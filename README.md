@@ -32,7 +32,7 @@ src/
 │   ├── form.tsx
 │   └── login.tsx
 └── styles/
-    └── globals.css
+   └── globals.css
 
 ---
 
