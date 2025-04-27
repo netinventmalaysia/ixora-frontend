@@ -1,40 +1,89 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/pages/api-reference/create-next-app).
 
-## Getting Started
+# 🚀 MBMB Template Frontend
 
-First, run the development server:
+A responsive web application template built with Next.js (Pages Router), Tailwind CSS, Tailwind UI components, and React Hook Form for modern and efficient form handling.
 
-```bash
+This project is structured to support rapid frontend development for MBMB systems and other scalable Next.js applications.
+
+---
+
+## 📦 Tech Stack
+
+- Next.js (Pages Router)
+- Tailwind CSS
+- Tailwind UI Blocks
+- React Hook Form
+- Heroicons
+
+---
+
+## 📁 Project Structure
+
+src/
+├── components/
+│   ├── FormWrapper.tsx
+│   ├── auth/
+│   │   └── LoginForm.tsx
+│   └── form-sections/
+│       ├── ProfileSection.tsx
+│       ├── PersonalInfoSection.tsx
+│       └── NotificationsSection.tsx
+├── pages/
+│   ├── form.tsx
+│   └── login.tsx
+└── styles/
+    └── globals.css
+
+---
+
+## 🚀 Getting Started
+
+1. Clone the project
+git clone https://github.com/netinventmalaysia/mbmb-template-frontend.git
+cd mbmb-template-frontend
+
+2. Install dependencies
+npm install
+
+3. Run the development server
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Then open http://localhost:3000 to view it in your browser.
 
-You can start editing the page by modifying `pages/index.tsx`. The page auto-updates as you edit the file.
+---
 
-[API routes](https://nextjs.org/docs/pages/building-your-application/routing/api-routes) can be accessed on [http://localhost:3000/api/hello](http://localhost:3000/api/hello). This endpoint can be edited in `pages/api/hello.ts`.
+## 🧩 Available Pages
 
-The `pages/api` directory is mapped to `/api/*`. Files in this directory are treated as [API routes](https://nextjs.org/docs/pages/building-your-application/routing/api-routes) instead of React pages.
+Page | URL | Description
+---- | --- | -----------
+Form | /form | Full modular profile form
+Login | /login | Tailwind UI styled login form
 
-This project uses [`next/font`](https://nextjs.org/docs/pages/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+---
 
-## Learn More
+## ✅ Features
 
-To learn more about Next.js, take a look at the following resources:
+- Modular ProfileSection, PersonalInfoSection, NotificationsSection
+- Unified FormWrapper using react-hook-form
+- Reusable LoginForm component
+- Beautiful Tailwind UI styling
+- Pages Router architecture (no App Router)
+- Fully mobile-responsive design
+- Simple to extend and scale
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn-pages-router) - an interactive Next.js tutorial.
+---
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+## 🛠 Future Enhancements (Planned)
 
-## Deploy on Vercel
+- Connect to authentication APIs
+- Add Zod/Yup schema validation for better form control
+- Add file upload previews (for photos, documents)
+- Build a multi-step wizard form (optional)
+- Save form submissions to a database (e.g., MongoDB, PostgreSQL)
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+---
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/pages/building-your-application/deploying) for more details.
+## 📄 License
+
+This project is maintained by Net Invent Malaysia.
+Built with ❤️ using Tailwind UI.
