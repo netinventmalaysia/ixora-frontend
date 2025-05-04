@@ -89,10 +89,10 @@ export default function SidebarContent({
 
       {/* Main Content */}
       <main className="py-10 lg:pl-72 bg-white">
-        <div className="px-4 sm:px-6 lg:px-8">
-          {children}
-        </div>
-      </main>
+  <div className="px-2 sm:px-4 lg:px-6 xl:px-8 2xl:px-10 max-w-screen-2xl mx-auto w-full">
+    {children}
+  </div>
+</main>
     </div>
   );
 }

@@ -1,32 +1,46 @@
-
 import { useFormContext } from "react-hook-form";
 
-export default function Textarea({
-  name,
-  label,
-  placeholder = "",
-  required = false,
-  rows = 4,
-}: {
+type TextAreaFieldProps = {
+  id: string;
   name: string;
   label: string;
   placeholder?: string;
-  required?: boolean;
+  requiredMessage?: string;
   rows?: number;
-}) {
-  const { register, formState: { errors } } = useFormContext();
+};
+
+export default function TextAreaField({
+  id,
+  name,
+  label,
+  placeholder,
+  requiredMessage,
+  rows = 3,
+}: TextAreaFieldProps) {
+  const {
+    register,
+    formState: { errors },
+  } = useFormContext();
 
   return (
-    <div className="mb-4">
-      <label htmlFor={name} className="block font-medium text-sm text-gray-700">{label}</label>
-      <textarea
-        id={name}
-        rows={rows}
-        placeholder={placeholder}
-        className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:ring focus:ring-blue-200 focus:border-blue-400"
-        {...register(name, { required: required ? `${label} is required` : false })}
-      />
-      {errors[name] && <p className="text-sm text-red-500 mt-1">{errors[name]?.message as string}</p>}
+    <div className="col-span-full">
+      <label htmlFor={id} className="block text-sm font-medium text-gray-900">
+        {label}
+      </label>
+      <div className="mt-2">
+        <textarea
+          id={id}
+          {...register(name, requiredMessage ? { required: requiredMessage } : {})}
+          rows={rows}
+          className="block w-full rounded-md border border-gray-300 px-3 py-1.5 text-sm text-gray-900 placeholder:text-gray-400 focus:outline-indigo-600"
+          placeholder={placeholder}
+        />
+        {errors[name] && (
+          <p className="text-sm text-red-500 mt-1">
+            {errors[name]?.message as string}
+          </p>
+        )}
+      </div>
     </div>
   );
 }
