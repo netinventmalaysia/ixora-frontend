@@ -15,6 +15,7 @@ import { countryOptions } from "todo/components/data/SelectionList";
 import SelectField from "todo/components/forms/SelectField";
 import CheckboxGroupField from "todo/components/forms/CheckboxGroupField";
 import { emailNotificationOptions } from "todo/components/data/CheckList";
+import CodeExample from "todo/components/common/CodeExample";
 export default function FormPage() {
     const onSubmit = (data: any) => {
         console.log("✅ Submitted data:", data);
@@ -23,10 +24,14 @@ export default function FormPage() {
     return (
         <SidebarContent navigation={navigation} teams={teams} logoUrl={logoUrl}>
             <FormWrapper onSubmit={onSubmit}>
+
+                {/* === FormSectionHeader === */}
                 <FormSectionHeader
                     title="Profile"
                     description="This information will be displayed publicly so be careful what you share."
                 />
+                <CodeExample code={`<FormSectionHeader title="Profile" description="This information will be displayed publicly so be careful what you share." />`} />
+
                 <Spacing size="lg" />
                 <InputWithPrefix
                     id="username"
@@ -36,6 +41,8 @@ export default function FormPage() {
                     prefix="workcation.com/"
                     requiredMessage="Username is required"
                 />
+                <CodeExample code={`<InputWithPrefix id="username" name="username" label="Username" prefix="workcation.com/" requiredMessage="Username is required" />`} />
+
                 <Spacing size="lg" />
                 <TextArea
                     id="about"
@@ -44,12 +51,16 @@ export default function FormPage() {
                     placeholder="Tell us something about yourself"
                     requiredMessage="Please tell us something about yourself"
                 />
+                <CodeExample code={`<TextArea id="about" name="about" label="About" requiredMessage="Please tell us something about yourself" />`} />
+
                 <Spacing size="lg" />
                 <PhotoUploadField
                     label="Profile Picture"
                     buttonText="Upload Photo"
                     onClick={() => console.log("Upload photo clicked")}
                 />
+                <CodeExample code={`<PhotoUploadField label="Profile Picture" buttonText="Upload Photo" onClick={() => {}} />`} />
+
                 <Spacing size="lg" />
                 <FileUploadField
                     id="cover"
@@ -59,44 +70,47 @@ export default function FormPage() {
                     accept="image/*"
                     requiredMessage="Please upload a cover photo"
                 />
-                <Spacing size="lg" />
+                <CodeExample code={`<FileUploadField id="cover" name="cover" label="Upload a file" description="PNG, JPG, GIF up to 10MB" accept="image/*" requiredMessage="Please upload a cover photo" />`} />
 
+                <Spacing size="lg" />
                 <LineSeparator />
+                <CodeExample code={`<LineSeparator />`} />
 
                 <FormSectionHeader
                     title="Personal Information"
                     description="Use a permanent address where you can receive mail."
                 />
-                <Spacing size="lg" />
+                <CodeExample code={`<FormSectionHeader title="Personal Information" description="Use a permanent address where you can receive mail." />`} />
 
+                <Spacing size="lg" />
                 <FormRow columns={2}>
                     <InputWithPrefix
                         id="firstname"
                         name="firstname"
                         label="First Name"
-                        placeholder=""
-                        prefix=""
                         requiredMessage="First name is required"
                     />
-
                     <InputWithPrefix
                         id="lastname"
                         name="lastname"
                         label="Last name"
-                        placeholder=""
-                        prefix=""
                         requiredMessage="Last name is required"
                     />
                 </FormRow>
+                <CodeExample code={`<FormRow columns={2}>
+  <InputWithPrefix id="firstname" name="firstname" label="First Name" requiredMessage="First name is required" />
+  <InputWithPrefix id="lastname" name="lastname" label="Last name" requiredMessage="Last name is required" />
+</FormRow>`} />
+
                 <Spacing size="lg" />
                 <InputWithPrefix
                     id="emailaddress"
                     name="emailaddress"
                     label="Email Address"
-                    placeholder=""
-                    prefix=""
                     requiredMessage="Email is required"
                 />
+                <CodeExample code={`<InputWithPrefix id="emailaddress" name="emailaddress" label="Email Address" requiredMessage="Email is required" />`} />
+
                 <Spacing size="lg" />
                 <FormRow columns={2}>
                     <SelectField
@@ -108,60 +122,63 @@ export default function FormPage() {
                         requiredMessage="Country is required"
                     />
                 </FormRow>
+                <CodeExample code={`<SelectField id="country" name="country" label="Country" options={countryOptions} requiredMessage="Country is required" />`} />
+
                 <Spacing size="lg" />
                 <InputWithPrefix
                     id="address"
                     name="address"
                     label="Street Address"
-                    placeholder=""
-                    prefix=""
                     requiredMessage="Street Address is required"
                 />
+                <CodeExample code={`<InputWithPrefix id="address" name="address" label="Street Address" requiredMessage="Street Address is required" />`} />
+
                 <Spacing size="lg" />
                 <FormRow columns={3}>
                     <InputWithPrefix
                         id="city"
                         name="city"
                         label="City"
-                        placeholder=""
-                        prefix=""
                         requiredMessage="City is required"
                     />
                     <InputWithPrefix
                         id="state"
                         name="state"
                         label="State / Province"
-                        placeholder=""
-                        prefix=""
-                        //requiredMessage="State is required"
                     />
                     <InputWithPrefix
                         id="postalcode"
                         name="postalcode"
                         label="ZIP / Postal code"
-                        placeholder=""
-                        prefix=""
                         requiredMessage="ZIP / Postal code is required"
                     />
                 </FormRow>
+                <CodeExample code={`<FormRow columns={3}>
+  <InputWithPrefix id="city" name="city" label="City" requiredMessage="City is required" />
+  <InputWithPrefix id="state" name="state" label="State / Province" />
+  <InputWithPrefix id="postalcode" name="postalcode" label="ZIP / Postal code" requiredMessage="ZIP / Postal code is required" />
+</FormRow>`} />
 
                 <LineSeparator />
+                <CodeExample code={` <LineSeparator />`} />
 
                 <FormSectionHeader
                     title="Notifications"
                     description="Choose what you want to be notified about."
                 />
+                <CodeExample code={`<FormSectionHeader title="Notifications" description="Choose what you want to be notified about." />`} />
 
                 <CheckboxGroupField
                     name="notifications"
                     legend="By email"
                     options={emailNotificationOptions}
                 />
+                <CodeExample code={`<CheckboxGroupField name="notifications" legend="By email" options={emailNotificationOptions} />`} />
 
                 <Spacing size="lg" />
                 <LineSeparator />
+                <CodeExample code={`<LineSeparator />`} />
 
-            
                 <FormActions>
                     <Button type="button" variant="ghost">
                         Cancel
@@ -170,10 +187,13 @@ export default function FormPage() {
                         Save
                     </Button>
                 </FormActions>
+                <CodeExample code={`<FormActions>
+  <Button type="button" variant="ghost">Cancel</Button>
+  <Button type="submit" variant="primary">Save</Button>
+</FormActions>`} />
 
             </FormWrapper>
         </SidebarContent>
-
-
     );
 }
+
