@@ -11,7 +11,7 @@ export default function FormWrapper({
 
   return (
     <FormProvider {...methods}>
-      <form onSubmit={methods.handleSubmit(onSubmit)} className="w-full max-w-md mx-auto">
+      <form onSubmit={methods.handleSubmit(onSubmit)} className="w-full max-w-3xl mx-auto">
         {children}
       </form>
     </FormProvider>
