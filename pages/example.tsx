@@ -17,14 +17,33 @@ import CheckboxGroupField from "todo/components/forms/CheckboxGroupField";
 import { emailNotificationOptions2 } from "todo/components/data/CheckList";
 import CodeExample from "todo/components/common/CodeExample";
 import TextInput from "todo/components/forms/TextInput";
+import ConfirmDialog from "todo/components/forms/ConfirmDialog";
+import router from "next/router";
+import { useState } from "react";
+import RadioGroupField from "todo/components/forms/RadioGroupField";
+import { radioButtonList } from "todo/components/data/RadioList";
+import toast from 'react-hot-toast';
+import DatePickerField from "todo/components/forms/DatePickerField";
 export default function FormPage() {
-    const onSubmit = (data: any) => {
-        console.log("✅ Submitted data:", data);
+
+    const [showCancelDialog, setShowCancelDialog] = useState(false);
+    const [loading, setLoading] = useState(false);
+
+    const handleSubmit = (data: any) => {
+        setLoading(true);
+        setTimeout(() => {
+            setLoading(false);
+            toast.success('Form submitted successfully!');
+            console.log('Submitted data:', data);
+        }, 2000);
+
+        // toast.error('Something went wrong');
+        // toast.loading('Submitting...');
     };
 
     return (
         <SidebarContent navigation={navigation} teams={teams} logoUrl={logoUrl}>
-            <FormWrapper onSubmit={onSubmit}>
+            <FormWrapper onSubmit={handleSubmit}>
                 <FormSectionHeader title="Profile" description="This information will be displayed publicly so be careful what you share." />
                 <Spacing size="lg" />
                 <InputWithPrefix id="phoneNum" name="phoneNum" label="No Tel" prefix="60" requiredMessage="Phone Number is required" />
@@ -41,12 +60,63 @@ export default function FormPage() {
                 <Spacing size="lg" />
                 <CheckboxGroupField name="notifications" legend="By email" options={emailNotificationOptions2} />
 
+                <Spacing size="lg" />
+                <RadioGroupField
+                    name="gender"
+                    label="Gender"
+                    options={radioButtonList}
+                    inline={true}
+                    requiredMessage="Please select a gender"
+                />
+
+                <Spacing size="lg" />
+                <DatePickerField
+                    name="dob"
+                    label="Date of Birth"
+                    dateFormat="dd/MM/yyyy"
+                    placeholder="DD/MM/YYYY"
+                    requiredMessage="Please select your birthdate"
+                />
+
+                <Spacing size="lg" />
+                <DatePickerField
+                    name="appointmentTime"
+                    label="Appointment"
+                    showTimeSelect
+                    dateFormat="Pp"
+                    placeholder="Select date & time"
+                />
+
+                <Spacing size="lg" />
+                <DatePickerField
+                    name="bookingDate"
+                    label="Booking Date"
+                    minDate={new Date()} // today
+                    maxDate={new Date(2025, 11, 31)} // Dec 31, 2025
+                    dateFormat="yyyy-MM-dd"
+                    placeholder="Select booking date"
+                />
+
                 <FormActions>
-                    <Button type="button" variant="ghost">Cancel</Button>
-                    <Button type="submit" variant="primary">Save</Button>
+                    <Button type="button" variant="ghost" onClick={() => setShowCancelDialog(true)}>Cancel</Button>
+                    <Button type="submit" variant="primary" loading={loading}>Save</Button>
                 </FormActions>
+
+
             </FormWrapper>
 
+            <ConfirmDialog
+                open={showCancelDialog}
+                title="Discard changes?"
+                description="Your unsaved changes will be lost. Are you sure you want to leave this form?"
+                confirmText="Yes, discard"
+                cancelText="Stay"
+                onCancel={() => setShowCancelDialog(false)}
+                onConfirm={() => {
+                    setShowCancelDialog(false);
+                    router.push('/form'); // or reset form
+                }}
+            />
 
         </SidebarContent>
     );
