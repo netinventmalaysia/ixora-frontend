@@ -10,6 +10,30 @@ export const navigation = [
     { name: 'Reports', href: 'report', icon: ChartPieIcon, current: false },
 ];
 
+
+export const accountNavigation = [
+    { name: 'Dashboard', href: '/account/dashboard', icon: HomeIcon, current: false },
+    { name: 'Profile', href: '/account/profile', icon: UsersIcon, current: false },
+  ];
+  
+  export const adminNavigation = [
+    { name: 'Admin Panel', href: '/admin/dashboard', icon: ChartPieIcon, current: false },
+    { name: 'User Management', href: '/admin/users', icon: UsersIcon, current: false },
+    { name: 'Reports', href: '/admin/reports', icon: DocumentDuplicateIcon, current: false },
+  ];
+
+export const userNavigation = [
+    { name: 'Your Profile', href: '/account/profile' },
+    { name: 'Settings', href: '/account/settings' },
+    { name: 'Sign out', href: '/logout' },
+];
+
+export const developerNavigation = [
+    { name: 'Form', href: 'form', icon: BookOpenIcon, current: false },
+    { name: 'Your Profile', href: '/developer/profile' },
+    { name: 'Settings', href: '/developer/settings' },
+];
+
 export const teams = [
     { id: 1, name: 'Product Team', href: '#', initial: 'PT', current: false },
     { id: 2, name: 'Dev Team', href: '#', initial: 'DT', current: false },

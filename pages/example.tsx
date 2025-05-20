@@ -4,7 +4,7 @@ import Button from '@/components/common/Button';
 import { navigation, teams, logoUrl } from '@/components/main/SidebarConfig';
 import FormSectionHeader from '@/components/forms/FormSectionHeader';
 import FormActions from "todo/components/common/FormActions";
-import InputWithPrefix from "todo/components/forms/InputWithPrefix";
+import InputWithPrefix from "todo/components/forms/InputText";
 import TextArea from "todo/components/forms/Textarea";
 import Spacing from "todo/components/forms/Spacing";
 import PhotoUploadField from "todo/components/forms/PhotoUploadField";
@@ -24,7 +24,7 @@ import RadioGroupField from "todo/components/forms/RadioGroupField";
 import { radioButtonList } from "todo/components/data/RadioList";
 import toast from 'react-hot-toast';
 import DatePickerField from "todo/components/forms/DatePickerField";
-export default function FormPage() {
+export default function LoginPage() {
 
     const [showCancelDialog, setShowCancelDialog] = useState(false);
     const [loading, setLoading] = useState(false);

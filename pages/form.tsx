@@ -1,49 +1,226 @@
-import FormWrapper from "todo/components/forms/FormWrapper";
+// ==========================
+// 📆 FormPage.tsx (Cleaned & Structured)
+// ==========================
+
+import { useState } from "react";
+import router from "next/router";
+import toast from "react-hot-toast";
+
 import SidebarContent from "@/components/main/Sidebar";
-import Button from '@/components/common/Button';
-import { navigation, teams, logoUrl } from '@/components/main/SidebarConfig';
-import FormSectionHeader from '@/components/forms/FormSectionHeader';
-import FormActions from "todo/components/common/FormActions";
-import InputWithPrefix from "todo/components/forms/InputWithPrefix";
+import { navigation, teams, logoUrl } from "@/components/main/SidebarConfig";
+
+import FormWrapper from "todo/components/forms/FormWrapper";
+import FormSectionHeader from "todo/components/forms/FormSectionHeader";
+import Heading from "todo/components/forms/Heading";
+import FormRow from "todo/components/forms/FormRow";
+import InputText from "todo/components/forms/InputText";
 import TextArea from "todo/components/forms/Textarea";
-import Spacing from "todo/components/forms/Spacing";
 import PhotoUploadField from "todo/components/forms/PhotoUploadField";
 import FileUploadField from "todo/components/forms/FileUpload";
-import LineSeparator from "todo/components/forms/LineSeparator";
-import FormRow from "todo/components/forms/FormRow";
-import { countryOptions } from "todo/components/data/SelectionList";
 import SelectField from "todo/components/forms/SelectField";
 import CheckboxGroupField from "todo/components/forms/CheckboxGroupField";
-import { emailNotificationOptions } from "todo/components/data/CheckList";
+import RadioGroupField from "todo/components/forms/RadioGroupField";
+import DatePickerField from "todo/components/forms/DatePickerField";
+import FormActions from "todo/components/common/FormActions";
+import Button from "todo/components/common/Button";
+import ConfirmDialog from "todo/components/forms/ConfirmDialog";
 import CodeExample from "todo/components/common/CodeExample";
+import Spacing from "todo/components/forms/Spacing";
+import LineSeparator from "todo/components/forms/LineSeparator";
+
+import { countryOptions } from "todo/components/data/SelectionList";
+import { emailNotificationOptions } from "todo/components/data/CheckList";
+import { radioButtonList } from "todo/components/data/RadioList";
+
 export default function FormPage() {
-    const onSubmit = (data: any) => {
-        console.log("✅ Submitted data:", data);
+    const [showCancelDialog, setShowCancelDialog] = useState(false);
+    const [loading, setLoading] = useState(false);
+
+    const handleSubmit = (data: any) => {
+        setLoading(true);
+        setTimeout(() => {
+            setLoading(false);
+            toast.success("Form submitted successfully!");
+            console.log("Submitted data:", data);
+        }, 2000);
     };
 
     return (
         <SidebarContent navigation={navigation} teams={teams} logoUrl={logoUrl}>
-            <FormWrapper onSubmit={onSubmit}>
-
-                {/* === FormSectionHeader === */}
+            <FormWrapper onSubmit={handleSubmit}>
                 <FormSectionHeader
-                    title="Profile"
-                    description="This information will be displayed publicly so be careful what you share."
+                    title="Headings"
+                    description="Use different heading levels to create a hierarchy of information."
                 />
-                <CodeExample code={`<FormSectionHeader title="Profile" description="This information will be displayed publicly so be careful what you share." />`} />
+                {[1, 2, 3, 4, 5].map((level) => (
+                    <div key={level}>
+                        <Spacing size="lg" />
+                        <Heading level={level as 1 | 2 | 3 | 4 | 5} align="left" bold>
+                            {`H${level} Heading`}
+                        </Heading>
+                        <CodeExample code={`<Heading level={${level}} align="left" bold>H${level} Heading</Heading>`} />
+                    </div>
+                ))}
+                <LineSeparator />
 
                 <Spacing size="lg" />
-                <InputWithPrefix
+                <FormSectionHeader
+                    title="Button Styles"
+                    description="Use different button styles"
+                />
+
+                <Button type="submit" variant="primary" fullWidth size="md">
+                    Sign in
+                </Button>
+                <CodeExample code={`<Button type="submit" variant="primary" fullWidth size="md">Sign in</Button>`} />
+
+                <Spacing size="lg" />
+                <Button type="button" variant="secondary" fullWidth size="md">
+                    Sign in
+                </Button>
+                <CodeExample code={`<Button type="button" variant="secondary" fullWidth size="md">Sign in</Button>`} />
+
+                <Spacing size="lg" />
+                <Button type="button" variant="danger" fullWidth size="md">
+                    Sign in
+                </Button>
+                <CodeExample code={`<Button type="button" variant="danger" fullWidth size="md">Sign in</Button>`} />
+
+                <Spacing size="lg" />
+                <FormSectionHeader
+                    title="Button Styles"
+                    description="Use different button size"
+                />
+                <Spacing size="lg" />
+                <Button type="button" variant="primary" fullWidth size="sm">
+                    Sign in
+                </Button>
+                <CodeExample code={`<Button type="button" variant="primary" fullWidth size="sm">Sign in</Button>`} />
+
+                <Spacing size="lg" />
+                <Button type="button" variant="primary" fullWidth size="md">
+                    Sign in
+                </Button>
+                <CodeExample code={`<Button type="button" variant="primary" fullWidth size="md">Sign in</Button>`} />
+
+                <Spacing size="lg" />
+                <Button type="button" variant="primary" fullWidth size="lg">
+                    Sign in
+                </Button>
+
+                <CodeExample code={`<Button type="button" variant="primary" fullWidth size="lg">Sign in</Button>`} />
+
+                <Spacing size="lg" />
+                <LineSeparator />
+
+                <FormSectionHeader
+                    title="Personal Information"
+                    description="Use a permanent address where you can receive mail."
+                />
+                <CodeExample code={`<FormSectionHeader title="Personal Information" description="Use a permanent address where you can receive mail." />`} />
+
+                <Spacing size="lg" />
+                <InputText
                     id="username"
                     name="username"
-                    label="Username"
+                    label="Username (With Prefix)"
                     placeholder="janesmith"
                     prefix="workcation.com/"
                     requiredMessage="Username is required"
                 />
-                <CodeExample code={`<InputWithPrefix id="username" name="username" label="Username" prefix="workcation.com/" requiredMessage="Username is required" />`} />
+                <CodeExample code={`<InputText id="username" name="username" label="Username" prefix="workcation.com/" requiredMessage="Username is required" />`} />
+
 
                 <Spacing size="lg" />
+                <InputText
+                    id="usernameAlt"
+                    name="usernameAlt"
+                    label="Username (Without Prefix)"
+                    placeholder="Username"
+                    requiredMessage="Username is required"
+                />
+                <CodeExample code={`<InputText id="username" name="username" label="Username" prefix="workcation.com/" requiredMessage="Username is required" />`} />
+
+                <Spacing size="lg" />
+                <InputText
+                    id="password"
+                    name="password"
+                    label="Password"
+                    placeholder="••••••••"
+                    type="password"
+                    requiredMessage="Password is required"
+                />
+                <CodeExample code={`<InputText id="password" name="password" label="Password" placeholder="••••••••" type="password" requiredMessage="Password is required" />`} />
+
+                <Spacing size="lg" />
+                <InputText
+                    id="age"
+                    name="age"
+                    label="Age"
+                    type="number"
+                    requiredMessage="Age is required"
+                />
+                <CodeExample code={`<InputText id="age" name="age" label="Age" type="number" requiredMessage="Age is required" />`} />
+
+                <Spacing size="lg" />
+                <FormRow columns={2}>
+                    <InputText
+                        id="firstname"
+                        name="firstname"
+                        label="First Name"
+                        requiredMessage="First name is required"
+                    />
+                    <InputText
+                        id="lastname"
+                        name="lastname"
+                        label="Last name"
+                        requiredMessage="Last name is required"
+                    />
+                </FormRow>
+                <CodeExample code={`<FormRow columns={2}>
+                    <InputText id="firstname" name="firstname" label="First Name" requiredMessage="First name is required" />
+                    <InputText id="lastname" name="lastname" label="Last name" requiredMessage="Last name is required" />
+                </FormRow>`} />
+
+                
+<Spacing size="lg" />
+                <InputText
+                    id="address"
+                    name="address"
+                    label="Street Address"
+                    requiredMessage="Street Address is required"
+                />
+                <CodeExample code={`<InputText id="address" name="address" label="Street Address" requiredMessage="Street Address is required" />`} />
+
+                <Spacing size="lg" />
+                <FormRow columns={3}>
+                    <InputText
+                        id="city"
+                        name="city"
+                        label="City"
+                        requiredMessage="City is required"
+                    />
+                    <InputText
+                        id="state"
+                        name="state"
+                        label="State / Province"
+                    />
+                    <InputText
+                        id="postalcode"
+                        name="postalcode"
+                        label="ZIP / Postal code"
+                        requiredMessage="ZIP / Postal code is required"
+                    />
+                </FormRow>
+                <CodeExample code={`<FormRow columns={3}>
+                    <InputText id="city" name="city" label="City" requiredMessage="City is required" />
+                    <InputText id="state" name="state" label="State / Province" />
+                    <InputText id="postalcode" name="postalcode" label="ZIP / Postal code" requiredMessage="ZIP / Postal code is required" />
+                </FormRow>`} />
+
+                <Spacing size="lg" />
+
+              
                 <TextArea
                     id="about"
                     name="about"
@@ -72,44 +249,6 @@ export default function FormPage() {
                 />
                 <CodeExample code={`<FileUploadField id="cover" name="cover" label="Upload a file" description="PNG, JPG, GIF up to 10MB" accept="image/*" requiredMessage="Please upload a cover photo" />`} />
 
-                <Spacing size="lg" />
-                <LineSeparator />
-                <CodeExample code={`<LineSeparator />`} />
-
-                <FormSectionHeader
-                    title="Personal Information"
-                    description="Use a permanent address where you can receive mail."
-                />
-                <CodeExample code={`<FormSectionHeader title="Personal Information" description="Use a permanent address where you can receive mail." />`} />
-
-                <Spacing size="lg" />
-                <FormRow columns={2}>
-                    <InputWithPrefix
-                        id="firstname"
-                        name="firstname"
-                        label="First Name"
-                        requiredMessage="First name is required"
-                    />
-                    <InputWithPrefix
-                        id="lastname"
-                        name="lastname"
-                        label="Last name"
-                        requiredMessage="Last name is required"
-                    />
-                </FormRow>
-                <CodeExample code={`<FormRow columns={2}>
-  <InputWithPrefix id="firstname" name="firstname" label="First Name" requiredMessage="First name is required" />
-  <InputWithPrefix id="lastname" name="lastname" label="Last name" requiredMessage="Last name is required" />
-</FormRow>`} />
-
-                <Spacing size="lg" />
-                <InputWithPrefix
-                    id="emailaddress"
-                    name="emailaddress"
-                    label="Email Address"
-                    requiredMessage="Email is required"
-                />
-                <CodeExample code={`<InputWithPrefix id="emailaddress" name="emailaddress" label="Email Address" requiredMessage="Email is required" />`} />
 
                 <Spacing size="lg" />
                 <FormRow columns={2}>
@@ -124,49 +263,7 @@ export default function FormPage() {
                 </FormRow>
                 <CodeExample code={`<SelectField id="country" name="country" label="Country" options={countryOptions} requiredMessage="Country is required" />`} />
 
-                <Spacing size="lg" />
-                <InputWithPrefix
-                    id="address"
-                    name="address"
-                    label="Street Address"
-                    requiredMessage="Street Address is required"
-                />
-                <CodeExample code={`<InputWithPrefix id="address" name="address" label="Street Address" requiredMessage="Street Address is required" />`} />
-
-                <Spacing size="lg" />
-                <FormRow columns={3}>
-                    <InputWithPrefix
-                        id="city"
-                        name="city"
-                        label="City"
-                        requiredMessage="City is required"
-                    />
-                    <InputWithPrefix
-                        id="state"
-                        name="state"
-                        label="State / Province"
-                    />
-                    <InputWithPrefix
-                        id="postalcode"
-                        name="postalcode"
-                        label="ZIP / Postal code"
-                        requiredMessage="ZIP / Postal code is required"
-                    />
-                </FormRow>
-                <CodeExample code={`<FormRow columns={3}>
-  <InputWithPrefix id="city" name="city" label="City" requiredMessage="City is required" />
-  <InputWithPrefix id="state" name="state" label="State / Province" />
-  <InputWithPrefix id="postalcode" name="postalcode" label="ZIP / Postal code" requiredMessage="ZIP / Postal code is required" />
-</FormRow>`} />
-
                 <LineSeparator />
-                <CodeExample code={` <LineSeparator />`} />
-
-                <FormSectionHeader
-                    title="Notifications"
-                    description="Choose what you want to be notified about."
-                />
-                <CodeExample code={`<FormSectionHeader title="Notifications" description="Choose what you want to be notified about." />`} />
 
                 <CheckboxGroupField
                     name="notifications"
@@ -177,23 +274,96 @@ export default function FormPage() {
 
                 <Spacing size="lg" />
                 <LineSeparator />
+      
+                <RadioGroupField
+                    name="gender"
+                    label="Gender"
+                    options={radioButtonList}
+                    inline={true}
+                    requiredMessage="Please select a gender"
+                />
+                <CodeExample code={`<RadioGroupField name="gender" label="Gender" options={radioButtonList} inline={true} requiredMessage="Please select a gender" />`} />
+
+
+                <Spacing size="lg" />
+                <DatePickerField
+                    name="dob"
+                    label="Date of Birth"
+                    dateFormat="dd/MM/yyyy"
+                    placeholder="DD/MM/YYYY"
+                    requiredMessage="Please select your birthdate"
+                />
+                <CodeExample code={`<DatePickerField name="dob" label="Date of Birth" dateFormat="dd/MM/yyyy" placeholder="DD/MM/YYYY" requiredMessage="Please select your birthdate" />`} />
+
+                <DatePickerField
+                    name="appointmentTime"
+                    label="Appointment"
+                    showTimeSelect
+                    dateFormat="Pp"
+                    placeholder="Select date & time"
+                />
+                <CodeExample code={`<DatePickerField name="appointmentTime" label="Appointment" showTimeSelect dateFormat="Pp" placeholder="Select date & time" />`} />
+
+                <DatePickerField
+                    name="bookingDate"
+                    label="Booking Date"
+                    minDate={new Date()}
+                    maxDate={new Date(2025, 11, 31)}
+                    dateFormat="yyyy-MM-dd"
+                    placeholder="Select booking date"
+                />
+                <CodeExample code={`<DatePickerField name="bookingDate" label="Booking Date" minDate={new Date()} maxDate={new Date(2025, 11, 31)} dateFormat="yyyy-MM-dd" placeholder="Select booking date" />`} />
+
+                <LineSeparator />
+
+                <FormSectionHeader
+                    title="Confirmation Dialog"
+                    description="Use confirmation dialogs to prevent users from accidentally losing their changes."
+                />
+                <ConfirmDialog
+                    open={showCancelDialog}
+                    title="Discard changes?"
+                    description="Your unsaved changes will be lost. Are you sure you want to leave this form?"
+                    confirmText="Yes, discard"
+                    cancelText="Stay"
+                    onCancel={() => setShowCancelDialog(false)}
+                    onConfirm={() => {
+                        setShowCancelDialog(false);
+                        router.push("/form");
+                    }}
+                />
+                <CodeExample
+                    code={`<ConfirmDialog open={showCancelDialog} title="Discard changes?" description="Your unsaved changes will be lost. Are you sure you want to leave this form?" confirmText="Yes, discard" cancelText="Stay" onCancel={() => setShowCancelDialog(false)} onConfirm={() => { setShowCancelDialog(false); router.push('/form'); }} />`}
+                />
+
+                <FormSectionHeader
+                    title="Toast Notifications"
+                    description="Use toast notifications to inform users about the status of their actions."
+                />
+                <CodeExample
+                    code={`toast.success('Form submitted successfully!');\ntoast.error('Something went wrong');\ntoast.loading('Submitting...');`}
+                />
+
+
+                <Spacing size="lg" />
+                <LineSeparator />
                 <CodeExample code={`<LineSeparator />`} />
 
+                
+
                 <FormActions>
-                    <Button type="button" variant="ghost">
-                        Cancel
-                    </Button>
-                    <Button type="submit" variant="primary">
-                        Save
-                    </Button>
+                    <Button type="button" variant="ghost" onClick={() => setShowCancelDialog(true)}>Cancel</Button>
+                    <Button type="submit" variant="primary" loading={loading}>Save</Button>
                 </FormActions>
-                <CodeExample code={`<FormActions>
-  <Button type="button" variant="ghost">Cancel</Button>
-  <Button type="submit" variant="primary">Save</Button>
-</FormActions>`} />
+
+                <CodeExample code={
+                    `<FormActions>
+    <Button type="button" variant="ghost" onClick={() => setShowCancelDialog(true)}>Cancel</Button>
+    <Button type="submit" variant="primary" loading={loading}>Save</Button>
+</FormActions>`
+                } />
 
             </FormWrapper>
         </SidebarContent>
     );
 }
-

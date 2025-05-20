@@ -1,6 +1,6 @@
 import { useFormContext } from "react-hook-form";
 
-type InputWithPrefixProps = {
+type InputTextProps = {
   id: string;
   name: string;
   label: string;
@@ -8,9 +8,10 @@ type InputWithPrefixProps = {
   prefix?: string;
   requiredMessage?: string; // If undefined, the field is optional
   colSpan?: string;
+  type?: "text" | "password" | "number"; // NEW: Control input type
 };
 
-export default function InputWithPrefix({
+export default function InputText({
   id,
   name,
   label,
@@ -18,7 +19,8 @@ export default function InputWithPrefix({
   prefix,
   requiredMessage,
   colSpan = "sm:col-span-3",
-}: InputWithPrefixProps) {
+  type = "text", // Default to free text
+}: InputTextProps) {
   const {
     register,
     formState: { errors },
@@ -42,6 +44,7 @@ export default function InputWithPrefix({
           )}
           <input
             id={id}
+            type={type}
             {...register(name, validationRules)}
             placeholder={placeholder}
             className="block w-full grow py-1.5 pl-1 pr-3 text-sm text-gray-900 placeholder:text-gray-400 focus:outline-none"
