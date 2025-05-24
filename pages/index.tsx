@@ -11,6 +11,9 @@ import { useState } from "react";
 import toast from 'react-hot-toast';
 import LayoutWithoutSidebar from "todo/components/main/LayoutWithoutSidebar";
 import Heading from "todo/components/forms/Heading";
+import { Row } from "jspdf-autotable";
+import FormRow from "todo/components/forms/FormRow";
+import ImageDisplay from "todo/components/forms/ImageDisplay";
 export default function FormPage() {
 
     const [showCancelDialog, setShowCancelDialog] = useState(false);
@@ -31,6 +34,17 @@ export default function FormPage() {
     return (
         <LayoutWithoutSidebar>
             <FormWrapper onSubmit={handleSubmit}>
+                <ImageDisplay
+                    src="/images/logo.jpg"
+                    alt="Centered Image"
+                    align="center"
+                    width={90}
+                    height={90}
+                    rounded={false}
+                    shadow={false}
+                    bordered={false}
+                />
+                <Spacing size="lg" />
                 <Heading level={2} align="center" bold>
                     Sign in to your account
                 </Heading>

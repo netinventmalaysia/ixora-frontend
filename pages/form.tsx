@@ -31,6 +31,7 @@ import LineSeparator from "todo/components/forms/LineSeparator";
 import { countryOptions } from "todo/components/data/SelectionList";
 import { emailNotificationOptions } from "todo/components/data/CheckList";
 import { radioButtonList } from "todo/components/data/RadioList";
+import ImageDisplay from "todo/components/forms/ImageDisplay";
 
 export default function FormPage() {
     const [showCancelDialog, setShowCancelDialog] = useState(false);
@@ -62,6 +63,38 @@ export default function FormPage() {
                     </div>
                 ))}
                 <LineSeparator />
+
+                <Spacing size="lg" />
+                <ImageDisplay
+                    src="/images/logo.png"
+                    alt="Logo Left"
+                    align="left"
+                />
+                <CodeExample
+                    code={`<ImageDisplay src="/images/logo.png" alt="Logo Left" align="left" />`}                   
+                />
+
+                <ImageDisplay
+                    src="/images/logo.png"
+                    alt="Centered Image"
+                    align="center"
+                    width={600}
+                    height={300}
+                />
+                <CodeExample
+                    code={`<ImageDisplay src="/images/logo.png" alt="Centered Image" align="center" width={600} height={300} />`}           
+                />
+
+                <ImageDisplay
+                    src="/images/logo.png"
+                    alt="Aligned Right"
+                    align="right"
+                    bordered
+                    shadow={false}
+                />
+                <CodeExample
+                    code={`<ImageDisplay src="/images/logo.png" alt="Aligned Right" align="right" bordered shadow={false} />`}         
+                />
 
                 <Spacing size="lg" />
                 <FormSectionHeader
@@ -182,8 +215,8 @@ export default function FormPage() {
                     <InputText id="lastname" name="lastname" label="Last name" requiredMessage="Last name is required" />
                 </FormRow>`} />
 
-                
-<Spacing size="lg" />
+
+                <Spacing size="lg" />
                 <InputText
                     id="address"
                     name="address"
@@ -220,7 +253,7 @@ export default function FormPage() {
 
                 <Spacing size="lg" />
 
-              
+
                 <TextArea
                     id="about"
                     name="about"
@@ -274,7 +307,7 @@ export default function FormPage() {
 
                 <Spacing size="lg" />
                 <LineSeparator />
-      
+
                 <RadioGroupField
                     name="gender"
                     label="Gender"
@@ -349,7 +382,7 @@ export default function FormPage() {
                 <LineSeparator />
                 <CodeExample code={`<LineSeparator />`} />
 
-                
+
 
                 <FormActions>
                     <Button type="button" variant="ghost" onClick={() => setShowCancelDialog(true)}>Cancel</Button>
