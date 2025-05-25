@@ -14,6 +14,8 @@ import Heading from "todo/components/forms/Heading";
 import { Row } from "jspdf-autotable";
 import FormRow from "todo/components/forms/FormRow";
 import ImageDisplay from "todo/components/forms/ImageDisplay";
+import Hyperlink from "todo/components/forms/Hyperlink";
+import HyperText from "todo/components/forms/HyperText";
 export default function FormPage() {
 
     const [showCancelDialog, setShowCancelDialog] = useState(false);
@@ -32,7 +34,7 @@ export default function FormPage() {
     };
 
     return (
-        <LayoutWithoutSidebar>
+        <LayoutWithoutSidebar shiftY="-translate-y-16">
             <FormWrapper onSubmit={handleSubmit}>
                 <ImageDisplay
                     src="/images/logo.jpg"
@@ -50,9 +52,21 @@ export default function FormPage() {
                 </Heading>
                 <Spacing size="lg" />
                 <InputWithPrefix id="email" name="email" label="Email Address" requiredMessage="Email Address is required" />
-                <Spacing size="lg" />
+                <Spacing size="sm" />
                 <InputWithPrefix id="password" name="password" label="Password" requiredMessage="Password Address is required" />
+                <Spacing size="xs" />
+                <Hyperlink href="/forgot-password" position="right" bold fontSize="text-sm" underline={false} color="text-blue-600">
+                    Forgot Password?
+                </Hyperlink>
 
+                <Spacing size="md" />
+
+                <HyperText size="sm" align="center"  color="text-gray-600">
+                    Not a member?{" "}
+                    <Hyperlink href="/signup" inline bold>
+                        Sign up now!
+                    </Hyperlink>
+                </HyperText>
 
                 <FormActions>
                     <Button type="submit" variant="primary" fullWidth size="md">

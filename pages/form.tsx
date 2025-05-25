@@ -32,6 +32,8 @@ import { countryOptions } from "todo/components/data/SelectionList";
 import { emailNotificationOptions } from "todo/components/data/CheckList";
 import { radioButtonList } from "todo/components/data/RadioList";
 import ImageDisplay from "todo/components/forms/ImageDisplay";
+import Hyperlink from "todo/components/forms/Hyperlink";
+import TextLine from "todo/components/forms/HyperText";
 
 export default function FormPage() {
     const [showCancelDialog, setShowCancelDialog] = useState(false);
@@ -66,35 +68,50 @@ export default function FormPage() {
 
                 <Spacing size="lg" />
                 <ImageDisplay
-                    src="/images/logo.png"
+                    src="/images/logo.jpg"
                     alt="Logo Left"
                     align="left"
                 />
                 <CodeExample
-                    code={`<ImageDisplay src="/images/logo.png" alt="Logo Left" align="left" />`}                   
+                    code={`<ImageDisplay src="/images/logo.jpg" alt="Logo Left" align="left" />`}
                 />
 
                 <ImageDisplay
-                    src="/images/logo.png"
+                    src="/images/logo.jpg"
                     alt="Centered Image"
                     align="center"
-                    width={600}
-                    height={300}
+                    width={90}
+                    height={90}
                 />
                 <CodeExample
-                    code={`<ImageDisplay src="/images/logo.png" alt="Centered Image" align="center" width={600} height={300} />`}           
+                    code={`<ImageDisplay src="/images/logo.jpg" alt="Centered Image" align="center" width={600} height={300} />`}
                 />
 
                 <ImageDisplay
-                    src="/images/logo.png"
+                    src="/images/logo.jpg"
                     alt="Aligned Right"
                     align="right"
                     bordered
                     shadow={false}
                 />
                 <CodeExample
-                    code={`<ImageDisplay src="/images/logo.png" alt="Aligned Right" align="right" bordered shadow={false} />`}         
+                    code={`<ImageDisplay src="/images/logo.jpg" alt="Aligned Right" align="right" bordered shadow={false} />`}
                 />
+
+                <ImageDisplay
+                    src="/images/logo.jpg"
+                    alt="Centered Image"
+                    align="center"
+                    width={90}
+                    height={90}
+                    rounded={false}
+                    shadow={false}
+                    bordered={false}
+                />
+                <CodeExample
+                    code={`<ImageDisplay src="/images/logo.jpg" alt="Centered Image" align="center" width={90} height={90} rounded={false} shadow={false} bordered={false} />`}
+                />
+                <LineSeparator />
 
                 <Spacing size="lg" />
                 <FormSectionHeader
@@ -348,7 +365,7 @@ export default function FormPage() {
                 <CodeExample code={`<DatePickerField name="bookingDate" label="Booking Date" minDate={new Date()} maxDate={new Date(2025, 11, 31)} dateFormat="yyyy-MM-dd" placeholder="Select booking date" />`} />
 
                 <LineSeparator />
-
+                <Spacing size="lg" />
                 <FormSectionHeader
                     title="Confirmation Dialog"
                     description="Use confirmation dialogs to prevent users from accidentally losing their changes."
@@ -369,6 +386,7 @@ export default function FormPage() {
                     code={`<ConfirmDialog open={showCancelDialog} title="Discard changes?" description="Your unsaved changes will be lost. Are you sure you want to leave this form?" confirmText="Yes, discard" cancelText="Stay" onCancel={() => setShowCancelDialog(false)} onConfirm={() => { setShowCancelDialog(false); router.push('/form'); }} />`}
                 />
 
+                <Spacing size="lg" />
                 <FormSectionHeader
                     title="Toast Notifications"
                     description="Use toast notifications to inform users about the status of their actions."
@@ -377,6 +395,41 @@ export default function FormPage() {
                     code={`toast.success('Form submitted successfully!');\ntoast.error('Something went wrong');\ntoast.loading('Submitting...');`}
                 />
 
+                <Spacing size="lg" />
+                <FormSectionHeader
+                    title="Hyperlinks"
+                    description="Use hyperlinks to navigate to different pages or external sites."  
+                />
+                <Spacing size="lg" />
+                <Hyperlink href="/about">About Us</Hyperlink>
+                <CodeExample code={`<Hyperlink href="/about">About Us</Hyperlink>`} />
+
+                <Spacing size="lg" />
+                <Hyperlink href="https://google.com" external>
+                    Visit Google
+                </Hyperlink>
+                <CodeExample code={`<Hyperlink href="https://google.com" external>Visit Google</Hyperlink>`} />
+
+                <Spacing size="lg" />
+                <Hyperlink href="/terms" bold underline={false} color="text-red-500">
+                    Terms & Conditions
+                </Hyperlink>
+                <CodeExample code={`<Hyperlink href="/terms" bold underline={false} color="text-red-500">Terms & Conditions</Hyperlink>`} />
+
+                       <TextLine size="sm" align="center" color="text-gray-600">
+                                    By continuing, you agree to the{" "}
+                                    <Hyperlink href="/terms" inline>
+                                        Terms of Service
+                                    </Hyperlink>{" "}
+                                    and{" "}
+                                    <Hyperlink href="/privacy" inline>
+                                        Privacy Policy
+                                    </Hyperlink>.
+                                </TextLine>
+                <CodeExample code={`<TextLine size="sm" align="center" color="text-gray-600"> By continuing, you agree to the{" "}
+    <Hyperlink href="/terms" inline> Terms of Service </Hyperlink>{" "}  and{" "}    
+    <Hyperlink href="/privacy" inline> Privacy Policy </Hyperlink>.
+</TextLine>`} />
 
                 <Spacing size="lg" />
                 <LineSeparator />
