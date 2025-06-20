@@ -40,8 +40,7 @@ const Tabs: React.FC<TabsProps> = ({ tabs, currentTab, onTabChange }) => {
         >
           {tabs.map((tab) => (
             <option key={tab.name} value={tab.name}>
-              {tab.name}
-              {tab.badge && <Badge label={tab.badge} color={tab.badgeColor ?? 'red'} />}
+              {tab.name}{tab.badge ? ` (${tab.badge})` : ''}
             </option>
           ))}
         </select>
