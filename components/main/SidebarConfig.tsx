@@ -1,8 +1,9 @@
-import { HomeIcon, UsersIcon, FolderIcon, CalendarIcon, DocumentDuplicateIcon, ChartPieIcon, BookOpenIcon, KeyIcon } from '@heroicons/react/24/outline';
+import { BuildingOfficeIcon, HomeIcon, UsersIcon, FolderIcon, CalendarIcon, DocumentDuplicateIcon, ChartPieIcon, BookOpenIcon, KeyIcon, ArrowRightOnRectangleIcon, CogIcon, ReceiptPercentIcon, BriefcaseIcon, BuildingStorefrontIcon, RectangleStackIcon } from '@heroicons/react/24/outline';
+import { ArrowRightCircleIcon } from '@heroicons/react/24/solid';
 
-export const navigation = [
+export const superAdminNavigation = [
+    { name: 'Login', href: '/', icon: KeyIcon, current: true },
     { name: 'Form', href: 'form', icon: BookOpenIcon, current: false },
-    { name: 'Login', href: 'login', icon: KeyIcon, current: true },
     { name: 'Team', href: '#', icon: UsersIcon, current: false },
     { name: 'Projects', href: '#', icon: FolderIcon, current: false },
     { name: 'Calendar', href: '#', icon: CalendarIcon, current: false },
@@ -14,29 +15,47 @@ export const navigation = [
 export const accountNavigation = [
     { name: 'Dashboard', href: '/account/dashboard', icon: HomeIcon, current: false },
     { name: 'Profile', href: '/account/profile', icon: UsersIcon, current: false },
-  ];
-  
-  export const adminNavigation = [
+];
+
+export const adminNavigation = [
     { name: 'Admin Panel', href: '/admin/dashboard', icon: ChartPieIcon, current: false },
     { name: 'User Management', href: '/admin/users', icon: UsersIcon, current: false },
     { name: 'Reports', href: '/admin/reports', icon: DocumentDuplicateIcon, current: false },
-  ];
+];
 
 export const userNavigation = [
-    { name: 'Your Profile', href: '/account/profile' },
-    { name: 'Settings', href: '/account/settings' },
-    { name: 'Sign out', href: '/logout' },
+  { name: 'Profile', href: '/account/profile', icon: UsersIcon, current: true },
+  { name: 'Settings', href: '/account/settings', icon: CogIcon, current: false },
+  { name: 'Sign out', href: '/logout', icon: ArrowRightCircleIcon, current: false },
 ];
 
 export const developerNavigation = [
     { name: 'Form', href: 'form', icon: BookOpenIcon, current: false },
-    { name: 'Your Profile', href: '/developer/profile' },
-    { name: 'Settings', href: '/developer/settings' },
+    { name: 'Your Profile', href: '/developer/profile', icon: UsersIcon, current: true },
+    { name: 'Settings', href: '/developer/settings', icon: CogIcon, current: false },
 ];
 
 export const teams = [
-    { id: 1, name: 'Product Team', href: '#', initial: 'PT', current: false },
-    { id: 2, name: 'Dev Team', href: '#', initial: 'DT', current: false },
+    { id: 1, name: 'Company', href: '#', initial: 'Com', current: false },
+    { id: 2, name: 'Organization', href: '#', initial: 'Org', current: false },
+    { id: 3, name: 'Consultant', href: '#', initial: 'Cnt', current: false },
+    { id: 4, name: 'Developer', href: '#', initial: 'Dev', current: false },
 ];
 
-export const logoUrl = "https://tailwindcss.com/plus-assets/img/logos/mark.svg?color=indigo&shade=500";
+export const generalAppNavigation = [
+    { name: 'Assessment Tax', href: '/', icon: HomeIcon, current: false },
+    { name: 'Compound', href: '/', icon: ReceiptPercentIcon, current: false },
+    { name: 'Booth Rental', href: '/', icon: BuildingStorefrontIcon, current: false },
+    { name: 'Miscellaneous bills', href: '/', icon: RectangleStackIcon, current: false },
+]
+
+export const businessAppNavigation = [
+    { name: 'My SKB', href: '/myskb', icon: BuildingOfficeIcon, current: false
+    },
+]
+
+export const businessEnrollmentNavigation = [
+    { name: 'Business Registration', href: '/business', icon: BriefcaseIcon, current: true },
+]
+
+export const logoUrl = "/images/logo.jpg"; // Update with your logo URL

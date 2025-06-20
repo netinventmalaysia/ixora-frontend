@@ -38,7 +38,7 @@ export default function DatePickerField({
                 name={name}
                 rules={{ required: requiredMessage }}
                 render={({ field }) => (
-                    <div className="relative">
+                    <div className="relative w-full">
                         <DatePicker
                             selected={field.value}
                             onChange={(date) => field.onChange(date)}

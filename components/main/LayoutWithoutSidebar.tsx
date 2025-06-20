@@ -12,8 +12,8 @@ export default function LayoutWithoutSidebar({
   shiftY = "", // Optional vertical shift
 }: LayoutWithoutSidebarProps) {
   return (
-    <main className="min-h-screen bg-white flex items-center justify-center p-6">
-      <div className={`flex min-h-full flex-1 flex-col justify-center px-6 ${paddingY} ${shiftY}`}>
+    <main className="min-h-screen bg-white flex items-start justify-center p-6">
+      <div className={`flex min-h-full flex-1 flex-col justify-start px-6 ${paddingY} ${shiftY}`}>
         {children}
       </div>
     </main>

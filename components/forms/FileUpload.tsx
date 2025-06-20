@@ -5,6 +5,7 @@ import { useFormContext } from "react-hook-form";
 type FileUploadFieldProps = {
   id: string;
   name: string;
+  title?: string;
   label?: string;
   description?: string;
   accept?: string; // e.g., "image/*"
@@ -14,6 +15,7 @@ type FileUploadFieldProps = {
 export default function FileUploadField({
   id,
   name,
+  title = "Cover photo",
   label = "Upload a file",
   description = "PNG, JPG, GIF up to 10MB",
   accept = "image/*",
@@ -27,7 +29,8 @@ export default function FileUploadField({
   return (
     <div className="col-span-full">
       <label htmlFor={id} className="block text-sm font-medium text-gray-900">
-        Cover photo
+        {title}
+        {requiredMessage && <span className="text-red-500">*</span>}
       </label>
       <div className="mt-2 flex justify-center rounded-lg border border-dashed border-gray-900/25 px-6 py-10">
         <div className="text-center">

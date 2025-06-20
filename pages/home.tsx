@@ -38,8 +38,6 @@ import { radioButtonList } from "todo/components/data/RadioList";
 import ImageDisplay from "todo/components/forms/ImageDisplay";
 import Hyperlink from "todo/components/forms/Hyperlink";
 import TextLine from "todo/components/forms/HyperText";
-import Tab from "todo/components/forms/Tab";
-import Toggle from "todo/components/forms/Toggle";
 
 export default function FormPage() {
     const [showCancelDialog, setShowCancelDialog] = useState(false);
@@ -55,7 +53,7 @@ export default function FormPage() {
     };
 
     return (
-        <SidebarContent teams={teams} logoUrl={logoUrl} userRole="superadmin">
+        <SidebarContent teams={teams} logoUrl={logoUrl} userRole="admin">
             <FormWrapper onSubmit={handleSubmit}>
                 <FormSectionHeader
                     title="Headings"
@@ -438,31 +436,6 @@ export default function FormPage() {
 </TextLine>`} />
 
                 <Spacing size="lg" />
-                <FormSectionHeader
-                    title="Tabs"
-                    description="Use tabs to organize content into sections."   
-                />
-
-                <Tab
-                    tabs={[
-                        { name: "Tab 1", href: "#tab1", badge: "New", badgeColor: "green" },
-                        { name: "Tab 2", href: "#tab2", badge: "3", badgeColor: "blue" },
-                        { name: "Tab 3", href: "#tab3" },
-                    ]}
-                    currentTab="Tab 1"
-                    onTabChange={(tab) => console.log("Selected tab:", tab.name)}
-                />
-                <CodeExample code={`<Tab tabs={[{ name: "Tab 1", href: "#tab1", badge: "New", badgeColor: "green" }, { name: "Tab 2", href: "#tab2", badge: "3", badgeColor: "blue"  }, { name: "Tab 3", href: "#tab3" }]} currentTab="Tab 1" onTabChange={(tab) => console.log("Selected tab:", tab.name)} />`} />
-                <Spacing size="lg" />
-                <Toggle
-                    label="Enable Notifications"
-                    description="Receive notifications about important updates."
-                    checked={true}
-                    onChange={(checked) => console.log("Toggle changed:", checked)}
-                />
-                <CodeExample code={`<Toggle label="Enable Notifications" description="Receive notifications about important updates." checked={true} onChange={(checked) => console.log("Toggle changed:", checked)} />`} />
-                <Spacing size="lg" />
-
                 <LineSeparator />
                 <CodeExample code={`<LineSeparator />`} />
 

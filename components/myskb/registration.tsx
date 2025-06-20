@@ -1,22 +1,15 @@
 import FormWrapper from "todo/components/forms/FormWrapper";
-import SidebarContent from "@/components/main/Sidebar";
 import Button from 'todo/components/forms/Button';
-import { teams, logoUrl } from '@/components/main/SidebarConfig';
 import FormSectionHeader from '@/components/forms/FormSectionHeader';
 import FormActions from "todo/components/forms/FormActions";
 import InputWithPrefix from "todo/components/forms/InputText";
-import TextArea from "todo/components/forms/Textarea";
 import Spacing from "todo/components/forms/Spacing";
-import PhotoUploadField from "todo/components/forms/PhotoUploadField";
-import FileUploadField from "todo/components/forms/FileUpload";
 import LineSeparator from "todo/components/forms/LineSeparator";
 import FormRow from "todo/components/forms/FormRow";
 import { countryOptions } from "todo/components/data/SelectionList";
 import SelectField from "todo/components/forms/SelectField";
 import CheckboxGroupField from "todo/components/forms/CheckboxGroupField";
 import { emailNotificationOptions2 } from "todo/components/data/CheckList";
-import CodeExample from "todo/components/common/CodeExample";
-import TextInput from "todo/components/forms/TextInput";
 import ConfirmDialog from "todo/components/forms/ConfirmDialog";
 import router from "next/router";
 import { useState } from "react";
@@ -24,7 +17,7 @@ import RadioGroupField from "todo/components/forms/RadioGroupField";
 import { radioButtonList } from "todo/components/data/RadioList";
 import toast from 'react-hot-toast';
 import DatePickerField from "todo/components/forms/DatePickerField";
-import Hyperlink from "todo/components/forms/Hyperlink";
+import LayoutWithoutSidebar from "../main/LayoutWithoutSidebar";
 export default function LoginPage() {
 
     const [showCancelDialog, setShowCancelDialog] = useState(false);
@@ -37,13 +30,10 @@ export default function LoginPage() {
             toast.success('Form submitted successfully!');
             console.log('Submitted data:', data);
         }, 2000);
-
-        // toast.error('Something went wrong');
-        // toast.loading('Submitting...');
     };
 
     return (
-        <SidebarContent teams={teams} logoUrl={logoUrl} userRole="developer">
+      <LayoutWithoutSidebar shiftY="-translate-y-0">
             <FormWrapper onSubmit={handleSubmit}>
                 <FormSectionHeader title="Profile" description="This information will be displayed publicly so be careful what you share." />
                 <Spacing size="lg" />
@@ -105,6 +95,7 @@ export default function LoginPage() {
 
 
             </FormWrapper>
+            
 
             <ConfirmDialog
                 open={showCancelDialog}
@@ -119,7 +110,9 @@ export default function LoginPage() {
                 }}
             />
 
-        </SidebarContent>
+            </LayoutWithoutSidebar>
+
+  
     );
 }
 
