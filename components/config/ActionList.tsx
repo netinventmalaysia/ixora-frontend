@@ -24,3 +24,23 @@ export const BillingActions = [
         onClick: (item : any) => alert(`Pay ${item.name}`),
     },
 ]
+
+export const MySkbActions = [
+    {
+        label: 'View',
+        onClick: (item : any) => console.log('View', item),
+    },
+    {
+        label: 'Download',
+        onClick: (item : any) => alert(`Download ${item.name}`),
+    },
+    {
+        label: 'Pay',
+        onClick: (item : any) => alert(`Pay ${item.name}`),
+    },
+    {
+        label: 'Withdraw',
+        onClick: (item : any) => alert(`Withdraw ${item.name}`),
+        danger: true,
+    }
+]

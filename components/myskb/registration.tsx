@@ -35,62 +35,19 @@ export default function LoginPage() {
     return (
       <LayoutWithoutSidebar shiftY="-translate-y-0">
             <FormWrapper onSubmit={handleSubmit}>
-                <FormSectionHeader title="Profile" description="This information will be displayed publicly so be careful what you share." />
+                <FormSectionHeader title="Consultant Onboard" description="This registration enables businesses to be officially recognized as consultants authorized to manage temporary building permits through the MYSKB system. It enhances their capability to oversee and coordinate building-related submissions on behalf of project owners." />
                 <Spacing size="lg" />
-                <InputWithPrefix id="phoneNum" name="phoneNum" label="No Tel" prefix="60" requiredMessage="Phone Number is required" />
-                <LineSeparator />
-                <FormRow columns={2}>
-                    <InputWithPrefix id="firstname" name="firstname" label="First Name" requiredMessage="First name is required" />
-                    <InputWithPrefix id="lastname" name="lastname" label="Last name" requiredMessage="Last name is required" />
-                </FormRow>
-                <Spacing size="lg" />
-                <FormRow columns={1}>
-                    <SelectField id="country" name="country" label="Country" options={countryOptions} requiredMessage="Country is required" />
-                </FormRow>
-
-                <Spacing size="lg" />
-                <CheckboxGroupField name="notifications" legend="By email" options={emailNotificationOptions2} />
-
-                <Spacing size="lg" />
-                <RadioGroupField
-                    name="gender"
-                    label="Gender"
-                    options={radioButtonList}
-                    inline={true}
-                    requiredMessage="Please select a gender"
-                />
-
-                <Spacing size="lg" />
-                <DatePickerField
-                    name="dob"
-                    label="Date of Birth"
-                    dateFormat="dd/MM/yyyy"
-                    placeholder="DD/MM/YYYY"
-                    requiredMessage="Please select your birthdate"
-                />
-
-                <Spacing size="lg" />
-                <DatePickerField
-                    name="appointmentTime"
-                    label="Appointment"
-                    showTimeSelect
-                    dateFormat="Pp"
-                    placeholder="Select date & time"
-                />
-
-                <Spacing size="lg" />
-                <DatePickerField
-                    name="bookingDate"
-                    label="Booking Date"
-                    minDate={new Date()} // today
-                    maxDate={new Date(2025, 11, 31)} // Dec 31, 2025
-                    dateFormat="yyyy-MM-dd"
-                    placeholder="Select booking date"
-                />
+             
+                    <InputWithPrefix
+                    name="aim"
+                    label="AIM registration number"
+                    placeholder="Enter your AIM registration number" id={""}                       
+                    />
+                   
          
                 <FormActions>
                     <Button type="button" variant="ghost" onClick={() => setShowCancelDialog(true)}>Cancel</Button>
-                    <Button type="submit" variant="primary" loading={loading}>Save</Button>
+                    <Button type="submit" variant="primary" loading={loading}>Submit</Button>
                 </FormActions>
 
 

@@ -1,23 +1,18 @@
 import FormWrapper from "todo/components/forms/FormWrapper";
-import SidebarContent from "@/components/main/Sidebar";
 import Button from 'todo/components/forms/Button';
-import FormSectionHeader from '@/components/forms/FormSectionHeader';
 import FormActions from "todo/components/forms/FormActions";
 import InputWithPrefix from "todo/components/forms/InputText";
 import Spacing from "todo/components/forms/Spacing";
-import LineSeparator from "todo/components/forms/LineSeparator";
 import { useState } from "react";
 import toast from 'react-hot-toast';
 import LayoutWithoutSidebar from "todo/components/main/LayoutWithoutSidebar";
 import Heading from "todo/components/forms/Heading";
-import { Row } from "jspdf-autotable";
-import FormRow from "todo/components/forms/FormRow";
 import ImageDisplay from "todo/components/forms/ImageDisplay";
 import Hyperlink from "todo/components/forms/Hyperlink";
 import HyperText from "todo/components/forms/HyperText";
 import InputText from "todo/components/forms/InputText";
 import router from "next/router";
-import { loginUser } from "todo/services/api";
+import { loginUser, guestLogin } from "todo/services/api";
 import { AxiosError } from 'axios'
 
 export default function FormPage() {
@@ -27,12 +22,14 @@ export default function FormPage() {
 
 
     const handleSubmit = async (data: any) => {
+
         try {
             setLoading(true)
-            // assume loginUser returns the full AxiosResponse<{ accessToken: string; user: User }>
-            await loginUser(data)
+            const res = await loginUser(data)
+            localStorage.setItem('userRole', res.user.role);
+            localStorage.setItem('userId', res.user.id);
             toast.success('Logged in!')
-            router.push('/form')
+            router.push('/dashboard') 
         } catch (err) {
             const error = err as AxiosError<{ message: string; error: string }>
             if (error.response?.status === 401) {
@@ -41,8 +38,28 @@ export default function FormPage() {
                     'Invalid credentials'
                 toast.error(msg)
             } else {
+                console.error('Login error:', error);
                 toast.error('Something went wrong')
             }
+        } finally {
+            setLoading(false)
+        }
+    }
+
+    const handleGuestLogin = async () => {
+        try {
+            setLoading(true)
+            const res = await guestLogin();
+            console.log('Guest login response:', res);
+            if (!res || !res.user) {
+                throw new Error('Guest login failed');
+            }
+            localStorage.setItem('userRole', res.user.role);
+            localStorage.setItem('userId', res.user.id);
+            toast.success('Logged in as Guest')
+            router.push('/dashboard');
+        } catch (err) {
+            toast.error('Failed to login as guest')
         } finally {
             setLoading(false)
         }
@@ -86,14 +103,30 @@ export default function FormPage() {
                     <Hyperlink href="/signup" inline bold>
                         Sign up now!
                     </Hyperlink>
+
+
                 </HyperText>
+
+                <Spacing size="sm" />
 
                 <FormActions>
                     <Button type="submit" variant="primary" fullWidth size="md">
                         Sign in
                     </Button>
+
                 </FormActions>
 
+                <FormActions>
+                    <Button
+                        type="button"
+                        variant="secondary"
+                        fullWidth
+                        size="md"
+                        onClick={handleGuestLogin}
+                    >
+                        Continue as Guest
+                    </Button>
+                </FormActions>
 
             </FormWrapper>
 

@@ -1,27 +1,56 @@
-import React from 'react'
-import { useFormContext } from 'react-hook-form'
+import LayoutWithoutSidebar from "todo/components/main/LayoutWithoutSidebar";
+import { FormProvider, useForm } from "react-hook-form";
+import ItemList from "../forms/ItemList";
+import Tabs, { Tab } from '../forms/Tab'
+import { ProjectList, statuses } from '@/components/data/ItemData';
+import Heading from "../forms/Heading";
+import { MySkbActions } from "todo/components/config/ActionList";
+import { useState } from 'react';
+import FilterTabs from "../forms/FilterTabs";
 
-/**
- * MyApplication tab content: basic user info form fields
- * Wrapped by FormWrapper (which provides react-hook-form context and handles submission).
- */
+const projectTabs: Tab[] = [
+  { name: 'All', href: '#' },
+  { name: 'Submitted', href: '#', badge: `${ProjectList.filter(p => p.status === 'Submitted').length}`, badgeColor: 'gray' },
+  { name: 'Pending', href: '#', badge: `${ProjectList.filter(p => p.status === 'Pending').length}`, badgeColor: 'gray' },
+  { name: 'Rejected', href: '#', badge: `${ProjectList.filter(p => p.status === 'Rejected').length}`, badgeColor: 'gray' },
+  { name: 'Complete', href: '#', badge: `${ProjectList.filter(p => p.status === 'Complete').length}`, badgeColor: 'gray' },
+];
+
 const Application: React.FC = () => {
-  const {
-    register,
-    formState: { errors },
-  } = useFormContext()
+  const methods = useForm();
+  const [currentTab, setCurrentTab] = useState('All');
+
+  const filteredProjects = ProjectList.filter((project) => {
+    if (currentTab === 'All') return true;
+    return project.status === currentTab;
+  });
 
   return (
-    <div className="space-y-6">
-      {/* Applicant Name */}
-      <div>
-        <label htmlFor="applicantName" className="block text-sm font-medium text-gray-700">
-          Applicant Name
-        </label>
-      </div>
+    <FormProvider {...methods}>
+      <LayoutWithoutSidebar shiftY="-translate-y-0">
+        <Heading level={5} align="left" bold>
+          Project Application
+        </Heading>
 
-    </div>
-  )
-}
+        {/* Tabs for filtering */}
+        <FilterTabs
+          tabs={projectTabs}
+          currentTab={currentTab}
+          onTabChange={(tab) => setCurrentTab(tab.name)}
+        />
 
-export default Application
+        {/* Filtered list */}
+        <ItemList
+          items={filteredProjects}
+          statusClasses={statuses}
+          actions={MySkbActions}
+        />
+      </LayoutWithoutSidebar>
+    </FormProvider>
+  );
+};
+
+
+
+export default Application;
+

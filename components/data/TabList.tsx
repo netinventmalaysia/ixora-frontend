@@ -3,9 +3,9 @@ import { Tab } from "../forms/Tab";
 export const myskbTabs: Tab[] = [
   { name: 'Home', href: '#' },
   { name: 'Registration', href: '#' },
-  { name: 'Application', href: '#' },
-  { name: 'Team', href: '#' },
-  { name: 'Billing', href: '#' },
+  { name: 'Ownership', href: '#', badge: '2', badgeColor: 'gray' },
+  { name: 'Project', href: '#'},
+  { name: 'Application', href: '#', badge: '5', badgeColor: 'gray' },
 ]
 
 

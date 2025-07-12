@@ -29,13 +29,30 @@ api.interceptors.response.use(
 );
 
 export const loginUser = async (credentials: any) => {
-    await api.post('/auth/login', credentials);
-    const { data } = await api.get('/auth/csrf-token');
-    const csrfToken = data?.csrfToken;
+    const { data } = await api.post('/auth/login', credentials);
+    const csrfRes = await api.get('/auth/csrf-token');
+    const csrfToken = csrfRes?.data?.csrfToken;
     if (csrfToken) {
         localStorage.setItem('csrfToken', csrfToken);
     }
     return data;
+};
+
+
+export const guestLogin = async () => {
+    const { data } = await api.post('/auth/guest-login');
+    const csrfRes = await api.get('/auth/csrf-token');
+    const csrfToken = csrfRes?.data?.csrfToken;
+    if (csrfToken) {
+        localStorage.setItem('csrfToken', csrfToken);
+    }
+    return data;
+}
+
+
+export const logoutUser = async () => {
+    await api.post('/auth/logout');
+    localStorage.removeItem('csrfToken');
 };
 
 export const createUser = (userData: any) => api.post('/users', userData);

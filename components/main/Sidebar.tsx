@@ -66,11 +66,17 @@ export default function SidebarContent({
       }));
 
     if (mode === 'Personal') {
-      setNavigation(withCurrent([...businessEnrollmentNavigation, ...userNavigation]));
+      switch (userRole) {
+        case 'guest':
+          setNavigation(withCurrent([])); // Or you can pass a guestNavigation config
+          break;
+        default:
+          setNavigation(withCurrent([...businessEnrollmentNavigation, ...userNavigation]));
+      }
     } else {
       switch (userRole) {
         case 'superadmin':
-          setNavigation(withCurrent([...businessAppNavigation, ...superAdminNavigation, ...userNavigation ]));
+          setNavigation(withCurrent([...businessAppNavigation, ...superAdminNavigation, ...userNavigation]));
           break;
         case 'admin':
           setNavigation(withCurrent([...businessAppNavigation, ...adminNavigation, ...userNavigation]));
@@ -125,7 +131,7 @@ export default function SidebarContent({
               <div className="flex h-16 shrink-0 items-center">
                 <img alt="Your Company" src={logoUrl} className="h-8 w-auto" />
               </div>
-              <SidebarNav navigation={navigation}  />
+              <SidebarNav navigation={navigation} />
             </div>
           </DialogPanel>
         </div>
@@ -138,7 +144,7 @@ export default function SidebarContent({
             <img alt="Your Company" src={logoUrl} className="h-8 w-auto" />
           </div>
           <div className="flex h-16 shrink-0 items-center justify-between">
-             <div className="flex-1 text-sm font-semibold text-white">Dashboard ({mode})</div>
+            <div className="flex-1 text-sm font-semibold text-white">Dashboard ({mode})</div>
             {/* <img alt="Your Company" src={logoUrl} className="h-8 w-auto" /> */}
             <button
               onClick={toggleMode}
@@ -189,7 +195,7 @@ export default function SidebarContent({
 
 function SidebarNav({ navigation = [], teams = [] }: { navigation?: NavigationItem[]; teams?: TeamItem[] }) {
   return (
-     <nav className="flex flex-1 flex-col">
+    <nav className="flex flex-1 flex-col">
       <ul role="list" className="flex flex-1 flex-col gap-y-7">
         {/* General App Navigation */}
         <li>
@@ -207,13 +213,13 @@ function SidebarNav({ navigation = [], teams = [] }: { navigation?: NavigationIt
                 >
                   <item.icon className="h-6 w-6 shrink-0" />
                   <span>{item.name}</span>
-               
+
                 </a>
               </li>
             ))}
           </ul>
         </li>
-        
+
         {/* Teams */}
         {teams.length > 0 && (
           <li>

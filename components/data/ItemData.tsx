@@ -3,9 +3,11 @@ export const statuses = {
   'In progress': 'text-gray-600 bg-gray-50 ring-gray-500/10',
   Withdrawn: 'text-red-700 bg-red-50 ring-red-600/20',
   Rejected: 'text-red-700 bg-red-50 ring-red-600/20',
+  'Pending Payment': 'text-yellow-700 bg-yellow-50 ring-yellow-600/20',
+  'Submitted': 'text-blue-700 bg-blue-50 ring-blue-600/20',
 };
 
-export const projects = [
+export const BusinessRegistration = [
   {
     id: 1,
     name: 'Net Invent Sdn Bhd',
@@ -50,5 +52,62 @@ export const projects = [
     createdBy: 'Courtney Henry',
     dueDate: 'June 10, 2025',
     dueDateTime: '2025-06-10T00:00Z',
+  },
+];
+
+export const ProjectList = [
+  {
+    id: 1,
+    name: 'Project Apollo',
+    href: '#',
+    status: 'Complete',
+    createdBy: 'Leslie Alexander',
+    dueDate: 'March 17, 2025',
+    dueDateTime: '2025-03-17T00:00Z',
+  },
+  {
+    id: 2,
+    name: 'Project Mercury',
+    href: '#',
+    status: 'In progress',
+    createdBy: 'Courtney Henry',
+    dueDate: 'May 25, 2025',
+    dueDateTime: '2025-05-25T00:00Z',
+  },
+  {
+    id: 3,
+    name: 'Project Gemini',
+    href: '#',
+    status: 'Withdrawn',
+    createdBy: 'Leonard Krasner',
+    dueDate: 'June 7, 2025',
+    dueDateTime: '2025-06-07T00:00Z',
+  },
+  {
+    id: 4,
+    name: 'Project Orion',
+    href: '#',
+    status: 'Rejected',
+    createdBy: 'Courtney Henry',
+    dueDate: 'June 10, 2025',
+    dueDateTime: '2025-06-10T00:00Z',
+  },
+  {
+    id: 5,
+    name: 'Project Voyager',
+    href: '#',
+    status: 'Pending',
+    createdBy: 'Leslie Alexander',
+    dueDate: 'June 15, 2025',
+    dueDateTime: '2025-06-15T00:00Z',
+  },
+  {
+    id: 6,
+    name: 'Project Discovery',
+    href: '#',
+    status: 'Submitted',
+    createdBy: 'Courtney Henry',
+    dueDate: 'June 20, 2025',
+    dueDateTime: '2025-06-20T00:00Z',
   },
 ];

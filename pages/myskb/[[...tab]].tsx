@@ -8,8 +8,9 @@ import Home from 'todo/components/myskb/home'
 import Registration from 'todo/components/myskb/registration'
 import Application from 'todo/components/myskb/application'
 import TeamMembers from 'todo/components/myskb/team'
-import Billing from 'todo/components/myskb/billing'
+import Project from 'todo/components/myskb/project'
 import { teams, logoUrl } from 'todo/components/main/SidebarConfig'
+import Ownership from 'todo/components/myskb/ownership'
 
 const MyskbPage: React.FC = () => {
   const router = useRouter()
@@ -35,12 +36,12 @@ const MyskbPage: React.FC = () => {
         return <Home />
       case 'Registration':
         return <Registration />
+      case 'Ownership':
+        return <Ownership />
+      case 'Project':
+        return <Project />
       case 'Application':
         return <Application />
-      case 'Team':
-        return <TeamMembers />
-      case 'Billing':
-        return <Billing />
       default:
         return null
     }

@@ -3,18 +3,18 @@ import { FormProvider, useForm } from "react-hook-form";
 import ItemList from "../forms/ItemList";
 
 
-import { projects, statuses } from '@/components/data/ItemData';
+import { BusinessRegistration, statuses } from '@/components/data/ItemData';
 import Heading from "../forms/Heading";
 import { RegistrationApplicationActions } from "todo/components/config/ActionList";
 
-const Registration: React.FC = () => {
+const Application: React.FC = () => {
     const methods = useForm()
 
     return (
         <FormProvider {...methods}>
             <LayoutWithoutSidebar shiftY="-translate-y-0">
             <Heading level={5} align="left" bold>Business Application</Heading>
-                <ItemList items={projects} statusClasses={statuses} actions={RegistrationApplicationActions} />
+                <ItemList items={BusinessRegistration} statusClasses={statuses} actions={RegistrationApplicationActions} />
 
             </LayoutWithoutSidebar>
         </FormProvider>
@@ -22,5 +22,5 @@ const Registration: React.FC = () => {
 }
 
 
-export default Registration;
+export default Application;
 
