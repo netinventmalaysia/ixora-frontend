@@ -72,7 +72,6 @@ export default function InputText({
 
   // Narrow the icon prop
   const IconComponent = icon;
-
   return (
     <div className={`w-full ${colSpan}`}>  
       <label htmlFor={id} className="block text-sm font-medium text-gray-900">

@@ -1,4 +1,5 @@
 export type Person = {
+  id: number;
   name: string;
   email: string;
   role: string;
@@ -10,6 +11,7 @@ export type Person = {
 
 export const people: Person[] = [
   {
+    id: 1,
     name: 'Leslie Alexander',
     email: 'leslie.alexander@example.com',
     role: 'Administrator',
@@ -19,6 +21,7 @@ export const people: Person[] = [
     lastSeenDateTime: '2023-01-23T13:23Z',
   },
   {
+    id: 2,
     name: 'Michael Foster',
     email: 'michael.foster@example.com',
     role: 'Checker',
@@ -28,6 +31,7 @@ export const people: Person[] = [
     lastSeenDateTime: '2023-01-23T13:23Z',
   },
   {
+    id: 3,
     name: 'Dries Vincent',
     email: 'dries.vincent@example.com',
     role: 'Maker',

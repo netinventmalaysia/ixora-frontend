@@ -1,61 +1,74 @@
-import React from 'react'
-import { useRouter } from 'next/router'
-import SidebarContent from 'todo/components/main/Sidebar'
-import Tabs, { Tab } from 'todo/components/forms/Tab'
-import { businessTabs } from 'todo/components/data/TabList'
-import FormWrapper from 'todo/components/forms/FormWrapper'
-import Home from 'todo/components/business/home'
-import Registration from 'todo/components/business/registration'
-import Application from 'todo/components/business/application'
-import TeamMembers from 'todo/components/business/team'
-import { teams, logoUrl } from 'todo/components/main/SidebarConfig'
-import Billing from 'todo/components/business/billing'
+import React, { useState, useEffect } from 'react';
+import { useRouter } from 'next/router';
+import SidebarContent from 'todo/components/main/Sidebar';
+import Tabs, { Tab } from 'todo/components/forms/Tab';
+import { businessTabs } from 'todo/components/data/TabList';
+import Home from 'todo/components/business/home';
+import Registration from 'todo/components/business/registration';
+import Application from 'todo/components/business/application';
+import TeamMembers from 'todo/components/business/team';
+import { teams, logoUrl } from 'todo/components/main/SidebarConfig';
+import Billing from 'todo/components/business/billing';
+import { fetchMyBusinesses } from 'todo/services/api';
+import { useBadgeCounts } from 'todo/components/config/BadgeCounts';
+import SidebarLayout from 'todo/components/main/SidebarLayout';
 
 const BusinessPage: React.FC = () => {
-  const router = useRouter()
-  const { tab } = router.query
-  // Use lowercase slug for routing
-  const currentSlug = Array.isArray(tab) ? tab[0] : tab || 'home'
-  const allTabs: Tab[] = businessTabs
-  // Match by lowercase name
-  const currentTab: Tab =
-    allTabs.find((t) => t.name.toLowerCase() === currentSlug.toLowerCase()) ||
-    allTabs[0]
+  const router = useRouter();
+  const { tab } = router.query;
+  const currentSlug = Array.isArray(tab) ? tab[0] : tab || 'home';
+
+ const { badgeCounts, loading } = useBadgeCounts({
+  applicationStatus: 'Submitted',
+  //teamStatus: 'Active',
+});
+
+  const tabs: Tab[] = businessTabs.map((t) => {
+  const key = t.name.toLowerCase();
+
+  if (['application'].includes(key)) {
+    return {
+      ...t,
+      badge: badgeCounts[key]?.toString() || undefined,
+      badgeColor: 'blue',
+    };
+  }
+  return t;
+});
+  const currentTab =
+    tabs.find((t) => t.name.toLowerCase() === currentSlug.toLowerCase()) || tabs[0];
 
   const handleTabChange = (t: Tab) => {
-    const slug = t.name.toLowerCase()
-    router.push(`/business/${encodeURIComponent(slug)}`, undefined, {
-      shallow: true,
-    })
-  }
+    const slug = t.name.toLowerCase();
+    router.push(`/business/${encodeURIComponent(slug)}`, undefined, { shallow: true });
+  };
+
 
   const renderContent = () => {
     switch (currentTab.name) {
       case 'Home':
-        return <Home />
+        return <Home />;
       case 'Registration':
-        return <Registration />
+        return <Registration />;
       case 'Application':
-        return <Application />
+        return <Application />;
       case 'Team':
-        return <TeamMembers />
+        return <TeamMembers />;
       case 'Billing':
-        return <Billing />
+        return <Billing />;
       default:
-        return null
+        return null;
     }
-  }
+  };
 
   return (
-    <SidebarContent teams={teams} logoUrl={logoUrl} userRole="user">
-      <FormWrapper onSubmit={() => { }}>
-        <Tabs tabs={allTabs} currentTab={currentTab.name} onTabChange={handleTabChange} />
-        <div className="mt-4">
-          {renderContent()}
-        </div>
-      </FormWrapper>
-    </SidebarContent>
-  )
-}
+    <SidebarLayout>
+      <Tabs tabs={tabs} currentTab={currentTab.name} onTabChange={handleTabChange} />
+      <div className="mt-4">
+        {loading ? <p>Loading...</p> : renderContent()}
+      </div>
+    </SidebarLayout>
+  );
+};
 
-export default BusinessPage
+export default BusinessPage;

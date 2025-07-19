@@ -14,5 +14,5 @@ export const businessTabs: Tab[] = [
   { name: 'Registration', href: '#' },
   { name: 'Application', href: '#', badge: '5', badgeColor: 'blue' },
   { name: 'Team', href: '#' },
-  { name: 'Billing', href: '#' },
+  { name: 'Billing', href: '#', badge: '0', badgeColor: 'green' },
 ]

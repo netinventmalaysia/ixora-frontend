@@ -12,13 +12,14 @@ import Hyperlink from "todo/components/forms/Hyperlink";
 import HyperText from "todo/components/forms/HyperText";
 import InputText from "todo/components/forms/InputText";
 import router from "next/router";
-import { loginUser, guestLogin } from "todo/services/api";
+import { loginUser, guestLogin, fetchCsrfToken } from "todo/services/api";
 import { AxiosError } from 'axios'
 
 export default function FormPage() {
 
     const [showCancelDialog, setShowCancelDialog] = useState(false);
     const [loading, setLoading] = useState(false);
+    
 
 
     const handleSubmit = async (data: any) => {
@@ -28,6 +29,14 @@ export default function FormPage() {
             const res = await loginUser(data)
             localStorage.setItem('userRole', res.user.role);
             localStorage.setItem('userId', res.user.id);
+            localStorage.setItem('username', res.user.username);
+            localStorage.setItem('email', res.user.email);
+            // call fetchCsrfToken() here if needed
+            console.log('Login response:', res);
+            await fetchCsrfToken(); // Ensure CSRF token is fetched after login
+            if (!res || !res.user) {
+                throw new Error('Login failed');
+            }
             toast.success('Logged in!')
             router.push('/dashboard') 
         } catch (err) {
@@ -69,7 +78,7 @@ export default function FormPage() {
         <LayoutWithoutSidebar shiftY="-translate-y-0">
             <FormWrapper onSubmit={handleSubmit}>
                 <ImageDisplay
-                    src="/images/logo.jpg"
+                    src="/images/logo.png"
                     alt="Centered Image"
                     align="center"
                     width={90}

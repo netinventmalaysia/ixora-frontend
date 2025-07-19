@@ -1,64 +1,113 @@
-// components/FileUploadField.tsx
+import { useState, useRef } from "react";
 import { PhotoIcon } from "@heroicons/react/24/solid";
 import { useFormContext } from "react-hook-form";
+import { uploadCertificate } from "@/services/api";
+import clsx from "clsx";
 
 type FileUploadFieldProps = {
-  id: string;
   name: string;
-  title?: string;
   label?: string;
+  buttonText?: string;
+  folder?: string;
   description?: string;
-  accept?: string; // e.g., "image/*"
+  accept?: string;
   requiredMessage?: string;
+  onUploadSuccess?: (filePath: string) => void;
 };
 
 export default function FileUploadField({
-  id,
   name,
-  title = "Cover photo",
   label = "Upload a file",
-  description = "PNG, JPG, GIF up to 10MB",
-  accept = "image/*",
+  buttonText = "Select File",
+  folder = "business",
+  description = "PNG, JPG, PDF up to 10MB",
+  accept = "application/pdf,image/*",
   requiredMessage,
+  onUploadSuccess,
 }: FileUploadFieldProps) {
-  const {
-    register,
-    formState: { errors },
-  } = useFormContext();
+  const { setValue, trigger, register, formState: { errors } } = useFormContext();
+  const inputRef = useRef<HTMLInputElement | null>(null);
+  const [selectedFileName, setSelectedFileName] = useState<string>("");
+  const [uploading, setUploading] = useState(false);
+
+  const handleFileUpload = async (file: File) => {
+    setSelectedFileName(file.name);
+    setUploading(true);
+
+    try {
+      const uploadedPath = await uploadCertificate(file, folder);
+      setValue(name, uploadedPath, { shouldValidate: true });
+      await trigger(name);
+      onUploadSuccess?.(uploadedPath);
+    } catch (error) {
+      console.error("Upload failed", error);
+    } finally {
+      setUploading(false);
+    }
+  };
+
+  const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) handleFileUpload(file);
+  };
+
+  const handleDrop = (e: React.DragEvent<HTMLDivElement>) => {
+    e.preventDefault();
+    const file = e.dataTransfer.files?.[0];
+    if (file) handleFileUpload(file);
+  };
 
   return (
     <div className="col-span-full">
-      <label htmlFor={id} className="block text-sm font-medium text-gray-900">
-        {title}
-        {requiredMessage && <span className="text-red-500">*</span>}
-      </label>
-      <div className="mt-2 flex justify-center rounded-lg border border-dashed border-gray-900/25 px-6 py-10">
-        <div className="text-center">
-          <PhotoIcon className="mx-auto h-12 w-12 text-gray-300" />
-          <div className="mt-4 flex text-sm text-gray-600">
-            <label
-              htmlFor={id}
-              className="relative cursor-pointer rounded-md bg-white font-semibold text-indigo-600 hover:text-indigo-500"
-            >
-              <span>{label}</span>
-              <input
-                id={id}
-                type="file"
-                accept={accept}
-                {...register(name, requiredMessage ? { required: requiredMessage } : {})}
-                className="sr-only"
-              />
-            </label>
-            <p className="pl-1">or drag and drop</p>
-          </div>
-          <p className="text-xs text-gray-500">{description}</p>
-          {errors[name] && (
-            <p className="text-sm text-red-500 mt-1">
-              {errors[name]?.message as string}
-            </p>
-          )}
+      <label className="block text-sm font-medium text-gray-900">{label}</label>
+
+      <div
+        className={clsx(
+          "mt-2 flex flex-col items-center justify-center rounded-lg border border-dashed border-gray-900/25 px-6 py-10 text-center",
+          "hover:border-indigo-500 hover:bg-gray-50 cursor-pointer transition-colors"
+        )}
+        onClick={() => inputRef.current?.click()}
+        onDrop={handleDrop}
+        onDragOver={(e) => e.preventDefault()}
+      >
+        <PhotoIcon className="mx-auto h-12 w-12 text-gray-300" />
+        <div className="mt-4 flex text-sm text-gray-600 items-center gap-1">
+          <span className="relative cursor-pointer rounded-md bg-white font-semibold text-indigo-600 hover:text-indigo-500">
+            {uploading ? "Uploading..." : buttonText}
+          </span>
+          <span>or drag and drop</span>
         </div>
+
+        {description && (
+          <p className="text-xs text-gray-500">{description}</p>
+        )}
+
+        {selectedFileName && (
+          <p className="mt-2 text-xs text-gray-700 truncate w-40">
+            Selected: {selectedFileName}
+          </p>
+        )}
+
+        {errors[name] && (
+          <p className="text-xs text-red-500 mt-1">
+            {errors[name]?.message as string}
+          </p>
+        )}
       </div>
+
+      <input
+        type="file"
+        ref={inputRef}
+        accept={accept}
+        className="hidden"
+        onChange={handleFileSelect}
+        disabled={uploading}
+      />
+
+      <input
+        type="hidden"
+        {...register(name, requiredMessage ? { required: requiredMessage } : {})}
+      />
     </div>
   );
 }

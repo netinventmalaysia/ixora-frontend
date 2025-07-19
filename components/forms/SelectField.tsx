@@ -1,8 +1,7 @@
-// components/forms/SelectField.tsx
-import { useFormContext } from "react-hook-form";
+import { useFormContext } from 'react-hook-form';
 
 type Option = {
-  value: string;
+  value: string | number;
   label: string;
 };
 
@@ -12,8 +11,9 @@ type SelectFieldProps = {
   label: string;
   options: Option[];
   requiredMessage?: string;
-  placeholder?: string; // 👈 NEW
+  placeholder?: string;
   colSpan?: string;
+  onChange?: (e: React.ChangeEvent<HTMLSelectElement>) => void;
 };
 
 export default function SelectField({
@@ -22,8 +22,9 @@ export default function SelectField({
   label,
   options,
   requiredMessage,
-  placeholder = "Please select...",
-  colSpan = "sm:col-span-3",
+  placeholder = 'Please select...',
+  colSpan = 'sm:col-span-3',
+  onChange,
 }: SelectFieldProps) {
   const {
     register,
@@ -39,9 +40,14 @@ export default function SelectField({
         <select
           id={id}
           {...register(name, requiredMessage ? { required: requiredMessage } : {})}
-          className="w-full rounded-md bg-white px-3 py-1.5 text-sm text-gray-900 border outline-gray-300 focus:outline-indigo-600"
+          onChange={onChange}
+          className={`w-full rounded-md bg-white px-3 py-1.5 text-sm text-gray-900 border 
+            ${errors[name] ? 'border-red-500' : 'border-gray-300'} 
+            focus:outline-none focus:ring-1 focus:ring-indigo-500`}
         >
-          <option value="">{placeholder}</option> {/* 👈 default dynamic placeholder */}
+          <option value="" disabled>
+            {placeholder}
+          </option>
           {options.map((option) => (
             <option key={option.value} value={option.value}>
               {option.label}

@@ -11,6 +11,7 @@ import TeamMembers from 'todo/components/myskb/team'
 import Project from 'todo/components/myskb/project'
 import { teams, logoUrl } from 'todo/components/main/SidebarConfig'
 import Ownership from 'todo/components/myskb/ownership'
+import SidebarLayout from 'todo/components/main/SidebarLayout'
 
 const MyskbPage: React.FC = () => {
   const router = useRouter()
@@ -48,14 +49,14 @@ const MyskbPage: React.FC = () => {
   }
 
   return (
-    <SidebarContent teams={teams} logoUrl={logoUrl} userRole="user">
+    <SidebarLayout>
       <FormWrapper onSubmit={() => {}}>
         <Tabs tabs={allTabs} currentTab={currentTab.name} onTabChange={handleTabChange} />
         <div className="mt-4">
           {renderContent()}
         </div>
       </FormWrapper>
-    </SidebarContent>
+    </SidebarLayout>
   )
 }
 

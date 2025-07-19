@@ -1,26 +1,38 @@
-import LayoutWithoutSidebar from "todo/components/main/LayoutWithoutSidebar";
-import { FormProvider, useForm } from "react-hook-form";
-import ItemList from "../forms/ItemList";
+import { useEffect, useState } from 'react';
+import { fetchMyBusinesses } from '@/services/api';
+import ItemList from '../forms/ItemList';
+import Heading from '../forms/Heading';
+import LayoutWithoutSidebar from '@/components/main/LayoutWithoutSidebar';
+import { statuses } from '@/components/data/ItemData';
+import { RegistrationApplicationActions } from '@/components/config/ActionList';
 
+export default function Application() {
+  const [businesses, setBusinesses] = useState([]);
+  const [loading, setLoading] = useState(true);
 
-import { BusinessRegistration, statuses } from '@/components/data/ItemData';
-import Heading from "../forms/Heading";
-import { RegistrationApplicationActions } from "todo/components/config/ActionList";
+  useEffect(() => {
+  fetchMyBusinesses()
+    .then((data) => setBusinesses(data))
+    .catch((err) => {
+      if (err.response?.status !== 401) {
+        console.error('Error fetching businesses:', err);
+      }
+      
+    })
+    .finally(() => setLoading(false));
+}, []);
 
-const Application: React.FC = () => {
-    const methods = useForm()
+  return (
+    <LayoutWithoutSidebar shiftY="-translate-y-0">
+      <Heading level={5} align="left" bold>
+        Business Application
+      </Heading>
 
-    return (
-        <FormProvider {...methods}>
-            <LayoutWithoutSidebar shiftY="-translate-y-0">
-            <Heading level={5} align="left" bold>Business Application</Heading>
-                <ItemList items={BusinessRegistration} statusClasses={statuses} actions={RegistrationApplicationActions} />
-
-            </LayoutWithoutSidebar>
-        </FormProvider>
-    );
+      {loading ? (
+        <p>Loading...</p>
+      ) : (
+        <ItemList items={businesses} statusClasses={statuses} actions={RegistrationApplicationActions} />
+      )}
+    </LayoutWithoutSidebar>
+  );
 }
-
-
-export default Application;
-

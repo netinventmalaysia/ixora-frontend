@@ -1,6 +1,6 @@
-import { Dialog, DialogBackdrop, DialogPanel, TransitionChild } from '@headlessui/react'
-import { Bars3Icon, BriefcaseIcon, UserIcon, XMarkIcon } from '@heroicons/react/24/outline'
-import { useState, useEffect, ReactNode, JSX } from 'react';
+import { useState, useEffect, ReactNode } from 'react';
+import { Dialog, DialogBackdrop, DialogPanel, TransitionChild } from '@headlessui/react';
+import { ArrowRightCircleIcon, Bars3Icon, BriefcaseIcon, UserIcon, XMarkIcon } from '@heroicons/react/24/outline';
 import {
   superAdminNavigation,
   accountNavigation,
@@ -12,16 +12,18 @@ import {
   businessAppNavigation
 } from '@/components/main/SidebarConfig';
 import LineSeparator from '../forms/LineSeparator';
+import SidebarNav from '@/components/main/SidebarNav';
 
 
-type NavigationItem = {
+
+export type NavigationItem = {
   name: string;
   href: string;
   icon: React.ElementType;
   current: boolean;
 };
 
-type TeamItem = {
+export type TeamItem = {
   id: number;
   name: string;
   href: string;
@@ -29,66 +31,72 @@ type TeamItem = {
   current: boolean;
 };
 
-type IndividualAppItem = {
-  id: number;
-  name: string;
-  href: string;
-  icon: React.ElementType;
-  current: boolean;
-};
-
-function cn(...classes: string[]) {
-  return classes.filter(Boolean).join(' ');
-}
-
-
-
 export default function SidebarContent({
   children,
   teams,
   logoUrl,
   userRole,
+  email,
+  username,
 }: {
   children: ReactNode;
   teams: TeamItem[];
   logoUrl?: string;
   userRole: string;
+  email?: string;
+  username?: string;
 }) {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [mode, setMode] = useState<'Personal' | 'Business'>(() => 'Personal');
-  const [navigation, setNavigation] = useState<NavigationItem[]>([]);
+  const [generalNav, setGeneralNav] = useState<NavigationItem[]>([]);
+  const [personalNav, setPersonalNav] = useState<NavigationItem[]>([]);
+  const [bottomNav, setBottomNav] = useState<NavigationItem[]>([]);
 
   useEffect(() => {
     const withCurrent = (items: NavigationItem[]) =>
       items.map((item) => ({
         ...item,
-        current: false, // Optional: add logic to highlight based on current route
+        current: false,
       }));
 
     if (mode === 'Personal') {
       switch (userRole) {
         case 'guest':
-          setNavigation(withCurrent([])); // Or you can pass a guestNavigation config
+          setGeneralNav([]);
+          setPersonalNav([]);
+          setBottomNav([]);
           break;
         default:
-          setNavigation(withCurrent([...businessEnrollmentNavigation, ...userNavigation]));
+          setGeneralNav(withCurrent([...generalAppNavigation]));
+          setPersonalNav(withCurrent([...businessEnrollmentNavigation]));
+          setBottomNav(withCurrent([...userNavigation]));
       }
     } else {
       switch (userRole) {
         case 'superadmin':
-          setNavigation(withCurrent([...businessAppNavigation, ...superAdminNavigation, ...userNavigation]));
+          setGeneralNav([]);
+          setPersonalNav(withCurrent([...businessAppNavigation, ...superAdminNavigation]));
+          setBottomNav(withCurrent([...userNavigation]));
           break;
         case 'admin':
-          setNavigation(withCurrent([...businessAppNavigation, ...adminNavigation, ...userNavigation]));
+          setGeneralNav([]);
+          setPersonalNav(withCurrent([...businessAppNavigation, ...adminNavigation]));
+          setBottomNav(withCurrent([...userNavigation]));
           break;
         case 'account':
-          setNavigation(withCurrent([...accountNavigation, ...userNavigation]));
+          setGeneralNav([]);
+          setPersonalNav(withCurrent([...accountNavigation]));
+          setBottomNav(withCurrent([...userNavigation]));
           break;
         case 'developer':
-          setNavigation(withCurrent([...developerNavigation, ...userNavigation]));
+          setGeneralNav([]);
+          setPersonalNav(withCurrent([...developerNavigation]));
+          setBottomNav(withCurrent([...userNavigation]));
           break;
         default:
-          setNavigation([]);
+          setGeneralNav([]);
+          setPersonalNav([]);
+          setBottomNav([]);
       }
     }
   }, [mode, userRole]);
@@ -108,8 +116,8 @@ export default function SidebarContent({
     localStorage.setItem('user-mode', mode);
   }, [mode]);
 
-
-
+  const showModeToggle = userRole !== 'guest';
+console.log('SidebarContent rendered with mode:', mode, 'and userRole:', userRole, 'username:', username, 'email:', email);
   return (
     <div>
       {/* Mobile Sidebar */}
@@ -125,13 +133,11 @@ export default function SidebarContent({
                 </button>
               </div>
             </TransitionChild>
-
-            {/* Move logo inside gray background */}
             <div className="flex grow flex-col gap-y-5 overflow-y-auto bg-gray-900 px-6 pb-2 ring-1 ring-white/10">
               <div className="flex h-16 shrink-0 items-center">
                 <img alt="Your Company" src={logoUrl} className="h-8 w-auto" />
               </div>
-              <SidebarNav navigation={navigation} />
+              <SidebarNav general={generalNav} personal={personalNav} bottom={bottomNav}   teams={mode === 'Business' ? teams : []} />
             </div>
           </DialogPanel>
         </div>
@@ -143,23 +149,34 @@ export default function SidebarContent({
           <div className="flex h-16 shrink-0 items-center">
             <img alt="Your Company" src={logoUrl} className="h-8 w-auto" />
           </div>
-          <div className="flex h-16 shrink-0 items-center justify-between">
-            <div className="flex-1 text-sm font-semibold text-white">Dashboard ({mode})</div>
-            {/* <img alt="Your Company" src={logoUrl} className="h-8 w-auto" /> */}
-            <button
-              onClick={toggleMode}
-              className="rounded bg-white/10 p-1 hover:bg-white/20"
-              title={mode === 'Personal' ? 'Switch to Business Mode' : 'Switch to Personal Mode'}
-            >
-              {mode === 'Personal' ? (
-                <BriefcaseIcon className="h-6 w-6 text-white" />
-              ) : (
-                <UserIcon className="h-6 w-6 text-white" />
+          {showModeToggle && (
+            <div className="flex flex-col text-white">
+              <div className="flex items-center justify-between">
+                <div className="text-sm font-semibold">Dashboard ({mode})</div>
+                <button
+                  onClick={toggleMode}
+                  className="rounded bg-white/10 p-1 hover:bg-white/20"
+                  title={mode === 'Personal' ? 'Switch to Business Mode' : 'Switch to Personal Mode'}
+                >
+                  {mode === 'Personal' ? (
+                    <BriefcaseIcon className="h-6 w-6 text-white" />
+                  ) : (
+                    <UserIcon className="h-6 w-6 text-white" />
+                  )}
+                </button>
+              </div>
+                
+              {mode === 'Personal' && (
+                <div className="mt-1 text-xs text-gray-400">
+                  <div>{username}</div>
+                  <div>{email}</div>
+                </div>
               )}
-            </button>
-          </div>
+            </div>
+          )}
 
-          <SidebarNav navigation={navigation} />
+          <SidebarNav general={generalNav} personal={personalNav} bottom={bottomNav}   teams={mode === 'Business' ? teams : []} />
+
         </div>
       </div>
 
@@ -170,104 +187,32 @@ export default function SidebarContent({
           <Bars3Icon className="size-6" />
         </button>
         <div className="flex-1 text-sm font-semibold text-white">Dashboard ({mode})</div>
-        <button
-          onClick={toggleMode}
-          className="rounded bg-white/10 p-1 hover:bg-white/20"
-          title={mode === 'Personal' ? 'Switch to Business Mode' : 'Switch to Personal Mode'}
-        >
-          {mode === 'Personal' ? (
-            <BriefcaseIcon className="h-6 w-6 text-white" />
-          ) : (
-            <UserIcon className="h-6 w-6 text-white" />
-          )}
-        </button>
+        {showModeToggle && (
+          <button
+            onClick={toggleMode}
+            className="rounded bg-white/10 p-1 hover:bg-white/20"
+            title={mode === 'Personal' ? 'Switch to Business Mode' : 'Switch to Personal Mode'}
+          >
+            {mode === 'Personal' ? (
+              <BriefcaseIcon className="h-6 w-6 text-white" />
+            ) : (
+              <UserIcon className="h-6 w-6 text-white" />
+            )}
+          </button>
+        )}
+           {mode === 'Personal' && (
+                <div className="mt-1 text-xs text-gray-400">
+                  <div>{username}</div>
+                  <div>{email}</div>
+                </div>
+              )}
       </div>
 
-      {/* Main Content */}
       <main className="py-10 lg:pl-72 bg-white">
         <div className="px-2 sm:px-4 lg:px-6 xl:px-8 2xl:px-10 max-w-screen-2xl mx-auto w-full">
           {children}
         </div>
       </main>
     </div>
-  );
-}
-
-function SidebarNav({ navigation = [], teams = [] }: { navigation?: NavigationItem[]; teams?: TeamItem[] }) {
-  return (
-    <nav className="flex flex-1 flex-col">
-      <ul role="list" className="flex flex-1 flex-col gap-y-7">
-        {/* General App Navigation */}
-        <li>
-          <ul role="list" className="-mx-2 space-y-1">
-            {generalAppNavigation.map((item) => (
-              <li key={item.name}>
-                <a
-                  href={item.href}
-                  className={cn(
-                    item.current
-                      ? 'bg-gray-800 text-white'
-                      : 'text-gray-400 hover:bg-gray-800 hover:text-white',
-                    'group flex gap-x-3 rounded-md p-2 text-sm font-semibold'
-                  )}
-                >
-                  <item.icon className="h-6 w-6 shrink-0" />
-                  <span>{item.name}</span>
-
-                </a>
-              </li>
-            ))}
-          </ul>
-        </li>
-
-        {/* Teams */}
-        {teams.length > 0 && (
-          <li>
-            <ul role="list" className="-mx-2 space-y-1">
-              {teams.map((team) => (
-                <li key={team.id}>
-                  <a
-                    href={team.href}
-                    className={cn(
-                      team.current
-                        ? 'bg-gray-800 text-white'
-                        : 'text-gray-400 hover:bg-gray-800 hover:text-white',
-                      'group flex gap-x-3 rounded-md p-2 text-sm font-semibold'
-                    )}
-                  >
-                    <span className="flex h-6 w-6 items-center justify-center rounded-lg border border-gray-700 bg-gray-800 text-[0.625rem] font-medium text-gray-400 group-hover:text-white">
-                      {team.initial}
-                    </span>
-                    <span className="truncate">{team.name}</span>
-                  </a>
-                </li>
-              ))}
-            </ul>
-          </li>
-        )}
-
-        {/* Other Navigation */}
-        <li>
-          <ul role="list" className="-mx-2 space-y-1">
-            {navigation.map((item) => (
-              <li key={item.name}>
-                <a
-                  href={item.href}
-                  className={cn(
-                    item.current
-                      ? 'bg-gray-800 text-white'
-                      : 'text-gray-400 hover:bg-gray-800 hover:text-white',
-                    'group flex gap-x-3 rounded-md p-2 text-sm font-semibold'
-                  )}
-                >
-                  <item.icon className="h-6 w-6 shrink-0" />
-                  <span>{item.name}</span>
-                </a>
-              </li>
-            ))}
-          </ul>
-        </li>
-      </ul>
-    </nav>
   );
 }

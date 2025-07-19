@@ -74,38 +74,38 @@ export default function FormPage() {
 
                 <Spacing size="lg" />
                 <ImageDisplay
-                    src="/images/logo.jpg"
+                    src="/images/logo.png"
                     alt="Logo Left"
                     align="left"
                 />
                 <CodeExample
-                    code={`<ImageDisplay src="/images/logo.jpg" alt="Logo Left" align="left" />`}
+                    code={`<ImageDisplay src="/images/logo.png" alt="Logo Left" align="left" />`}
                 />
 
                 <ImageDisplay
-                    src="/images/logo.jpg"
+                    src="/images/logo.png"
                     alt="Centered Image"
                     align="center"
                     width={90}
                     height={90}
                 />
                 <CodeExample
-                    code={`<ImageDisplay src="/images/logo.jpg" alt="Centered Image" align="center" width={600} height={300} />`}
+                    code={`<ImageDisplay src="/images/logo.png" alt="Centered Image" align="center" width={600} height={300} />`}
                 />
 
                 <ImageDisplay
-                    src="/images/logo.jpg"
+                    src="/images/logo.png"
                     alt="Aligned Right"
                     align="right"
                     bordered
                     shadow={false}
                 />
                 <CodeExample
-                    code={`<ImageDisplay src="/images/logo.jpg" alt="Aligned Right" align="right" bordered shadow={false} />`}
+                    code={`<ImageDisplay src="/images/logo.png" alt="Aligned Right" align="right" bordered shadow={false} />`}
                 />
 
                 <ImageDisplay
-                    src="/images/logo.jpg"
+                    src="/images/logo.png"
                     alt="Centered Image"
                     align="center"
                     width={90}
@@ -115,7 +115,7 @@ export default function FormPage() {
                     bordered={false}
                 />
                 <CodeExample
-                    code={`<ImageDisplay src="/images/logo.jpg" alt="Centered Image" align="center" width={90} height={90} rounded={false} shadow={false} bordered={false} />`}
+                    code={`<ImageDisplay src="/images/logo.png" alt="Centered Image" align="center" width={90} height={90} rounded={false} shadow={false} bordered={false} />`}
                 />
                 <LineSeparator />
 
@@ -288,21 +288,24 @@ export default function FormPage() {
 
                 <Spacing size="lg" />
                 <PhotoUploadField
+                    name ="profilePicture"
                     label="Profile Picture"
                     buttonText="Upload Photo"
-                    onClick={() => console.log("Upload photo clicked")}
+                    folder="profile_pictures"
+                    requiredMessage="Profile picture is required"
+                    onUpload={(path) => console.log("Uploaded profile picture:", path)}
                 />
                 <CodeExample code={`<PhotoUploadField label="Profile Picture" buttonText="Upload Photo" onClick={() => {}} />`} />
 
                 <Spacing size="lg" />
                 <FileUploadField
-                    id="cover"
                     name="cover"
                     label="Upload a file"
                     description="PNG, JPG, GIF up to 10MB"
                     accept="image/*"
                     requiredMessage="Please upload a cover photo"
                 />
+
                 <CodeExample code={`<FileUploadField id="cover" name="cover" label="Upload a file" description="PNG, JPG, GIF up to 10MB" accept="image/*" requiredMessage="Please upload a cover photo" />`} />
 
 

@@ -6,13 +6,19 @@ import LineSeparator from '@/components/forms/LineSeparator';
 import TextLine from '@/components/forms/HyperText';
 import { CheckCircleIcon } from '@heroicons/react/24/solid';
 import { teams, logoUrl } from '@/components/main/SidebarConfig';
+import SidebarLayout from 'todo/components/main/SidebarLayout';
 
 export default function DashboardPage() {
   const [userRole, setUserRole] = useState<string>('');
+  const [username, setUsername] = useState<string>('');
+  const [email, setEmail] = useState<string>('');
 
   useEffect(() => {
-    const role = localStorage.getItem('user-role');
+    const role = localStorage.getItem('userRole');
     setUserRole(role || '');
+    setUsername(localStorage.getItem('username') || '');
+    setEmail(localStorage.getItem('email') || '');
+
   }, []);
 
   const features = [
@@ -27,8 +33,8 @@ export default function DashboardPage() {
   ];
 
   return (
-    <SidebarContent teams={[]} logoUrl={logoUrl} userRole={userRole || 'guest'}>
-        <Heading level={1} align="left" bold>
+    <SidebarLayout>
+      <Heading level={1} align="left" bold>
           Selamat Datang ke MBMB Go (Ixora)
         </Heading>
         <TextLine>
@@ -87,6 +93,6 @@ export default function DashboardPage() {
         <Spacing size="lg" />
         <LineSeparator />
 
-    </SidebarContent>
+    </SidebarLayout>
   );
 }
