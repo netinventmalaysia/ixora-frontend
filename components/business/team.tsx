@@ -13,14 +13,16 @@ import LineSeparator from '../forms/LineSeparator';
 import Button from '../forms/Button';
 import toast from 'react-hot-toast';
 import { fetchMyBusinesses, fetchTeamMembers, inviteTeamMember } from 'todo/services/api';
-import { handleAssignRole, handleRemove } from '../actions/consultantActions';
-
+import { handleAssignRole, handleRemove } from '../actions/actionHandler';
+import ConfirmSelectDialog from '../forms/ConfirmSelectDialog';
 export default function PeoplePage() {
     const methods = useForm();
     const [team, setTeam] = useState<Person[]>([]);
     const [filteredTeam, setFilteredTeam] = useState<Person[]>([]);
     const [businessId, setBusinessId] = useState<number | null>(null);
     const [businessOptions, setBusinessOptions] = useState<{ value: number; label: string }[]>([]);
+    const [showRoleDialog, setShowRoleDialog] = useState(false);
+    const [selectedPerson, setSelectedPerson] = useState<Person | null>(null);
 
     useEffect(() => {
         fetchMyBusinesses()
@@ -70,19 +72,15 @@ export default function PeoplePage() {
         }
     };
 
-    const doSearch = (e: React.MouseEvent<HTMLButtonElement>) => {
-        e.preventDefault();
-        const searchValue = methods.getValues('search')?.toLowerCase() || '';
-        if (!searchValue) {
-            setFilteredTeam(team);
-            return;
-        }
-        const filtered = team.filter((p) =>
-            p.name.toLowerCase().includes(searchValue) ||
-            p.email.toLowerCase().includes(searchValue) ||
-            p.role.toLowerCase().includes(searchValue)
-        );
-        setFilteredTeam(filtered);
+    const openAssignRoleDialog = (person: Person) => {
+        setSelectedPerson(person);
+        setShowRoleDialog(true);
+    };
+
+    const onConfirmAssignRole = async (newRole: string) => {
+        if (!selectedPerson || !businessId) return;
+        await handleAssignRole(selectedPerson, newRole, businessId, setTeam, setFilteredTeam);
+        setShowRoleDialog(false);
     };
 
     return (
@@ -118,7 +116,7 @@ export default function PeoplePage() {
                             size="sm"
                             className="bg-transparent shadow-none px-3 py-1 text-sm text-indigo-600 hover:bg-indigo-50"
                             onClick={handleInvite}
-                            //disabled={!businessId}  // ✅ Prevents invite if business is not selected
+                        //disabled={!businessId}  // ✅ Prevents invite if business is not selected
                         >
                             Invite
                         </Button>
@@ -129,8 +127,17 @@ export default function PeoplePage() {
                 <LineSeparator />
                 <PersonList
                     people={filteredTeam}
-                    onAssignRole={(person) => handleAssignRole(person, businessId!, setTeam, setFilteredTeam)}
+                    onAssignRole={(person) => openAssignRoleDialog(person)}
                     onRemove={(person) => handleRemove(person, businessId!, setTeam, setFilteredTeam)}
+                />
+                <ConfirmSelectDialog
+                    isOpen={showRoleDialog}
+                    title="Assign New Role"
+                    message={`Assign a new role for ${selectedPerson?.email}`}
+                    options={['consultant', 'admin', 'staff', 'viewer', 'approver', 'account']}
+                    defaultValue={selectedPerson?.role}
+                    onConfirm={onConfirmAssignRole}
+                    onClose={() => setShowRoleDialog(false)}
                 />
             </LayoutWithoutSidebar>
         </FormProvider>

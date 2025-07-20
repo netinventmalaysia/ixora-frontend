@@ -20,7 +20,7 @@ import {
     handlePay,
     handleAssignRole,
     handleRemove,
-} from '../actions/consultantActions';
+} from '../actions/actionHandler';
 
 import Tabs, { Tab } from '../forms/Tab'
 import FilterTabs from '../forms/FilterTabs';

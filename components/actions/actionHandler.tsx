@@ -3,7 +3,7 @@ import toast from 'react-hot-toast';
 import { updateTeamMemberRole, fetchTeamMembers, removeTeamMember } from 'todo/services/api';
 import { Person } from '../data/StaffList';
 
-export type UserRole = 'consultant' | 'admin' | 'staff' | 'viewer';
+export type UserRole = 'consultant' | 'admin' | 'staff' | 'viewer' | 'approver' | 'account';
 const currentUserRole: UserRole = 'consultant';
 
 const rolePermissions: Record<UserRole, string[]> = {
@@ -11,6 +11,8 @@ const rolePermissions: Record<UserRole, string[]> = {
   admin: ['download', 'assign'],
   staff: ['download'],
   viewer: [],
+  approver: ['pay'],
+  account: ['download', 'pay'],
 };
 
 function hasPermission(action: string): boolean {
@@ -34,35 +36,23 @@ export function handlePay(profile: Profile) {
   alert(`Processing payment for ${profile.name}`);
 }
 
-// export function handleAssignRole(profile: Profile, setProfiles: React.Dispatch<React.SetStateAction<Profile[]>>) {
-//   if (!hasPermission('assign')) return alert('You do not have permission to assign roles.');
-//   const newRole = prompt(`Assign new role to ${profile.name}:`, profile.role);
-//   if (newRole) {
-//     setProfiles((prev) =>
-//       prev.map((p) => (p.email === profile.email ? { ...p, role: newRole } : p))
-//     );
-//   }
-// }
-
-// export function handleRemove(profile: Profile, setProfiles: React.Dispatch<React.SetStateAction<Profile[]>>) {
-//   if (!hasPermission('remove')) return alert('You do not have permission to remove.');
-//   if (confirm(`Remove ${profile.name}?`)) {
-//     setProfiles((prev) => prev.filter((p) => p.email !== profile.email));
-//   }
-// }
-
 export const handleAssignRole = async (
   person: Person,
+  newRole: string,
   businessId: number,
   setTeam: React.Dispatch<React.SetStateAction<Person[]>>,
   setFilteredTeam: React.Dispatch<React.SetStateAction<Person[]>>
 ) => {
-  const newRole = prompt(`Assign new role for ${person.name}:`, person.role);
+  if (!hasPermission('assign')) {
+    toast.error('You do not have permission to assign roles.');
+    return;
+  }
+
   if (!newRole || newRole === person.role) return;
 
   try {
     await updateTeamMemberRole(person.id, newRole);
-    toast.success(`Role updated for ${person.name}`);
+    toast.success(`Role updated for ${person.email}`);
     const updatedTeam = await fetchTeamMembers(businessId);
     setTeam(updatedTeam);
     setFilteredTeam(updatedTeam);
@@ -78,11 +68,12 @@ export const handleRemove = async (
   setTeam: React.Dispatch<React.SetStateAction<Person[]>>,
   setFilteredTeam: React.Dispatch<React.SetStateAction<Person[]>>
 ) => {
-  if (!confirm(`Remove ${person.name} from the team?`)) return;
+  if (!hasPermission('remove')) return alert('You do not have permission to remove.');
+  if (!confirm(`Remove ${person.email} from the team?`)) return;
 
   try {
     await removeTeamMember(person.id);
-    toast.success(`${person.name} has been removed`);
+    toast.success(`${person.email} has been removed`);
     const updatedTeam = await fetchTeamMembers(businessId);
     setTeam(updatedTeam);
     setFilteredTeam(updatedTeam);
