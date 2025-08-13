@@ -19,6 +19,9 @@ import ConfirmDialog from "todo/components/forms/ConfirmDialog";
 import { createUser } from "todo/services/api";
 import toast from 'react-hot-toast';
 import router from "next/router";
+import RadioGroupField from "todo/components/forms/RadioGroupField";
+import { identificationTypeList } from "todo/components/data/RadioList";
+import { useFormContext, useWatch } from "react-hook-form";
 
 
 type UserProfile = {
@@ -26,6 +29,8 @@ type UserProfile = {
   email: string;
   firstName: string;
   lastName: string;
+  identificationType: string;
+  identificationNumber: string;
   dateOfBirth: string;
   phoneNumber: string;
   address: string;
@@ -54,7 +59,7 @@ export default function SignUpPage() {
       const payload: UserProfile = {
         ...data,
         dateOfBirth: data.dateOfBirth.toISOString(),
-        role: 'personal', 
+        role: 'personal',
       };
 
       await createUser(payload);
@@ -85,6 +90,24 @@ export default function SignUpPage() {
         <Spacing size="sm" />
         <InputText id="password" name="password" label="Password" type="password" requiredMessage="Password is required" showHint={true} />
         <Spacing size="lg" />
+
+        {/* radio button add new or old IC number / passport / my tentera */}
+        <RadioGroupField
+          name="identificationType"
+          label="Identification Type"
+          options={identificationTypeList}
+          inline={true}
+          requiredMessage="Please select a gender"
+        />
+
+
+        <Spacing size="sm" />
+        <InputText
+          id="identificationNumber"
+          name="identificationNumber"
+          label="Identification Number" // Generic, will be overridden dynamically
+          requiredMessage="Identification number is required"
+        />
 
         <LineSeparator />
         <FormSectionHeader title="User Information" description="Please provide your profile details." />

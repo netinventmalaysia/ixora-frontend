@@ -82,3 +82,7 @@ export const handleRemove = async (
     toast.error('Failed to remove member');
   }
 };
+
+export function triggerUserRefresh() {
+  window.dispatchEvent(new StorageEvent('storage', { key: 'userRole' }));
+}

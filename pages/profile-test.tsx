@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { fetchCsrfToken, getUserProfile, updateUser } from '@/services/api';
+import { getUserProfile, updateUser } from '@/services/api';
 import toast from 'react-hot-toast';
 
 export default function ProfileTestPage() {
@@ -17,7 +17,6 @@ export default function ProfileTestPage() {
     const loadProfile = async () => {
       try {
         if (!userId) return;
-        await fetchCsrfToken();
         const res = await getUserProfile(Number(userId));
         setProfile(res.data);
       } catch (err) {
@@ -30,7 +29,7 @@ export default function ProfileTestPage() {
   const handleUpdate = async () => {
     try {
       setLoading(true);
-      await fetchCsrfToken();
+      //await fetchCsrfToken();
       await updateUser({ ...profile, firstName: 'Updated Name' });
       toast.success('Profile updated!');
     } catch (err: any) {

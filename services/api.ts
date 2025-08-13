@@ -2,17 +2,67 @@
 import axios from 'axios';
 import router from 'next/router';
 
+// Constants
+const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000';
+const CSRF_TOKEN_KEY = 'csrfToken';
+
+// Shared state to avoid multiple CSRF fetches
+let csrfFetchingPromise: Promise<string | null> | null = null;
+
+// Create main API instance with interceptors
 const api = axios.create({
-    baseURL: process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000',
+    baseURL: API_BASE_URL,
     withCredentials: true,
 });
 
-// Attach CSRF token to all requests that need it
-api.interceptors.request.use((config) => {
-    const csrfToken = localStorage.getItem('csrfToken');
-    if (csrfToken) {
-        config.headers['X-CSRF-Token'] = csrfToken;  // ✅ You have this already
+// --- CSRF Token Helpers ---
+
+// Use plain Axios (no interceptors) to prevent infinite loop
+const rawAxios = axios.create({
+    baseURL: API_BASE_URL,
+    withCredentials: true,
+});
+
+export const fetchCsrfToken = async (): Promise<string | null> => {
+    if (csrfFetchingPromise) return csrfFetchingPromise;
+
+    csrfFetchingPromise = rawAxios
+        .get('/auth/csrf-token')
+        .then((res) => {
+            const token = res.data?.csrfToken;
+            if (token) {
+                sessionStorage.setItem(CSRF_TOKEN_KEY, token);
+                console.log('[CSRF] Token fetched:', token);
+                return token;
+            } else {
+                console.warn('[CSRF] Token missing in response');
+                return null;
+            }
+        })
+        .catch((error) => {
+            console.error('[CSRF] Failed to fetch token:', error);
+            return null;
+        })
+        .finally(() => {
+            csrfFetchingPromise = null;
+        });
+
+    return csrfFetchingPromise;
+};
+
+
+
+// --- Axios Interceptors ---
+
+// Attach CSRF token to all outgoing requests
+api.interceptors.request.use(async (config) => {
+    let token = sessionStorage.getItem(CSRF_TOKEN_KEY);
+    if (!token) token = await fetchCsrfToken();
+
+    if (token) {
+        config.headers['x-csrf-token'] = token;
     }
+
     return config;
 });
 
@@ -20,51 +70,42 @@ api.interceptors.request.use((config) => {
 api.interceptors.response.use(
     (response) => response,
     (error) => {
-        if (error.response && error.response.status === 401) {
-            console.error('Unauthorized access - redirecting to login');
-            localStorage.removeItem('csrfToken'); // only CSRF token now
-        }
-        return Promise.reject(error);
-    }
-);
-
-api.interceptors.request.use((config) => {
-    if (typeof window !== 'undefined') {
-        const csrfToken = localStorage.getItem('csrfToken');
-        if (csrfToken) {
-            config.headers['X-CSRF-Token'] = csrfToken;
-        }
-    }
-    return config;
-});
-
-api.interceptors.response.use(
-    (response) => response,
-    (error) => {
         if (error.response?.status === 401) {
-            console.warn('401 Unauthorized — Redirecting to login');
-            if (typeof window !== 'undefined') {
-                localStorage.removeItem('csrfToken');
-                router.push('/');  // ✅ Redirect globally on 401
+            console.warn('401 Unauthorized — handling globally');
+
+            // Optional: Try to detect "guest" role to avoid auto-kick
+            const userRole = localStorage.getItem('userRole');
+            const userId = localStorage.getItem('userId');
+
+            const isGuest = userRole === 'guest' || !userId;
+
+            // Clear CSRF token
+            sessionStorage.removeItem('csrfToken');
+
+            if (!isGuest && typeof window !== 'undefined') {
+                console.warn('🔐 Redirecting to home — non-guest 401');
+                router.push('/');
+            } else {
+                console.warn('🟡 Skipped redirect for guest user');
             }
         }
+
         return Promise.reject(error);
     }
 );
+
+// --- API Methods ---
 
 export const loginUser = async (credentials: any) => {
     const { data } = await api.post('/auth/login', credentials);
-    console.log('Login response:', data);
-
+    await fetchCsrfToken(); // Refresh token after login
     return data;
 };
-
 
 export const guestLogin = async () => {
     const { data } = await api.post('/auth/guest-login');
     return data;
-}
-
+};
 
 export const logoutUser = async () => {
     await api.post('/auth/logout');
@@ -75,22 +116,9 @@ export const getUserProfile = (userId: number) => api.get(`/users/profile/${user
 export const updateUser = (userData: any) => api.put(`/users/profile/${userData.id}`, userData);
 export const createBusiness = (businessData: any) => api.post('/business', businessData);
 
+export const forgotPassword = (data: { email: string }) => api.post('/auth/forgot-password', data);
 
-export const fetchCsrfToken = async () => {
-    const res = await api.get('/auth/csrf-token');
-    console.log('Fetched CSRF token:', res.data);
-    const csrfToken = res.data?.csrfToken;
-    if (csrfToken) {
-        localStorage.setItem('csrfToken', csrfToken);
-    }
-};
-
-export const forgotPassword = async (data: { email: string }) => {
-    return api.post('/auth/forgot-password', data);
-};
-
-
-export const resetPassword = async (data: { token: string | string[] | undefined; newPassword: string }) => {
+export const resetPassword = (data: { token: string | string[] | undefined; newPassword: string }) => {
     if (!data.token || Array.isArray(data.token)) {
         throw new Error('Invalid or missing token');
     }
@@ -101,46 +129,45 @@ export const resetPassword = async (data: { token: string | string[] | undefined
     });
 };
 
-export async function uploadCertificate(file: File, folder = 'certificates'): Promise<string> {
+export const uploadCertificate = async (file: File, folder = 'certificates'): Promise<string> => {
     const formData = new FormData();
     formData.append('file', file);
     formData.append('folder', folder);
-
-    console.log('Uploading file:', file.name, 'to folder:', folder);
 
     const res = await api.post('/uploads/file', formData, {
         headers: { 'Content-Type': 'multipart/form-data' },
     });
 
     return res.data.path;
-}
+};
 
-
-export async function fetchMyBusinesses() {
+// Business
+export const fetchMyBusinesses = async () => {
     const { data } = await api.get('/business/registered');
     return data;
-}
+};
 
+export const fetchBusinessById = async (businessId: number) => {
+    const { data } = await api.get(`/business/${businessId}`);
+    return data;
+};
 
-// Get team members for selected business
+// Team Members
 export const fetchTeamMembers = async (businessId: number) => {
     const { data } = await api.get(`/business/${businessId}/team`);
     return data;
 };
 
-// Invite new staff member (and trigger email)
 export const inviteTeamMember = async (businessId: number, email: string) => {
     const { data } = await api.post(`/business/${businessId}/team/invite`, { email });
     return data;
 };
 
-// Assign new role
 export const updateTeamMemberRole = async (memberId: number, role: string) => {
     const { data } = await api.patch(`/business/team/${memberId}/role`, { role });
     return data;
 };
 
-// Remove team member
 export const removeTeamMember = async (memberId: number) => {
     const { data } = await api.delete(`/business/team/${memberId}`);
     return data;

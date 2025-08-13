@@ -1,5 +1,5 @@
 import React, { ComponentType, SVGProps, useState, ReactNode } from "react";
-import { useFormContext } from "react-hook-form";
+import { useFormContext, useWatch } from "react-hook-form";
 import { EyeIcon, EyeSlashIcon } from "@heroicons/react/24/outline";
 
 export type InputTextProps = {
@@ -12,9 +12,7 @@ export type InputTextProps = {
   colSpan?: string;
   type?: "text" | "password" | "number" | "email";
   showHint?: boolean;
-  /** A Heroicon (or any SVG component) to render on the right side */
   icon?: ComponentType<SVGProps<SVGSVGElement>>;
-  /** Optional custom element (e.g. a button) rendered at the far right */
   rightElement?: ReactNode;
 };
 
@@ -34,13 +32,25 @@ export default function InputText({
   const {
     register,
     formState: { errors },
+    control,
   } = useFormContext();
 
   const [showPassword, setShowPassword] = useState(false);
   const isPassword = type === "password";
   const isEmail = type === "email";
+  const isIdentificationField = name === "identificationNumber";
 
-  // Password validation rules
+  //Watch the identification type only if relevant
+  let selectedIdType: string | null = null;
+  if (typeof window !== 'undefined' && isIdentificationField) {
+    try {
+      selectedIdType = useWatch({ control, name: "identificationType" });
+    } catch (e) {
+      selectedIdType = null;
+    }
+  }
+
+  //Validation for password field
   const passwordValidation = {
     required: requiredMessage || "Password is required",
     minLength: { value: 7, message: "Password must be at least 7 characters" },
@@ -52,7 +62,7 @@ export default function InputText({
     },
   };
 
-  // Email validation rules
+  // Validation for email field
   const emailValidation = {
     required: requiredMessage || "Email is required",
     pattern: {
@@ -61,19 +71,42 @@ export default function InputText({
     },
   };
 
-  // Choose rules based on type
+  // Validation for identificationNumber field
+  const identificationValidation = {
+    required: requiredMessage || "Identification number is required",
+    validate: (value: string) => {
+      if (!value) return "Identification number is required";
+
+      switch (selectedIdType) {
+        case "new_ic":
+          return /^\d{12}$/.test(value) || "New IC must be 12 digits";
+        case "old_ic":
+          return /^\d{8,9}$/.test(value) || "Old IC must be 8–9 digits";
+        case "passport":
+          return /^[A-Z0-9]{6,9}$/i.test(value) || "Passport must be 6–9 alphanumeric characters";
+        case "tentera":
+          return value.length >= 4 || "Tentera number must be at least 4 characters";
+        default:
+          return true;
+      }
+    },
+  };
+
+  // Select the correct validation rule
   const validationRules = isPassword
     ? passwordValidation
     : isEmail
-    ? emailValidation
-    : requiredMessage
-    ? { required: requiredMessage }
-    : {};
+      ? emailValidation
+      : isIdentificationField
+        ? identificationValidation
+        : requiredMessage
+          ? { required: requiredMessage }
+          : {};
 
-  // Narrow the icon prop
   const IconComponent = icon;
+
   return (
-    <div className={`w-full ${colSpan}`}>  
+    <div className={`w-full ${colSpan}`}>
       <label htmlFor={id} className="block text-sm font-medium text-gray-900">
         {label}
       </label>
@@ -111,12 +144,7 @@ export default function InputText({
             </span>
           ) : null}
 
-          {/* Custom right-side element */}
-          {rightElement && (
-            <span className="ml-2">
-              {rightElement}
-            </span>
-          )}
+          {rightElement && <span className="ml-2">{rightElement}</span>}
         </div>
 
         {isPassword && showHint && (
@@ -126,7 +154,9 @@ export default function InputText({
         )}
 
         {errors[name] && (
-          <p className="mt-1 text-sm text-red-500">{errors[name]?.message as string}</p>
+          <p className="mt-1 text-sm text-red-500">
+            {errors[name]?.message as string}
+          </p>
         )}
       </div>
     </div>

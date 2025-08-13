@@ -16,6 +16,7 @@ export default function LogoutPage() {
     } finally {
       // Clear tokens AFTER attempting logout
       localStorage.removeItem('user-role');
+      localStorage.removeItem('userRole');
       localStorage.removeItem('user-mode');
       localStorage.removeItem('access_token');
       localStorage.removeItem('csrfToken');
@@ -27,6 +28,8 @@ export default function LogoutPage() {
       localStorage.removeItem('userCompanyName');
       localStorage.removeItem('userRegistrationNumber');
       localStorage.removeItem('csrfToken');
+      localStorage.removeItem('auth_token');
+
       router.replace('/');
     }
   };

@@ -10,9 +10,16 @@ type BadgeCountFilters = {
 
 export function useBadgeCounts(filters: BadgeCountFilters = {}) {
     const [badgeCounts, setBadgeCounts] = useState<BadgeCounts>({});
-    const [loading, setLoading] = useState(true);
+    const [loading, setLoading] = useState(false);
+
+    const isAuthenticated = typeof window !== 'undefined' && document.cookie.includes('auth_token');
 
     const fetchCounts = () => {
+        if (!isAuthenticated) {
+            console.warn('🔒 Skipping badge fetch — not authenticated');
+            return;
+        }
+
         setLoading(true);
 
         Promise.all([fetchMyBusinesses()])
@@ -23,7 +30,9 @@ export function useBadgeCounts(filters: BadgeCountFilters = {}) {
                         : businessData.length,
                 });
             })
-            .catch(console.error)
+            .catch((err) => {
+                console.error('❌ Failed to fetch badge counts:', err);
+            })
             .finally(() => setLoading(false));
     };
 

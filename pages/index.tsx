@@ -12,8 +12,9 @@ import Hyperlink from "todo/components/forms/Hyperlink";
 import HyperText from "todo/components/forms/HyperText";
 import InputText from "todo/components/forms/InputText";
 import router from "next/router";
-import { loginUser, guestLogin, fetchCsrfToken } from "todo/services/api";
+import { loginUser, guestLogin } from "todo/services/api";
 import { AxiosError } from 'axios'
+import { triggerUserRefresh } from "todo/components/actions/actionHandler";
 
 export default function FormPage() {
 
@@ -31,9 +32,10 @@ export default function FormPage() {
             localStorage.setItem('userId', res.user.id);
             localStorage.setItem('username', res.user.username);
             localStorage.setItem('email', res.user.email);
-            // call fetchCsrfToken() here if needed
+            triggerUserRefresh();
             console.log('Login response:', res);
-            await fetchCsrfToken(); // Ensure CSRF token is fetched after login
+     
+
             if (!res || !res.user) {
                 throw new Error('Login failed');
             }

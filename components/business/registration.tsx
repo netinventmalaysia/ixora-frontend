@@ -16,7 +16,7 @@ import DatePickerField from "todo/components/forms/DatePickerField";
 import TextLine from "todo/components/forms/HyperText";
 import PhotoUploadField from "todo/components/forms/PhotoUploadField";
 import ConfirmDialog from "todo/components/forms/ConfirmDialog";
-import { createBusiness, fetchCsrfToken, uploadCertificate } from "todo/services/api";
+import { createBusiness, uploadCertificate } from "todo/services/api";
 import toast from "react-hot-toast";
 import router from "next/router";
 import Toggle from "todo/components/forms/Toggle";
@@ -43,20 +43,31 @@ export default function BusinessRegistrationPage() {
     const handleSubmit = async (data: any) => {
         try {
             setLoading(true);
-            await fetchCsrfToken();
+            //await getCsrfToken();
 
             const payload = {
                 ...data,
                 expiryDate: data.expiryDate.toISOString().split('T')[0],
                 certificateFilePath,
-                accountType: accountType === "business" ? (isOrganisation ? "organisation" : "business") : undefined,
+                accountType: accountType === "business"
+                    ? (isOrganisation ? "organisation" : "business")
+                    : undefined,
             };
 
             await createBusiness(payload);
             toast.success("Business registered successfully!");
             router.push("/business/application");
-        } catch (err) {
-            toast.error("Something went wrong");
+
+        } catch (err: any) {
+            console.error('❌ Business creation error:', err);
+
+            if (err.response?.status === 403) {
+                toast.error("Forbidden: Invalid CSRF token");
+            } else if (err.response?.status === 401) {
+                toast.error("Unauthorized: Please log in again");
+            } else {
+                toast.error("Something went wrong");
+            }
         } finally {
             setLoading(false);
         }

@@ -50,12 +50,10 @@ const MyskbPage: React.FC = () => {
 
   return (
     <SidebarLayout>
-      <FormWrapper onSubmit={() => {}}>
         <Tabs tabs={allTabs} currentTab={currentTab.name} onTabChange={handleTabChange} />
         <div className="mt-4">
           {renderContent()}
         </div>
-      </FormWrapper>
     </SidebarLayout>
   )
 }
