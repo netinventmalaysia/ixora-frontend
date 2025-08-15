@@ -43,7 +43,7 @@ export default function ProfileTestPage() {
 
   return (
     <div className="p-4">
-      <h1 className="text-xl font-bold">Profile Test Page</h1>
+      <h1 className="text-xl font-bold">Profile Test Paging</h1>
       <pre className="bg-gray-100 p-2 my-2">{JSON.stringify(profile, null, 2)}</pre>
       <button
         onClick={handleUpdate}
