@@ -11,8 +11,8 @@ type PhotoUploadFieldProps = {
   requiredMessage?: string;
   onUpload?: (filePath: string) => void;
 };
-
-const UPLOAD_BASE_URL = 'http://localhost:3000/uploads/file/';
+const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL
+const UPLOAD_BASE_URL = `${API_BASE_URL}/uploads/file/`;
 
 export default function PhotoUploadField({
   name,
