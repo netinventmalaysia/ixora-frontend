@@ -67,6 +67,7 @@ function BusinessEffect({ businessId }: { businessId?: number }) {
 
     fetchBusinessById(businessId)
       .then((biz) => {
+        console.log(biz);
         setValue("companyName", biz.companyName);
         setValue("registrationNumber", biz.registrationNumber);
         // also populate address fields:
