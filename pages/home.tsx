@@ -287,14 +287,14 @@ export default function FormPage() {
                 <Spacing size="lg" />
                 <PhotoUploadField
                     label="Profile Picture"
+                    name=""
                     buttonText="Upload Photo"
-                    onClick={() => console.log("Upload photo clicked")}
+                    onUpload={() => {}}
                 />
                 <CodeExample code={`<PhotoUploadField label="Profile Picture" buttonText="Upload Photo" onClick={() => {}} />`} />
 
                 <Spacing size="lg" />
                 <FileUploadField
-                    id="cover"
                     name="cover"
                     label="Upload a file"
                     description="PNG, JPG, GIF up to 10MB"
