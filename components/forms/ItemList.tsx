@@ -5,6 +5,7 @@ import { EllipsisVerticalIcon } from '@heroicons/react/20/solid';
 import { useState } from 'react';
 import { fetchBusinessById } from '@/services/api';
 import DetailDialog from './DetailDialog';
+import BusinessEditDialog from './BusinessEditDialog';
 
 type Item = {
   id: number | string;
@@ -41,6 +42,8 @@ export default function ItemList({ items, statusClasses, actions = [] }: ItemLis
 
   const [loadingDetails, setLoadingDetails] = useState(false);
   const [loadError, setLoadError] = useState<string | null>(null);
+  const [isEditOpen, setIsEditOpen] = useState(false);
+  const [editData, setEditData] = useState<Item | null>(null);
 
   const openModal = async (item: Item) => {
     setLoadError(null);
@@ -62,6 +65,18 @@ export default function ItemList({ items, statusClasses, actions = [] }: ItemLis
   const closeModal = () => {
     setIsOpen(false);
     // keep selected for a11y focus restoration; clear if you prefer
+  };
+
+  const handleEdit = async (item: Item) => {
+    setEditData(item);
+    setIsEditOpen(true);
+    try {
+      const idNum = typeof item.id === 'string' ? Number(item.id) : item.id;
+      const details = await fetchBusinessById(idNum as number);
+      setEditData(details);
+    } catch (e) {
+      // fallback to basic data
+    }
   };
 
   return (
@@ -119,7 +134,12 @@ export default function ItemList({ items, statusClasses, actions = [] }: ItemLis
                       <MenuItem key={action.label}>
                         <button
                           type="button"
-                          onClick={() => action.onClick?.(item)}
+                          onClick={() => {
+                            if (action.label.toLowerCase() === 'edit') {
+                              handleEdit(item);
+                            }
+                            action.onClick?.(item);
+                          }}
                           className="w-full text-left px-3 py-1 text-sm/6 text-gray-900 data-focus:bg-gray-50 data-focus:outline-hidden"
                         >
                           {action.label}
@@ -146,6 +166,18 @@ export default function ItemList({ items, statusClasses, actions = [] }: ItemLis
   excludeKeys={["invitationToken"]}
   hideTokenLike={true}
   showOther={false}
+      />
+
+      <BusinessEditDialog
+        open={isEditOpen}
+        onClose={() => setIsEditOpen(false)}
+        data={editData}
+        onSaved={(updated) => {
+          // reflect changes in the view dialog if same item
+          if (selected && updated && selected.id === updated.id) {
+            setSelected(updated);
+          }
+        }}
       />
     </>
   );

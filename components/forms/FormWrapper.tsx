@@ -1,3 +1,4 @@
+import { useEffect } from "react";
 import { useForm, FormProvider } from "react-hook-form";
 
 export default function FormWrapper({
@@ -10,6 +11,13 @@ export default function FormWrapper({
   defaultValues?: Record<string, any>; // allow optional default values
 }) {
   const methods = useForm({ defaultValues });
+
+  // When defaultValues change (e.g., after fetching data), reset the form
+  useEffect(() => {
+    if (defaultValues) {
+      methods.reset(defaultValues);
+    }
+  }, [defaultValues, methods]);
 
   return (
     <FormProvider {...methods}>

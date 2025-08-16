@@ -152,6 +152,11 @@ export const fetchBusinessById = async (businessId: number) => {
     return data;
 };
 
+export const updateBusiness = async (businessId: number, payload: any) => {
+    const { data } = await api.put(`/business/${businessId}`, payload);
+    return data;
+};
+
 // Team Members
 export const fetchTeamMembers = async (businessId: number) => {
     const { data } = await api.get(`/business/${businessId}/team`);

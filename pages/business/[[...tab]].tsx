@@ -9,14 +9,20 @@ import Application from 'todo/components/business/application';
 import TeamMembers from 'todo/components/business/team';
 import { teams, logoUrl } from 'todo/components/main/SidebarConfig';
 import Billing from 'todo/components/business/billing';
-import { fetchMyBusinesses } from 'todo/services/api';
+import { fetchBusinessById, fetchMyBusinesses } from 'todo/services/api';
 import { useBadgeCounts } from 'todo/components/config/BadgeCounts';
 import SidebarLayout from 'todo/components/main/SidebarLayout';
+import BusinessEditDialog from 'todo/components/forms/BusinessEditDialog';
 
 const BusinessPage: React.FC = () => {
   const router = useRouter();
   const { tab } = router.query;
   const currentSlug = Array.isArray(tab) ? tab[0] : tab || 'home';
+  const isIdRoute = !!currentSlug && /^\d+$/.test(currentSlug);
+
+  const [editOpen, setEditOpen] = useState(false);
+  const [editData, setEditData] = useState<any | null>(null);
+  const [editLoading, setEditLoading] = useState(false);
 
  const { badgeCounts, loading } = useBadgeCounts({
   applicationStatus: 'Submitted',
@@ -43,9 +49,25 @@ const BusinessPage: React.FC = () => {
     router.push(`/business/${encodeURIComponent(slug)}`, undefined, { shallow: true });
   };
 
+  // If route is numeric like /business/123, open the edit dialog with that ID
+  useEffect(() => {
+    if (isIdRoute) {
+      const id = Number(currentSlug);
+      setEditOpen(true);
+      setEditLoading(true);
+      fetchBusinessById(id)
+        .then((data) => setEditData(data))
+        .finally(() => setEditLoading(false));
+    } else {
+      setEditOpen(false);
+      setEditData(null);
+    }
+  }, [isIdRoute, currentSlug]);
+
 
   const renderContent = () => {
-    switch (currentTab.name) {
+  // If route is /business/{id}, keep the usual page content (e.g., Home) and overlay edit dialog
+  switch (currentTab.name) {
       case 'Home':
         return <Home />;
       case 'Registration':
@@ -67,6 +89,16 @@ const BusinessPage: React.FC = () => {
       <div className="mt-4">
         {loading ? <p>Loading...</p> : renderContent()}
       </div>
+
+      {/* Pre-filled edit dialog for /business/{id} */}
+      <BusinessEditDialog
+        open={editOpen}
+        onClose={() => setEditOpen(false)}
+        data={editData}
+        onSaved={(updated) => {
+          setEditData(updated);
+        }}
+      />
     </SidebarLayout>
   );
 };
