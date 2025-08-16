@@ -141,7 +141,11 @@ export default function ItemList({ items, statusClasses, actions = [] }: ItemLis
         data={selected}
         statusClasses={statusClasses}
         loading={loadingDetails}
-        error={loadError}
+  error={loadError}
+  // hide token fields and unrelated others by default
+  excludeKeys={["invitationToken"]}
+  hideTokenLike={true}
+  showOther={false}
       />
     </>
   );

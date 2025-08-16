@@ -13,9 +13,11 @@ export type DetailDialogProps = {
   error?: string | null;
   groups?: Array<{ title: string; keys: string[] }>;
   showOther?: boolean;
+  excludeKeys?: string[];
+  hideTokenLike?: boolean;
 };
 
-export default function DetailDialog({ open, onClose, title, data, statusClasses = {}, loading = false, error = null, groups, showOther = true }: DetailDialogProps) {
+export default function DetailDialog({ open, onClose, title, data, statusClasses = {}, loading = false, error = null, groups, showOther = false, excludeKeys = [], hideTokenLike = true }: DetailDialogProps) {
   const effectiveTitle = title || (data?.name || data?.companyName || (data ? `ID: ${data.id}` : 'Details'));
   const defaultGroups: Array<{ title: string; keys: string[] }> = [
     { title: 'Business Info', keys: ['companyName', 'registrationNumber', 'accountType', 'phone'] },
@@ -25,6 +27,8 @@ export default function DetailDialog({ open, onClose, title, data, statusClasses
     { title: 'Identifiers', keys: ['id', 'invitationToken'] },
   ];
   const usedGroups = groups && groups.length > 0 ? groups : defaultGroups;
+  const excludeSet = new Set(excludeKeys);
+  const isHiddenKey = (k: string) => excludeSet.has(k) || (hideTokenLike && /token/i.test(k));
 
   return (
     <Dialog open={open} onClose={onClose} className="relative z-50">
@@ -52,11 +56,11 @@ export default function DetailDialog({ open, onClose, title, data, statusClasses
             </div>
 
             <div className="mt-4 space-y-4">
-              {data?.status && (
+      {data?.status && (
                 <div className="flex items-center gap-2">
                   <span className="text-sm font-medium text-gray-500">Status:</span>
                   <span
-                    className={`${statusClasses[data.status] ?? ''} rounded-md px-1.5 py-0.5 text-xs font-medium ring-1 ring-inset`}
+        className={`${statusClasses[data.status] ?? ''} rounded-md px-1.5 py-0.5 text-xs font-medium ring-1 ring-inset uppercase`}
                   >
                     {data.status}
                   </span>
@@ -81,16 +85,16 @@ export default function DetailDialog({ open, onClose, title, data, statusClasses
                 <div className="max-h-[60vh] space-y-6 overflow-auto">
                   {/* Grouped sections */}
                   {usedGroups.map((group) => {
-                    const present = group.keys.filter((k) => Object.prototype.hasOwnProperty.call(data, k));
+                    const present = group.keys.filter((k) => Object.prototype.hasOwnProperty.call(data, k) && !isHiddenKey(k));
                     if (present.length === 0) return null;
                     return (
                       <section key={group.title}>
                         <h3 className="mb-2 text-sm font-semibold text-gray-900">{group.title}</h3>
-                        <dl className="grid grid-cols-3 gap-2 text-sm">
+        <dl className="grid grid-cols-3 gap-2 text-sm">
                           {present.map((key) => (
                             <div className="contents" key={key}>
                               <dt className="text-gray-500 break-words">{humanize(key)}</dt>
-                              <dd className="col-span-2 text-gray-900 break-words">{renderValue((data as any)[key], key)}</dd>
+          <dd className="col-span-2 break-words text-gray-900 uppercase">{renderValue((data as any)[key], key)}</dd>
                             </div>
                           ))}
                         </dl>
@@ -99,20 +103,20 @@ export default function DetailDialog({ open, onClose, title, data, statusClasses
                   })}
 
                   {/* Other fields */}
-                  {showOther && (() => {
+          {showOther && (() => {
                     const assigned = new Set<string>(usedGroups.flatMap((g) => g.keys));
                     const otherKeys = Object.keys(data)
-                      .filter((k) => !assigned.has(k) && k !== 'status')
+            .filter((k) => !assigned.has(k) && k !== 'status' && !isHiddenKey(k))
                       .sort();
                     if (otherKeys.length === 0) return null;
                     return (
                       <section key="Other">
                         <h3 className="mb-2 text-sm font-semibold text-gray-900">Other</h3>
-                        <dl className="grid grid-cols-3 gap-2 text-sm">
+        <dl className="grid grid-cols-3 gap-2 text-sm">
                           {otherKeys.map((key) => (
                             <div className="contents" key={key}>
                               <dt className="text-gray-500 break-words">{humanize(key)}</dt>
-                              <dd className="col-span-2 text-gray-900 break-words">{renderValue((data as any)[key], key)}</dd>
+          <dd className="col-span-2 break-words text-gray-900 uppercase">{renderValue((data as any)[key], key)}</dd>
                             </div>
                           ))}
                         </dl>
