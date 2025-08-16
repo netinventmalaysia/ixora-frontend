@@ -21,7 +21,7 @@ if [ -n "${DIGEST}" ] && ! printf '%s' "$DIGEST" | grep -q '^sha256:'; then
   DIGEST=""
 fi
 
-# If GHCR package is private, uncomment and provide PAT with read:packages
+# If GHCR is private, login once with a PAT that has read:packages
 # echo "$GHCR_TOKEN" | docker login ghcr.io -u netinventmalaysia --password-stdin || true
 
 if [ -n "${DIGEST}" ]; then
@@ -44,7 +44,6 @@ CID="$(docker ps -q -f "name=mbmbgo-frontend" || true)"
 if [ -n "$CID" ]; then
   RUN_IMG_ID="$(docker inspect --format='{{.Image}}' "$CID")"
   echo "Running container image ID: $RUN_IMG_ID" | tee -a "$LOG_FILE"
-  # Show the repo digest we resolved
   if docker image inspect "$IMAGE_REF" >/dev/null 2>&1; then
     TAG_DIGEST="$(docker image inspect "$IMAGE_REF" --format='{{index .RepoDigests 0}}' || true)"
     echo "Resolved repo digest:      $TAG_DIGEST" | tee -a "$LOG_FILE"
