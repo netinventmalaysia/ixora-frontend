@@ -2,7 +2,7 @@
 set -euo pipefail
 
 STACK_DIR="/www/wwwroot/ixora/frontend"
-COMPOSE_FILE="$STACK_DIR/docker-compose.frontend.yml"   # <- name it like this (or adjust)
+COMPOSE_FILE="$STACK_DIR/docker-compose.yml"   # <- name it like this (or adjust)
 LOG_FILE="/tmp/ixora-frontend-deploy.log"
 IMG="ghcr.io/netinventmalaysia/ixora-frontend:prod"     # <- your GHCR image tag
 
