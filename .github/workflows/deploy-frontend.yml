@@ -49,6 +49,9 @@ jobs:
           # If you need NEXT_PUBLIC_* at build time, pass it as build-arg(s):
           # build-args: |
           #   NEXT_PUBLIC_API_URL=${{ vars.NEXT_PUBLIC_API_URL }}
+          build-args: |
+              NEXT_PUBLIC_BUILD_SHA=${{ github.sha }}
+              NEXT_PUBLIC_BUILD_TIME=${{ steps.meta.outputs.created }}
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
 
