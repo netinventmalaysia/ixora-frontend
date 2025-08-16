@@ -36,9 +36,6 @@ ENV NODE_ENV=production \
     NEXT_TELEMETRY_DISABLED=1 \
     PORT=3001
 
-# Healthcheck uses wget in your compose; add it here
-RUN apk add --no-cache wget
-
 # Copy only what we need for runtime
 # If your Next.js is configured for "standalone" output, prefer that (smaller):
 #   In next.config.js: output: 'standalone'
