@@ -3,7 +3,7 @@ import axios from 'axios';
 import router from 'next/router';
 
 // Constants
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000';
+const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'https://ixora-api.mbmb.gov.my';
 const CSRF_TOKEN_KEY = 'csrfToken';
 
 // Shared state to avoid multiple CSRF fetches
