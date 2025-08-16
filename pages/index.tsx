@@ -91,7 +91,7 @@ export default function FormPage() {
                 />
                 <Spacing size="lg" />
                 <Heading level={2} align="center" bold>
-                    Sign in to your accounts
+                    Sign in to your account
                 </Heading>
                 <Spacing size="lg" />
                 <InputWithPrefix id="email" name="email" label="Email Address" requiredMessage="Email Address is required" />
