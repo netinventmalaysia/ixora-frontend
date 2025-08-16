@@ -157,6 +157,11 @@ export const updateBusiness = async (businessId: number, payload: any) => {
     return data;
 };
 
+export const withdrawBusiness = async (businessId: number) => {
+    const { data } = await api.patch(`/business/${businessId}/status`, { status: 'Withdrawn' });
+    return data;
+};
+
 // Team Members
 export const fetchTeamMembers = async (businessId: number) => {
     const { data } = await api.get(`/business/${businessId}/team`);

@@ -3,9 +3,10 @@
 import { Menu, MenuButton, MenuItem, MenuItems } from '@headlessui/react';
 import { EllipsisVerticalIcon } from '@heroicons/react/20/solid';
 import { useState } from 'react';
-import { fetchBusinessById } from '@/services/api';
+import { fetchBusinessById, withdrawBusiness } from '@/services/api';
 import DetailDialog from './DetailDialog';
 import BusinessEditDialog from './BusinessEditDialog';
+import ConfirmDialog from './ConfirmDialog';
 
 type Item = {
   id: number | string;
@@ -44,6 +45,8 @@ export default function ItemList({ items, statusClasses, actions = [] }: ItemLis
   const [loadError, setLoadError] = useState<string | null>(null);
   const [isEditOpen, setIsEditOpen] = useState(false);
   const [editData, setEditData] = useState<Item | null>(null);
+  const [confirmOpen, setConfirmOpen] = useState(false);
+  const [pendingWithdraw, setPendingWithdraw] = useState<Item | null>(null);
 
   const openModal = async (item: Item) => {
     setLoadError(null);
@@ -76,6 +79,31 @@ export default function ItemList({ items, statusClasses, actions = [] }: ItemLis
       setEditData(details);
     } catch (e) {
       // fallback to basic data
+    }
+  };
+
+  const requestWithdraw = (item: Item) => {
+    if ((item.status || '').toLowerCase() !== 'submitted') {
+      return; // Only allow for Submitted
+    }
+    setPendingWithdraw(item);
+    setConfirmOpen(true);
+  };
+
+  const confirmWithdraw = async () => {
+    if (!pendingWithdraw) return;
+    try {
+      const idNum = typeof pendingWithdraw.id === 'string' ? Number(pendingWithdraw.id) : pendingWithdraw.id;
+      const updated = await withdrawBusiness(idNum as number);
+      // Reflect in local items if passed from parent (immutable update expected upstream)
+      // Update selected/edit data if matches
+      if (selected && selected.id === updated.id) setSelected(updated);
+      if (editData && editData.id === updated.id) setEditData(updated);
+    } catch (e) {
+      console.error('Withdraw failed', e);
+    } finally {
+      setConfirmOpen(false);
+      setPendingWithdraw(null);
     }
   };
 
@@ -137,6 +165,8 @@ export default function ItemList({ items, statusClasses, actions = [] }: ItemLis
                           onClick={() => {
                             if (action.label.toLowerCase() === 'edit') {
                               handleEdit(item);
+                            } else if (action.label.toLowerCase() === 'withdraw') {
+                              requestWithdraw(item);
                             }
                             action.onClick?.(item);
                           }}
@@ -178,6 +208,16 @@ export default function ItemList({ items, statusClasses, actions = [] }: ItemLis
             setSelected(updated);
           }
         }}
+      />
+
+      <ConfirmDialog
+        open={confirmOpen}
+        title="Withdraw application?"
+        description="Are you sure you want to withdraw your application? This action cannot be undone."
+        onCancel={() => { setConfirmOpen(false); setPendingWithdraw(null); }}
+        onConfirm={confirmWithdraw}
+        confirmText="Yes, withdraw"
+        cancelText="No, keep it"
       />
     </>
   );
