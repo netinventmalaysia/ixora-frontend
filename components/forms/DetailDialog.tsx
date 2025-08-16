@@ -11,10 +11,20 @@ export type DetailDialogProps = {
   statusClasses?: StatusMap;
   loading?: boolean;
   error?: string | null;
+  groups?: Array<{ title: string; keys: string[] }>;
+  showOther?: boolean;
 };
 
-export default function DetailDialog({ open, onClose, title, data, statusClasses = {}, loading = false, error = null }: DetailDialogProps) {
+export default function DetailDialog({ open, onClose, title, data, statusClasses = {}, loading = false, error = null, groups, showOther = true }: DetailDialogProps) {
   const effectiveTitle = title || (data?.name || data?.companyName || (data ? `ID: ${data.id}` : 'Details'));
+  const defaultGroups: Array<{ title: string; keys: string[] }> = [
+    { title: 'Business Info', keys: ['companyName', 'registrationNumber', 'accountType', 'phone'] },
+    { title: 'Address', keys: ['address', 'city', 'state', 'postalcode', 'country'] },
+    { title: 'Dates', keys: ['createdAt', 'updatedAt', 'expiryDate', 'invitationTokenExpires'] },
+    { title: 'Files', keys: ['certificateFilePath'] },
+    { title: 'Identifiers', keys: ['id', 'invitationToken'] },
+  ];
+  const usedGroups = groups && groups.length > 0 ? groups : defaultGroups;
 
   return (
     <Dialog open={open} onClose={onClose} className="relative z-50">
@@ -68,20 +78,47 @@ export default function DetailDialog({ open, onClose, title, data, statusClasses
               )}
 
               {data && !loading && (
-                <div className="max-h-[60vh] overflow-auto">
-                  <dl className="grid grid-cols-3 gap-2 text-sm">
-                    {Object.keys(data)
-                      .sort()
-                      .map((key) => {
-                        const value = (data as any)[key];
-                        return (
-                          <div className="contents" key={key}>
-                            <dt className="text-gray-500 break-words">{humanize(key)}</dt>
-                            <dd className="col-span-2 text-gray-900 break-words">{renderValue(value, key)}</dd>
-                          </div>
-                        );
-                      })}
-                  </dl>
+                <div className="max-h-[60vh] space-y-6 overflow-auto">
+                  {/* Grouped sections */}
+                  {usedGroups.map((group) => {
+                    const present = group.keys.filter((k) => Object.prototype.hasOwnProperty.call(data, k));
+                    if (present.length === 0) return null;
+                    return (
+                      <section key={group.title}>
+                        <h3 className="mb-2 text-sm font-semibold text-gray-900">{group.title}</h3>
+                        <dl className="grid grid-cols-3 gap-2 text-sm">
+                          {present.map((key) => (
+                            <div className="contents" key={key}>
+                              <dt className="text-gray-500 break-words">{humanize(key)}</dt>
+                              <dd className="col-span-2 text-gray-900 break-words">{renderValue((data as any)[key], key)}</dd>
+                            </div>
+                          ))}
+                        </dl>
+                      </section>
+                    );
+                  })}
+
+                  {/* Other fields */}
+                  {showOther && (() => {
+                    const assigned = new Set<string>(usedGroups.flatMap((g) => g.keys));
+                    const otherKeys = Object.keys(data)
+                      .filter((k) => !assigned.has(k) && k !== 'status')
+                      .sort();
+                    if (otherKeys.length === 0) return null;
+                    return (
+                      <section key="Other">
+                        <h3 className="mb-2 text-sm font-semibold text-gray-900">Other</h3>
+                        <dl className="grid grid-cols-3 gap-2 text-sm">
+                          {otherKeys.map((key) => (
+                            <div className="contents" key={key}>
+                              <dt className="text-gray-500 break-words">{humanize(key)}</dt>
+                              <dd className="col-span-2 text-gray-900 break-words">{renderValue((data as any)[key], key)}</dd>
+                            </div>
+                          ))}
+                        </dl>
+                      </section>
+                    );
+                  })()}
                 </div>
               )}
             </div>
