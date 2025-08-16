@@ -17,11 +17,13 @@ RUN if [ -f package-lock.json ]; then npm ci --omit=dev=false; else npm install;
 # Copy source
 COPY . .
 
-# (Optional) Build-time public envs (Next.js inlines NEXT_PUBLIC_* at build)
-# If you want to set these at build time from CI, pass:
-#   --build-arg NEXT_PUBLIC_API_URL=https://ixora-api.mbmb.gov.my
+# accept build-time envs for Next.js
 ARG NEXT_PUBLIC_API_URL
-ENV NEXT_PUBLIC_API_URL=$NEXT_PUBLIC_API_URL
+ARG NEXT_PUBLIC_BUILD_SHA
+ARG NEXT_PUBLIC_BUILD_TIME
+ENV NEXT_PUBLIC_API_URL=$NEXT_PUBLIC_API_URL \
+    NEXT_PUBLIC_BUILD_SHA=$NEXT_PUBLIC_BUILD_SHA \
+    NEXT_PUBLIC_BUILD_TIME=$NEXT_PUBLIC_BUILD_TIME
 
 # Build (outputs .next)
 RUN npm run build
