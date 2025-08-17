@@ -32,9 +32,15 @@ export default function PeoplePage() {
                     return;
                 }
 
-                const options = data.map((biz: any) => ({
+                const submittedOnly = (data as any[]).filter((biz) => (deriveStatus(biz) || '') === 'submitted');
+
+                if (submittedOnly.length === 0) {
+                    toast.error('No submitted businesses available.');
+                }
+
+                const options = submittedOnly.map((biz: any) => ({
                     value: biz.id,
-                    label: biz.name,
+                    label: biz.name || biz.companyName || `#${biz.id}`,
                 }));
                 setBusinessOptions(options);
             })
@@ -142,5 +148,25 @@ export default function PeoplePage() {
             </LayoutWithoutSidebar>
         </FormProvider>
     );
+}
+
+// --- helpers ---
+function deriveStatus(item: any): string | undefined {
+    const direct =
+        item?.status ||
+        item?.applicationStatus ||
+        item?.approvalStatus ||
+        item?.statusName ||
+        item?.currentStatus ||
+        item?.state ||
+        item?.application_status ||
+        item?.approval_status ||
+        item?.status_name ||
+        item?.current_status;
+    if (typeof direct === 'string') return direct.toLowerCase();
+    for (const [k, v] of Object.entries(item || {})) {
+        if (typeof v === 'string' && /status/i.test(k)) return v.toLowerCase();
+    }
+    return undefined;
 }
 
