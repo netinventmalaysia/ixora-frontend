@@ -54,6 +54,7 @@ export default function BusinessInvitePage() {
         setValid(true);
         // backend returns { valid: boolean, info: { ... } }
         const payload = res?.info ?? res;
+        console.log('Invite info:', payload);
         setInfo({
           businessId: payload?.businessId ?? payload?.business_id,
           businessName: payload?.businessName ?? payload?.business_name ?? payload?.name,
