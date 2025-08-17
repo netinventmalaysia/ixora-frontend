@@ -1,0 +1,136 @@
+import React, { useEffect, useMemo, useState } from 'react';
+import { useRouter } from 'next/router';
+import LayoutWithoutSidebar from '@/components/main/LayoutWithoutSidebar';
+import Heading from '@/components/forms/Heading';
+import Spacing from '@/components/forms/Spacing';
+import LineSeparator from '@/components/forms/LineSeparator';
+import Button from '@/components/forms/Button';
+import FormSectionHeader from '@/components/forms/FormSectionHeader';
+import HyperText from '@/components/forms/HyperText';
+import FormWrapper from '@/components/forms/FormWrapper';
+import Card from '@/components/forms/Card';
+import Alert from '@/components/forms/Alert';
+import Spinner from '@/components/forms/Spinner';
+import Stack from '@/components/forms/Stack';
+import Inline from '@/components/forms/Inline';
+import toast from 'react-hot-toast';
+import { acceptBusinessInvite, validateBusinessInvite } from '@/services/api';
+
+type InviteInfo = {
+  businessId?: number;
+  businessName?: string;
+  inviterEmail?: string;
+  invitedEmail?: string;
+  status?: string; // e.g., Pending/Accepted/Expired
+};
+
+export default function BusinessInvitePage() {
+  const router = useRouter();
+  const token = useMemo(() => {
+    if (typeof window === 'undefined') return undefined;
+    const url = new URL(window.location.href);
+    return url.searchParams.get('token') || undefined;
+  }, []);
+
+  const [loading, setLoading] = useState(true);
+  const [valid, setValid] = useState(false);
+  const [info, setInfo] = useState<InviteInfo | null>(null);
+  const [accepting, setAccepting] = useState(false);
+
+  const isAuthenticated = typeof document !== 'undefined' && document.cookie.includes('auth_token');
+
+  useEffect(() => {
+    let mounted = true;
+    async function run() {
+      if (!token) {
+        setLoading(false);
+        setValid(false);
+        return;
+      }
+      try {
+        const res = await validateBusinessInvite(token);
+        if (!mounted) return;
+        setValid(true);
+        setInfo({
+          businessId: res?.businessId ?? res?.business_id,
+          businessName: res?.businessName ?? res?.business_name ?? res?.name,
+          inviterEmail: res?.inviterEmail ?? res?.inviter_email,
+          invitedEmail: res?.invitedEmail ?? res?.invited_email,
+          status: res?.status,
+        });
+      } catch (e: any) {
+        if (!mounted) return;
+        setValid(false);
+        toast.error(e?.response?.data?.message || 'Invalid or expired invitation link');
+      } finally {
+        if (mounted) setLoading(false);
+      }
+    }
+    run();
+    return () => {
+      mounted = false;
+    };
+  }, [token]);
+
+  const handleAccept = async () => {
+    if (!token) return;
+    if (!isAuthenticated) {
+      const redirect = encodeURIComponent(`/business-invite?token=${encodeURIComponent(token)}`);
+      router.push(`/login?redirect=${redirect}`);
+      return;
+    }
+    try {
+      setAccepting(true);
+      await acceptBusinessInvite(token);
+      toast.success('Invitation accepted');
+      router.push('/business/team');
+    } catch (e: any) {
+      toast.error(e?.response?.data?.message || 'Failed to accept invitation');
+    } finally {
+      setAccepting(false);
+    }
+  };
+
+  return (
+    <LayoutWithoutSidebar shiftY="-translate-y-0">
+      <Heading level={4} align="left" bold>
+        Business Invitation
+      </Heading>
+      <Spacing size="md" />
+
+      {loading ? (
+        <Spinner label="Validating invitation…" />
+      ) : !token ? (
+        <Alert>This invitation link is missing a token.</Alert>
+      ) : !valid ? (
+        <Alert>This invitation link is invalid or expired.</Alert>
+      ) : (
+        <Stack>
+          <Card>
+            <FormSectionHeader
+              title="Welcome!"
+              description={`You have been invited${info?.inviterEmail ? ` by ${info.inviterEmail}` : ''} to join${info?.businessName ? ` "${info.businessName}"` : ' this business'}.`}
+            />
+            {info?.invitedEmail && (
+              <HyperText size="xs" color="text-gray-500">Invitation for: {info.invitedEmail}</HyperText>
+            )}
+            {info?.status && (
+              <HyperText size="xs" color="text-gray-500">Status: {info.status}</HyperText>
+            )}
+          </Card>
+
+          <LineSeparator />
+
+          <FormWrapper onSubmit={() => handleAccept()}>
+            <Inline>
+              <Button type="submit" disabled={accepting}>
+                {isAuthenticated ? (accepting ? 'Accepting…' : 'Accept Invitation') : 'Login to Accept'}
+              </Button>
+              <Button type="button" variant="secondary" onClick={() => router.push('/')}>Cancel</Button>
+            </Inline>
+          </FormWrapper>
+        </Stack>
+      )}
+    </LayoutWithoutSidebar>
+  );
+}

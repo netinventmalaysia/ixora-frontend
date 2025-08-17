@@ -183,4 +183,15 @@ export const removeTeamMember = async (memberId: number) => {
     return data;
 };
 
+// Business Invites
+export const validateBusinessInvite = async (token: string) => {
+    const { data } = await api.get(`/business/invite/validate`, { params: { token } });
+    return data;
+};
+
+export const acceptBusinessInvite = async (token: string) => {
+    const { data } = await api.post(`/business/invite/accept`, { token });
+    return data;
+};
+
 export default api;
