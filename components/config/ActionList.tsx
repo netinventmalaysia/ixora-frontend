@@ -5,7 +5,7 @@ export const RegistrationApplicationActions = [
     },
     {
         label: 'Withdraw',
-        onClick: (item : any) => alert(`Withdraw ${item.name}`),
+        onClick: (item : any) => console.log(`Withdraw ${item.name}`),
     },
 ];
 
