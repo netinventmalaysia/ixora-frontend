@@ -194,4 +194,15 @@ export const acceptBusinessInvite = async (token: string) => {
     return data;
 };
 
+// Email verification
+export const validateEmailVerification = async (token: string) => {
+    const { data } = await api.get(`/auth/verify-email/validate`, { params: { token } });
+    return data;
+};
+
+export const confirmEmailVerification = async (token: string) => {
+    const { data } = await api.post(`/auth/verify-email/confirm`, { token });
+    return data;
+};
+
 export default api;
