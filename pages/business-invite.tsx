@@ -20,6 +20,7 @@ type InviteInfo = {
   businessId?: number;
   businessName?: string;
   inviterEmail?: string;
+  inviterId?: number | string;
   invitedEmail?: string;
   status?: string; // e.g., Pending/Accepted/Expired
 };
@@ -51,12 +52,15 @@ export default function BusinessInvitePage() {
         const res = await validateBusinessInvite(token);
         if (!mounted) return;
         setValid(true);
+        // backend returns { valid: boolean, info: { ... } }
+        const payload = res?.info ?? res;
         setInfo({
-          businessId: res?.businessId ?? res?.business_id,
-          businessName: res?.businessName ?? res?.business_name ?? res?.name,
-          inviterEmail: res?.inviterEmail ?? res?.inviter_email,
-          invitedEmail: res?.invitedEmail ?? res?.invited_email,
-          status: res?.status,
+          businessId: payload?.businessId ?? payload?.business_id,
+          businessName: payload?.businessName ?? payload?.business_name ?? payload?.name,
+          inviterEmail: payload?.inviterEmail ?? payload?.inviter_email,
+          inviterId: payload?.inviterId ?? payload?.inviter_id,
+          invitedEmail: payload?.invitedEmail ?? payload?.invited_email,
+          status: payload?.status,
         });
       } catch (e: any) {
         if (!mounted) return;
@@ -76,7 +80,7 @@ export default function BusinessInvitePage() {
     if (!token) return;
     if (!isAuthenticated) {
       const redirect = encodeURIComponent(`/business-invite?token=${encodeURIComponent(token)}`);
-      router.push(`/login?redirect=${redirect}`);
+      router.push(`/?redirect=${redirect}`);
       return;
     }
     try {
@@ -109,7 +113,7 @@ export default function BusinessInvitePage() {
           <Card>
             <FormSectionHeader
               title="Welcome!"
-              description={`You have been invited${info?.inviterEmail ? ` by ${info.inviterEmail}` : ''} to join${info?.businessName ? ` "${info.businessName}"` : ' this business'}.`}
+              description={`You have been invited${info?.inviterEmail ? ` by ${info.inviterEmail}` : info?.inviterId ? ` by user #${info.inviterId}` : ''} to join${info?.businessName ? ` "${info.businessName}"` : ' this business'}.`}
             />
             {info?.invitedEmail && (
               <HyperText size="xs" color="text-gray-500">Invitation for: {info.invitedEmail}</HyperText>
