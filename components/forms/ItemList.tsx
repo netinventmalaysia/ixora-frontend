@@ -145,7 +145,11 @@ export default function ItemList({ items, statusClasses, actions = [], onItemUpd
                 <svg viewBox="0 0 2 2" className="size-0.5 fill-current">
                   <circle r={1} cx={1} cy={1} />
                 </svg>
-                <p className="truncate">{item.registrationNumber ? `Reg No: ${item.registrationNumber}` : item.accountType ? `Type: ${item.accountType}` : '—'}</p>
+                <p className="whitespace-nowrap">By: {getCreator(item) ?? '—'}</p>
+                <svg viewBox="0 0 2 2" className="size-0.5 fill-current">
+                  <circle r={1} cx={1} cy={1} />
+                </svg>
+                
               </div>
             </div>
             <div className="flex flex-none items-center gap-x-4">
@@ -281,4 +285,18 @@ function buildUrl(path: string) {
   const url = `${base}/${normalized}`;
   // collapse duplicate slashes but keep protocol
   return url.replace(/([^:]\/)\/+/, '$1/');
+}
+
+function getCreator(item: Item): string | undefined {
+  const candidate =
+    (item as any).createdByName ||
+    (item as any).creatorName ||
+    (item as any).createdByUser?.name ||
+    (item as any).createdByUser?.username ||
+    (item as any).createdBy ||
+    (item as any).created_by ||
+    (item as any).creator ||
+    (item as any).owner;
+  if (candidate === undefined || candidate === null) return undefined;
+  return String(candidate);
 }
