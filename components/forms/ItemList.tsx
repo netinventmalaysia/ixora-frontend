@@ -31,13 +31,14 @@ type ItemListProps = {
   items: Item[];
   statusClasses: StatusMap;
   actions?: ActionItem[];
+  onItemUpdated?: (updated: Item) => void;
 };
 
 function classNames(...classes: string[]) {
   return classes.filter(Boolean).join(' ');
 }
 
-export default function ItemList({ items, statusClasses, actions = [] }: ItemListProps) {
+export default function ItemList({ items, statusClasses, actions = [], onItemUpdated }: ItemListProps) {
   const [isOpen, setIsOpen] = useState(false);
   const [selected, setSelected] = useState<Item | null>(null);
 
@@ -83,7 +84,8 @@ export default function ItemList({ items, statusClasses, actions = [] }: ItemLis
   };
 
   const requestWithdraw = (item: Item) => {
-    if ((item.status || '').toLowerCase() !== 'submitted') {
+  const st = (getStatus(item) || '').toLowerCase();
+  if (st !== 'submitted') {
       return; // Only allow for Submitted
     }
     setPendingWithdraw(item);
@@ -99,6 +101,7 @@ export default function ItemList({ items, statusClasses, actions = [] }: ItemLis
       // Update selected/edit data if matches
       if (selected && selected.id === updated.id) setSelected(updated);
       if (editData && editData.id === updated.id) setEditData(updated);
+  onItemUpdated?.(updated);
     } catch (e) {
       console.error('Withdraw failed', e);
     } finally {
@@ -117,11 +120,16 @@ export default function ItemList({ items, statusClasses, actions = [] }: ItemLis
                 <p className="text-sm/6 font-semibold text-gray-900">{item.name ?? item.companyName ?? `#${item.id}`}</p>
                 <p
                   className={classNames(
-                    item.status ? statusClasses[item.status] : '',
+                    (() => {
+                      const s = getStatus(item);
+                      if (!s) return '';
+                      const key = findStatusKey(statusClasses, s);
+                      return key ? statusClasses[key] : '';
+                    })(),
                     'mt-0.5 rounded-md px-1.5 py-0.5 text-xs font-medium whitespace-nowrap ring-1 ring-inset',
                   )}
                 >
-                  {item.status ?? '—'}
+                  {getStatus(item) ?? '—'}
                 </p>
               </div>
               <div className="mt-1 flex items-center gap-x-2 text-xs/5 text-gray-500">
@@ -207,6 +215,9 @@ export default function ItemList({ items, statusClasses, actions = [] }: ItemLis
           if (selected && updated && selected.id === updated.id) {
             setSelected(updated);
           }
+          if (updated) {
+            onItemUpdated?.(updated);
+          }
         }}
       />
 
@@ -229,6 +240,33 @@ function formatDateString(input: string) {
   const d = new Date(input);
   if (isNaN(d.getTime())) return input;
   return d.toLocaleString();
+}
+
+function getStatus(item: Item): string | undefined {
+  // Prefer commonly-used fields; extend as needed
+  const direct =
+    item.status ||
+    (item as any).applicationStatus ||
+    (item as any).approvalStatus ||
+    (item as any).statusName ||
+    (item as any).currentStatus ||
+    (item as any).state ||
+    (item as any).application_status ||
+    (item as any).approval_status ||
+    (item as any).status_name ||
+    (item as any).current_status;
+  if (direct) return direct as string;
+
+  // Generic fallback: first string field whose key includes 'status'
+  for (const [k, v] of Object.entries(item)) {
+    if (typeof v === 'string' && /status/i.test(k)) return v;
+  }
+  return undefined;
+}
+
+function findStatusKey(map: StatusMap, status: string): string | undefined {
+  const target = status.toLowerCase();
+  return Object.keys(map).find((k) => k.toLowerCase() === target);
 }
 
 function buildUrl(path: string) {

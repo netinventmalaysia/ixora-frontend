@@ -7,12 +7,12 @@ import { statuses } from '@/components/data/ItemData';
 import { RegistrationApplicationActions } from '@/components/config/ActionList';
 
 export default function Application() {
-  const [businesses, setBusinesses] = useState([]);
+  const [businesses, setBusinesses] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
   fetchMyBusinesses()
-    .then((data) => setBusinesses(data))
+  .then((data) => setBusinesses(data))
     .catch((err) => {
       if (err.response?.status !== 401) {
         console.error('Error fetching businesses:', err);
@@ -31,7 +31,14 @@ export default function Application() {
       {loading ? (
         <p>Loading...</p>
       ) : (
-        <ItemList items={businesses} statusClasses={statuses} actions={RegistrationApplicationActions} />
+        <ItemList
+          items={businesses}
+          statusClasses={statuses}
+          actions={RegistrationApplicationActions}
+          onItemUpdated={(updated) => {
+            setBusinesses((prev: any[]) => prev.map((b) => (b.id === updated.id ? updated : b)));
+          }}
+        />
       )}
     </LayoutWithoutSidebar>
   );
