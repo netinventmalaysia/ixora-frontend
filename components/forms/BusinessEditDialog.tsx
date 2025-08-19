@@ -14,6 +14,7 @@ import Button from './Button';
 import Toggle from './Toggle';
 import toast from 'react-hot-toast';
 import { updateBusiness } from '@/services/api';
+import getErrorMessage from '@/utils/getErrorMessage';
 
 const countryOptions = [
   { value: 'malaysia', label: 'Malaysia' },
@@ -76,7 +77,7 @@ export default function BusinessEditDialog({ open, onClose, data, onSaved }: Bus
       onClose();
     } catch (e: any) {
       console.error(e);
-      toast.error(e?.response?.data?.message || 'Update failed');
+      toast.error(getErrorMessage(e) || 'Update failed');
     } finally {
       setSubmitting(false);
     }

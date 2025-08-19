@@ -15,6 +15,7 @@ import Stack from '@/components/forms/Stack';
 import Inline from '@/components/forms/Inline';
 import toast from 'react-hot-toast';
 import { acceptBusinessInvite, validateBusinessInvite } from '@/services/api';
+import getErrorMessage from '@/utils/getErrorMessage';
 
 type InviteInfo = {
   businessId?: number;
@@ -66,7 +67,7 @@ export default function BusinessInvitePage() {
       } catch (e: any) {
         if (!mounted) return;
         setValid(false);
-        toast.error(e?.response?.data?.message || 'Invalid or expired invitation link');
+        toast.error(getErrorMessage(e) || 'Invalid or expired invitation link');
       } finally {
         if (mounted) setLoading(false);
       }
@@ -91,7 +92,7 @@ export default function BusinessInvitePage() {
       toast.success('Invitation accepted');
       router.push('/business/team');
     } catch (e: any) {
-      toast.error(e?.response?.data?.message || 'Failed to accept invitation');
+  toast.error(getErrorMessage(e) || 'Failed to accept invitation');
     } finally {
       setAccepting(false);
     }

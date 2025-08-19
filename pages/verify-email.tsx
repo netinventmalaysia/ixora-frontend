@@ -15,6 +15,7 @@ import Stack from '@/components/forms/Stack';
 import Inline from '@/components/forms/Inline';
 import toast from 'react-hot-toast';
 import { validateEmailVerification, confirmEmailVerification } from '@/services/api';
+import getErrorMessage from '@/utils/getErrorMessage';
 
 type VerifyInfo = {
   email?: string;
@@ -56,7 +57,7 @@ export default function VerifyEmailPage() {
       } catch (e: any) {
         if (!mounted) return;
         setValid(false);
-        toast.error(e?.response?.data?.message || 'Invalid or expired verification link');
+        toast.error(getErrorMessage(e) || 'Invalid or expired verification link');
       } finally {
         if (mounted) setLoading(false);
       }
@@ -75,7 +76,7 @@ export default function VerifyEmailPage() {
       toast.success('Email verified successfully');
       router.push('/');
     } catch (e: any) {
-      toast.error(e?.response?.data?.message || 'Failed to verify email');
+      toast.error(getErrorMessage(e) || 'Failed to verify email');
     } finally {
       setConfirming(false);
     }
