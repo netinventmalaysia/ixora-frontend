@@ -116,6 +116,12 @@ export const getUserProfile = (userId: number) => api.get(`/users/profile/${user
 export const updateUser = (userData: any) => api.put(`/users/profile/${userData.id}`, userData);
 export const createBusiness = (businessData: any) => api.post('/business', businessData);
 
+// Fetch user(s) by email. Backend may return an object or an array — callers should handle both shapes.
+export const fetchUserByEmail = async (email: string) => {
+    const { data } = await api.get('/users', { params: { email } });
+    return data;
+};
+
 export const forgotPassword = (data: { email: string }) => api.post('/auth/forgot-password', data);
 
 export const resetPassword = (data: { token: string | string[] | undefined; newPassword: string }) => {

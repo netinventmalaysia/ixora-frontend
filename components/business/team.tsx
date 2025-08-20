@@ -12,7 +12,7 @@ import { MagnifyingGlassIcon } from '@heroicons/react/24/outline';
 import LineSeparator from '../forms/LineSeparator';
 import Button from '../forms/Button';
 import toast from 'react-hot-toast';
-import { fetchMyBusinesses, fetchTeamMembers, inviteTeamMember } from 'todo/services/api';
+import { fetchMyBusinesses, fetchTeamMembers, inviteTeamMember, fetchUserByEmail } from '@/services/api';
 import { handleAssignRole, handleRemove } from '../actions/actionHandler';
 import ConfirmSelectDialog from '../forms/ConfirmSelectDialog';
 export default function PeoplePage() {
@@ -38,9 +38,20 @@ export default function PeoplePage() {
                     toast.error('No submitted businesses available.');
                 }
 
+                // helper: convert a display name into camelCase (e.g., "My Biz Ltd" -> "myBizLtd")
+                const toCamelCase = (input: any) => {
+                    const s = String(input || '').trim();
+                    if (!s) return s;
+                    const parts = s.replace(/[^a-zA-Z0-9 ]+/g, ' ').split(/\s+/).filter(Boolean);
+                    if (parts.length === 0) return '';
+                    return parts
+                        .map((p, i) => (i === 0 ? p.toLowerCase() : p.charAt(0).toUpperCase() + p.slice(1)))
+                        .join('');
+                };
+
                 const options = submittedOnly.map((biz: any) => ({
                     value: biz.id,
-                    label: biz.name || biz.companyName || `#${biz.id}`,
+                    label: (biz.name || biz.companyName || `#${biz.id}`),
                 }));
                 setBusinessOptions(options);
             })
@@ -51,8 +62,51 @@ export default function PeoplePage() {
         if (businessId) {
             fetchTeamMembers(businessId)
                 .then((data) => {
-                    setTeam(data);
-                    setFilteredTeam(data);
+                    // attempt to enrich team members with a profile image when available
+                    Promise.all((data || []).map(async (p: any) => {
+                        if (p.imageUrl) return p;
+                            try {
+                                // normalize email before lookup (backend may expect lowercase/trimmed)
+                                const lookupEmail = String(p.email || '').toLowerCase().trim();
+                                if (!lookupEmail) return p;
+                                const user = await fetchUserByEmail(lookupEmail);
+                                // backend might return array or object
+                                const found = Array.isArray(user) ? user[0] : user;
+                                if (found) {
+                                    // prefer common fields returned by backend
+                                    const candidate =
+                                        found.profileImageUrl ??
+                                        found.avatarUrl ??
+                                        found.profilePicture ??
+                                        found.profile_picture ??
+                                        found.avatar_url ??
+                                        null;
+                                    if (candidate) {
+                                        // convert relative path to absolute URL
+                                        const raw = String(candidate);
+                                        // if candidate is already an absolute URL, use it
+                                        if (/^https?:\/\//i.test(raw)) {
+                                            p.imageUrl = raw;
+                                        } else {
+                                            const base = process.env.NEXT_PUBLIC_API_URL || 'https://ixora-api.mbmb.gov.my';
+                                            // ensure we serve via the uploads/file route if missing
+                                            let cleaned = raw.replace(/^\/+/, '');
+                                            if (!/uploads\/file/i.test(cleaned)) {
+                                                cleaned = `uploads/file/${cleaned}`;
+                                            }
+                                            p.imageUrl = `${base.replace(/\/$/, '')}/${cleaned.replace(/^\/+/, '')}`;
+                                        }
+                                    }
+                                }
+                        } catch (err) {
+                            // ignore enrichment errors
+                        }
+                        return p;
+                    })).then((enriched: any[]) => {
+                        console.debug('[team] enriched members:', enriched);
+                        setTeam(enriched);
+                        setFilteredTeam(enriched);
+                    });
                 })
                 .catch(console.error);
         }
@@ -70,7 +124,43 @@ export default function PeoplePage() {
         try {
             await inviteTeamMember(businessId!, email);
             toast.success('Invitation sent!');
-            const updatedTeam = await fetchTeamMembers(businessId!);
+            // refresh and enrich
+            const updatedTeamRaw = await fetchTeamMembers(businessId!);
+                const updatedTeam = await Promise.all((updatedTeamRaw || []).map(async (p: any) => {
+                if (p.imageUrl) return p;
+                try {
+                    const lookupEmail = String(p.email || '').toLowerCase().trim();
+                    if (!lookupEmail) return p;
+                    const user = await fetchUserByEmail(lookupEmail);
+                    const found = Array.isArray(user) ? user[0] : user;
+                    if (found) {
+                        const candidate =
+                            found.profileImageUrl ??
+                            found.avatarUrl ??
+                            found.profilePicture ??
+                            found.profile_picture ??
+                            found.avatar_url ??
+                            null;
+                        if (candidate) {
+                            const raw = String(candidate);
+                            if (/^https?:\/\//i.test(raw)) {
+                                p.imageUrl = raw;
+                            } else {
+                                const base = process.env.NEXT_PUBLIC_API_URL || 'https://ixora-api.mbmb.gov.my';
+                                let cleaned = raw.replace(/^\/+/, '');
+                                if (!/uploads\/file/i.test(cleaned)) {
+                                    cleaned = `uploads/file/${cleaned}`;
+                                }
+                                p.imageUrl = `${base.replace(/\/$/, '')}/${cleaned.replace(/^\/+/, '')}`;
+                            }
+                        }
+                    }
+                } catch (err) {
+                    // ignore
+                }
+                return p;
+            }));
+            console.debug('[team] updated members after invite:', updatedTeam);
             setTeam(updatedTeam);
             setFilteredTeam(updatedTeam);
         } catch (error) {

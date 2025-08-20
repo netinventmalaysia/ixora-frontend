@@ -1,6 +1,6 @@
 import { Menu, MenuButton, MenuItem, MenuItems } from '@headlessui/react';
 import { EllipsisVerticalIcon } from '@heroicons/react/20/solid';
-import { Person } from '@/components/data/StaffList';
+import { Person, people as knownPeople } from '@/components/data/StaffList';
 
 type Props = {
   people: Person[];
@@ -14,17 +14,32 @@ export default function PersonList({ people, onAssignRole, onRemove }: Props) {
       {people.map((person) => (
         <li key={person.email} className="flex justify-between gap-x-6 py-5">
           <div className="flex min-w-0 gap-x-4">
-            {person.imageUrl ? (
-              <img
-                alt=""
-                src={person.imageUrl}
-                className="size-12 flex-none rounded-full bg-gray-50 object-cover"
-              />
-            ) : (
-              <div className="size-12 flex-none rounded-full bg-gray-200 flex items-center justify-center text-gray-500">
-                {person.name?.[0] ?? '?'}
-              </div>
-            )}
+            {
+              // prefer explicit imageUrl; otherwise try to match against knownPeople by email
+              (() => {
+                const explicit = person.imageUrl && person.imageUrl.length > 0 ? person.imageUrl : undefined;
+                const match = !explicit && person.email
+                  ? knownPeople.find((k) => k.email?.toLowerCase() === String(person.email).toLowerCase())
+                  : undefined;
+                const avatarUrl = explicit ?? match?.imageUrl;
+
+                if (avatarUrl) {
+                  return (
+                    <img
+                      alt={person.name || person.email || 'Avatar'}
+                      src={avatarUrl}
+                      className="size-12 flex-none rounded-full bg-gray-50 object-cover"
+                    />
+                  );
+                }
+
+                return (
+                  <div className="size-12 flex-none rounded-full bg-gray-200 flex items-center justify-center text-gray-500">
+                    {person.name?.[0] ?? '?'}
+                  </div>
+                );
+              })()
+            }
             <div className="min-w-0 flex-auto">
               <p className="text-sm font-semibold text-gray-900">
                 {person.href ? (
@@ -52,12 +67,30 @@ export default function PersonList({ people, onAssignRole, onRemove }: Props) {
                   <time dateTime={person.lastSeenDateTime}>{person.lastSeen}</time>
                 </p>
               ) : (
-                <div className="mt-1 flex items-center gap-x-1.5">
-                  <div className="flex-none rounded-full bg-emerald-500/20 p-1">
-                    <div className="size-1.5 rounded-full bg-emerald-500" />
-                  </div>
-                  <p className="text-xs text-gray-500">Online</p>
-                </div>
+                (() => {
+                  // Prefer explicit status fields returned by backend
+                  const s: any = (person as any).status ?? (person as any).statusName ?? (person as any).invitationStatus ?? (person as any).invitedStatus ?? (person as any).invited ?? (person as any).accepted;
+                  let label: string | undefined;
+                  if (typeof s === 'string') label = s;
+                  else if (typeof s === 'boolean') label = s ? 'Accepted' : 'Pending';
+
+                  if (label) {
+                    // Normalize casing
+                    const pretty = String(label).trim();
+                    const display = pretty.charAt(0).toUpperCase() + pretty.slice(1);
+                    return <p className="mt-1 text-xs text-gray-500">{display}</p>;
+                  }
+
+                  // fallback: online indicator
+                  return (
+                    <div className="mt-1 flex items-center gap-x-1.5">
+                      <div className="flex-none rounded-full bg-emerald-500/20 p-1">
+                        <div className="size-1.5 rounded-full bg-emerald-500" />
+                      </div>
+                      <p className="text-xs text-gray-500">Online</p>
+                    </div>
+                  );
+                })()
               )}
             </div>
 
