@@ -58,14 +58,20 @@ export default function SidebarContent({
 
   useEffect(() => {
     const withCurrent = (items: NavigationItem[]) => items.map(item => ({ ...item, current: false }));
+    // If guest, always show only the general application navigation
+    if (userRole === 'guest') {
+      setGeneralNav(withCurrent([...generalAppNavigation]));
+      setPersonalNav([]);
+      // show Settings and Sign out for guests as requested
+      const guestBottom = withCurrent(
+        userNavigation.filter((i) => /settings|sign out/i.test(i.name)) as NavigationItem[]
+      );
+      setBottomNav(guestBottom);
+      return;
+    }
 
     if (mode === 'Personal') {
       switch (userRole) {
-        case 'guest':
-          setGeneralNav([]);
-          setPersonalNav([]);
-          setBottomNav([]);
-          break;
         default:
           setGeneralNav(withCurrent([...generalAppNavigation]));
           setPersonalNav(withCurrent([...businessEnrollmentNavigation]));
