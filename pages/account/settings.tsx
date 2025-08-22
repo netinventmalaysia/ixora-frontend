@@ -7,6 +7,7 @@ import Button from '@/components/forms/Button';
 import toast from 'react-hot-toast';
 import { updateUser } from '@/services/api';
 import getErrorMessage from '@/utils/getErrorMessage';
+import t from '@/utils/i18n';
 
 const LANG_OPTS = [
   { value: 'en', label: 'English' },
@@ -115,42 +116,42 @@ export default function SettingsPage() {
   };
 
   return (
-  <SidebarLayout>
-      <Heading level={4} align="left" bold>Settings</Heading>
+    <SidebarLayout>
+      <Heading level={4} align="left" bold>{t('settings.title')}</Heading>
 
       <Spacing size="lg" />
 
       <div className="max-w-xl">
         <div className="bg-white shadow sm:rounded-lg p-6">
-          <h3 className="text-sm font-medium text-gray-900">Language</h3>
-          <p className="mt-1 text-xs text-gray-500">Choose your preferred language for the UI.</p>
+          <h3 className="text-sm font-medium text-gray-900">{t('settings.language')}</h3>
+          <p className="mt-1 text-xs text-gray-500">{t('settings.language')}</p>
           <div className="mt-3">
-            <SelectField id="language" name="language" label="Language" options={LANG_OPTS.map(o => ({ value: o.value, label: o.label }))} onChange={handleLangChange} />
+            <SelectField id="language" name="language" label={t('settings.language')} options={LANG_OPTS.map(o => ({ value: o.value, label: o.label }))} onChange={handleLangChange} />
           </div>
         </div>
 
         <Spacing size="lg" />
 
         <div className="bg-white shadow sm:rounded-lg p-6">
-          <h3 className="text-sm font-medium text-gray-900">Location</h3>
-          <p className="mt-1 text-xs text-gray-500">Allow access to your location for features that require it.</p>
+          <h3 className="text-sm font-medium text-gray-900">{t('settings.location')}</h3>
+          <p className="mt-1 text-xs text-gray-500">{t('settings.locationDesc')}</p>
           <div className="mt-3 flex items-center gap-x-4">
             <div className="text-sm text-gray-700">Status: <strong className="ml-1">{locationPermission}</strong></div>
-            <Button type="button" onClick={requestLocation} variant="primary" size="sm">Request Location</Button>
+            <Button type="button" onClick={requestLocation} variant="primary" size="sm">{t('settings.requestLocation')}</Button>
           </div>
         </div>
 
         <Spacing size="lg" />
 
         <div className="bg-white shadow sm:rounded-lg p-6">
-          <h3 className="text-sm font-medium text-gray-900">Push Notifications</h3>
-          <p className="mt-1 text-xs text-gray-500">Allow push notifications from this application.</p>
+          <h3 className="text-sm font-medium text-gray-900">{t('settings.notifications')}</h3>
+          <p className="mt-1 text-xs text-gray-500">{t('settings.notificationsDesc')}</p>
           <div className="mt-3 flex items-center gap-x-4">
             <div className="text-sm text-gray-700">Status: <strong className="ml-1">{notificationPermission}</strong></div>
-            <Button type="button" onClick={requestNotifications} variant="primary" size="sm">Request Permission</Button>
+            <Button type="button" onClick={requestNotifications} variant="primary" size="sm">{t('settings.request')}</Button>
           </div>
         </div>
       </div>
-  </SidebarLayout>
+    </SidebarLayout>
   );
 }

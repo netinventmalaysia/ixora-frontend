@@ -1,0 +1,24 @@
+{
+  "sidebar": {
+    "assessmentTax": "Cukai Penilaian",
+    "compound": "Denda",
+    "boothRental": "Sewa Gerai",
+    "miscBills": "Bil Pelbagai",
+    "dashboard": "Papan Pemuka",
+    "profile": "Profil",
+    "settings": "Tetapan",
+    "signOut": "Keluar"
+  },
+  "settings": {
+    "title": "Tetapan",
+    "language": "Bahasa",
+    "location": "Lokasi",
+    "locationDesc": "Benarkan akses ke lokasi anda untuk ciri yang memerlukannya.",
+    "notifications": "Pemberitahuan Tolakan",
+    "notificationsDesc": "Benarkan pemberitahuan tolakan dari aplikasi ini.",
+    "request": "Minta Kebenaran",
+    "requestLocation": "Minta Lokasi",
+    "savedLocal": "Bahasa disimpan secara tempatan",
+    "savedSynced": "Bahasa disegerakkan ke akaun anda"
+  }
+}

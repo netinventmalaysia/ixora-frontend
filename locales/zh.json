@@ -1,0 +1,24 @@
+{
+  "sidebar": {
+    "assessmentTax": "评估税",
+    "compound": "罚款",
+    "boothRental": "展位租赁",
+    "miscBills": "杂项账单",
+    "dashboard": "仪表板",
+    "profile": "个人资料",
+    "settings": "设置",
+    "signOut": "登出"
+  },
+  "settings": {
+    "title": "设置",
+    "language": "语言",
+    "location": "位置",
+    "locationDesc": "允许访问您的位置以用于需要的位置功能。",
+    "notifications": "推送通知",
+    "notificationsDesc": "允许此应用程序的推送通知。",
+    "request": "请求权限",
+    "requestLocation": "请求位置",
+    "savedLocal": "语言已保存在本地",
+    "savedSynced": "语言已同步到您的帐户"
+  }
+}

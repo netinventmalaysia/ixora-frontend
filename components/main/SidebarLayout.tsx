@@ -24,7 +24,9 @@ export default function SidebarLayout({ children }: { children: ReactNode }) {
     const handleStorageChange = () => {
       refreshUser();
     };
-    window.addEventListener('storage', handleStorageChange);
+  window.addEventListener('storage', handleStorageChange);
+  const langHandler = () => setMounted((m) => !m); // toggle to force re-render
+  window.addEventListener('ixora:languagechange', langHandler as EventListener);
     return () => window.removeEventListener('storage', handleStorageChange);
   }, [refreshUser]);
 

@@ -1,0 +1,24 @@
+{
+  "sidebar": {
+    "assessmentTax": "Assessment Tax",
+    "compound": "Compound",
+    "boothRental": "Booth Rental",
+    "miscBills": "Miscellaneous bills",
+    "dashboard": "Dashboard",
+    "profile": "Profile",
+    "settings": "Settings",
+    "signOut": "Sign out"
+  },
+  "settings": {
+    "title": "Settings",
+    "language": "Language",
+    "location": "Location",
+    "locationDesc": "Allow access to your location for features that require it.",
+    "notifications": "Push Notifications",
+    "notificationsDesc": "Allow push notifications from this application.",
+    "request": "Request Permission",
+    "requestLocation": "Request Location",
+    "savedLocal": "Language saved locally",
+    "savedSynced": "Language synced to your account"
+  }
+}
