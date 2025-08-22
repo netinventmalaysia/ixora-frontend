@@ -1,4 +1,5 @@
 import { useFormContext } from 'react-hook-form';
+import { useState } from 'react';
 
 type Option = {
   value: string | number;
@@ -26,12 +27,28 @@ export default function SelectField({
   colSpan = 'sm:col-span-3',
   onChange,
 }: SelectFieldProps) {
-  const {
-    register,
-    watch,
-    setValue,
-    formState: { errors },
-  } = useFormContext();
+  // react-hook-form's useFormContext will throw or return null when no FormProvider is present.
+  // Support using this component standalone (no form) by falling back to local state.
+  let methods: any = null;
+  try {
+    methods = useFormContext();
+  } catch (e) {
+    methods = null;
+  }
+
+  const [localValue, setLocalValue] = useState<string | number>('');
+
+  let register: any = () => ({});
+  let watch: any = () => localValue;
+  let setValue: any = (_n: string, v: any) => setLocalValue(v);
+  let errors: any = {};
+
+  if (methods) {
+    register = methods.register;
+    watch = methods.watch;
+    setValue = methods.setValue;
+    errors = methods.formState?.errors || {};
+  }
 
   const selectedValue = watch(name);
 
@@ -43,10 +60,16 @@ export default function SelectField({
       <div className="mt-2">
         <select
           id={id}
-          {...register(name, requiredMessage ? { required: requiredMessage } : {})}
-          value={selectedValue || ''}
+          {...(methods ? register(name, requiredMessage ? { required: requiredMessage } : {}) : {})}
+          value={selectedValue ?? ''}
           onChange={(e) => {
-            setValue(name, e.target.value, { shouldValidate: true });
+            // when using react-hook-form, setValue will update the form state
+            // otherwise, update local fallback state
+            try {
+              setValue(name, e.target.value, { shouldValidate: true });
+            } catch (err) {
+              setLocalValue(e.target.value);
+            }
             onChange?.(e);
           }}
           className={`w-full rounded-md bg-white px-3 py-1.5 text-sm text-gray-900 border 
