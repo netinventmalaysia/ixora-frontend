@@ -11,6 +11,7 @@ import Spacing from '@/components/forms/Spacing';
 import LineSeparator from '@/components/forms/LineSeparator';
 import toast from 'react-hot-toast';
 import { resetPassword } from '@/services/api';
+import t from '@/utils/i18n';
 
 type ResetPasswordFormValues = {
     newPassword: string;
@@ -55,7 +56,7 @@ export default function ResetPasswordPage() {
             <FormProvider {...methods}>
                 <FormWrapper onSubmit={onSubmit}>
                     <Heading level={1} align="center" bold>
-                        Reset Password
+                        {t('resetPassword.title')}
                     </Heading>
 
                     <Spacing size="md" />
@@ -75,7 +76,7 @@ export default function ResetPasswordPage() {
 
                     <FormActions>
                         <Button type="submit" variant="primary" fullWidth disabled={isSubmitting}>
-                            {isSubmitting ? 'Resetting...' : 'Reset Password'}
+                            {isSubmitting ? t('resetPassword.resetting') : t('resetPassword.submit')}
                         </Button>
                     </FormActions>
                 </FormWrapper>

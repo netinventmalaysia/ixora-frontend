@@ -21,4 +21,55 @@
     "savedLocal": "Bahasa disimpan secara tempatan",
     "savedSynced": "Bahasa disegerakkan ke akaun anda"
   }
+  ,
+  "common": {
+    "cancel": "Batal",
+    "loading": "Memuat..."
+  },
+  "signup": {
+    "title": "Daftar",
+    "createAccountTitle": "Buat akaun anda",
+    "createAccountDesc": "Sila isi butiran di bawah untuk membuat akaun anda.",
+    "uploadPhoto": "Muat Naik Foto",
+    "submit": "Daftar"
+  },
+  "resetPassword": {
+    "title": "Tetapkan Semula Kata Laluan",
+    "submit": "Tetapkan Semula Kata Laluan",
+    "resetting": "Sedang menetapkan semula..."
+  },
+  "verifyEmail": {
+    "title": "Sahkan Emel",
+    "validating": "Mengesahkan token…",
+    "missingToken": "Token hilang.",
+    "invalidToken": "Token tidak sah atau telah luput.",
+    "verifyYourEmail": "Sahkan emel anda",
+    "verifyDesc": "Sahkan emel anda untuk melengkapkan tetapan akaun.",
+    "verifying": "Sedang mengesahkan…",
+    "submit": "Sahkan Emel"
+  },
+  "profile": {
+    "failedLoad": "Gagal memuat profil.",
+    "title": "Sunting Profil",
+    "accountDetailsTitle": "Butiran Akaun",
+    "accountDetailsDesc": "Kemas kini log masuk dan maklumat hubungan anda.",
+    "userInfoTitle": "Maklumat Pengguna",
+    "userInfoDesc": "Kemas kini butiran profil peribadi anda.",
+    "organisation": "Organisasi",
+    "company": "Syarikat",
+    "businessName": "Nama Perniagaan",
+    "selectBusiness": "Sila pilih perniagaan",
+    "organisationName": "Nama Organisasi",
+    "companyName": "Nama Syarikat",
+    "companyNameRequired": "Nama Syarikat diperlukan",
+    "rosNumber": "Nombor ROS",
+    "ssmNumber": "Nombor SSM",
+    "rosRequired": "Nombor ROS diperlukan",
+    "ssmRequired": "Nombor SSM diperlukan",
+    "termsPrefix": "Dengan meneruskan, anda bersetuju dengan",
+    "terms": "Terma Perkhidmatan",
+    "and": "dan",
+    "privacy": "Dasar Privasi",
+    "saveChanges": "Simpan Perubahan"
+  }
 }

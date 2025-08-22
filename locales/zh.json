@@ -21,4 +21,55 @@
     "savedLocal": "语言已保存在本地",
     "savedSynced": "语言已同步到您的帐户"
   }
+  ,
+  "common": {
+    "cancel": "取消",
+    "loading": "加载中..."
+  },
+  "signup": {
+    "title": "注册",
+    "createAccountTitle": "创建您的帐户",
+    "createAccountDesc": "请填写以下信息以创建您的帐户。",
+    "uploadPhoto": "上传照片",
+    "submit": "注册"
+  },
+  "resetPassword": {
+    "title": "重置密码",
+    "submit": "重置密码",
+    "resetting": "正在重置..."
+  },
+  "verifyEmail": {
+    "title": "验证电子邮件",
+    "validating": "正在验证令牌…",
+    "missingToken": "缺少令牌。",
+    "invalidToken": "令牌无效或已过期。",
+    "verifyYourEmail": "验证您的电子邮件",
+    "verifyDesc": "验证您的电子邮件以完成帐户设置。",
+    "verifying": "正在验证…",
+    "submit": "验证电子邮件"
+  },
+  "profile": {
+    "failedLoad": "加载配置文件失败。",
+    "title": "编辑个人资料",
+    "accountDetailsTitle": "帐户详细信息",
+    "accountDetailsDesc": "更新您的登录和联系信息。",
+    "userInfoTitle": "用户信息",
+    "userInfoDesc": "更新您的个人资料详细信息。",
+    "organisation": "组织",
+    "company": "公司",
+    "businessName": "企业名称",
+    "selectBusiness": "请选择企业",
+    "organisationName": "组织名称",
+    "companyName": "公司名称",
+    "companyNameRequired": "公司名称是必填项",
+    "rosNumber": "ROS 编号",
+    "ssmNumber": "SSM 编号",
+    "rosRequired": "ROS 编号是必填项",
+    "ssmRequired": "SSM 编号是必填项",
+    "termsPrefix": "继续即表示您同意",
+    "terms": "服务条款",
+    "and": "和",
+    "privacy": "隐私政策",
+    "saveChanges": "保存更改"
+  }
 }

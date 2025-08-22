@@ -21,4 +21,55 @@
     "savedLocal": "Language saved locally",
     "savedSynced": "Language synced to your account"
   }
+  ,
+  "common": {
+    "cancel": "Cancel",
+    "loading": "Loading..."
+  },
+  "signup": {
+    "title": "Sign Up",
+    "createAccountTitle": "Create your account",
+    "createAccountDesc": "Please fill in the details below to create your account.",
+    "uploadPhoto": "Upload Photo",
+    "submit": "Sign Up"
+  },
+  "resetPassword": {
+    "title": "Reset Password",
+    "submit": "Reset Password",
+    "resetting": "Resetting..."
+  },
+  "verifyEmail": {
+    "title": "Verify Email",
+    "validating": "Validating token…",
+    "missingToken": "Missing token.",
+    "invalidToken": "Invalid or expired token.",
+    "verifyYourEmail": "Verify your email",
+    "verifyDesc": "Verify your email to complete account setup.",
+    "verifying": "Verifying…",
+    "submit": "Verify Email"
+  },
+  "profile": {
+    "failedLoad": "Failed to load profile.",
+    "title": "Edit Profile",
+    "accountDetailsTitle": "Account Details",
+    "accountDetailsDesc": "Update your login and contact information.",
+    "userInfoTitle": "User Information",
+    "userInfoDesc": "Update your personal profile details.",
+    "organisation": "Organisation",
+    "company": "Company",
+    "businessName": "Business Name",
+    "selectBusiness": "Please select a business",
+    "organisationName": "Organisation Name",
+    "companyName": "Company Name",
+    "companyNameRequired": "Company Name is required",
+    "rosNumber": "ROS Number",
+    "ssmNumber": "SSM Number",
+    "rosRequired": "ROS Number is required",
+    "ssmRequired": "SSM Number is required",
+    "termsPrefix": "By continuing, you agree to the",
+    "terms": "Terms of Service",
+    "and": "and",
+    "privacy": "Privacy Policy",
+    "saveChanges": "Save Changes"
+  }
 }

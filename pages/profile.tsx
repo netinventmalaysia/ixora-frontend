@@ -32,6 +32,7 @@ import router from "next/router";
 import { AxiosResponse } from "axios";
 import SidebarContent from "todo/components/main/Sidebar";
 import { logoUrl } from "todo/components/main/SidebarConfig";
+import t from '@/utils/i18n';
 
 type UserProfile = {
   id: number;
@@ -174,9 +175,9 @@ export default function ProfilePage() {
     }
   };
 
-  if (loading) return <div className="p-6">Loading...</div>;
+  if (loading) return <div className="p-6">{t('common.loading')}</div>;
   if (!userProfile)
-    return <div className="p-6 text-red-500">Failed to load profile.</div>;
+    return <div className="p-6 text-red-500">{t('profile.failedLoad')}</div>;
 
   return (
     <SidebarContent
@@ -194,14 +195,14 @@ export default function ProfilePage() {
         }}
       >
         <Heading level={2} align="left" bold>
-          Edit Profile
+          {t('profile.title')}
         </Heading>
         <Spacing size="lg" />
 
         {/* Account Details */}
         <FormSectionHeader
-          title="Account Details"
-          description="Update your login and contact information."
+          title={t('profile.accountDetailsTitle')}
+          description={t('profile.accountDetailsDesc')}
         />
         <Spacing size="lg" />
         <InputText
@@ -223,8 +224,8 @@ export default function ProfilePage() {
         {/* User Information */}
         <LineSeparator />
         <FormSectionHeader
-          title="User Information"
-          description="Update your personal profile details."
+          title={t('profile.userInfoTitle')}
+          description={t('profile.userInfoDesc')}
         />
         <Spacing size="sm" />
         <PhotoUploadField
@@ -309,7 +310,7 @@ export default function ProfilePage() {
             <Spacing size="lg" />
             <Toggle
               label=""
-              description={isOrganisation ? "Organisation" : "Company"}
+              description={isOrganisation ? t('profile.organisation') : t('profile.company')}
               checked={isOrganisation}
               onChange={setIsOrganisation}
             />
@@ -318,10 +319,10 @@ export default function ProfilePage() {
             <SelectField
               id="businessName"
               name="businessName"
-              label="Business Name"
+              label={t('profile.businessName')}
               options={businessOptions}
               onChange={(e) => setBusinessId(Number(e.target.value))}
-              requiredMessage="Please select a business"
+              requiredMessage={t('profile.selectBusiness')}
             />
             <BusinessEffect businessId={businessId} />
             <Spacing size="sm" />
@@ -329,15 +330,15 @@ export default function ProfilePage() {
             <InputText
               id="companyName"
               name="companyName"
-              label={isOrganisation ? "Organisation Name" : "Company Name"}
-              requiredMessage="Company Name is required"
+              label={isOrganisation ? t('profile.organisationName') : t('profile.companyName')}
+              requiredMessage={t('profile.companyNameRequired')}
             />
             <Spacing size="sm" />
             <InputText
               id="registrationNumber"
               name="registrationNumber"
-              label={isOrganisation ? "ROS Number" : "SSM Number"}
-              requiredMessage={`${isOrganisation ? "ROS" : "SSM"} Number is required`}
+              label={isOrganisation ? t('profile.rosNumber') : t('profile.ssmNumber')}
+              requiredMessage={isOrganisation ? t('profile.rosRequired') : t('profile.ssmRequired')}
             />
           </>
         )}
@@ -345,22 +346,22 @@ export default function ProfilePage() {
         {/* Terms & Actions */}
         <Spacing size="lg" />
         <TextLine size="sm" align="center" color="text-gray-600">
-          By continuing, you agree to the{" "}
+          {t('profile.termsPrefix')} {" "}
           <Hyperlink href="/terms" inline>
-            Terms of Service
+            {t('profile.terms')}
           </Hyperlink>{" "}
-          and{" "}
+          {t('profile.and')} {" "}
           <Hyperlink href="/privacy" inline>
-            Privacy Policy
+            {t('profile.privacy')}
           </Hyperlink>
         </TextLine>
 
         <FormActions>
           <Button type="button" variant="ghost" onClick={() => setShowCancelDialog(true)}>
-            Cancel
+            {t('common.cancel')}
           </Button>
           <Button type="submit" variant="primary" loading={loading}>
-            Save Changes
+            {t('profile.saveChanges')}
           </Button>
         </FormActions>
       </FormWrapper>

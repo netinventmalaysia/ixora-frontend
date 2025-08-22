@@ -16,6 +16,7 @@ import Inline from '@/components/forms/Inline';
 import toast from 'react-hot-toast';
 import { validateEmailVerification, confirmEmailVerification } from '@/services/api';
 import getErrorMessage from '@/utils/getErrorMessage';
+import t from '@/utils/i18n';
 
 type VerifyInfo = {
   email?: string;
@@ -85,22 +86,22 @@ export default function VerifyEmailPage() {
   return (
     <LayoutWithoutSidebar shiftY="-translate-y-0">
       <Heading level={4} align="left" bold>
-        Verify Email
+        {t('verifyEmail.title')}
       </Heading>
       <Spacing size="md" />
 
       {loading ? (
-        <Spinner label="Validating token…" />
+        <Spinner label={t('verifyEmail.validating')} />
       ) : !token ? (
-        <Alert>Missing token.</Alert>
+        <Alert>{t('verifyEmail.missingToken')}</Alert>
       ) : !valid ? (
-        <Alert>Invalid or expired token.</Alert>
+        <Alert>{t('verifyEmail.invalidToken')}</Alert>
       ) : (
         <Stack>
           <Card>
             <FormSectionHeader
-              title="Verify your email"
-              description={`Verify ${info?.email ?? 'your email'} to complete account setup.`}
+              title={t('verifyEmail.verifyYourEmail')}
+              description={t('verifyEmail.verifyDesc', `Verify ${info?.email ?? 'your email'} to complete account setup.`)}
             />
             {info?.sentAt && (
               <HyperText size="xs" color="text-gray-500">Sent: {info.sentAt}</HyperText>
@@ -114,8 +115,8 @@ export default function VerifyEmailPage() {
 
           <FormWrapper onSubmit={() => handleConfirm()}>
             <Inline>
-              <Button type="submit" disabled={confirming}>{confirming ? 'Verifying…' : 'Verify Email'}</Button>
-              <Button type="button" variant="secondary" onClick={() => router.push('/')}>Cancel</Button>
+              <Button type="submit" disabled={confirming}>{confirming ? t('verifyEmail.verifying') : t('verifyEmail.submit')}</Button>
+              <Button type="button" variant="secondary" onClick={() => router.push('/')}>{t('common.cancel')}</Button>
             </Inline>
           </FormWrapper>
         </Stack>

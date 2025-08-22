@@ -1,4 +1,5 @@
 import { useState } from "react";
+import t from '@/utils/i18n';
 import FormWrapper from "todo/components/forms/FormWrapper";
 import Button from 'todo/components/forms/Button';
 import FormSectionHeader from '@/components/forms/FormSectionHeader';
@@ -75,12 +76,12 @@ export default function SignUpPage() {
   return (
     <LayoutWithoutSidebar>
       <FormWrapper onSubmit={handleSubmit}>
-        <Heading level={2} align="left" bold>Sign Up</Heading>
+  <Heading level={2} align="left" bold>{t('signup.title')}</Heading>
         <Spacing size="lg" />
 
         <FormSectionHeader
-          title="Create your account"
-          description="Please fill in the details below to create your account."
+          title={t('signup.createAccountTitle')}
+          description={t('signup.createAccountDesc')}
         />
         <Spacing size="lg" />
 
@@ -116,7 +117,7 @@ export default function SignUpPage() {
         <PhotoUploadField
           name="profilePicture"
           label="Profile Picture"
-          buttonText="Upload Photo"
+          buttonText={t('signup.uploadPhoto')}
           folder="profile_pictures"
           requiredMessage="Profile picture is required"
           onUpload={(path) => console.log("Uploaded profile picture:", path)}
@@ -159,8 +160,8 @@ export default function SignUpPage() {
         </TextLine>
 
         <FormActions>
-          <Button type="button" variant="ghost" onClick={() => setShowCancelDialog(true)}>Cancel</Button>
-          <Button type="submit" variant="primary" loading={loading}>Sign Up</Button>
+          <Button type="button" variant="ghost" onClick={() => setShowCancelDialog(true)}>{t('common.cancel')}</Button>
+          <Button type="submit" variant="primary" loading={loading}>{t('signup.submit')}</Button>
         </FormActions>
       </FormWrapper>
 
