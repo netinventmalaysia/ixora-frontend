@@ -32,6 +32,28 @@
     "createAccountDesc": "Please fill in the details below to create your account.",
     "uploadPhoto": "Upload Photo",
     "submit": "Sign Up"
+  ,"username": "Username",
+  "usernameRequired": "Username is required",
+  "emailLabel": "Email Address",
+  "emailRequired": "Email Address is required",
+  "identificationType": "Identification Type",
+  "identificationTypeRequired": "Please select an identification type",
+  "identificationNumber": "Identification Number",
+  "identificationNumberRequired": "Identification number is required",
+  "userInfoTitle": "User Information",
+  "userInfoDesc": "Please provide your profile details.",
+  "profilePicture": "Profile Picture",
+  "profilePictureRequired": "Profile picture is required",
+  "dateOfBirth": "Date of Birth",
+  "dateOfBirthPlaceholder": "DD/MM/YYYY",
+  "dateOfBirthRequired": "Please select your birthdate",
+  "phoneNumber": "Phone Number",
+  "phoneNumberRequired": "Phone number is required",
+  "address": "Premise / Lot / Street Address",
+  "addressRequired": "Address is required",
+  "discardTitle": "Discard changes?",
+  "discardDesc": "Your unsaved changes will be lost. Are you sure you want to leave this form?",
+  "discardConfirm": "Yes, discard"
   },
   "resetPassword": {
     "title": "Reset Password",
@@ -71,6 +93,8 @@
     "and": "and",
     "privacy": "Privacy Policy",
     "saveChanges": "Save Changes"
+  ,"businessInfoTitle": "Business Information",
+  "businessInfoDesc": "Update your business or organisation details."
   }
   ,
   "login": {
@@ -78,6 +102,8 @@
     "forgot": "Forgot Password?",
     "signIn": "Sign in",
     "continueGuest": "Continue as Guest"
+  ,"notMember": "Not a member yet?",
+  "signUpNow": "Sign up now"
   },
   "loginExtras": {
     "notMember": "Not a member?",

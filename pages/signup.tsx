@@ -86,20 +86,20 @@ export default function SignUpPage() {
         />
         <Spacing size="lg" />
 
-        <InputText id="username" name="username" label="Username" requiredMessage="Username is required" />
+  <InputText id="username" name="username" label={t('signup.username')} requiredMessage={t('signup.usernameRequired')} />
         <Spacing size="sm" />
-        <InputText id="email" name="email" type="email" label="Email Address" requiredMessage="Email Address is required" />
+  <InputText id="email" name="email" type="email" label={t('signup.emailLabel')} requiredMessage={t('signup.emailRequired')} />
         <Spacing size="sm" />
-        <InputText id="password" name="password" label="Password" type="password" requiredMessage="Password is required" showHint={true} />
+  <InputText id="password" name="password" label={t('form.password')} type="password" requiredMessage={t('form.passwordRequired')} showHint={true} />
         <Spacing size="lg" />
 
         {/* radio button add new or old IC number / passport / my tentera */}
         <RadioGroupField
           name="identificationType"
-          label="Identification Type"
+          label={t('signup.identificationType')}
           options={identificationTypeList}
           inline={true}
-          requiredMessage="Please select a gender"
+          requiredMessage={t('signup.identificationTypeRequired')}
         />
 
 
@@ -107,57 +107,59 @@ export default function SignUpPage() {
         <InputText
           id="identificationNumber"
           name="identificationNumber"
-          label="Identification Number" // Generic, will be overridden dynamically
-          requiredMessage="Identification number is required"
+          label={t('signup.identificationNumber')}
+          requiredMessage={t('signup.identificationNumberRequired')}
         />
 
         <LineSeparator />
-        <FormSectionHeader title="User Information" description="Please provide your profile details." />
+  <FormSectionHeader title={t('signup.userInfoTitle')} description={t('signup.userInfoDesc')} />
         <Spacing size="sm" />
 
         <PhotoUploadField
           name="profilePicture"
-          label="Profile Picture"
+          label={t('signup.profilePicture')}
           buttonText={t('signup.uploadPhoto')}
           folder="profile_pictures"
-          requiredMessage="Profile picture is required"
+          requiredMessage={t('signup.profilePictureRequired')}
           onUpload={(path) => console.log("Uploaded profile picture:", path)}
         />
         <Spacing size="sm" />
 
         <FormRow columns={2}>
-          <InputText id="firstName" name="firstName" label="First Name" requiredMessage="First name is required" />
-          <InputText id="lastName" name="lastName" label="Last Name" requiredMessage="Last name is required" />
+          <InputText id="firstName" name="firstName" label={t('form.firstName')} requiredMessage={t('form.firstNameRequired')} />
+          <InputText id="lastName" name="lastName" label={t('form.lastName')} requiredMessage={t('form.lastNameRequired')} />
         </FormRow>
         <Spacing size="sm" />
 
         <DatePickerField
           name="dateOfBirth"
-          label="Date of Birth"
+          label={t('signup.dateOfBirth')}
           dateFormat="dd/MM/yyyy"
-          placeholder="DD/MM/YYYY"
-          requiredMessage="Please select your birthdate"
+          placeholder={t('signup.dateOfBirthPlaceholder')}
+          requiredMessage={t('signup.dateOfBirthRequired')}
         />
         <Spacing size="sm" />
 
-        <InputText id="phoneNumber" name="phoneNumber" label="Phone Number" prefix="+601" requiredMessage="Phone number is required" />
+  <InputText id="phoneNumber" name="phoneNumber" label={t('signup.phoneNumber')} prefix="+601" requiredMessage={t('signup.phoneNumberRequired')} />
         <Spacing size="sm" />
 
-        <InputText id="address" name="address" label="Premise / Lot / Street Address" requiredMessage="Address is required" />
+  <InputText id="address" name="address" label={t('signup.address')} requiredMessage={t('signup.addressRequired')} />
         <Spacing size="sm" />
 
         <FormRow columns={3}>
-          <InputText id="city" name="city" label="City" requiredMessage="City is required" />
-          <InputText id="state" name="state" label="State / Province" requiredMessage="State is required" />
-          <InputText id="postalcode" name="postalcode" label="ZIP / Postal code" requiredMessage="Postal code is required" />
+          <InputText id="city" name="city" label={t('form.city')} requiredMessage={t('form.cityRequired')} />
+          <InputText id="state" name="state" label={t('form.state')} requiredMessage={t('form.stateRequired')} />
+          <InputText id="postalcode" name="postalcode" label={t('form.postalCode')} requiredMessage={t('form.postalCodeRequired')} />
         </FormRow>
         <Spacing size="sm" />
 
-        <SelectField id="country" name="country" label="Country" options={countryOptions} requiredMessage="Country is required" />
+  <SelectField id="country" name="country" label={t('form.country')} options={countryOptions} requiredMessage={t('form.countryRequired')} />
         <Spacing size="sm" />
 
         <TextLine size="sm" align="center" color="text-gray-600">
-          By continuing, you agree to the <Hyperlink href="/terms" inline>Terms of Service</Hyperlink> and <Hyperlink href="/privacy" inline>Privacy Policy</Hyperlink>.
+          {t('profile.termsPrefix')} {" "}
+          <Hyperlink href="/terms" inline>{t('profile.terms')}</Hyperlink> {" "}{t('profile.and')} {" "}
+          <Hyperlink href="/privacy" inline>{t('profile.privacy')}</Hyperlink>.
         </TextLine>
 
         <FormActions>
@@ -168,10 +170,10 @@ export default function SignUpPage() {
 
       <ConfirmDialog
         open={showCancelDialog}
-        title="Discard changes?"
-        description="Your unsaved changes will be lost. Are you sure you want to leave this form?"
-        confirmText="Yes, discard"
-        cancelText="Stay"
+        title={t('signup.discardTitle')}
+        description={t('signup.discardDesc')}
+        confirmText={t('signup.discardConfirm')}
+        cancelText={t('common.cancel')}
         onCancel={() => setShowCancelDialog(false)}
         onConfirm={() => {
           setShowCancelDialog(false);

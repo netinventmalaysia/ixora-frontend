@@ -32,6 +32,28 @@
     "createAccountDesc": "Sila isi butiran di bawah untuk membuat akaun anda.",
     "uploadPhoto": "Muat Naik Foto",
     "submit": "Daftar"
+  ,"username": "Nama Pengguna",
+  "usernameRequired": "Nama pengguna diperlukan",
+  "emailLabel": "Alamat Emel",
+  "emailRequired": "Alamat Emel diperlukan",
+  "identificationType": "Jenis Pengenalan",
+  "identificationTypeRequired": "Sila pilih jenis pengenalan",
+  "identificationNumber": "Nombor Pengenalan",
+  "identificationNumberRequired": "Nombor pengenalan diperlukan",
+  "userInfoTitle": "Maklumat Pengguna",
+  "userInfoDesc": "Sila berikan butiran profil anda.",
+  "profilePicture": "Gambar Profil",
+  "profilePictureRequired": "Gambar profil diperlukan",
+  "dateOfBirth": "Tarikh Lahir",
+  "dateOfBirthPlaceholder": "DD/MM/YYYY",
+  "dateOfBirthRequired": "Sila pilih tarikh lahir anda",
+  "phoneNumber": "Nombor Telefon",
+  "phoneNumberRequired": "Nombor telefon diperlukan",
+  "address": "Alamat Premis / Lot / Jalan",
+  "addressRequired": "Alamat diperlukan",
+  "discardTitle": "Buang perubahan?",
+  "discardDesc": "Perubahan yang belum disimpan akan hilang. Adakah anda pasti mahu meninggalkan borang ini?",
+  "discardConfirm": "Ya, buang"
   },
   "resetPassword": {
     "title": "Tetapkan Semula Kata Laluan",
@@ -71,6 +93,8 @@
     "and": "dan",
     "privacy": "Dasar Privasi",
     "saveChanges": "Simpan Perubahan"
+  ,"businessInfoTitle": "Maklumat Perniagaan",
+  "businessInfoDesc": "Kemas kini butiran perniagaan atau organisasi anda."
   }
   ,
   "login": {
@@ -78,6 +102,8 @@
     "forgot": "Lupa Kata Laluan?",
     "signIn": "Log masuk",
     "continueGuest": "Teruskan sebagai Tetamu"
+  ,"notMember": "Belum menjadi ahli?",
+  "signUpNow": "Daftar sekarang"
   },
   "loginExtras": {
     "notMember": "Bukan ahli?",

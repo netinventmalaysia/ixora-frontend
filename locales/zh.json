@@ -32,6 +32,28 @@
     "createAccountDesc": "请填写以下信息以创建您的帐户。",
     "uploadPhoto": "上传照片",
     "submit": "注册"
+  ,"username": "用户名",
+  "usernameRequired": "需要用户名",
+  "emailLabel": "电子邮件地址",
+  "emailRequired": "需要电子邮件",
+  "identificationType": "身份证明类型",
+  "identificationTypeRequired": "请选择身份证明类型",
+  "identificationNumber": "身份证号码",
+  "identificationNumberRequired": "需要身份证号码",
+  "userInfoTitle": "用户信息",
+  "userInfoDesc": "请提供您的个人资料详细信息。",
+  "profilePicture": "个人资料照片",
+  "profilePictureRequired": "需要个人资料照片",
+  "dateOfBirth": "出生日期",
+  "dateOfBirthPlaceholder": "DD/MM/YYYY",
+  "dateOfBirthRequired": "请选择您的出生日期",
+  "phoneNumber": "电话号码",
+  "phoneNumberRequired": "需要电话号码",
+  "address": "房产/地段/街道地址",
+  "addressRequired": "需要地址",
+  "discardTitle": "放弃更改？",
+  "discardDesc": "您未保存的更改将丢失。您确定要离开此表单吗？",
+  "discardConfirm": "是的，放弃"
   },
   "resetPassword": {
     "title": "重置密码",
@@ -71,6 +93,8 @@
     "and": "和",
     "privacy": "隐私政策",
     "saveChanges": "保存更改"
+  ,"businessInfoTitle": "商业信息",
+  "businessInfoDesc": "更新您的企业或组织详细信息。"
   }
   ,
   "login": {
@@ -78,6 +102,8 @@
     "forgot": "忘记密码？",
     "signIn": "登录",
     "continueGuest": "以访客身份继续"
+  ,"notMember": "还不是会员？",
+  "signUpNow": "立即注册"
   },
   "loginExtras": {
     "notMember": "还不是会员？",

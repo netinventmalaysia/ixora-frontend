@@ -16,9 +16,12 @@ import { loginUser, guestLogin } from "todo/services/api";
 import { AxiosError } from 'axios'
 import { triggerUserRefresh } from "todo/components/actions/actionHandler";
 import { useTranslation } from '@/utils/i18n';
+import LanguageSelector from '@/components/common/LanguageSelector';
 
 export default function FormPage() {
     const { t } = useTranslation();
+
+    const { lang } = useTranslation();
 
     const [showCancelDialog, setShowCancelDialog] = useState(false);
     const [loading, setLoading] = useState(false);
@@ -80,6 +83,7 @@ export default function FormPage() {
 
     return (
         <LayoutWithoutSidebar shiftY="-translate-y-0">
+            <LanguageSelector />
             <FormWrapper onSubmit={handleSubmit}>
                 <ImageDisplay
                     src="/images/logo.png"

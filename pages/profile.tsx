@@ -209,16 +209,16 @@ export default function ProfilePage() {
         <InputText
           id="username"
           name="username"
-          label="Username"
-          requiredMessage="Username is required"
+          label={t('signup.username')}
+          requiredMessage={t('signup.usernameRequired')}
         />
         <Spacing size="sm" />
         <InputText
           id="email"
           name="email"
           type="email"
-          label="Email Address"
-          requiredMessage="Email Address is required"
+          label={t('signup.emailLabel')}
+          requiredMessage={t('signup.emailRequired')}
         />
         <Spacing size="lg" />
 
@@ -231,10 +231,10 @@ export default function ProfilePage() {
         <Spacing size="sm" />
         <PhotoUploadField
           name="profilePicture"
-          label="Profile Picture"
-          buttonText="Upload Photo"
+          label={t('signup.profilePicture')}
+          buttonText={t('signup.uploadPhoto')}
           folder="profile_pictures"
-          requiredMessage="Profile picture is required"
+          requiredMessage={t('signup.profilePictureRequired')}
           onUpload={(path) => console.log("Uploaded profile picture:", path)}
         />
         <Spacing size="sm" />
@@ -242,62 +242,62 @@ export default function ProfilePage() {
           <InputText
             id="firstName"
             name="firstName"
-            label="First Name"
-            requiredMessage="First name is required"
+            label={t('form.firstName')}
+            requiredMessage={t('form.firstNameRequired')}
           />
           <InputText
             id="lastName"
             name="lastName"
-            label="Last Name"
-            requiredMessage="Last name is required"
+            label={t('form.lastName')}
+            requiredMessage={t('form.lastNameRequired')}
           />
         </FormRow>
         <Spacing size="sm" />
         <DatePickerField
           name="dateOfBirth"
-          label="Date of Birth"
+          label={t('signup.dateOfBirth')}
           dateFormat="dd/MM/yyyy"
-          placeholder="DD/MM/YYYY"
-          requiredMessage="Please select your birthdate"
+          placeholder={t('signup.dateOfBirthPlaceholder')}
+          requiredMessage={t('signup.dateOfBirthRequired')}
         />
         <Spacing size="sm" />
         <InputText
           id="phoneNumber"
           name="phoneNumber"
-          label="Phone Number"
+          label={t('signup.phoneNumber')}
           prefix="+601"
-          requiredMessage="Phone number is required"
+          requiredMessage={t('signup.phoneNumberRequired')}
         />
         <Spacing size="sm" />
         <InputText
           id="address"
           name="address"
-          label="Premise / Lot / Street Address"
-          requiredMessage="Address is required"
+          label={t('signup.address')}
+          requiredMessage={t('signup.addressRequired')}
         />
         <Spacing size="sm" />
         <FormRow columns={3}>
-          <InputText id="city" name="city" label="City" requiredMessage="City is required" />
+          <InputText id="city" name="city" label={t('form.city')} requiredMessage={t('form.cityRequired')} />
           <InputText
             id="state"
             name="state"
-            label="State / Province"
-            requiredMessage="State / Province is required"
+            label={t('form.state')}
+            requiredMessage={t('form.stateRequired')}
           />
           <InputText
             id="postalcode"
             name="postalcode"
-            label="ZIP / Postal code"
-            requiredMessage="ZIP / Postal code is required"
+            label={t('form.postalCode')}
+            requiredMessage={t('form.postalCodeRequired')}
           />
         </FormRow>
         <Spacing size="sm" />
         <SelectField
           id="country"
           name="country"
-          label="Country"
+          label={t('form.country')}
           options={countryOptions}
-          requiredMessage="Country is required"
+          requiredMessage={t('form.countryRequired')}
         />
 
         {/* Business Information */}
@@ -305,8 +305,8 @@ export default function ProfilePage() {
           <>
             <LineSeparator />
             <FormSectionHeader
-              title="Business Information"
-              description="Update your business or organisation details."
+              title={t('profile.businessInfoTitle')}
+              description={t('profile.businessInfoDesc')}
             />
             <Spacing size="lg" />
             <Toggle
@@ -369,10 +369,10 @@ export default function ProfilePage() {
 
       <ConfirmDialog
         open={showCancelDialog}
-        title="Discard changes?"
-        description="Your unsaved changes will be lost. Are you sure you want to leave this page?"
-        confirmText="Yes, discard"
-        cancelText="Stay"
+        title={t('signup.discardTitle')}
+        description={t('signup.discardDesc')}
+        confirmText={t('signup.discardConfirm')}
+        cancelText={t('common.cancel')}
         onCancel={() => setShowCancelDialog(false)}
         onConfirm={() => {
           setShowCancelDialog(false);
