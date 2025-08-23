@@ -104,4 +104,74 @@
     "sent": "Pautan Dihantar",
     "checkEmail": "Sila semak emel anda untuk pautan tetapan semula kata laluan."
   }
+  ,
+  "form": {
+    "headings": "Tajuk",
+    "headingsDesc": "Gunakan peringkat tajuk berbeza untuk membuat hierarki maklumat.",
+    "h1Heading": "Tajuk H1",
+    "h2Heading": "Tajuk H2",
+    "h3Heading": "Tajuk H3",
+    "h4Heading": "Tajuk H4",
+    "h5Heading": "Tajuk H5",
+    "buttonStyles": "Gaya Butang",
+    "buttonStylesDesc": "Gunakan gaya butang yang berbeza",
+    "buttonSizes": "Saiz Butang",
+    "buttonSizesDesc": "Gunakan saiz butang yang berbeza",
+    "signIn": "Log masuk",
+    "personalInfo": "Maklumat Peribadi",
+    "personalInfoDesc": "Gunakan alamat tetap di mana anda boleh menerima surat.",
+    "usernameWithPrefix": "Nama Pengguna (Dengan Awalan)",
+    "usernamePlaceholder": "janesmith",
+    "usernameRequired": "Nama pengguna diperlukan",
+    "password": "Kata Laluan",
+    "passwordRequired": "Kata laluan diperlukan",
+    "age": "Umur",
+    "ageRequired": "Umur diperlukan",
+    "firstName": "Nama Pertama",
+    "firstNameRequired": "Nama pertama diperlukan",
+    "lastName": "Nama akhir",
+    "lastNameRequired": "Nama akhir diperlukan",
+    "streetAddress": "Alamat Jalan",
+    "streetAddressRequired": "Alamat Jalan diperlukan",
+    "city": "Bandar",
+    "cityRequired": "Bandar diperlukan",
+    "state": "Negeri / Wilayah",
+    "postalCode": "ZIP / Kod Pos",
+    "postalCodeRequired": "ZIP / Kod Pos diperlukan",
+    "about": "Mengenai",
+    "aboutPlaceholder": "Beritahu kami sesuatu tentang diri anda",
+    "aboutRequired": "Sila beritahu kami sesuatu tentang diri anda",
+    "profilePicture": "Gambar Profil",
+    "uploadPhoto": "Muat Naik Foto",
+    "uploadFile": "Muat naik fail",
+    "uploadFileDesc": "PNG, JPG, GIF sehingga 10MB",
+    "uploadFileRequired": "Sila muat naik gambar penutup",
+    "country": "Negara",
+    "countryPlaceholder": "Sila pilih...",
+    "countryRequired": "Negara diperlukan"
+  },
+  "dashboard": {
+    "welcome": "Selamat Datang ke MBMB Go (Ixora)",
+    "description": "MBMB Go ialah portal digital rasmi Majlis Bandaraya Melaka Bersejarah yang memudahkan urusan rakyat dan perniagaan secara dalam talian.",
+    "featuresTitle": "Ciri-Ciri Utama",
+    "features": {
+      "assessmentTax": "Pembayaran Cukai Taksiran",
+      "compoundPayments": "Bayaran Kompaun",
+      "boothRental": "Sewaan Gerai",
+      "miscBills": "Bayaran Bil Pelbagai",
+      "businessRegistration": "Pendaftaran Perniagaan & Perlesenan",
+      "accountStaffMgmt": "Pengurusan Akaun & Staf Perniagaan",
+      "myskb": "Permit Bangunan Sementara (MySKB)",
+      "announcements": "Pengumuman & Berita"
+    },
+    "roles": {
+      "guest": { "label": "Tetamu", "desc": "Boleh lihat pengumuman dan capaian awam" },
+      "personal": { "label": "Peribadi", "desc": "Boleh daftar perniagaan, bayar cukai dan akses gerai" },
+      "business": { "label": "Perniagaan", "desc": "Boleh daftar sebagai perunding dan akses modul MySKB" },
+      "consultant": { "label": "Perunding", "desc": "Boleh hantar projek permit sementara dan pembaharuan lesen" }
+    }
+  },
+  "report": {
+    "title": "Laporan"
+  }
 }

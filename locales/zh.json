@@ -104,4 +104,74 @@
     "sent": "链接已发送",
     "checkEmail": "请检查您的电子邮件以获取密码重置链接。"
   }
+  ,
+  "form": {
+    "headings": "标题",
+    "headingsDesc": "使用不同的标题级别来创建信息层次结构。",
+    "h1Heading": "H1 标题",
+    "h2Heading": "H2 标题",
+    "h3Heading": "H3 标题",
+    "h4Heading": "H4 标题",
+    "h5Heading": "H5 标题",
+    "buttonStyles": "按钮样式",
+    "buttonStylesDesc": "使用不同的按钮样式",
+    "buttonSizes": "按钮尺寸",
+    "buttonSizesDesc": "使用不同的按钮尺寸",
+    "signIn": "登录",
+    "personalInfo": "个人信息",
+    "personalInfoDesc": "使用可以接收邮件的永久地址。",
+    "usernameWithPrefix": "用户名（带前缀）",
+    "usernamePlaceholder": "janesmith",
+    "usernameRequired": "需要用户名",
+    "password": "密码",
+    "passwordRequired": "需要密码",
+    "age": "年龄",
+    "ageRequired": "需要年龄",
+    "firstName": "名字",
+    "firstNameRequired": "需要名字",
+    "lastName": "姓氏",
+    "lastNameRequired": "需要姓氏",
+    "streetAddress": "街道地址",
+    "streetAddressRequired": "需要街道地址",
+    "city": "城市",
+    "cityRequired": "需要城市",
+    "state": "州/省",
+    "postalCode": "邮政编码",
+    "postalCodeRequired": "需要邮政编码",
+    "about": "关于",
+    "aboutPlaceholder": "告诉我们一些关于您的信息",
+    "aboutRequired": "请告诉我们一些关于您的信息",
+    "profilePicture": "个人资料照片",
+    "uploadPhoto": "上传照片",
+    "uploadFile": "上传文件",
+    "uploadFileDesc": "PNG、JPG、GIF，最多 10MB",
+    "uploadFileRequired": "请上传封面照片",
+    "country": "国家",
+    "countryPlaceholder": "请选择...",
+    "countryRequired": "需要国家"
+  },
+  "dashboard": {
+    "welcome": "欢迎使用 MBMB Go (Ixora)",
+    "description": "MBMB Go 是马六甲历史市议会的官方数字门户，简化市民和企业的在线事务。",
+    "featuresTitle": "主要功能",
+    "features": {
+      "assessmentTax": "评估税支付",
+      "compoundPayments": "罚款支付",
+      "boothRental": "展位租赁",
+      "miscBills": "杂项账单",
+      "businessRegistration": "企业注册与许可",
+      "accountStaffMgmt": "账户与员工管理",
+      "myskb": "MySKB 临时建筑许可",
+      "announcements": "公告与新闻"
+    },
+    "roles": {
+      "guest": { "label": "访客", "desc": "可查看公告和公共访问" },
+      "personal": { "label": "个人", "desc": "可注册企业、缴税并访问展位" },
+      "business": { "label": "企业", "desc": "可注册为顾问并访问 MySKB 模块" },
+      "consultant": { "label": "顾问", "desc": "可提交临时建筑许可项目并续签执照" }
+    }
+  },
+  "report": {
+    "title": "报告"
+  }
 }

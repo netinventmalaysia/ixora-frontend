@@ -104,4 +104,74 @@
     "sent": "Link Sent",
     "checkEmail": "Please check your email for the password reset link."
   }
+  ,
+  "form": {
+    "headings": "Headings",
+    "headingsDesc": "Use different heading levels to create a hierarchy of information.",
+    "h1Heading": "H1 Heading",
+    "h2Heading": "H2 Heading",
+    "h3Heading": "H3 Heading",
+    "h4Heading": "H4 Heading",
+    "h5Heading": "H5 Heading",
+    "buttonStyles": "Button Styles",
+    "buttonStylesDesc": "Use different button styles",
+    "buttonSizes": "Button Sizes",
+    "buttonSizesDesc": "Use different button sizes",
+    "signIn": "Sign in",
+    "personalInfo": "Personal Information",
+    "personalInfoDesc": "Use a permanent address where you can receive mail.",
+    "usernameWithPrefix": "Username (With Prefix)",
+    "usernamePlaceholder": "janesmith",
+    "usernameRequired": "Username is required",
+    "password": "Password",
+    "passwordRequired": "Password is required",
+    "age": "Age",
+    "ageRequired": "Age is required",
+    "firstName": "First Name",
+    "firstNameRequired": "First name is required",
+    "lastName": "Last name",
+    "lastNameRequired": "Last name is required",
+    "streetAddress": "Street Address",
+    "streetAddressRequired": "Street Address is required",
+    "city": "City",
+    "cityRequired": "City is required",
+    "state": "State / Province",
+    "postalCode": "ZIP / Postal code",
+    "postalCodeRequired": "ZIP / Postal code is required",
+    "about": "About",
+    "aboutPlaceholder": "Tell us something about yourself",
+    "aboutRequired": "Please tell us something about yourself",
+    "profilePicture": "Profile Picture",
+    "uploadPhoto": "Upload Photo",
+    "uploadFile": "Upload a file",
+    "uploadFileDesc": "PNG, JPG, GIF up to 10MB",
+    "uploadFileRequired": "Please upload a cover photo",
+    "country": "Country",
+    "countryPlaceholder": "Please select...",
+    "countryRequired": "Country is required"
+  },
+  "dashboard": {
+    "welcome": "Welcome to MBMB Go (Ixora)",
+    "description": "MBMB Go is the official digital portal of Majlis Bandaraya Melaka Bersejarah that simplifies citizen and business transactions online.",
+    "featuresTitle": "Key Features",
+    "features": {
+      "assessmentTax": "Assessment Tax Payments",
+      "compoundPayments": "Compound Payments",
+      "boothRental": "Booth Rental",
+      "miscBills": "Miscellaneous Bills",
+      "businessRegistration": "Business Registration & Licensing",
+      "accountStaffMgmt": "Account & Business Staff Management",
+      "myskb": "MySKB Temporary Building Permit",
+      "announcements": "Announcements & News"
+    },
+    "roles": {
+      "guest": { "label": "Guest", "desc": "Can view announcements and public access" },
+      "personal": { "label": "Personal", "desc": "Can register businesses, pay taxes, and access booths" },
+      "business": { "label": "Business", "desc": "Can register as consultant and access MySKB module" },
+      "consultant": { "label": "Consultant", "desc": "Can submit temporary building permit projects and renew licenses" }
+    }
+  },
+  "report": {
+    "title": "Reports"
+  }
 }

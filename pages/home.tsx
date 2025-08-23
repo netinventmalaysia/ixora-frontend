@@ -16,6 +16,7 @@ import { superAdminNavigation,
 import FormWrapper from "todo/components/forms/FormWrapper";
 import FormSectionHeader from "todo/components/forms/FormSectionHeader";
 import Heading from "todo/components/forms/Heading";
+import { t } from '@/utils/i18n';
 import FormRow from "todo/components/forms/FormRow";
 import InputText from "todo/components/forms/InputText";
 import TextArea from "todo/components/forms/Textarea";
@@ -56,14 +57,14 @@ export default function FormPage() {
         <SidebarContent teams={teams} logoUrl={logoUrl} userRole="admin">
             <FormWrapper onSubmit={handleSubmit}>
                 <FormSectionHeader
-                    title="Headings"
-                    description="Use different heading levels to create a hierarchy of information."
+                    title={t('form.headings')}
+                    description={t('form.headingsDesc')}
                 />
                 {[1, 2, 3, 4, 5].map((level) => (
                     <div key={level}>
                         <Spacing size="lg" />
                         <Heading level={level as 1 | 2 | 3 | 4 | 5} align="left" bold>
-                            {`H${level} Heading`}
+                            {t(`form.h${level}Heading`, `H${level} Heading`)}
                         </Heading>
                         <CodeExample code={`<Heading level={${level}} align="left" bold>H${level} Heading</Heading>`} />
                     </div>
@@ -119,12 +120,12 @@ export default function FormPage() {
 
                 <Spacing size="lg" />
                 <FormSectionHeader
-                    title="Button Styles"
-                    description="Use different button styles"
+                    title={t('form.buttonStyles')}
+                    description={t('form.buttonStylesDesc')}
                 />
 
                 <Button type="submit" variant="primary" fullWidth size="md">
-                    Sign in
+                    {t('form.signIn')}
                 </Button>
                 <CodeExample code={`<Button type="submit" variant="primary" fullWidth size="md">Sign in</Button>`} />
 
@@ -142,8 +143,8 @@ export default function FormPage() {
 
                 <Spacing size="lg" />
                 <FormSectionHeader
-                    title="Button Styles"
-                    description="Use different button size"
+                    title={t('form.buttonSizes')}
+                    description={t('form.buttonSizesDesc')}
                 />
                 <Spacing size="lg" />
                 <Button type="button" variant="primary" fullWidth size="sm">
@@ -168,8 +169,8 @@ export default function FormPage() {
                 <LineSeparator />
 
                 <FormSectionHeader
-                    title="Personal Information"
-                    description="Use a permanent address where you can receive mail."
+                    title={t('form.personalInfo')}
+                    description={t('form.personalInfoDesc')}
                 />
                 <CodeExample code={`<FormSectionHeader title="Personal Information" description="Use a permanent address where you can receive mail." />`} />
 
@@ -177,10 +178,10 @@ export default function FormPage() {
                 <InputText
                     id="username"
                     name="username"
-                    label="Username (With Prefix)"
-                    placeholder="janesmith"
+                    label={t('form.usernameWithPrefix')}
+                    placeholder={t('form.usernamePlaceholder')}
                     prefix="workcation.com/"
-                    requiredMessage="Username is required"
+                    requiredMessage={t('form.usernameRequired')}
                 />
                 <CodeExample code={`<InputText id="username" name="username" label="Username" prefix="workcation.com/" requiredMessage="Username is required" />`} />
 
@@ -199,10 +200,10 @@ export default function FormPage() {
                 <InputText
                     id="password"
                     name="password"
-                    label="Password"
+                    label={t('form.password')}
                     placeholder="••••••••"
                     type="password"
-                    requiredMessage="Password is required"
+                    requiredMessage={t('form.passwordRequired')}
                 />
                 <CodeExample code={`<InputText id="password" name="password" label="Password" placeholder="••••••••" type="password" requiredMessage="Password is required" />`} />
 
@@ -210,9 +211,9 @@ export default function FormPage() {
                 <InputText
                     id="age"
                     name="age"
-                    label="Age"
+                    label={t('form.age')}
                     type="number"
-                    requiredMessage="Age is required"
+                    requiredMessage={t('form.ageRequired')}
                 />
                 <CodeExample code={`<InputText id="age" name="age" label="Age" type="number" requiredMessage="Age is required" />`} />
 
@@ -221,14 +222,14 @@ export default function FormPage() {
                     <InputText
                         id="firstname"
                         name="firstname"
-                        label="First Name"
-                        requiredMessage="First name is required"
+                        label={t('form.firstName')}
+                        requiredMessage={t('form.firstNameRequired')}
                     />
                     <InputText
                         id="lastname"
                         name="lastname"
-                        label="Last name"
-                        requiredMessage="Last name is required"
+                        label={t('form.lastName')}
+                        requiredMessage={t('form.lastNameRequired')}
                     />
                 </FormRow>
                 <CodeExample code={`<FormRow columns={2}>
@@ -241,8 +242,8 @@ export default function FormPage() {
                 <InputText
                     id="address"
                     name="address"
-                    label="Street Address"
-                    requiredMessage="Street Address is required"
+                    label={t('form.streetAddress')}
+                    requiredMessage={t('form.streetAddressRequired')}
                 />
                 <CodeExample code={`<InputText id="address" name="address" label="Street Address" requiredMessage="Street Address is required" />`} />
 
@@ -251,19 +252,19 @@ export default function FormPage() {
                     <InputText
                         id="city"
                         name="city"
-                        label="City"
-                        requiredMessage="City is required"
+                        label={t('form.city')}
+                        requiredMessage={t('form.cityRequired')}
                     />
                     <InputText
                         id="state"
                         name="state"
-                        label="State / Province"
+                        label={t('form.state')}
                     />
                     <InputText
                         id="postalcode"
                         name="postalcode"
-                        label="ZIP / Postal code"
-                        requiredMessage="ZIP / Postal code is required"
+                        label={t('form.postalCode')}
+                        requiredMessage={t('form.postalCodeRequired')}
                     />
                 </FormRow>
                 <CodeExample code={`<FormRow columns={3}>
@@ -278,17 +279,17 @@ export default function FormPage() {
                 <TextArea
                     id="about"
                     name="about"
-                    label="About"
-                    placeholder="Tell us something about yourself"
-                    requiredMessage="Please tell us something about yourself"
+                    label={t('form.about')}
+                    placeholder={t('form.aboutPlaceholder')}
+                    requiredMessage={t('form.aboutRequired')}
                 />
                 <CodeExample code={`<TextArea id="about" name="about" label="About" requiredMessage="Please tell us something about yourself" />`} />
 
                 <Spacing size="lg" />
                 <PhotoUploadField
-                    label="Profile Picture"
+                    label={t('form.profilePicture')}
                     name=""
-                    buttonText="Upload Photo"
+                    buttonText={t('form.uploadPhoto')}
                     onUpload={() => {}}
                 />
                 <CodeExample code={`<PhotoUploadField label="Profile Picture" buttonText="Upload Photo" onClick={() => {}} />`} />
@@ -296,10 +297,10 @@ export default function FormPage() {
                 <Spacing size="lg" />
                 <FileUploadField
                     name="cover"
-                    label="Upload a file"
-                    description="PNG, JPG, GIF up to 10MB"
+                    label={t('form.uploadFile')}
+                    description={t('form.uploadFileDesc')}
                     accept="image/*"
-                    requiredMessage="Please upload a cover photo"
+                    requiredMessage={t('form.uploadFileRequired')}
                 />
                 <CodeExample code={`<FileUploadField id="cover" name="cover" label="Upload a file" description="PNG, JPG, GIF up to 10MB" accept="image/*" requiredMessage="Please upload a cover photo" />`} />
 
@@ -309,10 +310,10 @@ export default function FormPage() {
                     <SelectField
                         id="country"
                         name="country"
-                        label="Country"
+                        label={t('form.country')}
                         options={countryOptions}
-                        placeholder="Please select..."
-                        requiredMessage="Country is required"
+                        placeholder={t('form.countryPlaceholder')}
+                        requiredMessage={t('form.countryRequired')}
                     />
                 </FormRow>
                 <CodeExample code={`<SelectField id="country" name="country" label="Country" options={countryOptions} requiredMessage="Country is required" />`} />

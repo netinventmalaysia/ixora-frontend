@@ -17,7 +17,10 @@ let clientLang: string | null = null;
 export function getLanguage(): string {
   if (typeof window === 'undefined') return 'en';
   try {
-    return clientLang || (localStorage.getItem('ixora:lang') as string) || 'en';
+  const raw = clientLang || (localStorage.getItem('ixora:lang') as string) || 'en';
+  // normalize variants like 'zh-CN' -> 'zh', 'en-US' -> 'en'
+  const norm = raw.split('-')[0];
+  return norm;
   } catch (e) {
     return 'en';
   }
@@ -26,8 +29,9 @@ export function getLanguage(): string {
 export function setLanguage(lang: string) {
   if (typeof window === 'undefined') return;
   try {
-    localStorage.setItem('ixora:lang', lang);
-    clientLang = lang;
+  const norm = (lang || 'en').split('-')[0];
+  localStorage.setItem('ixora:lang', norm);
+  clientLang = norm;
     try {
       window.dispatchEvent(new CustomEvent('ixora:languagechange', { detail: { lang } }));
     } catch (e) {}

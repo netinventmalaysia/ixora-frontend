@@ -1,14 +1,16 @@
 import { useEffect, useState } from 'react';
 import SidebarContent from '@/components/main/Sidebar';
 import Heading from '@/components/forms/Heading';
+import { useTranslation } from '@/utils/i18n';
 import Spacing from '@/components/forms/Spacing';
 import LineSeparator from '@/components/forms/LineSeparator';
 import TextLine from '@/components/forms/HyperText';
 import { CheckCircleIcon } from '@heroicons/react/24/solid';
 import { teams, logoUrl } from '@/components/main/SidebarConfig';
-import SidebarLayout from 'todo/components/main/SidebarLayout';
+import SidebarLayout from '@/components/main/SidebarLayout';
 
 export default function DashboardPage() {
+  const { t } = useTranslation();
   const [userRole, setUserRole] = useState<string>('');
   const [username, setUsername] = useState<string>('');
   const [email, setEmail] = useState<string>('');
@@ -22,23 +24,23 @@ export default function DashboardPage() {
   }, []);
 
   const features = [
-    'Pembayaran Cukai Taksiran',
-    'Bayaran Kompaun',
-    'Sewaan Gerai',
-    'Bayaran Bil Pelbagai',
-    'Pendaftaran Perniagaan dan Permohonan Lesen',
-    'Pengurusan Akaun dan Staf Perniagaan',
-    'Permohonan Permit Bangunan Sementara (MySKB)',
-    'Pengumuman dan Berita MBMB'
+    t('dashboard.features.assessmentTax'),
+    t('dashboard.features.compoundPayments'),
+    t('dashboard.features.boothRental'),
+    t('dashboard.features.miscBills'),
+    t('dashboard.features.businessRegistration'),
+    t('dashboard.features.accountStaffMgmt'),
+    t('dashboard.features.myskb'),
+    t('dashboard.features.announcements')
   ];
 
   return (
     <SidebarLayout>
-      <Heading level={1} align="left" bold>
-          Selamat Datang ke MBMB Go (Ixora)
+          <Heading level={1} align="left" bold>
+          {t('dashboard.welcome')}
         </Heading>
         <TextLine>
-          MBMB Go ialah portal digital rasmi Majlis Bandaraya Melaka Bersejarah yang memudahkan urusan rakyat dan perniagaan secara dalam talian.
+          {t('dashboard.description')}
         </TextLine>
 
       
@@ -46,7 +48,7 @@ export default function DashboardPage() {
         <LineSeparator />
 
         <Heading level={2} align="left" bold>
-          Ciri-Ciri Utama MBMB Go
+          {t('dashboard.featuresTitle')}
         </Heading>
         <Spacing size="sm" />
         <ul className="space-y-2">
@@ -62,21 +64,21 @@ export default function DashboardPage() {
         <LineSeparator />
 
         <Heading level={2} align="left" bold>
-          Matriks Peranan Pengguna
+          {t('dashboard.rolesTitle', 'Matriks Peranan Pengguna')}
         </Heading>
        <Spacing size="sm" />
         <ul className="list-disc list-inside text-gray-700 text-base space-y-2">
-          <li><strong>Guest:</strong> Boleh lihat pengumuman dan capaian awam</li>
-          <li><strong>Personal:</strong> Boleh daftar perniagaan, bayar cukai, kompaun dan akses gerai</li>
-          <li><strong>Business:</strong> Boleh daftar sebagai perunding dan akses modul MySKB</li>
-          <li><strong>Consultant:</strong> Boleh hantar projek permit bangunan sementara dan perbaharui lesen</li>
+          <li><strong>{t('dashboard.roles.guest.label')}:</strong> {t('dashboard.roles.guest.desc')}</li>
+          <li><strong>{t('dashboard.roles.personal.label')}:</strong> {t('dashboard.roles.personal.desc')}</li>
+          <li><strong>{t('dashboard.roles.business.label')}:</strong> {t('dashboard.roles.business.desc')}</li>
+          <li><strong>{t('dashboard.roles.consultant.label')}:</strong> {t('dashboard.roles.consultant.desc')}</li>
         </ul>
 
         <Spacing size="lg" />
         <LineSeparator />
 
         <Heading level={2} align="left" bold>
-          Berita & Pengumuman Terkini
+          {t('dashboard.announcementsTitle', 'Berita & Pengumuman Terkini')}
         </Heading>
         <Spacing size="sm" />
         <ul className="list-none space-y-4">
