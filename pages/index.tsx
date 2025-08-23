@@ -15,6 +15,7 @@ import router from "next/router";
 import { loginUser, guestLogin } from "todo/services/api";
 import { AxiosError } from 'axios'
 import { triggerUserRefresh } from "todo/components/actions/actionHandler";
+import t from '@/utils/i18n';
 
 export default function FormPage() {
 
@@ -91,7 +92,7 @@ export default function FormPage() {
                 />
                 <Spacing size="lg" />
                 <Heading level={2} align="center" bold>
-                    Sign in to your account
+                    {t('login.title')}
                 </Heading>
                 <Spacing size="lg" />
                 <InputWithPrefix id="email" name="email" label="Email Address" requiredMessage="Email Address is required" />
@@ -104,7 +105,7 @@ export default function FormPage() {
                     requiredMessage="Password is required"
                 />
                 <Hyperlink href="/forgot-password" position="right" bold fontSize="text-sm" underline={false} color="text-blue-600">
-                    Forgot Password?
+                    {t('login.forgot')}
                 </Hyperlink>
 
                 <Spacing size="md" />
@@ -122,7 +123,7 @@ export default function FormPage() {
 
                 <FormActions>
                     <Button type="submit" variant="primary" fullWidth size="md">
-                        Sign in
+                        {t('login.signIn')}
                     </Button>
 
                 </FormActions>
@@ -135,7 +136,7 @@ export default function FormPage() {
                         size="md"
                         onClick={handleGuestLogin}
                     >
-                        Continue as Guest
+                        {t('login.continueGuest')}
                     </Button>
                 </FormActions>
 

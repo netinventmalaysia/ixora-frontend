@@ -72,4 +72,36 @@
     "privacy": "隐私政策",
     "saveChanges": "保存更改"
   }
+  ,
+  "login": {
+    "title": "登录到您的帐户",
+    "forgot": "忘记密码？",
+    "signIn": "登录",
+    "continueGuest": "以访客身份继续"
+  },
+  "businessInvite": {
+    "title": "企业邀请",
+    "validating": "正在验证邀请…",
+    "missingToken": "此邀请链接缺少令牌。",
+    "invalid": "此邀请链接无效或已过期。",
+    "welcome": "欢迎！",
+    "description": "您已被邀请加入此企业。",
+    "accept": "接受邀请",
+    "accepting": "正在接受…",
+    "loginToAccept": "登录以接受"
+  },
+  "profileTest": {
+    "title": "配置文件测试分页",
+    "updating": "正在更新...",
+    "update": "更新名字"
+  },
+  "forgotPassword": {
+    "title": "忘记密码",
+    "emailLabel": "电子邮件地址",
+    "emailRequired": "需要电子邮件",
+    "emailPlaceholder": "输入您的电子邮件地址",
+    "send": "发送重置链接",
+    "sent": "链接已发送",
+    "checkEmail": "请检查您的电子邮件以获取密码重置链接。"
+  }
 }

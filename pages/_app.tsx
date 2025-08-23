@@ -2,8 +2,12 @@ import "todo/styles/globals.css";
 import type { AppProps } from "next/app";
 import { Toaster } from 'react-hot-toast';
 import 'react-datepicker/dist/react-datepicker.css';
+import { useEffect, useState } from 'react';
+import { useRouter } from 'next/router';
 
 export default function App({ Component, pageProps }: AppProps) {
+  const [hydrated, setHydrated] = useState(false);
+  useEffect(() => setHydrated(true), []);
   return (
     <>
       <Toaster
@@ -18,7 +22,8 @@ export default function App({ Component, pageProps }: AppProps) {
           },
         }}
       />
-      <Component {...pageProps} />
+  {/* pass hydration flag to pages so they can avoid reading localStorage on SSR */}
+  <Component {...pageProps} hydrated={hydrated} />
     </>
   );
 }

@@ -13,6 +13,7 @@ import Alert from '@/components/forms/Alert';
 import Spinner from '@/components/forms/Spinner';
 import Stack from '@/components/forms/Stack';
 import Inline from '@/components/forms/Inline';
+import t from '@/utils/i18n';
 import toast from 'react-hot-toast';
 import { acceptBusinessInvite, validateBusinessInvite } from '@/services/api';
 import getErrorMessage from '@/utils/getErrorMessage';
@@ -101,22 +102,22 @@ export default function BusinessInvitePage() {
   return (
     <LayoutWithoutSidebar shiftY="-translate-y-0">
       <Heading level={4} align="left" bold>
-        Business Invitation
+  {t('businessInvite.title')}
       </Heading>
       <Spacing size="md" />
 
       {loading ? (
-        <Spinner label="Validating invitation…" />
+  <Spinner label={t('businessInvite.validating')} />
       ) : !token ? (
-        <Alert>This invitation link is missing a token.</Alert>
+  <Alert>{t('businessInvite.missingToken')}</Alert>
       ) : !valid ? (
-        <Alert>This invitation link is invalid or expired.</Alert>
+  <Alert>{t('businessInvite.invalid')}</Alert>
       ) : (
         <Stack>
           <Card>
             <FormSectionHeader
-              title="Welcome!"
-              description={`You have been invited${info?.inviterEmail ? ` by ${info.inviterEmail}` : info?.inviterId ? ` by user #${info.inviterId}` : ''} to join${info?.businessName ? ` "${info.businessName}"` : ' this business'}.`}
+              title={t('businessInvite.welcome')}
+              description={t('businessInvite.description', `You have been invited${info?.inviterEmail ? ` by ${info.inviterEmail}` : info?.inviterId ? ` by user #${info.inviterId}` : ''} to join${info?.businessName ? ` "${info.businessName}"` : ' this business'}.`)}
             />
             {info?.invitedEmail && (
               <HyperText size="xs" color="text-gray-500">Invitation for: {info.invitedEmail}</HyperText>
@@ -131,9 +132,9 @@ export default function BusinessInvitePage() {
           <FormWrapper onSubmit={() => handleAccept()}>
             <Inline>
               <Button type="submit" disabled={accepting}>
-                {isAuthenticated ? (accepting ? 'Accepting…' : 'Accept Invitation') : 'Login to Accept'}
+                {isAuthenticated ? (accepting ? t('businessInvite.accepting') : t('businessInvite.accept')) : t('businessInvite.loginToAccept')}
               </Button>
-              <Button type="button" variant="secondary" onClick={() => router.push('/')}>Cancel</Button>
+              <Button type="button" variant="secondary" onClick={() => router.push('/')}>{t('common.cancel')}</Button>
             </Inline>
           </FormWrapper>
         </Stack>

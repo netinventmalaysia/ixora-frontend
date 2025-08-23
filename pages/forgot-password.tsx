@@ -10,6 +10,7 @@ import Spacing from '@/components/forms/Spacing';
 import LineSeparator from '@/components/forms/LineSeparator';
 import toast from 'react-hot-toast';
 import { forgotPassword } from '@/services/api';
+import t from '@/utils/i18n';
 
 
 type ForgotPasswordFormValues = {
@@ -43,7 +44,7 @@ export default function ForgotPasswordPage() {
     <LayoutWithoutSidebar>
       <FormWrapper onSubmit={onSubmit}>
         <Heading level={1} align="center" bold>
-          Forgot Password
+          {t('forgotPassword.title')}
         </Heading>
         <Spacing size="md" />
         <LineSeparator />
@@ -52,10 +53,10 @@ export default function ForgotPasswordPage() {
         <InputText
           id="email"
           name="email"
-          label="Email Address"
+          label={t('forgotPassword.emailLabel')}
           type="email"
-          requiredMessage="Email is required"
-          placeholder="Enter your email address"
+          requiredMessage={t('forgotPassword.emailRequired')}
+          placeholder={t('forgotPassword.emailPlaceholder')}
         />
 
         <Spacing size="md" />
@@ -67,7 +68,7 @@ export default function ForgotPasswordPage() {
             fullWidth
             disabled={submitted}
           >
-            {submitted ? 'Link Sent' : 'Send Reset Link'}
+            {submitted ? t('forgotPassword.sent') : t('forgotPassword.send')}
           </Button>
         </FormActions>
 
@@ -75,7 +76,7 @@ export default function ForgotPasswordPage() {
           <>
             <Spacing size="md" />
             <div className="text-green-700 font-medium text-center">
-              Please check your email for the password reset link.
+              {t('forgotPassword.checkEmail')}
             </div>
           </>
         )}

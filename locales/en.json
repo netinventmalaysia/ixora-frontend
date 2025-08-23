@@ -72,4 +72,36 @@
     "privacy": "Privacy Policy",
     "saveChanges": "Save Changes"
   }
+  ,
+  "login": {
+    "title": "Sign in to your account",
+    "forgot": "Forgot Password?",
+    "signIn": "Sign in",
+    "continueGuest": "Continue as Guest"
+  },
+  "businessInvite": {
+    "title": "Business Invitation",
+    "validating": "Validating invitation…",
+    "missingToken": "This invitation link is missing a token.",
+    "invalid": "This invitation link is invalid or expired.",
+    "welcome": "Welcome!",
+    "description": "You have been invited to join this business.",
+    "accept": "Accept Invitation",
+    "accepting": "Accepting…",
+    "loginToAccept": "Login to Accept"
+  },
+  "profileTest": {
+    "title": "Profile Test Paging",
+    "updating": "Updating...",
+    "update": "Update First Name"
+  },
+  "forgotPassword": {
+    "title": "Forgot Password",
+    "emailLabel": "Email Address",
+    "emailRequired": "Email is required",
+    "emailPlaceholder": "Enter your email address",
+    "send": "Send Reset Link",
+    "sent": "Link Sent",
+    "checkEmail": "Please check your email for the password reset link."
+  }
 }

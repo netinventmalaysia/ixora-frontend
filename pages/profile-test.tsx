@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { getUserProfile, updateUser } from '@/services/api';
 import toast from 'react-hot-toast';
+import t from '@/utils/i18n';
 
 export default function ProfileTestPage() {
   const [profile, setProfile] = useState<any>(null);
@@ -39,18 +40,18 @@ export default function ProfileTestPage() {
     }
   };
 
-  if (!profile) return <div>Loading...</div>;
+  if (!profile) return <div>{t('common.loading')}</div>;
 
   return (
     <div className="p-4">
-      <h1 className="text-xl font-bold">Profile Test Paging</h1>
+  <h1 className="text-xl font-bold">{t('profileTest.title')}</h1>
       <pre className="bg-gray-100 p-2 my-2">{JSON.stringify(profile, null, 2)}</pre>
       <button
         onClick={handleUpdate}
         disabled={loading}
         className="px-4 py-2 bg-blue-500 text-white rounded"
       >
-        {loading ? 'Updating...' : 'Update First Name'}
+        {loading ? t('profileTest.updating') : t('profileTest.update')}
       </button>
     </div>
   );
