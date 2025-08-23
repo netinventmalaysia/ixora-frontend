@@ -16,12 +16,19 @@ const LANG_OPTS = [
 ];
 
 export default function SettingsPage() {
-  const [lang, setLang] = useState<string>(() => typeof window !== 'undefined' ? localStorage.getItem('ixora:lang') || 'en' : 'en');
+  // start with server default to avoid SSR/client mismatch; read stored value on mount
+  const [lang, setLang] = useState<string>('en');
   const [locationPermission, setLocationPermission] = useState<string>('prompt');
   const [notificationPermission, setNotificationPermission] = useState<string>(typeof window !== 'undefined' && 'Notification' in window ? Notification.permission : 'default');
   const [saving, setSaving] = useState(false);
 
   useEffect(() => {
+    // read stored language on client mount
+    try {
+      const stored = localStorage.getItem('ixora:lang');
+      if (stored) setLang(stored);
+    } catch (e) {}
+
     // query Permissions API when available
     if (typeof navigator !== 'undefined' && (navigator as any).permissions) {
       try {

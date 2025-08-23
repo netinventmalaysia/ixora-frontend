@@ -35,7 +35,11 @@ export function setLanguage(lang: string) {
 }
 
 export function t(key: string, fallback?: string) {
-  const lang = (typeof window === 'undefined') ? 'en' : getLanguage() || 'en';
+  // Use clientLang if set; otherwise default to server language 'en'.
+  // IMPORTANT: do NOT read localStorage here — reading it during client render
+  // can cause the client to render different HTML than the server and
+  // trigger hydration mismatches.
+  const lang = clientLang || 'en';
   const dict = LOCALES[lang] || LOCALES.en;
 
   const parts = key.split('.');
@@ -50,19 +54,22 @@ export function t(key: string, fallback?: string) {
 
 // React hook for client components to re-render on language change
 export function useTranslation() {
-  const [lang, setLang] = useState<string>(() => {
-    if (typeof window === 'undefined') return 'en';
-    try {
-      return (localStorage.getItem('ixora:lang') as string) || 'en';
-    } catch (e) {
-      return 'en';
-    }
-  });
+  // Start with server default so initial client render matches SSR.
+  const [lang, setLang] = useState<string>('en');
 
   useEffect(() => {
+    // On mount read stored preference and update clientLang and state.
+    try {
+      const stored = (localStorage.getItem('ixora:lang') as string) || 'en';
+      clientLang = stored;
+      setLang(stored);
+    } catch (err) {
+      clientLang = 'en';
+      setLang('en');
+    }
+
     const handler = (e: Event) => {
       try {
-        // read current lang from storage
         const l = (localStorage.getItem('ixora:lang') as string) || 'en';
         clientLang = l;
         setLang(l);

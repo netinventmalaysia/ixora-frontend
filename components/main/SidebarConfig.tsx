@@ -4,7 +4,6 @@ import { useState, useEffect, ReactNode } from 'react';
 
 import { BuildingOfficeIcon, HomeIcon, UsersIcon, FolderIcon, CalendarIcon, DocumentDuplicateIcon, ChartPieIcon, BookOpenIcon, KeyIcon, ArrowRightOnRectangleIcon, CogIcon, ReceiptPercentIcon, BriefcaseIcon as BizBriefcaseIcon, BuildingStorefrontIcon, RectangleStackIcon } from '@heroicons/react/24/outline';
 import { ArrowRightCircleIcon } from '@heroicons/react/24/solid';
-import t from '@/utils/i18n';
 
 export const superAdminNavigation = [
   { name: 'Login', href: '/', icon: KeyIcon, current: true },
@@ -28,9 +27,9 @@ export const adminNavigation = [
 ];
 
 export const userNavigation = [
-  { name: t('sidebar.profile'), href: '/profile', icon: UsersIcon, current: true },
-  { name: t('sidebar.settings'), href: '/account/settings', icon: CogIcon, current: false },
-  { name: t('sidebar.signOut'), href: '/logout', icon: ArrowRightCircleIcon, current: false },
+  { nameKey: 'sidebar.profile', href: '/profile', icon: UsersIcon, current: true },
+  { nameKey: 'sidebar.settings', href: '/account/settings', icon: CogIcon, current: false },
+  { nameKey: 'sidebar.signOut', href: '/logout', icon: ArrowRightCircleIcon, current: false },
 ];
 
 export const developerNavigation = [
@@ -47,10 +46,10 @@ export const teams = [
 ];
 
 export const generalAppNavigation = [
-  { name: t('sidebar.assessmentTax'), href: '/', icon: HomeIcon, current: false },
-  { name: t('sidebar.compound'), href: '/', icon: ReceiptPercentIcon, current: false },
-  { name: t('sidebar.boothRental'), href: '/', icon: BuildingStorefrontIcon, current: false },
-  { name: t('sidebar.miscBills'), href: '/', icon: RectangleStackIcon, current: false },
+  { nameKey: 'sidebar.assessmentTax', href: '/', icon: HomeIcon, current: false },
+  { nameKey: 'sidebar.compound', href: '/', icon: ReceiptPercentIcon, current: false },
+  { nameKey: 'sidebar.boothRental', href: '/', icon: BuildingStorefrontIcon, current: false },
+  { nameKey: 'sidebar.miscBills', href: '/', icon: RectangleStackIcon, current: false },
 ];
 
 export const businessAppNavigation = [

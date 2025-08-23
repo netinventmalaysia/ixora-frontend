@@ -11,11 +11,13 @@ import {
   businessEnrollmentNavigation,
   businessAppNavigation
 } from '@/components/main/SidebarConfig';
+import { useTranslation } from '@/utils/i18n';
 import SidebarNav from '@/components/main/SidebarNav';
 import { useRouter } from 'next/navigation';
 
 export type NavigationItem = {
-  name: string;
+  name?: string;
+  nameKey?: string;
   href: string;
   icon: React.ElementType;
   current: boolean;
@@ -54,17 +56,19 @@ export default function SidebarContent({
   const [generalNav, setGeneralNav] = useState<NavigationItem[]>([]);
   const [personalNav, setPersonalNav] = useState<NavigationItem[]>([]);
   const [bottomNav, setBottomNav] = useState<NavigationItem[]>([]);
+  const { t } = useTranslation();
   const router = useRouter();
 
   useEffect(() => {
     const withCurrent = (items: NavigationItem[]) => items.map(item => ({ ...item, current: false }));
     // If guest, always show only the general application navigation
     if (userRole === 'guest') {
-      setGeneralNav(withCurrent([...generalAppNavigation]));
+  // translate names for general nav
+  setGeneralNav(withCurrent(generalAppNavigation.map(i => ({ ...i, name: (i as any).nameKey ? t((i as any).nameKey) : (i as any).name }))));
       setPersonalNav([]);
-      // show Settings and Sign out for guests as requested
+      // show Settings and Sign out for guests: match by href instead of translated name
       const guestBottom = withCurrent(
-        userNavigation.filter((i) => /settings|sign out/i.test(i.name)) as NavigationItem[]
+        userNavigation.filter((i) => ['/account/settings', '/logout'].includes(i.href)).map(i => ({ ...i, name: (i as any).nameKey ? t((i as any).nameKey) : (i as any).name })) as NavigationItem[]
       );
       setBottomNav(guestBottom);
       return;
@@ -73,35 +77,35 @@ export default function SidebarContent({
     if (mode === 'Personal') {
       switch (userRole) {
         default:
-          setGeneralNav(withCurrent([...generalAppNavigation]));
-          setPersonalNav(withCurrent([...businessEnrollmentNavigation]));
-          setBottomNav(withCurrent([...userNavigation]));
+          setGeneralNav(withCurrent(generalAppNavigation.map(i => ({ ...i, name: (i as any).nameKey ? t((i as any).nameKey) : (i as any).name }))));
+          setPersonalNav(withCurrent(businessEnrollmentNavigation.map(i => ({ ...i, name: (i as any).nameKey ? t((i as any).nameKey) : (i as any).name }))));
+          setBottomNav(withCurrent(userNavigation.map(i => ({ ...i, name: (i as any).nameKey ? t((i as any).nameKey) : (i as any).name }))));
       }
     } else {
       switch (userRole) {
         case 'superadmin':
           setGeneralNav([]);
-          setPersonalNav(withCurrent([...businessAppNavigation, ...superAdminNavigation]));
-          setBottomNav(withCurrent([...userNavigation]));
+          setPersonalNav(withCurrent([...businessAppNavigation, ...superAdminNavigation].map(i => ({ ...i, name: (i as any).nameKey ? t((i as any).nameKey) : (i as any).name }))));
+          setBottomNav(withCurrent(userNavigation.map(i => ({ ...i, name: (i as any).nameKey ? t((i as any).nameKey) : (i as any).name }))));
           break;
         case 'admin':
           setGeneralNav([]);
-          setPersonalNav(withCurrent([...businessAppNavigation, ...adminNavigation]));
-          setBottomNav(withCurrent([...userNavigation]));
+          setPersonalNav(withCurrent([...businessAppNavigation, ...adminNavigation].map(i => ({ ...i, name: (i as any).nameKey ? t((i as any).nameKey) : (i as any).name }))));
+          setBottomNav(withCurrent(userNavigation.map(i => ({ ...i, name: (i as any).nameKey ? t((i as any).nameKey) : (i as any).name }))));
           break;
         case 'account':
           setGeneralNav([]);
-          setPersonalNav(withCurrent([...accountNavigation]));
-          setBottomNav(withCurrent([...userNavigation]));
+          setPersonalNav(withCurrent(accountNavigation.map(i => ({ ...i, name: (i as any).nameKey ? t((i as any).nameKey) : (i as any).name }))));
+          setBottomNav(withCurrent(userNavigation.map(i => ({ ...i, name: (i as any).nameKey ? t((i as any).nameKey) : (i as any).name }))));
           break;
         case 'developer':
           setGeneralNav([]);
-          setPersonalNav(withCurrent([...developerNavigation]));
-          setBottomNav(withCurrent([...userNavigation]));
+          setPersonalNav(withCurrent(developerNavigation.map(i => ({ ...i, name: (i as any).nameKey ? t((i as any).nameKey) : (i as any).name }))));
+          setBottomNav(withCurrent(userNavigation.map(i => ({ ...i, name: (i as any).nameKey ? t((i as any).nameKey) : (i as any).name }))));
           break;
         case 'business':
-          setGeneralNav(withCurrent([...generalAppNavigation]));
-          setPersonalNav(withCurrent([...businessAppNavigation]));
+          setGeneralNav(withCurrent(generalAppNavigation.map(i => ({ ...i, name: (i as any).nameKey ? t((i as any).nameKey) : (i as any).name }))));
+          setPersonalNav(withCurrent(businessAppNavigation.map(i => ({ ...i, name: (i as any).nameKey ? t((i as any).nameKey) : (i as any).name }))));
           break;
         default:
           setGeneralNav([]);
