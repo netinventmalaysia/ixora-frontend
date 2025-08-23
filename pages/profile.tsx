@@ -32,7 +32,7 @@ import router from "next/router";
 import { AxiosResponse } from "axios";
 import SidebarContent from "todo/components/main/Sidebar";
 import { logoUrl } from "todo/components/main/SidebarConfig";
-import t from '@/utils/i18n';
+import { useTranslation } from '@/utils/i18n';
 
 type UserProfile = {
   id: number;
@@ -87,6 +87,7 @@ function BusinessEffect({ businessId }: { businessId?: number }) {
 }
 
 export default function ProfilePage() {
+  const { t } = useTranslation();
   const [userProfile, setUserProfile] = useState<UserProfile | null>(null);
   const [accountType, setAccountType] = useState<"personal" | "business">("personal");
   const [isOrganisation, setIsOrganisation] = useState(false);

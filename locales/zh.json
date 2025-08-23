@@ -79,6 +79,10 @@
     "signIn": "登录",
     "continueGuest": "以访客身份继续"
   },
+  "loginExtras": {
+    "notMember": "还不是会员？",
+    "signUpNow": "现在注册！"
+  },
   "businessInvite": {
     "title": "企业邀请",
     "validating": "正在验证邀请…",

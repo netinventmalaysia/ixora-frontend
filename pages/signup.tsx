@@ -1,5 +1,5 @@
 import { useState } from "react";
-import t from '@/utils/i18n';
+import { useTranslation } from '@/utils/i18n';
 import FormWrapper from "todo/components/forms/FormWrapper";
 import Button from 'todo/components/forms/Button';
 import FormSectionHeader from '@/components/forms/FormSectionHeader';
@@ -50,6 +50,7 @@ type UserProfile = {
 
 
 export default function SignUpPage() {
+  const { t } = useTranslation();
   const [showCancelDialog, setShowCancelDialog] = useState(false);
   const [loading, setLoading] = useState(false);
 

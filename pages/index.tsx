@@ -15,9 +15,10 @@ import router from "next/router";
 import { loginUser, guestLogin } from "todo/services/api";
 import { AxiosError } from 'axios'
 import { triggerUserRefresh } from "todo/components/actions/actionHandler";
-import t from '@/utils/i18n';
+import { useTranslation } from '@/utils/i18n';
 
 export default function FormPage() {
+    const { t } = useTranslation();
 
     const [showCancelDialog, setShowCancelDialog] = useState(false);
     const [loading, setLoading] = useState(false);
@@ -95,14 +96,14 @@ export default function FormPage() {
                     {t('login.title')}
                 </Heading>
                 <Spacing size="lg" />
-                <InputWithPrefix id="email" name="email" label="Email Address" requiredMessage="Email Address is required" />
+                <InputWithPrefix id="email" name="email" label={t('forgotPassword.emailLabel')} requiredMessage={t('forgotPassword.emailRequired')} />
                 <Spacing size="sm" />
                 <InputText
                     id="password"
                     name="password"
-                    label="Password"
+                    label={t('form.password')}
                     type="password"
-                    requiredMessage="Password is required"
+                    requiredMessage={t('form.passwordRequired')}
                 />
                 <Hyperlink href="/forgot-password" position="right" bold fontSize="text-sm" underline={false} color="text-blue-600">
                     {t('login.forgot')}
@@ -111,12 +112,10 @@ export default function FormPage() {
                 <Spacing size="md" />
 
                 <HyperText size="sm" align="center" color="text-gray-600">
-                    Not a member?{" "}
+                    {t('login.notMember')} {" "}
                     <Hyperlink href="/signup" inline bold>
-                        Sign up now!
+                        {t('login.signUpNow')}
                     </Hyperlink>
-
-
                 </HyperText>
 
                 <Spacing size="sm" />

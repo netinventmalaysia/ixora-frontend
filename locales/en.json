@@ -79,6 +79,10 @@
     "signIn": "Sign in",
     "continueGuest": "Continue as Guest"
   },
+  "loginExtras": {
+    "notMember": "Not a member?",
+    "signUpNow": "Sign up now!"
+  },
   "businessInvite": {
     "title": "Business Invitation",
     "validating": "Validating invitation…",

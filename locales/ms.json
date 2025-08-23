@@ -79,6 +79,10 @@
     "signIn": "Log masuk",
     "continueGuest": "Teruskan sebagai Tetamu"
   },
+  "loginExtras": {
+    "notMember": "Bukan ahli?",
+    "signUpNow": "Daftar sekarang!"
+  },
   "businessInvite": {
     "title": "Jemputan Perniagaan",
     "validating": "Mengesahkan jemputan…",
