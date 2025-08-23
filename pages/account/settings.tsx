@@ -126,9 +126,10 @@ export default function SettingsPage() {
     <SidebarLayout>
       <Heading level={4} align="left" bold>{t('settings.title')}</Heading>
 
-      <Spacing size="lg" />
+  <Spacing size="lg" />
 
-      <div className="max-w-xl">
+  {/* Center the settings container horizontally and add top spacing */}
+  <div className="max-w-xl mx-auto mt-8">
         <div className="bg-white shadow sm:rounded-lg p-6">
           <h3 className="text-sm font-medium text-gray-900">{t('settings.language')}</h3>
           <p className="mt-1 text-xs text-gray-500">{t('settings.language')}</p>
