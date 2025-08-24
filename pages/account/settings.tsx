@@ -132,7 +132,6 @@ export default function SettingsPage() {
   <div className="max-w-xl mx-auto mt-8">
         <div className="bg-white shadow sm:rounded-lg p-6">
           <h3 className="text-sm font-medium text-gray-900">{t('settings.language')}</h3>
-          <p className="mt-1 text-xs text-gray-500">{t('settings.language')}</p>
           <div className="mt-3">
             <SelectField id="language" name="language" label={t('settings.language')} options={LANG_OPTS.map(o => ({ value: o.value, label: o.label }))} onChange={handleLangChange} />
           </div>
