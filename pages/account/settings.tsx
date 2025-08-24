@@ -122,6 +122,15 @@ export default function SettingsPage() {
     }
   };
 
+  const humanize = (s: string) => {
+    try {
+      if (!s) return s;
+      return String(s).charAt(0).toUpperCase() + String(s).slice(1);
+    } catch (e) {
+      return s;
+    }
+  };
+
   return (
     <SidebarLayout>
       <Heading level={4} align="left" bold>{t('settings.title')}</Heading>
@@ -143,7 +152,7 @@ export default function SettingsPage() {
           <h3 className="text-sm font-medium text-gray-900">{t('settings.location')}</h3>
           <p className="mt-1 text-xs text-gray-500">{t('settings.locationDesc')}</p>
           <div className="mt-3 flex items-center gap-x-4">
-            <div className="text-sm text-gray-700">Status: <strong className="ml-1">{locationPermission}</strong></div>
+            <div className="text-sm text-gray-700">Status: <strong className="ml-1">{humanize(locationPermission)}</strong></div>
             <Button type="button" onClick={requestLocation} variant="primary" size="sm">{t('settings.requestLocation')}</Button>
           </div>
         </div>
@@ -154,7 +163,7 @@ export default function SettingsPage() {
           <h3 className="text-sm font-medium text-gray-900">{t('settings.notifications')}</h3>
           <p className="mt-1 text-xs text-gray-500">{t('settings.notificationsDesc')}</p>
           <div className="mt-3 flex items-center gap-x-4">
-            <div className="text-sm text-gray-700">Status: <strong className="ml-1">{notificationPermission}</strong></div>
+            <div className="text-sm text-gray-700">Status: <strong className="ml-1">{humanize(notificationPermission)}</strong></div>
             <Button type="button" onClick={requestNotifications} variant="primary" size="sm">{t('settings.request')}</Button>
           </div>
         </div>
