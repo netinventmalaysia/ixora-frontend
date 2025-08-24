@@ -14,6 +14,8 @@ type SelectFieldProps = {
   requiredMessage?: string;
   placeholder?: string;
   colSpan?: string;
+  // optional controlled value when using this component outside react-hook-form
+  value?: string | number;
   onChange?: (e: React.ChangeEvent<HTMLSelectElement>) => void;
 };
 
@@ -25,6 +27,7 @@ export default function SelectField({
   requiredMessage,
   placeholder = 'Please select...',
   colSpan = 'sm:col-span-3',
+  value,
   onChange,
 }: SelectFieldProps) {
   // react-hook-form's useFormContext will throw or return null when no FormProvider is present.
@@ -50,7 +53,8 @@ export default function SelectField({
     errors = methods.formState?.errors || {};
   }
 
-  const selectedValue = watch(name);
+  // respect controlled value prop when provided, otherwise fall back to form/watch/local state
+  const selectedValue = value !== undefined ? value : watch(name);
 
   return (
     <div className={`w-full ${colSpan}`}>
