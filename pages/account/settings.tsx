@@ -3,6 +3,7 @@ import SidebarLayout from '@/components/main/SidebarLayout';
 import Heading from '@/components/forms/Heading';
 import Spacing from '@/components/forms/Spacing';
 import SelectField from '@/components/forms/SelectField';
+import SettingsCard, { SettingsCardRow } from '@/components/ui/SettingsCard';
 import Button from '@/components/forms/Button';
 import toast from 'react-hot-toast';
 import { updateUser } from '@/services/api';
@@ -137,36 +138,27 @@ export default function SettingsPage() {
 
   <Spacing size="lg" />
 
-  {/* Center the settings container horizontally and add top spacing */}
-  <div className="max-w-xl mx-auto mt-8">
-        <div className="bg-white shadow sm:rounded-lg p-6">
-          <h3 className="text-sm font-medium text-gray-900">{t('settings.language')}</h3>
-          <div className="mt-3">
-            <SelectField id="language" name="language" label={t('settings.language')} options={LANG_OPTS.map(o => ({ value: o.value, label: o.label }))} value={lang} onChange={handleLangChange} />
-          </div>
-        </div>
+  {/* Left-align the settings container and add top spacing */}
+  <div className="max-w-xl mt-8">
+        <SettingsCard title={t('settings.language')}>
+          <SelectField id="language" name="language" label={t('settings.language')} options={LANG_OPTS.map(o => ({ value: o.value, label: o.label }))} value={lang} onChange={handleLangChange} />
+        </SettingsCard>
 
         <Spacing size="lg" />
 
-        <div className="bg-white shadow sm:rounded-lg p-6">
-          <h3 className="text-sm font-medium text-gray-900">{t('settings.location')}</h3>
-          <p className="mt-1 text-xs text-gray-500">{t('settings.locationDesc')}</p>
-          <div className="mt-3 flex items-center gap-x-4">
-            <div className="text-sm text-gray-700">Status: <strong className="ml-1">{humanize(locationPermission)}</strong></div>
+        <SettingsCard title={t('settings.location')} description={t('settings.locationDesc')}>
+          <SettingsCardRow status={humanize(locationPermission)}>
             <Button type="button" onClick={requestLocation} variant="primary" size="sm">{t('settings.requestLocation')}</Button>
-          </div>
-        </div>
+          </SettingsCardRow>
+        </SettingsCard>
 
         <Spacing size="lg" />
 
-        <div className="bg-white shadow sm:rounded-lg p-6">
-          <h3 className="text-sm font-medium text-gray-900">{t('settings.notifications')}</h3>
-          <p className="mt-1 text-xs text-gray-500">{t('settings.notificationsDesc')}</p>
-          <div className="mt-3 flex items-center gap-x-4">
-            <div className="text-sm text-gray-700">Status: <strong className="ml-1">{humanize(notificationPermission)}</strong></div>
+        <SettingsCard title={t('settings.notifications')} description={t('settings.notificationsDesc')}>
+          <SettingsCardRow status={humanize(notificationPermission)}>
             <Button type="button" onClick={requestNotifications} variant="primary" size="sm">{t('settings.request')}</Button>
-          </div>
-        </div>
+          </SettingsCardRow>
+        </SettingsCard>
       </div>
     </SidebarLayout>
   );
