@@ -59,10 +59,45 @@ export default function SidebarContent({
   const { t } = useTranslation();
   const router = useRouter();
 
+  // keep a local copy of userRole so the sidebar can update immediately when
+  // storage or a custom event changes the value (same-window storage writes
+  // don't fire the storage event). Initialize from prop or localStorage.
+  const [localUserRole, setLocalUserRole] = useState<string>(() => {
+    try {
+      return userRole || (typeof window !== 'undefined' ? (localStorage.getItem('userRole') || 'guest') : 'guest');
+    } catch (e) {
+      return userRole || 'guest';
+    }
+  });
+
+  // sync when parent prop changes
+  useEffect(() => {
+    if (userRole && userRole !== localUserRole) setLocalUserRole(userRole);
+  }, [userRole]);
+
+  // listen for storage events (other tabs) and a custom event for same-window updates
+  useEffect(() => {
+    const onStorage = (e: StorageEvent) => {
+      if (e.key === 'userRole') setLocalUserRole(e.newValue || 'guest');
+    };
+    const onUserChange = () => {
+      try {
+        const v = localStorage.getItem('userRole') || 'guest';
+        setLocalUserRole(v);
+      } catch (e) {}
+    };
+    window.addEventListener('storage', onStorage);
+    window.addEventListener('ixora:userchange', onUserChange as EventListener);
+    return () => {
+      window.removeEventListener('storage', onStorage);
+      window.removeEventListener('ixora:userchange', onUserChange as EventListener);
+    };
+  }, []);
+
   useEffect(() => {
     const withCurrent = (items: NavigationItem[]) => items.map(item => ({ ...item, current: false }));
-    // If guest, always show only the general application navigation
-    if (userRole === 'guest') {
+  // If guest, always show only the general application navigation
+  if (localUserRole === 'guest') {
   // translate names for general nav
   setGeneralNav(withCurrent(generalAppNavigation.map(i => ({ ...i, name: (i as any).nameKey ? t((i as any).nameKey) : (i as any).name }))));
       setPersonalNav([]);
@@ -75,14 +110,14 @@ export default function SidebarContent({
     }
 
     if (mode === 'Personal') {
-      switch (userRole) {
+      switch (localUserRole) {
         default:
           setGeneralNav(withCurrent(generalAppNavigation.map(i => ({ ...i, name: (i as any).nameKey ? t((i as any).nameKey) : (i as any).name }))));
           setPersonalNav(withCurrent(businessEnrollmentNavigation.map(i => ({ ...i, name: (i as any).nameKey ? t((i as any).nameKey) : (i as any).name }))));
           setBottomNav(withCurrent(userNavigation.map(i => ({ ...i, name: (i as any).nameKey ? t((i as any).nameKey) : (i as any).name }))));
       }
     } else {
-      switch (userRole) {
+      switch (localUserRole) {
         case 'superadmin':
           setGeneralNav([]);
           setPersonalNav(withCurrent([...businessAppNavigation, ...superAdminNavigation].map(i => ({ ...i, name: (i as any).nameKey ? t((i as any).nameKey) : (i as any).name }))));
@@ -163,9 +198,14 @@ export default function SidebarContent({
             <div className="flex flex-col text-white">
               <div className="flex items-center justify-between">
                 <div className="text-sm font-semibold">Dashboard ({mode})</div>
-                <button onClick={toggleMode} className="rounded bg-white/10 p-1 hover:bg-white/20">
-                  {mode === 'Personal' ? <BriefcaseIcon className="h-6 w-6 text-white" /> : <UserIcon className="h-6 w-6 text-white" />}
-                </button>
+                {
+                  // don't render toggle button at all for 'personal' or 'guest' roles
+                  (userRole !== 'personal' && userRole !== 'guest') ? (
+                    <button onClick={toggleMode} className="rounded bg-white/10 p-1 hover:bg-white/20">
+                      {mode === 'Personal' ? <BriefcaseIcon className="h-6 w-6 text-white" /> : <UserIcon className="h-6 w-6 text-white" />}
+                    </button>
+                  ) : null
+                }
               </div>
               {mode === 'Personal' && (
                 <div className="mt-1 text-xs text-gray-300">
@@ -185,7 +225,7 @@ export default function SidebarContent({
           <Bars3Icon className="size-6" />
         </button>
         <div className="flex-1 text-sm font-semibold text-white">Dashboard ({mode})</div>
-        {showModeToggle && (
+        {showModeToggle && (userRole !== 'personal' && userRole !== 'guest') && (
           <button onClick={toggleMode} className="rounded bg-white/10 p-1 hover:bg-white/20">
             {mode === 'Personal' ? <BriefcaseIcon className="h-6 w-6 text-white" /> : <UserIcon className="h-6 w-6 text-white" />}
           </button>
