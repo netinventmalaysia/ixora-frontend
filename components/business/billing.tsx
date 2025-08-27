@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { FormProvider, useForm } from 'react-hook-form';
 import Heading from '../forms/Heading';
 import Spacing from '../forms/Spacing';
@@ -8,6 +8,8 @@ import { invoices } from '../data/CardList';
 import { statusColors } from '../config/StatusColors';
 import CardList from '../forms/CardList';
 import { businessNameOptions } from '../data/SelectionList';
+import { fetchMyBusinesses } from '@/services/api';
+import toast from 'react-hot-toast';
 import SelectField from '../forms/SelectField';
 import { BillingActions } from '../config/ActionList';
 import FilterTabs from '../forms/FilterTabs';
@@ -18,6 +20,8 @@ export default function Billing() {
     const methods = useForm();
     const [currentTab, setCurrentTab] = useState<string>('All');
     const [selectedIds, setSelectedIds] = useState<number[]>([]);
+    const [businessId, setBusinessId] = useState<number | null>(null);
+    const [businessOptions, setBusinessOptions] = useState<{ value: number; label: string }[]>([]);
 
     const tabOptions: Tab[] = [
         { name: 'All', href: '#' },
@@ -48,6 +52,41 @@ export default function Billing() {
         alert(`Processing payment for ${selectedInvoices.length} item(s) totaling RM ${totalAmount.toFixed(2)}`);
     };
 
+    useEffect(() => {
+        // fetch user's businesses and populate select options (similar to Business Team Management)
+        fetchMyBusinesses()
+            .then((data) => {
+                if (!data || (Array.isArray(data) && data.length === 0)) {
+                    // keep fallback static options but inform user
+                    // toast.info('No businesses found. Showing default options.');
+                    return;
+                }
+                // exclude withdrawn businesses
+                const isWithdrawn = (item: any) => {
+                    const direct = (item && (item.status || item.state || item.applicationStatus || item.statusName || item.currentStatus || item.application_status || item.status_name || item.current_status));
+                    if (typeof direct === 'string') {
+                        return String(direct).toLowerCase() === 'withdrawn';
+                    }
+                    for (const [k, v] of Object.entries(item || {})) {
+                        if (typeof v === 'string' && /withdrawn/i.test(String(v))) return true;
+                    }
+                    return false;
+                };
+
+                const options = (data as any[])
+                    .filter((biz) => !isWithdrawn(biz))
+                    .map((biz) => ({
+                        value: biz.id,
+                        label: biz.name || biz.companyName || `#${biz.id}`,
+                    }));
+                setBusinessOptions(options);
+            })
+            .catch((err) => {
+                console.error('Failed to fetch businesses for billing select', err);
+                toast.error('Failed to load your businesses');
+            });
+    }, []);
+
     return (
         <FormProvider {...methods}>
             <LayoutWithoutSidebar shiftY="-translate-y-0">
@@ -56,7 +95,7 @@ export default function Billing() {
                 </Heading>
 
                 <Spacing size="lg" />
-                <SelectField id="businessName" name="businessName" label="Business Name" options={businessNameOptions} />
+                <SelectField id="businessName" name="businessName" label="Business Name" options={(businessOptions.length > 0 ? businessOptions : businessNameOptions)} onChange={(e) => setBusinessId(Number(e.target.value))} />
 
                 <Spacing size="sm" />
                 <LineSeparator />
