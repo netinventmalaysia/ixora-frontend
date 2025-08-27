@@ -4,11 +4,11 @@ import Heading from '../forms/Heading';
 import Spacing from '../forms/Spacing';
 import LayoutWithoutSidebar from '../main/LayoutWithoutSidebar';
 import LineSeparator from '../forms/LineSeparator';
-import { invoices } from '../data/CardList';
+import { invoices as staticInvoices } from '../data/CardList';
 import { statusColors } from '../config/StatusColors';
 import CardList from '../forms/CardList';
 import { businessNameOptions } from '../data/SelectionList';
-import { fetchMyBusinesses } from '@/services/api';
+import { fetchMyBusinesses, fetchBillings } from '@/services/api';
 import toast from 'react-hot-toast';
 import SelectField from '../forms/SelectField';
 import { BillingActions } from '../config/ActionList';
@@ -22,14 +22,18 @@ export default function Billing() {
     const [selectedIds, setSelectedIds] = useState<number[]>([]);
     const [businessId, setBusinessId] = useState<number | null>(null);
     const [businessOptions, setBusinessOptions] = useState<{ value: number; label: string }[]>([]);
+    const [fetchedInvoices, setFetchedInvoices] = useState<any[] | null>(null);
+    const [loadingInvoices, setLoadingInvoices] = useState(false);
 
     const tabOptions: Tab[] = [
         { name: 'All', href: '#' },
-        { name: 'Pending Payment', href: '#', badge: `${invoices.filter(p => p.lastInvoice.status === 'Overdue').length}`, badgeColor: 'red' },
-        { name: 'Paid', href: '#', badge: `${invoices.filter(p => p.lastInvoice.status === 'Paid').length}`, badgeColor: 'green' },
+    { name: 'Pending Payment', href: '#', badge: `${staticInvoices.filter((p: any) => p.lastInvoice?.status === 'Overdue').length}`, badgeColor: 'red' },
+    { name: 'Paid', href: '#', badge: `${staticInvoices.filter((p: any) => p.lastInvoice?.status === 'Paid').length}`, badgeColor: 'green' },
     ];
 
-    const filteredBilling = invoices.filter((invoice) => {
+    const sourceInvoices = fetchedInvoices && Array.isArray(fetchedInvoices) ? fetchedInvoices : staticInvoices;
+
+    const filteredBilling = sourceInvoices.filter((invoice: any) => {
         if (currentTab === 'All') return true;
         if (currentTab === 'Pending Payment') return invoice.lastInvoice.status === 'Overdue';
         if (currentTab === 'Paid') return invoice.lastInvoice.status === 'Paid';
@@ -47,7 +51,7 @@ export default function Billing() {
         .reduce((sum, item) => sum + parseFloat(item.lastInvoice.amount.replace(/[^\d.-]/g, '')), 0);
 
     const handlePaySelected = () => {
-        const selectedInvoices = invoices.filter(inv => selectedIds.includes(inv.id));
+        const selectedInvoices = sourceInvoices.filter((inv: any) => selectedIds.includes(inv.id));
         // 👉 You can trigger your payment API here with selectedInvoices
         alert(`Processing payment for ${selectedInvoices.length} item(s) totaling RM ${totalAmount.toFixed(2)}`);
     };
@@ -86,6 +90,29 @@ export default function Billing() {
                 toast.error('Failed to load your businesses');
             });
     }, []);
+
+    // Fetch billings when a business is selected
+    useEffect(() => {
+        if (!businessId) return;
+
+        setLoadingInvoices(true);
+        fetchBillings(businessId)
+            .then((data) => {
+                if (!data) {
+                    setFetchedInvoices([]);
+                    toast('No billings found for selected business');
+                    return;
+                }
+
+                setFetchedInvoices(Array.isArray(data) ? data : [data]);
+            })
+            .catch((err) => {
+                console.error('Failed to fetch billings for business', err);
+                toast.error('Failed to load billings');
+                setFetchedInvoices([]);
+            })
+            .finally(() => setLoadingInvoices(false));
+    }, [businessId]);
 
     return (
         <FormProvider {...methods}>

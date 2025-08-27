@@ -168,6 +168,20 @@ export const withdrawBusiness = async (businessId: number) => {
     return data;
 };
 
+// Fetch billings for a business. Backend expects business_id as query param.
+export const fetchBillingsWithBusinessId = async (businessId?: number) => {
+    const params: any = {};
+    if (businessId) params.business_id = businessId;
+
+    const { data } = await api.get('/billings', { params });
+    return data;
+};
+
+export const fetchBillings = async (businessId: number) => {
+    const { data } = await api.get('/billings');
+    return data;
+};
+
 // Team Members
 export const fetchTeamMembers = async (businessId: number) => {
     const { data } = await api.get(`/business/${businessId}/team`);
