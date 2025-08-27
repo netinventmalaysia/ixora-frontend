@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { FormProvider, useForm } from 'react-hook-form';
 import Heading from '../forms/Heading';
 import Spacing from '../forms/Spacing';
@@ -25,19 +25,33 @@ export default function Billing() {
     const [fetchedInvoices, setFetchedInvoices] = useState<any[] | null>(null);
     const [loadingInvoices, setLoadingInvoices] = useState(false);
 
-    const tabOptions: Tab[] = [
-        { name: 'All', href: '#' },
-    { name: 'Pending Payment', href: '#', badge: `${staticInvoices.filter((p: any) => p.lastInvoice?.status === 'Overdue').length}`, badgeColor: 'red' },
-    { name: 'Paid', href: '#', badge: `${staticInvoices.filter((p: any) => p.lastInvoice?.status === 'Paid').length}`, badgeColor: 'green' },
-    ];
-
+    // Choose data source (live from API or static fallback)
     const sourceInvoices = fetchedInvoices && Array.isArray(fetchedInvoices) ? fetchedInvoices : staticInvoices;
 
+    // Helpers to normalize and classify statuses
+    const getStatus = (inv: any) => String(inv?.lastInvoice?.status ?? '').toLowerCase();
+    const isPaid = (inv: any) => getStatus(inv) === 'paid';
+    const isPending = (inv: any) => /^(overdue|pending|unpaid)$/.test(getStatus(inv));
+
+    // Dynamic badge counts based on current sourceInvoices
+    const counts = useMemo(() => {
+      const all = Array.isArray(sourceInvoices) ? sourceInvoices.length : 0;
+      const pending = Array.isArray(sourceInvoices) ? sourceInvoices.filter(isPending).length : 0;
+      const paid = Array.isArray(sourceInvoices) ? sourceInvoices.filter(isPaid).length : 0;
+      return { all, pending, paid };
+    }, [sourceInvoices]);
+
+    const tabOptions: Tab[] = [
+      { name: 'All', href: '#', badge: String(counts.all), badgeColor: 'blue' },
+      { name: 'Pending Payment', href: '#', badge: String(counts.pending), badgeColor: 'red' },
+      { name: 'Paid', href: '#', badge: String(counts.paid), badgeColor: 'green' },
+    ];
+
     const filteredBilling = sourceInvoices.filter((invoice: any) => {
-        if (currentTab === 'All') return true;
-        if (currentTab === 'Pending Payment') return invoice.lastInvoice.status === 'Overdue';
-        if (currentTab === 'Paid') return invoice.lastInvoice.status === 'Paid';
-        return false;
+      if (currentTab === 'All') return true;
+      if (currentTab === 'Pending Payment') return isPending(invoice);
+      if (currentTab === 'Paid') return isPaid(invoice);
+      return true;
     });
 
     const handleSelect = (id: number) => {
