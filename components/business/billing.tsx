@@ -132,7 +132,7 @@ export default function Billing() {
         <FormProvider {...methods}>
             <LayoutWithoutSidebar shiftY="-translate-y-0">
                 <Heading level={5} align="left" bold>
-                    Invoice Billing
+                    Invoice Billings
                 </Heading>
 
                 <Spacing size="lg" />
