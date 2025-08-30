@@ -8,7 +8,7 @@ import { invoices as staticInvoices } from '../data/CardList';
 import { statusColors } from '../config/StatusColors';
 import CardList from '../forms/CardList';
 import { businessNameOptions } from '../data/SelectionList';
-import { fetchMyBusinesses, fetchBillingsWithBusinessId } from '@/services/api';
+import { fetchMyBusinesses, fetchBillings } from '@/services/api';
 import toast from 'react-hot-toast';
 import SelectField from '../forms/SelectField';
 import { BillingActions } from '../config/ActionList';
@@ -110,7 +110,7 @@ export default function Billing() {
         if (!businessId) return;
 
         setLoadingInvoices(true);
-    fetchBillingsWithBusinessId(businessId)
+        fetchBillings(businessId)
             .then((data) => {
                 if (!data) {
                     setFetchedInvoices([]);
