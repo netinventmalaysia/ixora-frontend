@@ -74,7 +74,7 @@ export default function DashboardPage() {
       <Spacing size="lg" />
 
       {/* ===================== SUMMARY CARDS (HYBRID) ===================== */}
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
         {/* Total Bills */}
         <div className="bg-white shadow rounded-lg p-5">
           <div className="text-xs uppercase text-gray-500">Jumlah Bil</div>
@@ -89,22 +89,18 @@ export default function DashboardPage() {
           <div className="mt-2 text-sm text-gray-500">Invois aktif: {invoices.length}</div>
         </div>
 
-        {/* Next Bill Due */}
+        {/* Combined Total */}
         <div className="bg-white shadow rounded-lg p-5">
-          <div className="text-xs uppercase text-gray-500">Bil Terdekat</div>
-          <div className="mt-1 text-base font-semibold">{totals.nextBill?.type || '-'}</div>
-          <div className="text-sm text-gray-500">Tarikh Akhir: {totals.nextBill?.due || '-'}</div>
-          <div className="mt-1 font-bold">{totals.nextBill ? fRM(totals.nextBill.amount) : '-'}</div>
-        </div>
-
-        {/* Next Invoice Due */}
-        <div className="bg-white shadow rounded-lg p-5">
-          <div className="text-xs uppercase text-gray-500">Invois Terdekat</div>
-          <div className="mt-1 text-base font-semibold">{totals.nextInvoice?.type || '-'}</div>
-          <div className="text-sm text-gray-500">Tarikh Akhir: {totals.nextInvoice?.due || '-'}</div>
-          <div className="mt-1 font-bold">{totals.nextInvoice ? fRM(totals.nextInvoice.amount) : '-'}</div>
+          <div className="text-xs uppercase text-gray-500">Jumlah Bil + Invois</div>
+          <div className="mt-1 text-2xl font-bold">
+            {fRM((totals.billTotal || 0) + (totals.invoiceTotal || 0))}
+          </div>
+          <div className="mt-2 text-sm text-gray-500">
+            Keseluruhan: {bills.length + invoices.length} rekod
+          </div>
         </div>
       </div>
+
 
       <Spacing size="lg" />
 
