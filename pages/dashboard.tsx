@@ -1,4 +1,5 @@
-import { useEffect, useMemo, useState } from 'react';
+import React, { useMemo } from 'react';
+import SummaryCards from '@/components/dashboard/SummaryCards';
 import SidebarLayout from '@/components/main/SidebarLayout';
 import Heading from '@/components/forms/Heading';
 import Spacing from '@/components/forms/Spacing';
@@ -83,33 +84,14 @@ export default function DashboardPage() {
 
       <Spacing size="lg" />
 
-      {/* ===================== SUMMARY CARDS (HYBRID) ===================== */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-        {/* Total Bills */}
-        <div className="bg-white shadow rounded-lg p-5">
-          <div className="text-xs uppercase text-gray-500">Jumlah Bil</div>
-          <div className="mt-1 text-2xl font-bold">{fRM(totals.billTotal)}</div>
-          <div className="mt-2 text-sm text-gray-500">Bil aktif: {bills.length}</div>
-        </div>
-
-        {/* Total Invoices */}
-        <div className="bg-white shadow rounded-lg p-5">
-          <div className="text-xs uppercase text-gray-500">Jumlah Invois</div>
-          <div className="mt-1 text-2xl font-bold">{fRM(totals.invoiceTotal)}</div>
-          <div className="mt-2 text-sm text-gray-500">Invois aktif: {invoices.length}</div>
-        </div>
-
-        {/* Combined Total */}
-        <div className="bg-white shadow rounded-lg p-5">
-          <div className="text-xs uppercase text-gray-500">Jumlah Bil + Invois</div>
-          <div className="mt-1 text-2xl font-bold">
-            {fRM((totals.billTotal || 0) + (totals.invoiceTotal || 0))}
-          </div>
-          <div className="mt-2 text-sm text-gray-500">
-            Keseluruhan: {bills.length + invoices.length} rekod
-          </div>
-        </div>
-      </div>
+          {/* ===================== SUMMARY CARDS (REUSABLE) ===================== */}
+          <SummaryCards
+            billTotal={totals.billTotal}
+            invoiceTotal={totals.invoiceTotal}
+            billCount={bills.length}
+            invoiceCount={invoices.length}
+            formatAmount={fRM}
+          />
 
 
       <Spacing size="lg" />

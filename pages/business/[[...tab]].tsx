@@ -9,7 +9,7 @@ import Application from 'todo/components/business/application';
 import TeamMembers from 'todo/components/business/team';
 import { teams, logoUrl } from 'todo/components/main/SidebarConfig';
 import Billing from 'todo/components/business/billing';
-import { fetchBusinessById, fetchMyBusinesses } from 'todo/services/api';
+import { fetchBusinessById, fetchMyBusinesses, fetchBillingsWithBusinessId } from 'todo/services/api';
 import { useBadgeCounts } from 'todo/components/config/BadgeCounts';
 import SidebarLayout from 'todo/components/main/SidebarLayout';
 import BusinessEditDialog from 'todo/components/forms/BusinessEditDialog';
@@ -29,6 +29,17 @@ const BusinessPage: React.FC = () => {
   //teamStatus: 'Active',
 });
 
+  // Dynamic Billing badge: count of current billings (no business filter here; page-level/global)
+  const [billingCount, setBillingCount] = useState<number | undefined>(undefined);
+  useEffect(() => {
+    fetchBillingsWithBusinessId(undefined)
+      .then((data) => {
+        const count = Array.isArray(data) ? data.length : (data ? 1 : 0);
+        setBillingCount(count);
+      })
+      .catch(() => setBillingCount(undefined));
+  }, []);
+
   const tabs: Tab[] = businessTabs.map((t) => {
   const key = t.name.toLowerCase();
 
@@ -37,6 +48,13 @@ const BusinessPage: React.FC = () => {
       ...t,
       badge: badgeCounts[key]?.toString() || undefined,
       badgeColor: 'blue',
+    };
+  }
+  if (key === 'billing') {
+    return {
+      ...t,
+      badge: billingCount !== undefined ? String(billingCount) : undefined,
+      badgeColor: 'red',
     };
   }
   return t;
