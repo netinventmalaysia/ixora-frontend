@@ -47,6 +47,47 @@ export default function DashboardPage() {
         <Spacing size="lg" />
         <LineSeparator />
 
+          <Heading level={2} align="left" bold>
+          {t('dashboard.billsTitle', 'Your Bills')}
+          <TextLine>
+          Below is a summary of your current bills. Click on each bill type for more details and payment options.
+        </TextLine>
+        </Heading>
+        <Spacing size="sm" />
+
+        {/* Single card with table for bills */}
+        <div className="bg-white shadow rounded-lg p-6">
+          <table className="min-w-full">
+            <thead>
+              <tr className="border-b">
+                <th className="text-left py-2 px-3 font-semibold text-gray-700">Bill Type</th>
+                <th className="text-left py-2 px-3 font-semibold text-gray-700">Amount</th>
+                <th className="text-left py-2 px-3 font-semibold text-gray-700">Due Date</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr className="border-b">
+                <td className="py-2 px-3">Assessment Tax Bill #A12345</td>
+                <td className="py-2 px-3 text-green-600 font-bold">RM 120.00</td>
+                <td className="py-2 px-3 text-xs text-gray-500">30 Sep 2025</td>
+              </tr>
+              <tr className="border-b">
+                <td className="py-2 px-3">Compound #C54321</td>
+                <td className="py-2 px-3 text-red-600 font-bold">RM 50.00</td>
+                <td className="py-2 px-3 text-xs text-gray-500">15 Sep 2025</td>
+              </tr>
+              <tr>
+                <td className="py-2 px-3">Booth Rental Bill #B98765</td>
+                <td className="py-2 px-3 text-green-600 font-bold">RM 300.00</td>
+                <td className="py-2 px-3 text-xs text-gray-500">10 Oct 2025</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <Spacing size="lg" />
+        <LineSeparator />
+
         <Heading level={2} align="left" bold>
           {t('dashboard.featuresTitle')}
         </Heading>
