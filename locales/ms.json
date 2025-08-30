@@ -191,14 +191,14 @@
       "miscBills": "Bayaran Bil Pelbagai",
       "businessRegistration": "Pendaftaran Perniagaan & Perlesenan",
       "accountStaffMgmt": "Pengurusan Akaun & Staf Perniagaan",
-      "myskb": "Permit Bangunan Sementara (MySKB)",
+      "myskb": "Permit Bangunan Sementara MBMB",
       "announcements": "Pengumuman & Berita"
     },
     "roles": {
       "guest": { "label": "Tetamu", "desc": "Boleh lihat pengumuman dan capaian awam" },
       "personal": { "label": "Peribadi", "desc": "Boleh daftar perniagaan, bayar cukai dan akses gerai" },
-      "business": { "label": "Perniagaan", "desc": "Boleh daftar sebagai perunding dan akses modul MySKB" },
-      "consultant": { "label": "Perunding", "desc": "Boleh hantar projek permit sementara dan pembaharuan lesen" }
+      "business": { "label": "Perniagaan", "desc": "Boleh daftar sebagai perunding dan akses modul MBMB" },
+      "consultant": { "label": "Perunding", "desc": "Boleh hantar projek permit sementara dan pembaharuan permit" }
     }
   },
   "report": {

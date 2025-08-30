@@ -98,7 +98,7 @@
   }
   ,
   "login": {
-    "title": "Sign in to your account",
+    "title": "Sign in to your accounts",
     "forgot": "Forgot Password?",
     "signIn": "Sign in",
     "continueGuest": "Continue as Guest"
@@ -191,14 +191,14 @@
       "miscBills": "Miscellaneous Bills",
       "businessRegistration": "Business Registration & Licensing",
       "accountStaffMgmt": "Account & Business Staff Management",
-      "myskb": "MySKB Temporary Building Permit",
+      "myskb": "MBMB Temporary Building Permit",
       "announcements": "Announcements & News"
     },
     "roles": {
       "guest": { "label": "Guest", "desc": "Can view announcements and public access" },
       "personal": { "label": "Personal", "desc": "Can register businesses, pay taxes, and access booths" },
-      "business": { "label": "Business", "desc": "Can register as consultant and access MySKB module" },
-      "consultant": { "label": "Consultant", "desc": "Can submit temporary building permit projects and renew licenses" }
+      "business": { "label": "Business", "desc": "Can register as consultant and access MBMB module" },
+      "consultant": { "label": "Consultant", "desc": "Can submit temporary building permit projects and renew permit" }
     }
   },
   "report": {
