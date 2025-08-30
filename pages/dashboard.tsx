@@ -27,9 +27,9 @@ export default function DashboardPage() {
 
   // ====== Mock data dari mesej anda (tukar RM-->number) ======
   const bills: Bill[] = [
-    { type: 'Assessment Tax Bill', account: '124090000257', amount: 120.00, due: '30 Sep 2025', color: 'text-emerald-600' },
-    { type: 'Compound',            account: 'KN-44328990',  amount:  50.00, due: '15 Sep 2025', color: 'text-red-600' },
-    { type: 'Booth Rental Bill',   account: '111290-01',     amount: 300.00, due: '10 Oct 2025', color: 'text-emerald-600' },
+    { type: 'Assessment Tax', account: '124090000257', amount: 120.00, due: '30 Sep 2025', color: 'text-emerald-600' },
+    { type: 'Compound', account: 'KN-44328990',  amount:  50.00, due: '15 Sep 2025', color: 'text-red-600' },
+    { type: 'Booth Rental', account: '111290-01',     amount: 300.00, due: '10 Oct 2025', color: 'text-emerald-600' },
   ];
 
   const invoices: Invoice[] = [
@@ -117,7 +117,6 @@ export default function DashboardPage() {
           <thead>
             <tr className="border-b">
               <th className="text-left py-2 px-3 font-semibold text-gray-700">Bill Type</th>
-              <th className="text-left py-2 px-3 font-semibold text-gray-700">Account Number</th>
               <th className="text-left py-2 px-3 font-semibold text-gray-700">Amount</th>
               <th className="text-left py-2 px-3 font-semibold text-gray-700">Due Date</th>
               <th className="text-right py-2 px-3 font-semibold text-gray-700">Action</th>
@@ -126,8 +125,7 @@ export default function DashboardPage() {
           <tbody>
             {bills.map((b, i) => (
               <tr key={i} className="border-b last:border-0">
-                <td className="py-2 px-3">{b.type}</td>
-                <td className="py-2 px-3">{b.account}</td>
+                <td className="py-2 px-3">{b.type} - {b.account}</td>
                 <td className={`py-2 px-3 font-bold ${b.color || 'text-gray-800'}`}>{fRM(b.amount)}</td>
                 <td className="py-2 px-3 text-xs text-gray-500">{b.due}</td>
                 <td className="py-2 px-3 text-right">
@@ -154,7 +152,7 @@ export default function DashboardPage() {
       <Heading level={2} align="left" bold>
         {t('dashboard.favoriteAccountsTitle', 'Invoices')}
       </Heading>
-      <TextLine>{t('dashboard.invoicesDesc', 'Below is a summary of your invoices.')}</TextLine>
+      <TextLine>{t('dashboard.invoicesDesc', 'Below is a summary of your invoices.Click on each invoice type for more details and payment options.')}</TextLine>
       <Spacing size="sm" />
       <div className="bg-white shadow rounded-lg p-6 overflow-x-auto">
         <table className="min-w-full text-sm">
