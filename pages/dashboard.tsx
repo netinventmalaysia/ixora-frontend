@@ -61,23 +61,27 @@ export default function DashboardPage() {
                     <thead>
                         <tr className="border-b">
                             <th className="text-left py-2 px-3 font-semibold text-gray-700">Bill Type</th>
+                            <th className="text-left py-2 px-3 font-semibold text-gray-700">Account Number</th>
                             <th className="text-left py-2 px-3 font-semibold text-gray-700">Amount</th>
                             <th className="text-left py-2 px-3 font-semibold text-gray-700">Due Date</th>
                         </tr>
                     </thead>
                     <tbody>
                         <tr className="border-b">
-                            <td className="py-2 px-3">Assessment Tax Bill #A12345</td>
+                            <td className="py-2 px-3">Assessment Tax Bill</td>
+                            <td className="py-2 px-3">124090000257</td>
                             <td className="py-2 px-3 text-green-600 font-bold">RM 120.00</td>
                             <td className="py-2 px-3 text-xs text-gray-500">30 Sep 2025</td>
                         </tr>
                         <tr className="border-b">
-                            <td className="py-2 px-3">Compound #C54321</td>
+                            <td className="py-2 px-3">Compound</td>
+                            <td className="py-2 px-3">KN-44328990</td>
                             <td className="py-2 px-3 text-red-600 font-bold">RM 50.00</td>
                             <td className="py-2 px-3 text-xs text-gray-500">15 Sep 2025</td>
                         </tr>
                         <tr>
-                            <td className="py-2 px-3">Booth Rental Bill #B98765</td>
+                            <td className="py-2 px-3">Booth Rental Bill</td>
+                            <td className="py-2 px-3">111290-01</td>
                             <td className="py-2 px-3 text-green-600 font-bold">RM 300.00</td>
                             <td className="py-2 px-3 text-xs text-gray-500">10 Oct 2025</td>
                         </tr>
