@@ -64,7 +64,7 @@ export default function DashboardPage() {
         <LineSeparator />
 
         <Heading level={2} align="left" bold>
-          {t('dashboard.rolesTitle', 'Matriks Peranan Pengguna')}
+          {t('dashboard.rolesTitle', 'User Role Matrix')}
         </Heading>
        <Spacing size="sm" />
         <ul className="list-disc list-inside text-gray-700 text-base space-y-2">
@@ -78,7 +78,7 @@ export default function DashboardPage() {
         <LineSeparator />
 
         <Heading level={2} align="left" bold>
-          {t('dashboard.announcementsTitle', 'Berita & Pengumuman Terkini')}
+          {t('dashboard.announcementsTitle', 'Latest News and Announcements')}
         </Heading>
         <Spacing size="sm" />
         <ul className="list-none space-y-4">
