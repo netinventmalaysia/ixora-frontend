@@ -1,11 +1,21 @@
-import {useEffect, useMemo, useState} from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import SidebarLayout from '@/components/main/SidebarLayout';
 import Heading from '@/components/forms/Heading';
 import Spacing from '@/components/forms/Spacing';
 import LineSeparator from '@/components/forms/LineSeparator';
 import TextLine from '@/components/forms/HyperText';
-import {CheckCircleIcon} from '@heroicons/react/24/solid';
-import {useTranslation} from '@/utils/i18n';
+import { CheckCircleIcon } from '@heroicons/react/24/solid';
+import { useTranslation } from '@/utils/i18n';
+import {
+  Table,
+  TableBody,
+  TableCaption,
+  TableCell,
+  TableFooter,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from '@/components/ui/table';
 
 type Bill = {
   type: string;
@@ -23,7 +33,7 @@ type Invoice = {
 };
 
 export default function DashboardPage() {
-  const {t} = useTranslation();
+  const { t } = useTranslation();
 
   // ====== Mock data dari mesej anda (tukar RM-->number) ======
   const bills: Bill[] = [
@@ -113,37 +123,38 @@ export default function DashboardPage() {
       </TextLine>
       <Spacing size="sm" />
       <div className="bg-white shadow rounded-lg p-6 overflow-x-auto">
-        <table className="min-w-full text-sm">
-          <thead>
-            <tr className="border-b">
-              <th className="text-left py-2 px-3 font-semibold text-gray-700">Bill Type</th>
-              <th className="text-left py-2 px-3 font-semibold text-gray-700">Amount</th>
-              <th className="text-left py-2 px-3 font-semibold text-gray-700">Due Date</th>
-              <th className="text-right py-2 px-3 font-semibold text-gray-700">Action</th>
-            </tr>
-          </thead>
-          <tbody>
+        <Table>
+          <TableCaption className="sr-only">{t('dashboard.billsTitle', 'Your Bills')}</TableCaption>
+          <TableHeader>
+            <TableRow>
+              <TableHead className="w-[45%]">Bill Type</TableHead>
+              <TableHead>Amount</TableHead>
+              <TableHead>Due Date</TableHead>
+              <TableHead className="text-right">Action</TableHead>
+            </TableRow>
+          </TableHeader>
+          <TableBody>
             {bills.map((b, i) => (
-              <tr key={i} className="border-b last:border-0">
-                <td className="py-2 px-3">{b.type} - {b.account}</td>
-                <td className={`py-2 px-3 font-bold ${b.color || 'text-gray-800'}`}>{fRM(b.amount)}</td>
-                <td className="py-2 px-3 text-xs text-gray-500">{b.due}</td>
-                <td className="py-2 px-3 text-right">
+              <TableRow key={i}>
+                <TableCell>{b.type} - {b.account}</TableCell>
+                <TableCell className={`font-bold ${b.color || 'text-gray-800'}`}>{fRM(b.amount)}</TableCell>
+                <TableCell className="text-xs text-gray-500">{b.due}</TableCell>
+                <TableCell className="text-right">
                   <button className="inline-flex items-center px-3 py-1.5 rounded-md bg-[#00A7A6] text-white hover:opacity-90">
                     Bayar
                   </button>
-                </td>
-              </tr>
+                </TableCell>
+              </TableRow>
             ))}
-          </tbody>
-          <tfoot>
-            <tr>
-              <td className="py-3 px-3 font-semibold" colSpan={2}>Total</td>
-              <td className="py-3 px-3 font-extrabold">{fRM(totals.billTotal)}</td>
-              <td colSpan={2}></td>
-            </tr>
-          </tfoot>
-        </table>
+          </TableBody>
+          <TableFooter>
+            <TableRow>
+              <TableCell colSpan={2} className="font-semibold">Total</TableCell>
+              <TableCell className="font-extrabold">{fRM(totals.billTotal)}</TableCell>
+              <TableCell />
+            </TableRow>
+          </TableFooter>
+        </Table>
       </div>
 
       <Spacing size="lg" />
@@ -155,37 +166,38 @@ export default function DashboardPage() {
       <TextLine>{t('dashboard.invoicesDesc', 'Below is a summary of your invoices.Click on each invoice type for more details and payment options.')}</TextLine>
       <Spacing size="sm" />
       <div className="bg-white shadow rounded-lg p-6 overflow-x-auto">
-        <table className="min-w-full text-sm">
-          <thead>
-            <tr className="border-b">
-              <th className="text-left py-2 px-3 font-semibold text-gray-700">Invoice Type</th>
-              <th className="text-left py-2 px-3 font-semibold text-gray-700">Amount</th>
-              <th className="text-left py-2 px-3 font-semibold text-gray-700">Due Date</th>
-              <th className="text-right py-2 px-3 font-semibold text-gray-700">Action</th>
-            </tr>
-          </thead>
-          <tbody>
+        <Table>
+          <TableCaption className="sr-only">{t('dashboard.favoriteAccountsTitle', 'Invoices')}</TableCaption>
+          <TableHeader>
+            <TableRow>
+              <TableHead className="w-[45%]">Invoice Type</TableHead>
+              <TableHead>Amount</TableHead>
+              <TableHead>Due Date</TableHead>
+              <TableHead className="text-right">Action</TableHead>
+            </TableRow>
+          </TableHeader>
+          <TableBody>
             {invoices.map((inv, i) => (
-              <tr key={i} className="border-b last:border-0">
-                <td className="py-2 px-3">{inv.type}</td>
-                <td className={`py-2 px-3 font-bold ${inv.color || 'text-gray-800'}`}>{fRM(inv.amount)}</td>
-                <td className="py-2 px-3 text-xs text-gray-500">{inv.due}</td>
-                <td className="py-2 px-3 text-right">
+              <TableRow key={i}>
+                <TableCell>{inv.type}</TableCell>
+                <TableCell className={`font-bold ${inv.color || 'text-gray-800'}`}>{fRM(inv.amount)}</TableCell>
+                <TableCell className="text-xs text-gray-500">{inv.due}</TableCell>
+                <TableCell className="text-right">
                   <button className="inline-flex items-center px-3 py-1.5 rounded-md bg-[#B01C2F] text-white hover:opacity-90">
                     Bayar / Lihat
                   </button>
-                </td>
-              </tr>
+                </TableCell>
+              </TableRow>
             ))}
-          </tbody>
-          <tfoot>
-            <tr>
-              <td className="py-3 px-3 font-semibold">Total</td>
-              <td className="py-3 px-3 font-extrabold">{fRM(totals.invoiceTotal)}</td>
-              <td colSpan={2}></td>
-            </tr>
-          </tfoot>
-        </table>
+          </TableBody>
+          <TableFooter>
+            <TableRow>
+              <TableCell className="font-semibold">Total</TableCell>
+              <TableCell className="font-extrabold">{fRM(totals.invoiceTotal)}</TableCell>
+              <TableCell colSpan={2} />
+            </TableRow>
+          </TableFooter>
+        </Table>
       </div>
 
       <Spacing size="lg" />
