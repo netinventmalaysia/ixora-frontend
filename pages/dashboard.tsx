@@ -1,193 +1,212 @@
-import {useEffect, useState} from 'react';
-import SidebarContent from '@/components/main/Sidebar';
+import {useEffect, useMemo, useState} from 'react';
+import SidebarLayout from '@/components/main/SidebarLayout';
 import Heading from '@/components/forms/Heading';
-import {useTranslation} from '@/utils/i18n';
 import Spacing from '@/components/forms/Spacing';
 import LineSeparator from '@/components/forms/LineSeparator';
 import TextLine from '@/components/forms/HyperText';
 import {CheckCircleIcon} from '@heroicons/react/24/solid';
-import {teams, logoUrl} from '@/components/main/SidebarConfig';
-import SidebarLayout from '@/components/main/SidebarLayout';
+import {useTranslation} from '@/utils/i18n';
+
+type Bill = {
+  type: string;
+  account: string;
+  amount: number;   // simpan nombor (senang kira)
+  due: string;      // paparan tarikh
+  color?: string;   // tailwind text color utk amaun (optional)
+};
+
+type Invoice = {
+  type: string;
+  amount: number;
+  due: string;
+  color?: string;
+};
 
 export default function DashboardPage() {
-    const {t} = useTranslation();
-    const [userRole,
-        setUserRole] = useState < string > ('');
-    const [username,
-        setUsername] = useState < string > ('');
-    const [email,
-        setEmail] = useState < string > ('');
+  const {t} = useTranslation();
 
-    useEffect(() => {
-        const role = localStorage.getItem('userRole');
-        setUserRole(role || '');
-        setUsername(localStorage.getItem('username') || '');
-        setEmail(localStorage.getItem('email') || '');
+  // ====== Mock data dari mesej anda (tukar RM-->number) ======
+  const bills: Bill[] = [
+    { type: 'Assessment Tax', account: '124090000257', amount: 120.00, due: '30 Sep 2025', color: 'text-emerald-600' },
+    { type: 'Compound', account: 'KN-44328990',  amount:  50.00, due: '15 Sep 2025', color: 'text-red-600' },
+    { type: 'Booth Rental', account: '111290-01',     amount: 300.00, due: '10 Oct 2025', color: 'text-emerald-600' },
+  ];
 
-    }, []);
+  const invoices: Invoice[] = [
+    { type: 'Invoice Permit #P11223',  amount:  80.00, due: '05 Sep 2025', color: 'text-emerald-600' },
+    { type: 'Invoice Licence #L33445', amount: 150.00, due: '20 Sep 2025', color: 'text-sky-600' },
+    { type: 'Invoice Thypoid #T55667', amount:  40.00, due: '25 Sep 2025', color: 'text-amber-600' },
+  ];
 
-    const features = [
-        t('dashboard.features.assessmentTax'),
-        t('dashboard.features.compoundPayments'),
-        t('dashboard.features.boothRental'),
-        t('dashboard.features.miscBills'),
-        t('dashboard.features.businessRegistration'),
-        t('dashboard.features.accountStaffMgmt'),
-        t('dashboard.features.myskb'),
-        t('dashboard.features.announcements')
-    ];
+  // ====== Helpers ======
+  const fRM = (n: number) => `RM ${n.toFixed(2)}`;
 
-    return (
-        <SidebarLayout>
-            <Heading level={1} align="left" bold>
-                {t('dashboard.welcome')}
-            </Heading>
-            <TextLine>
-                {t('dashboard.description')}
-            </TextLine>
+  const totals = useMemo(() => {
+    const billTotal = bills.reduce((s, b) => s + b.amount, 0);
+    const invoiceTotal = invoices.reduce((s, i) => s + i.amount, 0);
+    // cari due paling hampir
+    const asDate = (d: string) => new Date(d.replace(/(\d{2}) (\w{3}) (\d{4})/, '$3-$2-$1'));
+    const nextBill = [...bills].sort((a,b)=>+asDate(a.due)-+asDate(b.due))[0];
+    const nextInvoice = [...invoices].sort((a,b)=>+asDate(a.due)-+asDate(b.due))[0];
+    return { billTotal, invoiceTotal, nextBill, nextInvoice };
+  }, [bills, invoices]);
 
-            <Spacing size="lg"/>
+  const features = [
+    t('dashboard.features.assessmentTax'),
+    t('dashboard.features.compoundPayments'),
+    t('dashboard.features.boothRental'),
+    t('dashboard.features.miscBills'),
+    t('dashboard.features.businessRegistration'),
+    t('dashboard.features.accountStaffMgmt'),
+    t('dashboard.features.myskb'),
+    t('dashboard.features.announcements')
+  ];
 
-            <Heading level={2} align="left" bold>
-                {t('dashboard.billsTitle', 'Your Bills')}
-                <TextLine>
-                    Below is a summary of your current bills. Click on each bill type for more
-                    details and payment options.
-                </TextLine>
-            </Heading>
-            <Spacing size="sm"/> {/* Single card with table for bills */}
-            <div className="bg-white shadow rounded-lg p-6">
-                <table className="min-w-full">
-                    <thead>
-                        <tr className="border-b">
-                            <th className="text-left py-2 px-3 font-semibold text-gray-700">Bill Type</th>
-                            <th className="text-left py-2 px-3 font-semibold text-gray-700">Account Number</th>
-                            <th className="text-left py-2 px-3 font-semibold text-gray-700">Amount</th>
-                            <th className="text-left py-2 px-3 font-semibold text-gray-700">Due Date</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr className="border-b">
-                            <td className="py-2 px-3">Assessment Tax Bill</td>
-                            <td className="py-2 px-3">124090000257</td>
-                            <td className="py-2 px-3 text-green-600 font-bold">RM 120.00</td>
-                            <td className="py-2 px-3 text-xs text-gray-500">30 Sep 2025</td>
-                        </tr>
-                        <tr className="border-b">
-                            <td className="py-2 px-3">Compound</td>
-                            <td className="py-2 px-3">KN-44328990</td>
-                            <td className="py-2 px-3 text-red-600 font-bold">RM 50.00</td>
-                            <td className="py-2 px-3 text-xs text-gray-500">15 Sep 2025</td>
-                        </tr>
-                        <tr>
-                            <td className="py-2 px-3">Booth Rental Bill</td>
-                            <td className="py-2 px-3">111290-01</td>
-                            <td className="py-2 px-3 text-green-600 font-bold">RM 300.00</td>
-                            <td className="py-2 px-3 text-xs text-gray-500">10 Oct 2025</td>
-                        </tr>
-                    </tbody>
-                </table>
-            </div>
+  return (
+    <SidebarLayout>
+      <Heading level={1} align="left" bold>
+        {t('dashboard.welcome', 'Welcome to MBMB IXORA')}
+      </Heading>
+      <TextLine>
+        {t('dashboard.description', 'MBMB IXORA is the official digital portal of Majlis Bandaraya Melaka Bersejarah that simplifies citizen and business transactions online.')}
+      </TextLine>
 
-            <Spacing size="lg"/>
+      <Spacing size="lg" />
 
-            <Heading level={2} align="left" bold>
-                {t('dashboard.favoriteAccountsTitle', 'Invoices')}
-            </Heading>
-            <TextLine>
-                Below is a summary of your invoices.
-            </TextLine>
-            <Spacing size="sm"/> {/* Single card with table for favorite accounts */}
-            <div className="bg-white shadow rounded-lg p-6">
-                <table className="min-w-full">
-                    <thead>
-                        <tr className="border-b">
-                            <th className="text-left py-2 px-3 font-semibold text-gray-700">Invoice Type</th>
-                            <th className="text-left py-2 px-3 font-semibold text-gray-700">Amount</th>
-                            <th className="text-left py-2 px-3 font-semibold text-gray-700">Due Date</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr className="border-b">
-                            <td className="py-2 px-3">Invoice Permit #P11223</td>
-                            <td className="py-2 px-3 text-green-600 font-bold">RM 80.00</td>
-                            <td className="py-2 px-3 text-xs text-gray-500">05 Sep 2025</td>
-                        </tr>
-                        <tr className="border-b">
-                            <td className="py-2 px-3">Invoice Licence #L33445</td>
-                            <td className="py-2 px-3 text-blue-600 font-bold">RM 150.00</td>
-                            <td className="py-2 px-3 text-xs text-gray-500">20 Sep 2025</td>
-                        </tr>
-                        <tr>
-                            <td className="py-2 px-3">Invoice Thypoid #T55667</td>
-                            <td className="py-2 px-3 text-yellow-600 font-bold">RM 40.00</td>
-                            <td className="py-2 px-3 text-xs text-gray-500">25 Sep 2025</td>
-                        </tr>
-                    </tbody>
-                </table>
-            </div>
+      {/* ===================== SUMMARY CARDS (HYBRID) ===================== */}
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+        {/* Total Bills */}
+        <div className="bg-white shadow rounded-lg p-5">
+          <div className="text-xs uppercase text-gray-500">Jumlah Bil</div>
+          <div className="mt-1 text-2xl font-bold">{fRM(totals.billTotal)}</div>
+          <div className="mt-2 text-sm text-gray-500">Bil aktif: {bills.length}</div>
+        </div>
 
-            <Spacing size="lg"/>
-            <LineSeparator/>
+        {/* Total Invoices */}
+        <div className="bg-white shadow rounded-lg p-5">
+          <div className="text-xs uppercase text-gray-500">Jumlah Invois</div>
+          <div className="mt-1 text-2xl font-bold">{fRM(totals.invoiceTotal)}</div>
+          <div className="mt-2 text-sm text-gray-500">Invois aktif: {invoices.length}</div>
+        </div>
 
-            <Heading level={2} align="left" bold>
-                {t('dashboard.featuresTitle')}
-            </Heading>
-            <Spacing size="sm"/>
-            <ul className="space-y-2">
-                {features.map((feature, index) => (
-                    <li key={index} className="flex items-center gap-2 text-gray-700 text-base">
-                        <CheckCircleIcon className="h-5 w-5 text-green-600"/>
-                        <span>{feature}</span>
-                    </li>
-                ))}
-            </ul>
+        {/* Combined Total */}
+        <div className="bg-white shadow rounded-lg p-5">
+          <div className="text-xs uppercase text-gray-500">Jumlah Bil + Invois</div>
+          <div className="mt-1 text-2xl font-bold">
+            {fRM((totals.billTotal || 0) + (totals.invoiceTotal || 0))}
+          </div>
+          <div className="mt-2 text-sm text-gray-500">
+            Keseluruhan: {bills.length + invoices.length} rekod
+          </div>
+        </div>
+      </div>
 
-            <Spacing size="lg"/>
-            <LineSeparator/>
 
-            <Heading level={2} align="left" bold>
-                {t('dashboard.rolesTitle', 'User Role Matrix')}
-            </Heading>
-            <Spacing size="sm"/>
-            <ul className="list-disc list-inside text-gray-700 text-base space-y-2">
-                <li>
-                    <strong>{t('dashboard.roles.guest.label')}:</strong>
-                    {t('dashboard.roles.guest.desc')}</li>
-                <li>
-                    <strong>{t('dashboard.roles.personal.label')}:</strong>
-                    {t('dashboard.roles.personal.desc')}</li>
-                <li>
-                    <strong>{t('dashboard.roles.business.label')}:</strong>
-                    {t('dashboard.roles.business.desc')}</li>
-                <li>
-                    <strong>{t('dashboard.roles.consultant.label')}:</strong>
-                    {t('dashboard.roles.consultant.desc')}</li>
-            </ul>
+      <Spacing size="lg" />
 
-            <Spacing size="lg"/>
-            <LineSeparator/>
+      {/* ===================== BILLS TABLE ===================== */}
+      <Heading level={2} align="left" bold>
+        {t('dashboard.billsTitle', 'Your Bills')}
+      </Heading>
+      <TextLine>
+        {t('dashboard.billsDesc', 'Below is a summary of your current bills. Click on each bill type for more details and payment options.')}
+      </TextLine>
+      <Spacing size="sm" />
+      <div className="bg-white shadow rounded-lg p-6 overflow-x-auto">
+        <table className="min-w-full text-sm">
+          <thead>
+            <tr className="border-b">
+              <th className="text-left py-2 px-3 font-semibold text-gray-700">Bill Type</th>
+              <th className="text-left py-2 px-3 font-semibold text-gray-700">Amount</th>
+              <th className="text-left py-2 px-3 font-semibold text-gray-700">Due Date</th>
+              <th className="text-right py-2 px-3 font-semibold text-gray-700">Action</th>
+            </tr>
+          </thead>
+          <tbody>
+            {bills.map((b, i) => (
+              <tr key={i} className="border-b last:border-0">
+                <td className="py-2 px-3">{b.type} - {b.account}</td>
+                <td className={`py-2 px-3 font-bold ${b.color || 'text-gray-800'}`}>{fRM(b.amount)}</td>
+                <td className="py-2 px-3 text-xs text-gray-500">{b.due}</td>
+                <td className="py-2 px-3 text-right">
+                  <button className="inline-flex items-center px-3 py-1.5 rounded-md bg-[#00A7A6] text-white hover:opacity-90">
+                    Bayar
+                  </button>
+                </td>
+              </tr>
+            ))}
+          </tbody>
+          <tfoot>
+            <tr>
+              <td className="py-3 px-3 font-semibold" colSpan={2}>Total</td>
+              <td className="py-3 px-3 font-extrabold">{fRM(totals.billTotal)}</td>
+              <td colSpan={2}></td>
+            </tr>
+          </tfoot>
+        </table>
+      </div>
 
-            <Heading level={2} align="left" bold>
-                {t('dashboard.announcementsTitle', 'Latest News and Announcements')}
-            </Heading>
-            <Spacing size="sm"/>
-            <ul className="list-none space-y-4">
-                <li>
-                    <Heading level={4}>13 Julai 2025 - Notis Penutupan Gerai Sementara</Heading>
-                    <TextLine>Semua gerai di Jalan Hang Tuah akan ditutup mulai 15 Julai bagi
-                        kerja-kerja penyelenggaraan.</TextLine>
-                </li>
-                <li>
-                    <Heading level={4}>1 Julai 2025 - Pembukaan Permohonan Gerai Baharu</Heading>
-                    <TextLine>Permohonan sewaan gerai bagi suku ketiga tahun 2025 kini dibuka di
-                        bawah menu "Gerai".</TextLine>
-                </li>
-            </ul>
+      <Spacing size="lg" />
 
-            <Spacing size="lg"/>
-            <LineSeparator/>
+      {/* ===================== INVOICES TABLE ===================== */}
+      <Heading level={2} align="left" bold>
+        {t('dashboard.favoriteAccountsTitle', 'Invoices')}
+      </Heading>
+      <TextLine>{t('dashboard.invoicesDesc', 'Below is a summary of your invoices.Click on each invoice type for more details and payment options.')}</TextLine>
+      <Spacing size="sm" />
+      <div className="bg-white shadow rounded-lg p-6 overflow-x-auto">
+        <table className="min-w-full text-sm">
+          <thead>
+            <tr className="border-b">
+              <th className="text-left py-2 px-3 font-semibold text-gray-700">Invoice Type</th>
+              <th className="text-left py-2 px-3 font-semibold text-gray-700">Amount</th>
+              <th className="text-left py-2 px-3 font-semibold text-gray-700">Due Date</th>
+              <th className="text-right py-2 px-3 font-semibold text-gray-700">Action</th>
+            </tr>
+          </thead>
+          <tbody>
+            {invoices.map((inv, i) => (
+              <tr key={i} className="border-b last:border-0">
+                <td className="py-2 px-3">{inv.type}</td>
+                <td className={`py-2 px-3 font-bold ${inv.color || 'text-gray-800'}`}>{fRM(inv.amount)}</td>
+                <td className="py-2 px-3 text-xs text-gray-500">{inv.due}</td>
+                <td className="py-2 px-3 text-right">
+                  <button className="inline-flex items-center px-3 py-1.5 rounded-md bg-[#B01C2F] text-white hover:opacity-90">
+                    Bayar / Lihat
+                  </button>
+                </td>
+              </tr>
+            ))}
+          </tbody>
+          <tfoot>
+            <tr>
+              <td className="py-3 px-3 font-semibold">Total</td>
+              <td className="py-3 px-3 font-extrabold">{fRM(totals.invoiceTotal)}</td>
+              <td colSpan={2}></td>
+            </tr>
+          </tfoot>
+        </table>
+      </div>
 
-        </SidebarLayout>
-    );
+      <Spacing size="lg" />
+      <LineSeparator />
+
+      {/* ============== Features (kekal) ============== */}
+      <Heading level={2} align="left" bold>
+        {t('dashboard.featuresTitle', 'Features')}
+      </Heading>
+      <Spacing size="sm" />
+      <ul className="space-y-2">
+        {features.map((feature, index) => (
+          <li key={index} className="flex items-center gap-2 text-gray-700 text-base">
+            <CheckCircleIcon className="h-5 w-5 text-emerald-600"/>
+            <span>{feature}</span>
+          </li>
+        ))}
+      </ul>
+
+      <Spacing size="lg" />
+      <LineSeparator />
+    </SidebarLayout>
+  );
 }
