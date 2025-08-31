@@ -234,14 +234,26 @@ export interface VerificationListParams {
     offset?: number;
 }
 
-export const listPendingVerifications = async (params: VerificationListParams = {}) => {
+export interface VerificationListResponse {
+    data: any[];
+    total?: number;
+    limit?: number;
+    offset?: number;
+}
+
+export const listPendingVerifications = async (params: VerificationListParams = {}): Promise<VerificationListResponse> => {
     const { status, limit, offset } = params;
     const query: any = {};
     if (status) query.status = status;
     if (typeof limit === 'number') query.limit = String(limit);
     if (typeof offset === 'number') query.offset = String(offset);
     const { data } = await api.get('/verification/pending', { params: query });
-    return data;
+    // Backend wraps results as { data: [...], total, limit, offset }
+    if (data && Array.isArray(data.data)) {
+        return data as VerificationListResponse;
+    }
+    // Fallback if backend returns array directly
+    return { data: Array.isArray(data) ? data : [], total: 0, limit, offset } as VerificationListResponse;
 };
 
 export const reviewVerification = async (verificationId: number, status: VerificationStatusType, reason?: string) => {
