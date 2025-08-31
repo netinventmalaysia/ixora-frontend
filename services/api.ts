@@ -225,4 +225,38 @@ export const confirmEmailVerification = async (token: string) => {
     return data;
 };
 
+// ================= Verification (Document) =================
+export type VerificationStatusType = string; // backend enum; keep loose on FE
+
+export interface VerificationListParams {
+    status?: VerificationStatusType | VerificationStatusType[];
+    limit?: number;
+    offset?: number;
+}
+
+export const listPendingVerifications = async (params: VerificationListParams = {}) => {
+    const { status, limit, offset } = params;
+    const query: any = {};
+    if (status) query.status = status;
+    if (typeof limit === 'number') query.limit = String(limit);
+    if (typeof offset === 'number') query.offset = String(offset);
+    const { data } = await api.get('/verification/pending', { params: query });
+    return data;
+};
+
+export const reviewVerification = async (verificationId: number, status: VerificationStatusType, reason?: string) => {
+    const { data } = await api.patch(`/verification/${verificationId}/review`, { status, reason });
+    return data;
+};
+
+export const processVerification = async (verificationId: number) => {
+    const { data } = await api.patch(`/verification/${verificationId}/process`);
+    return data;
+};
+
+export const getLatestVerificationForBusiness = async (businessId: number) => {
+    const { data } = await api.get(`/verification/business/${businessId}/latest`);
+    return data;
+};
+
 export default api;
