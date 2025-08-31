@@ -48,8 +48,12 @@ export default function SidebarContent({
 }) {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [mode, setMode] = useState<'Personal' | 'Business'>(() => {
-    //const saved = localStorage.getItem('user-mode') ? localStorage.getItem('user-mode') : 'Personal';
-    //return saved === 'Business' || saved === 'Personal' ? saved : 'Personal';
+    try {
+      if (typeof window !== 'undefined') {
+        const saved = localStorage.getItem('user-mode') || 'Personal';
+        return saved === 'Business' || saved === 'Personal' ? (saved as 'Personal' | 'Business') : 'Personal';
+      }
+    } catch {}
     return 'Personal';
   });
 
@@ -79,6 +83,10 @@ export default function SidebarContent({
   useEffect(() => {
     const onStorage = (e: StorageEvent) => {
       if (e.key === 'userRole') setLocalUserRole(e.newValue || 'guest');
+      if (e.key === 'user-mode') {
+        const next = e.newValue === 'Business' ? 'Business' : 'Personal';
+        setMode(next);
+      }
     };
     const onUserChange = () => {
       try {
@@ -148,11 +156,12 @@ export default function SidebarContent({
           setBottomNav([]);
       }
     }
-  }, [mode, userRole]);
+  }, [mode, localUserRole]);
 
   const toggleMode = () => {
     const newMode = mode === 'Personal' ? 'Business' : 'Personal';
     console.log('Toggling mode to', newMode);
+  try { localStorage.setItem('user-mode', newMode); } catch {}
     setMode(newMode);
     router.push('/dashboard');
   };

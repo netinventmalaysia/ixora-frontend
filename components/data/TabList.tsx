@@ -8,3 +8,11 @@ export const businessTabs: Tab[] = [
   { name: 'Team', href: '#' },
   { name: 'Billing', href: '#' }, // no hardcoded 0
 ];
+
+export const myskbTabs: Tab[] = [
+  { name: 'Home', href: '#' },
+  { name: 'Registration', href: '#' },
+  { name: 'Ownership', href: '#' },
+  { name: 'Project', href: '#' },
+  { name: 'Application', href: '#' },
+];
