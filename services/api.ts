@@ -271,4 +271,20 @@ export const getLatestVerificationForBusiness = async (businessId: number) => {
     return data;
 };
 
+// ================= Vendors (Admin) =================
+export const generateVendorKey = async () => {
+    const { data } = await api.get('/vendors/generate-key');
+    return data; // { status, message, key }
+};
+
+export const createVendor = async (payload: { name: string; key: string; app_name: string }) => {
+    const { data } = await api.post('/vendors', payload);
+    return data; // saved Vendor
+};
+
+export const listVendors = async () => {
+    const { data } = await api.get('/vendors');
+    return data; // Vendor[]
+};
+
 export default api;
