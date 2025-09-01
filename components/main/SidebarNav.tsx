@@ -9,11 +9,13 @@ export default function SidebarNav({
   personal = [],
   bottom = [],
   teams = [],
+  personalLabel = 'Business',
 }: {
   general?: NavigationItem[];
   personal?: NavigationItem[];
   bottom?: NavigationItem[];
   teams?: TeamItem[];
+  personalLabel?: string;
 }) {
   return (
     <nav className="flex flex-1 flex-col justify-between">
@@ -42,9 +44,9 @@ export default function SidebarNav({
           </li>
         )}
 
-        {personal.length > 0 && (
+    {personal.length > 0 && (
           <li>
-            <div className="text-xs font-semibold leading-6 text-gray-400">Business</div>
+      <div className="text-xs font-semibold leading-6 text-gray-400">{personalLabel}</div>
             <ul role="list" className="-mx-2 mt-2 space-y-1">
               {personal.map((item) => (
                 <li key={item.name}>

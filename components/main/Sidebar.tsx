@@ -133,7 +133,8 @@ export default function SidebarContent({
           break;
         case 'admin':
           setGeneralNav([]);
-          setPersonalNav(withCurrent([...businessAppNavigation, ...adminNavigation].map(i => ({ ...i, name: (i as any).nameKey ? t((i as any).nameKey) : (i as any).name }))));
+          // Admin should not see My SKB; show only admin navigation
+          setPersonalNav(withCurrent(adminNavigation.map(i => ({ ...i, name: (i as any).nameKey ? t((i as any).nameKey) : (i as any).name }))));
           setBottomNav(withCurrent(userNavigation.map(i => ({ ...i, name: (i as any).nameKey ? t((i as any).nameKey) : (i as any).name }))));
           break;
         case 'account':
@@ -172,6 +173,8 @@ export default function SidebarContent({
 
   const showModeToggle = userRole !== 'guest';
   const sidebarBg = mode === 'Business' ? 'bg-zinc-900' : 'bg-gray-900';
+  const displayMode = localUserRole === 'admin' && mode === 'Business' ? 'Admin' : mode;
+  const personalLabel = localUserRole === 'admin' ? 'Admin' : 'Business';
 
   return (
     <div>
@@ -191,7 +194,7 @@ export default function SidebarContent({
               <div className="flex h-16 shrink-0 items-center">
                 <img alt="Your Company" src={logoUrl} className="h-8 w-auto" />
               </div>
-              <SidebarNav general={generalNav} personal={personalNav} bottom={bottomNav} teams={mode === 'Business' ? teams : []} />
+              <SidebarNav general={generalNav} personal={personalNav} bottom={bottomNav} teams={mode === 'Business' ? teams : []} personalLabel={personalLabel} />
             </div>
           </DialogPanel>
         </div>
@@ -206,7 +209,7 @@ export default function SidebarContent({
           {showModeToggle && (
             <div className="flex flex-col text-white">
               <div className="flex items-center justify-between">
-                <div className="text-sm font-semibold">Dashboard ({mode})</div>
+                <div className="text-sm font-semibold">Dashboard ({displayMode})</div>
                 {
                   // don't render toggle button at all for 'personal' or 'guest' roles
                   (userRole !== 'personal' && userRole !== 'guest') ? (
@@ -224,7 +227,7 @@ export default function SidebarContent({
               )}
             </div>
           )}
-          <SidebarNav general={generalNav} personal={personalNav} bottom={bottomNav} teams={mode === 'Business' ? teams : []} />
+          <SidebarNav general={generalNav} personal={personalNav} bottom={bottomNav} teams={mode === 'Business' ? teams : []} personalLabel={personalLabel} />
         </div>
       </div>
 
@@ -233,7 +236,7 @@ export default function SidebarContent({
         <button onClick={() => setSidebarOpen(true)} className="-m-2.5 p-2.5 text-gray-400">
           <Bars3Icon className="size-6" />
         </button>
-        <div className="flex-1 text-sm font-semibold text-white">Dashboard ({mode})</div>
+        <div className="flex-1 text-sm font-semibold text-white">Dashboard ({displayMode})</div>
         {showModeToggle && (userRole !== 'personal' && userRole !== 'guest') && (
           <button onClick={toggleMode} className="rounded bg-white/10 p-1 hover:bg-white/20">
             {mode === 'Personal' ? <BriefcaseIcon className="h-6 w-6 text-white" /> : <UserIcon className="h-6 w-6 text-white" />}
