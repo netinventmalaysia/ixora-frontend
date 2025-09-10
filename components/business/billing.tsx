@@ -8,7 +8,7 @@ import { invoices as staticInvoices } from '../data/CardList';
 import { statusColors } from '../config/StatusColors';
 import CardList from '../forms/CardList';
 import { businessNameOptions } from '../data/SelectionList';
-import { fetchMyBusinesses, fetchBillings } from '@/services/api';
+import { fetchMyBusinesses, fetchBillings, submitPayment } from '@/services/api';
 import toast from 'react-hot-toast';
 import SelectField from '../forms/SelectField';
 import { BillingActions } from '../config/ActionList';
@@ -64,11 +64,26 @@ export default function Billing() {
         .filter(item => selectedIds.includes(item.id))
         .reduce((sum, item) => sum + parseFloat(item.lastInvoice.amount.replace(/[^\d.-]/g, '')), 0);
 
-    const handlePaySelected = () => {
-        const selectedInvoices = sourceInvoices.filter((inv: any) => selectedIds.includes(inv.id));
-        // 👉 You can trigger your payment API here with selectedInvoices
-        alert(`Processing payment for ${selectedInvoices.length} item(s) totaling RM ${totalAmount.toFixed(2)}`);
-    };
+        const handlePaySelected = async () => {
+                const selectedInvoices = sourceInvoices.filter((inv: any) => selectedIds.includes(inv.id));
+                if (selectedInvoices.length === 0) return;
+
+                // For now, submit as one consolidated payment with total amount
+                const orderid = `IXOR-${Date.now()}`;
+                const amount = totalAmount.toFixed(2);
+                const bill_name = (typeof window !== 'undefined' ? (localStorage.getItem('name') || 'User') : 'User');
+                const bill_email = (typeof window !== 'undefined' ? (localStorage.getItem('email') || 'user@example.com') : 'user@example.com');
+                const bill_mobile = (typeof window !== 'undefined' ? (localStorage.getItem('mobile') || '0123456789') : '0123456789');
+                const bill_desc = selectedInvoices.map((s: any) => s?.name).filter(Boolean).join(', ').slice(0, 120) || 'IXORA';
+                const country = 'MY';
+
+                try {
+                    const res = await submitPayment({ orderid, amount, bill_name, bill_email, bill_mobile, bill_desc, country });
+                    alert(res?.message || 'Payment submitted');
+                } catch (e: any) {
+                    alert(e?.response?.data?.message || 'Failed to submit payment');
+                }
+        };
 
     useEffect(() => {
         // fetch user's businesses and populate select options (similar to Business Team Management)

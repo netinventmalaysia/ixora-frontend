@@ -287,4 +287,21 @@ export const listVendors = async () => {
     return data; // Vendor[]
 };
 
+// ================= Payments =================
+export interface PaymentSubmitPayload {
+    orderid: string;
+    amount: string; // e.g. "100.01"
+    bill_name: string;
+    bill_email: string;
+    bill_mobile: string;
+    bill_desc: string;
+    country: string; // e.g. "MY"
+}
+
+// Submit a payment to MBMB public API
+export const submitPayment = async (payload: PaymentSubmitPayload) => {
+    const { data } = await api.post('/mbmb/public/api/payment/submit', payload);
+    return data;
+};
+
 export default api;
