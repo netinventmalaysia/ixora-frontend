@@ -94,6 +94,11 @@ export default function Billing() {
 
                 try {
                     const res = await submitPayment({ orderid, amount, bill_name, bill_email, bill_mobile, bill_desc, country });
+                    if (res && typeof res.url === 'string' && res.url) {
+                        // Redirect user to payment gateway
+                        if (typeof window !== 'undefined') window.location.href = res.url;
+                        return;
+                    }
                     toast.success(getApiMessage(res, 'Payment submitted'));
                 } catch (e: any) {
                     const errMsg = getApiMessage(e?.response?.data ?? e?.message, 'Failed to submit payment');

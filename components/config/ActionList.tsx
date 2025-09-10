@@ -40,9 +40,13 @@ export const BillingActions = [
                 const bill_desc = item?.name || 'IXORA';
                 const country = 'MY';
 
-        const res = await submitPayment({ orderid, amount, bill_name, bill_email, bill_mobile, bill_desc, country });
-        const msg = typeof res?.message === 'string' ? res.message : 'Payment submitted';
-        toast.success(msg);
+                const res = await submitPayment({ orderid, amount, bill_name, bill_email, bill_mobile, bill_desc, country });
+                if (res && typeof res.url === 'string' && res.url) {
+                    if (typeof window !== 'undefined') window.location.href = res.url;
+                    return;
+                }
+                const msg = typeof res?.message === 'string' ? res.message : 'Payment submitted';
+                toast.success(msg);
             } catch (e: any) {
         const err = e?.response?.data?.message || e?.message || 'Failed to submit payment';
         toast.error(String(err));
