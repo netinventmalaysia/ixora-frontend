@@ -64,6 +64,21 @@ export default function Billing() {
         .filter(item => selectedIds.includes(item.id))
         .reduce((sum, item) => sum + parseFloat(item.lastInvoice.amount.replace(/[^\d.-]/g, '')), 0);
 
+        // Helper to get a readable message from API responses
+        const getApiMessage = (res: any, fallback: string) => {
+                if (!res) return fallback;
+                if (typeof res === 'string') return res;
+                if (typeof res?.message === 'string') return res.message;
+                if (typeof res?.msg === 'string') return res.msg;
+                if (res?.status && typeof res.status === 'string' && !/^(error|fail)/i.test(res.status)) return res.status;
+                try {
+                    const s = JSON.stringify(res?.message ?? res);
+                    return s.length > 140 ? fallback : s;
+                } catch {
+                    return fallback;
+                }
+        };
+
         const handlePaySelected = async () => {
                 const selectedInvoices = sourceInvoices.filter((inv: any) => selectedIds.includes(inv.id));
                 if (selectedInvoices.length === 0) return;
@@ -79,9 +94,10 @@ export default function Billing() {
 
                 try {
                     const res = await submitPayment({ orderid, amount, bill_name, bill_email, bill_mobile, bill_desc, country });
-                    alert(res?.message || 'Payment submitted');
+                    toast.success(getApiMessage(res, 'Payment submitted'));
                 } catch (e: any) {
-                    alert(e?.response?.data?.message || 'Failed to submit payment');
+                    const errMsg = getApiMessage(e?.response?.data ?? e?.message, 'Failed to submit payment');
+                    toast.error(errMsg);
                 }
         };
 

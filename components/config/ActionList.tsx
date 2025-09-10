@@ -11,6 +11,7 @@ export const RegistrationApplicationActions = [
 
 
 import { submitPayment } from '@/services/api';
+import toast from 'react-hot-toast';
 
 const parseAmount = (amountStr: string): string => {
     // Extract numeric value from strings like "RM 2,000.00"
@@ -25,11 +26,11 @@ export const BillingActions = [
     },
     {
         label: 'Download',
-        onClick: (item: any) => alert(`Download ${item.name}`),
+        onClick: (item: any) => toast.success(`Downloading ${item.name}`),
     },
     {
         label: 'Pay',
-        onClick: async (item: any) => {
+    onClick: async (item: any) => {
             try {
                 const orderid = `IXOR-${Date.now()}`;
                 const amount = parseAmount(item?.lastInvoice?.amount);
@@ -39,10 +40,12 @@ export const BillingActions = [
                 const bill_desc = item?.name || 'IXORA';
                 const country = 'MY';
 
-                const res = await submitPayment({ orderid, amount, bill_name, bill_email, bill_mobile, bill_desc, country });
-                alert(res?.message || 'Payment submitted');
+        const res = await submitPayment({ orderid, amount, bill_name, bill_email, bill_mobile, bill_desc, country });
+        const msg = typeof res?.message === 'string' ? res.message : 'Payment submitted';
+        toast.success(msg);
             } catch (e: any) {
-                alert(e?.response?.data?.message || 'Failed to submit payment');
+        const err = e?.response?.data?.message || e?.message || 'Failed to submit payment';
+        toast.error(String(err));
             }
         },
     },
@@ -54,16 +57,16 @@ export const MySkbActions = [
         onClick: (item : any) => console.log('View', item),
     },
     {
-        label: 'Download',
-        onClick: (item : any) => alert(`Download ${item.name}`),
+    label: 'Download',
+    onClick: (item : any) => toast.success(`Downloading ${item.name}`),
     },
     {
-        label: 'Pay',
-        onClick: (item : any) => alert(`Pay ${item.name}`),
+    label: 'Pay',
+    onClick: (item : any) => toast.success(`Pay ${item.name}`),
     },
     {
-        label: 'Withdraw',
-        onClick: (item : any) => alert(`Withdraw ${item.name}`),
+    label: 'Withdraw',
+    onClick: (item : any) => toast(`Withdraw ${item.name}`),
         danger: true,
     }
 ]
