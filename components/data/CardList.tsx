@@ -7,7 +7,7 @@ export const invoices: CardItem[] = [
     lastInvoice: {
       date: 'December 13, 2024',
       dateTime: '2024-12-13',
-      amount: 'RM 2,000.00',
+      amount: 'RM 200.00',
       status: 'Overdue',
     },
   },
