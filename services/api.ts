@@ -304,4 +304,84 @@ export const submitPayment = async (payload: PaymentSubmitPayload) => {
     return data;
 };
 
+// ================= MySKB Ownership =================
+export interface OwnershipItem {
+    id: number;
+    user_id?: number | null;
+    name?: string | null;
+    email: string;
+    role?: string | null;
+    project?: string | null;
+    avatar_url?: string | null;
+    last_seen_iso?: string | null;
+    status: 'Pending' | 'Approved' | 'Rejected';
+    scope?: 'project-only' | 'full';
+    allowed_tabs?: string[];
+    created_at?: string;
+    updated_at?: string;
+}
+
+export interface OwnershipListParams {
+    business_id: number;
+    status?: 'Pending' | 'Approved' | 'Rejected';
+    q?: string;
+    limit?: number;
+    offset?: number;
+    sort?: string; // e.g., "created_at:desc"
+}
+
+export interface OwnershipListResponse {
+    data: OwnershipItem[];
+    total: number;
+    limit: number;
+    offset: number;
+}
+
+export const listOwnerships = async (params: OwnershipListParams): Promise<OwnershipListResponse> => {
+    const { data } = await api.get('/myskb/ownership', { params });
+    // normalize minimal fallback
+    if (Array.isArray(data)) {
+        return { data, total: data.length, limit: data.length, offset: 0 } as any;
+    }
+    return data;
+};
+
+export const inviteOwnership = async (payload: { business_id: number; email: string; project?: string; role?: string }) => {
+    const { data } = await api.post('/myskb/ownership/invite', payload);
+    return data as { status: boolean; user_exists?: boolean; invited?: boolean; invite_email_sent?: boolean; created: OwnershipItem };
+};
+
+export const updateOwnership = async (id: number, patch: { status?: 'Pending' | 'Approved' | 'Rejected'; role?: string; project?: string }) => {
+    const { data } = await api.patch(`/myskb/ownership/${id}`, patch);
+    return data as OwnershipItem;
+};
+
+export const removeOwnership = async (id: number) => {
+    const { data } = await api.delete(`/myskb/ownership/${id}`);
+    return data as { message: string };
+};
+
+// ================= MySKB Access Control =================
+export interface MySkbAccess {
+    projectOnly?: boolean;
+    allowedTabs?: string[]; // e.g., ['Application']
+}
+
+// Query which tabs the current user is allowed to see in MySKB
+export const getMySkbAccess = async (): Promise<MySkbAccess> => {
+    try {
+        const { data } = await api.get('/myskb/ownership/access');
+        return data;
+    } catch (e) {
+        // Fallback: read local override if set for testing
+        if (typeof window !== 'undefined') {
+            const raw = localStorage.getItem('myskb_allowed_tabs');
+            if (raw) {
+                try { return { allowedTabs: JSON.parse(raw) }; } catch {}
+            }
+        }
+        return {};
+    }
+};
+
 export default api;
