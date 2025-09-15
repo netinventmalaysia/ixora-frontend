@@ -2,7 +2,7 @@ import { Dialog, DialogBackdrop, DialogPanel, TransitionChild } from '@headlessu
 import { Bars3Icon, BriefcaseIcon, UserIcon, XMarkIcon } from '@heroicons/react/24/outline';
 import { useState, useEffect, ReactNode } from 'react';
 
-import { BuildingOfficeIcon, HomeIcon, UsersIcon, FolderIcon, CalendarIcon, DocumentDuplicateIcon, ChartPieIcon, BookOpenIcon, KeyIcon, ArrowRightOnRectangleIcon, CogIcon, ReceiptPercentIcon, BriefcaseIcon as BizBriefcaseIcon, BuildingStorefrontIcon, RectangleStackIcon } from '@heroicons/react/24/outline';
+import { BuildingOfficeIcon, HomeIcon, UsersIcon, FolderIcon, CalendarIcon, DocumentDuplicateIcon, ChartPieIcon, BookOpenIcon, KeyIcon, ArrowRightOnRectangleIcon, CogIcon, ReceiptPercentIcon, BriefcaseIcon as BizBriefcaseIcon, BuildingStorefrontIcon, RectangleStackIcon, BellIcon } from '@heroicons/react/24/outline';
 import { ArrowRightCircleIcon } from '@heroicons/react/24/solid';
 
 export const superAdminNavigation = [
@@ -26,6 +26,7 @@ export const adminNavigation = [
   { name: 'MBMB API', href: '/admin/vendors', icon: KeyIcon, current: false },
   { name: 'User Management', href: '/admin/users', icon: UsersIcon, current: false },
   { name: 'Reports', href: '/admin/reports', icon: DocumentDuplicateIcon, current: false },
+  { name: 'Push Test', href: '/admin/push-test', icon: BellIcon, current: false },
 ];
 
 export const userNavigation = [
