@@ -377,7 +377,7 @@ export const getMySkbAccess = async (): Promise<MySkbAccess> => {
         if (typeof window !== 'undefined') {
             const raw = localStorage.getItem('myskb_allowed_tabs');
             if (raw) {
-                try { return { allowedTabs: JSON.parse(raw) }; } catch {}
+                try { return { allowedTabs: JSON.parse(raw) }; } catch { }
             }
         }
         return {};

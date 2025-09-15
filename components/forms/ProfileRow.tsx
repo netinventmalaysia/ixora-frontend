@@ -3,9 +3,11 @@ import { Profile } from '@/components/types/Profile';
 type ProfileRowProps = {
     profile: Profile[];
     actions?: (profile: Profile) => React.ReactNode;
+    // Optional label to use instead of the default "Online" fallback
+    onlineLabel?: string;
 };
 
-export default function ProfileRow({ profile, actions }: ProfileRowProps) {
+export default function ProfileRow({ profile, actions, onlineLabel }: ProfileRowProps) {
     return (
         <ul role="list" className="divide-y divide-gray-100">
             {profile.map((data) => (
@@ -31,7 +33,20 @@ export default function ProfileRow({ profile, actions }: ProfileRowProps) {
                             {(data.role || data.project) && (
                                 <p className="text-sm text-gray-900">{data.role ?? data.project}</p>
                             )}
-                            {data.lastSeen ? (
+                            {data.status ? (
+                                <div className="mt-1 flex items-center gap-x-1.5">
+                                    {/* Status pill colors: Pending=yellow, Approved=green, Rejected=red */}
+                                    {data.status === 'Pending' && (
+                                        <span className="inline-flex items-center rounded-full bg-yellow-100 px-2 py-0.5 text-xs font-medium text-yellow-800">Pending</span>
+                                    )}
+                                    {data.status === 'Approved' && (
+                                        <span className="inline-flex items-center rounded-full bg-emerald-100 px-2 py-0.5 text-xs font-medium text-emerald-800">Approved</span>
+                                    )}
+                                    {data.status === 'Rejected' && (
+                                        <span className="inline-flex items-center rounded-full bg-red-100 px-2 py-0.5 text-xs font-medium text-red-800">Rejected</span>
+                                    )}
+                                </div>
+                            ) : data.lastSeen ? (
                                 <p className="mt-1 text-xs text-gray-500">
                                     Last seen <time dateTime={data.lastSeenDateTime}>{data.lastSeen}</time>
                                 </p>
@@ -40,7 +55,7 @@ export default function ProfileRow({ profile, actions }: ProfileRowProps) {
                                     <div className="flex-none rounded-full bg-emerald-500/20 p-1">
                                         <div className="size-1.5 rounded-full bg-emerald-500" />
                                     </div>
-                                    <p className="text-xs text-gray-500">Online</p>
+                                    <p className="text-xs text-gray-500">{onlineLabel ?? 'Online'}</p>
                                 </div>
                             )}
                         </div>

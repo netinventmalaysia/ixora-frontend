@@ -203,6 +203,7 @@ export default function Ownership() {
 
                 <ProfileRow
                     profile={filteredProfiles}
+                    onlineLabel={currentTab === 'Request' ? 'Pending' : undefined}
                     actions={(profile) => (
                         <ProfileActionMenu
                             profile={profile}
