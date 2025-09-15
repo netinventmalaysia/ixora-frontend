@@ -22,11 +22,21 @@ export default function PushTestPage() {
   const [serverKey, setServerKey] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
   const [serverMessage, setServerMessage] = useState<string>('');
+  const [savedSubId, setSavedSubId] = useState<string | number | null>(null);
+  const [myUserId, setMyUserId] = useState<number | null>(null);
+  const [target, setTarget] = useState<'all' | 'me' | 'user' | 'sub'>('all');
+  const [targetUserId, setTargetUserId] = useState<string>('');
+  const [targetSubId, setTargetSubId] = useState<string>('');
 
   useEffect(() => {
     setSupported('serviceWorker' in navigator && 'PushManager' in window);
     setPermission(Notification.permission);
     navigator.serviceWorker.ready.then((reg) => setSwReady(reg));
+    // get userId from localStorage if present
+    try {
+      const uid = localStorage.getItem('userId');
+      if (uid) setMyUserId(Number(uid));
+    } catch {}
   }, []);
 
   // Load VAPID public key from backend if available
@@ -66,7 +76,11 @@ export default function PushTestPage() {
       const appServerKey = urlBase64ToUint8Array(publicKey);
       const sub = await swReady.pushManager.subscribe({ userVisibleOnly: true, applicationServerKey: (appServerKey as unknown as BufferSource) });
       setSubscription(sub);
-      try { await savePushSubscription(sub); } catch {}
+      try {
+        const res = await savePushSubscription(sub);
+        const id = (res && (res.id || res.subscriptionId)) ?? null;
+        if (id !== null) setSavedSubId(id);
+      } catch {}
     } catch (e) {
       console.error('Subscribe failed', e);
       alert('Subscribe failed: ' + (e as any)?.message);
@@ -93,7 +107,23 @@ export default function PushTestPage() {
     setBusy(true);
     setServerMessage('');
     try {
-      const res = await sendAdminTestPush({ title: 'Admin Server Push', body: 'This is a server-sent test', url: '/myskb/home' });
+      const base = { title: 'Admin Server Push', body: 'This is a server-sent test', url: '/myskb/home' } as any;
+      if (target === 'all') base.all = true;
+      if (target === 'me') {
+        if (!myUserId || Number.isNaN(myUserId)) throw new Error('No userId found in localStorage for "me" target');
+        base.userId = myUserId;
+      }
+      if (target === 'user') {
+        const uid = Number(targetUserId);
+        if (!uid || Number.isNaN(uid)) throw new Error('Enter a valid userId');
+        base.userId = uid;
+      }
+      if (target === 'sub') {
+        const sid = targetSubId?.trim();
+        if (!sid) throw new Error('Enter a subscriptionId');
+        base.subscriptionId = /^\d+$/.test(sid) ? Number(sid) : sid;
+      }
+      const res = await sendAdminTestPush(base);
       setServerMessage(typeof res?.message === 'string' ? res.message : 'Requested server to send push.');
     } catch (e: any) {
       setServerMessage('Server push failed: ' + (e?.response?.data?.message || e?.message || 'Unknown error'));
@@ -142,6 +172,9 @@ export default function PushTestPage() {
               disabled={!subscription}
             >Unsubscribe</button>
           </div>
+          {savedSubId !== null && (
+            <p className="mt-2 text-xs text-gray-600">Saved subscription id: <span className="font-mono">{String(savedSubId)}</span></p>
+          )}
         </div>
 
         <div>
@@ -167,6 +200,32 @@ export default function PushTestPage() {
 
         <div className="mt-6 border-t pt-4">
           <p className="text-sm font-medium">Server Push Test</p>
+          <div className="mt-2 grid grid-cols-1 md:grid-cols-2 gap-3">
+            <div className="rounded border p-3">
+              <label className="text-xs font-medium text-gray-700">Target</label>
+              <div className="mt-2 flex flex-col gap-2 text-sm">
+                <label className="inline-flex items-center gap-2"><input type="radio" name="target" checked={target==='all'} onChange={()=>setTarget('all')} /> Broadcast (all)</label>
+                <label className="inline-flex items-center gap-2"><input type="radio" name="target" checked={target==='me'} onChange={()=>setTarget('me')} /> My User ID {myUserId ? <span className="ml-1 text-xs text-gray-600">({myUserId})</span> : <span className="ml-1 text-xs text-rose-600">(not found)</span>}</label>
+                <label className="inline-flex items-center gap-2"><input type="radio" name="target" checked={target==='user'} onChange={()=>setTarget('user')} /> Specific User ID</label>
+                {target==='user' && (
+                  <input className="mt-1 w-full rounded border px-2 py-1 text-sm" placeholder="e.g. 123" value={targetUserId} onChange={(e)=>setTargetUserId(e.target.value)} />
+                )}
+                <label className="inline-flex items-center gap-2"><input type="radio" name="target" checked={target==='sub'} onChange={()=>setTarget('sub')} /> Specific Subscription ID</label>
+                {target==='sub' && (
+                  <input className="mt-1 w-full rounded border px-2 py-1 text-sm" placeholder="e.g. 456 or UUID" value={targetSubId} onChange={(e)=>setTargetSubId(e.target.value)} />
+                )}
+              </div>
+            </div>
+            <div className="rounded border p-3">
+              <p className="text-xs text-gray-600">Examples for POST /push/test:</p>
+              <pre className="mt-2 text-[11px] bg-gray-50 border p-2 rounded overflow-auto">
+{`Broadcast: { "all": true, "title": "Admin Server Push", "body": "This is a server-sent test", "url": "/myskb/home" }
+Specific user: { "userId": 123, "title": "Admin Server Push", "body": "This is a server-sent test", "url": "/myskb/home" }
+Specific subscription: { "subscriptionId": 456, "title": "Admin Server Push", "body": "This is a server-sent test", "url": "/myskb/home" }`}
+              </pre>
+              <p className="mt-2 text-xs text-gray-500">Ensure at least one subscription exists for the selected target.</p>
+            </div>
+          </div>
           <div className="mt-2 flex gap-2">
             <button
               className="px-3 py-1.5 rounded bg-emerald-600 text-white text-sm"

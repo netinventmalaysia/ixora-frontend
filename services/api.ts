@@ -559,8 +559,14 @@ export const deletePushSubscription = async (endpoint: string) => {
     return data;
 };
 
+// List subscriptions (admin)
+export const listPushSubscriptions = async (params: { userId?: number; limit?: number; offset?: number } = {}) => {
+    const { data } = await api.get('/push/subscriptions', { params });
+    return data;
+};
+
 // Admin-only: trigger a test push from server
-export const sendAdminTestPush = async (payload: { title?: string; body?: string; url?: string } = {}) => {
+export const sendAdminTestPush = async (payload: { title?: string; body?: string; url?: string; all?: boolean; userId?: number; subscriptionId?: number | string } = {}) => {
     const { data } = await api.post('/push/test', payload);
     return data;
 };
