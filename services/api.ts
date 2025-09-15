@@ -385,3 +385,19 @@ export const getMySkbAccess = async (): Promise<MySkbAccess> => {
 };
 
 export default api;
+ 
+// ================= MySKB Project (Draft & Submit) =================
+// NOTE: If your backend uses different paths, update these endpoints only.
+export type ProjectFormPayload = Record<string, any>;
+
+// Save project as draft
+export const saveProjectDraft = async (payload: ProjectFormPayload) => {
+    const { data } = await api.post('/myskb/project/draft', payload);
+    return data;
+};
+
+// Submit project (final)
+export const submitProject = async (payload: ProjectFormPayload) => {
+    const { data } = await api.post('/myskb/project/submit', payload);
+    return data;
+};
