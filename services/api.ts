@@ -385,19 +385,49 @@ export const getMySkbAccess = async (): Promise<MySkbAccess> => {
 };
 
 export default api;
- 
+
 // ================= MySKB Project (Draft & Submit) =================
 // NOTE: If your backend uses different paths, update these endpoints only.
 export type ProjectFormPayload = Record<string, any>;
 
+// Best-effort cleanup: remove empty strings and coerce simple numerics
+const sanitizeProjectPayload = (src: ProjectFormPayload) => {
+    const cleaned: Record<string, any> = {};
+    const numericKeys = new Set([
+        'business_id',
+        'landArea',
+        'existingBuilding',
+        'residentialBuilding',
+        'semiResidentialBuilding',
+        'otherBuilding',
+        'openArea',
+        'closeArea',
+        'processingFees',
+    ]);
+    for (const [k, v] of Object.entries(src || {})) {
+        if (v === '' || v === undefined || v === null) continue;
+        if (numericKeys.has(k)) {
+            const n = Number(v);
+            if (!Number.isNaN(n)) {
+                cleaned[k] = n;
+                continue;
+            }
+        }
+        cleaned[k] = v;
+    }
+    return cleaned;
+};
+
 // Save project as draft
 export const saveProjectDraft = async (payload: ProjectFormPayload) => {
-    const { data } = await api.post('/myskb/project/draft', payload);
+    const body = { data: sanitizeProjectPayload(payload) };
+    const { data } = await api.post('/myskb/project/draft', body);
     return data;
 };
 
 // Submit project (final)
 export const submitProject = async (payload: ProjectFormPayload) => {
-    const { data } = await api.post('/myskb/project/submit', payload);
+    const body = { data: sanitizeProjectPayload(payload) };
+    const { data } = await api.post('/myskb/project/submit', body);
     return data;
 };
