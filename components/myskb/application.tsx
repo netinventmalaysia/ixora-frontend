@@ -5,10 +5,11 @@ import Tabs, { Tab } from '../forms/Tab'
 import { ProjectList, statuses } from '@/components/data/ItemData';
 import Heading from "../forms/Heading";
 import { MySkbActions } from "todo/components/config/ActionList";
-import { useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import FilterTabs from "../forms/FilterTabs";
+import { listProjectDrafts } from '@/services/api';
 
-const projectTabs: Tab[] = [
+const baseTabs: Tab[] = [
   { name: 'All', href: '#' },
   { name: 'Submitted', href: '#', badge: `${ProjectList.filter(p => p.status === 'Submitted').length}`, badgeColor: 'gray' },
   { name: 'Pending', href: '#', badge: `${ProjectList.filter(p => p.status === 'Pending').length}`, badgeColor: 'gray' },
@@ -19,11 +20,35 @@ const projectTabs: Tab[] = [
 const Application: React.FC = () => {
   const methods = useForm();
   const [currentTab, setCurrentTab] = useState('All');
+  const [drafts, setDrafts] = useState<any[]>([]);
 
-  const filteredProjects = ProjectList.filter((project) => {
-    if (currentTab === 'All') return true;
-    return project.status === currentTab;
-  });
+  useEffect(() => {
+    let mounted = true;
+    listProjectDrafts({ limit: 50, offset: 0 })
+      .then(({ data }) => { if (mounted) setDrafts(data || []); })
+      .catch(() => { if (mounted) setDrafts([]); });
+    return () => { mounted = false; };
+  }, []);
+
+  const projectTabs: Tab[] = useMemo(() => {
+    const draftCount = drafts.length;
+    return [
+      ...baseTabs,
+      { name: 'Draft', href: '#', badge: String(draftCount), badgeColor: 'yellow' },
+    ];
+  }, [drafts]);
+
+  const filteredProjects = currentTab === 'Draft'
+    ? drafts.map((d) => ({
+        id: d.id,
+        name: d.name || d.projectTitle || `Draft #${d.id}`,
+        status: 'Draft',
+        createdAt: d.created_at || d.createdAt,
+      }))
+    : ProjectList.filter((project) => {
+        if (currentTab === 'All') return true;
+        return project.status === currentTab;
+      });
 
   return (
     <FormProvider {...methods}>

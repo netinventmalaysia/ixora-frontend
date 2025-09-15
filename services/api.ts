@@ -449,3 +449,38 @@ export const submitProject = async (payload: ProjectFormPayload) => {
     const { data } = await api.post('/myskb/project/submit', body, { headers: { 'Content-Type': 'application/json' } });
     return data;
 };
+
+// List project drafts for current user
+export interface ProjectDraftListResponse {
+    data: Array<{
+        id: number | string;
+        name?: string;
+        projectTitle?: string;
+        createdAt?: string;
+        created_at?: string;
+        updatedAt?: string;
+        updated_at?: string;
+        status?: string;
+        [key: string]: any;
+    }>;
+    total?: number;
+    limit?: number;
+    offset?: number;
+}
+
+export const listProjectDrafts = async (params: { limit?: number; offset?: number } = {}): Promise<ProjectDraftListResponse> => {
+    try {
+        const { data } = await api.get('/myskb/project/draft', { params });
+        if (Array.isArray(data)) return { data, total: data.length, limit: data.length, offset: 0 } as any;
+        if (data && Array.isArray(data.data)) return data as ProjectDraftListResponse;
+        return { data: [] };
+    } catch (e: any) {
+        // Fallback to generic listing endpoint with status filter if available
+        try {
+            const { data } = await api.get('/myskb/project', { params: { ...params, status: 'Draft' } });
+            if (Array.isArray(data)) return { data, total: data.length, limit: data.length, offset: 0 } as any;
+            if (data && Array.isArray(data.data)) return data as ProjectDraftListResponse;
+        } catch {}
+        return { data: [] };
+    }
+};
