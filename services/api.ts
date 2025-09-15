@@ -420,14 +420,35 @@ const sanitizeProjectPayload = (src: ProjectFormPayload) => {
 
 // Save project as draft
 export const saveProjectDraft = async (payload: ProjectFormPayload) => {
-    const body = { data: sanitizeProjectPayload(payload) };
-    const { data } = await api.post('/myskb/project/draft', body);
-    return data;
+    const cleaned = sanitizeProjectPayload(payload);
+    const body = { data: cleaned };
+    try {
+        const { data } = await api.post('/myskb/project/draft', body, { headers: { 'Content-Type': 'application/json' } });
+        return data;
+    } catch (e: any) {
+        const msg = e?.response?.data?.message;
+        if (e?.response?.status === 400 && typeof msg === 'string' && /data must be an object/i.test(msg)) {
+            // Backend might expect top-level payload; retry unwrapped for compatibility
+            const { data } = await api.post('/myskb/project/draft', cleaned, { headers: { 'Content-Type': 'application/json' } });
+            return data;
+        }
+        throw e;
+    }
 };
 
 // Submit project (final)
 export const submitProject = async (payload: ProjectFormPayload) => {
-    const body = { data: sanitizeProjectPayload(payload) };
-    const { data } = await api.post('/myskb/project/submit', body);
-    return data;
+    const cleaned = sanitizeProjectPayload(payload);
+    const body = { data: cleaned };
+    try {
+        const { data } = await api.post('/myskb/project/submit', body, { headers: { 'Content-Type': 'application/json' } });
+        return data;
+    } catch (e: any) {
+        const msg = e?.response?.data?.message;
+        if (e?.response?.status === 400 && typeof msg === 'string' && /data must be an object/i.test(msg)) {
+            const { data } = await api.post('/myskb/project/submit', cleaned, { headers: { 'Content-Type': 'application/json' } });
+            return data;
+        }
+        throw e;
+    }
 };
