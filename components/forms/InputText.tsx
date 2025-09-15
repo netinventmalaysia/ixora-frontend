@@ -14,6 +14,8 @@ export type InputTextProps = {
   showHint?: boolean;
   icon?: ComponentType<SVGProps<SVGSVGElement>>;
   rightElement?: ReactNode;
+  disabled?: boolean;
+  readOnly?: boolean;
 };
 
 export default function InputText({
@@ -28,6 +30,8 @@ export default function InputText({
   showHint = false,
   icon,
   rightElement,
+  disabled = false,
+  readOnly = false,
 }: InputTextProps) {
   const {
     register,
@@ -112,7 +116,7 @@ export default function InputText({
       </label>
 
       <div className="mt-2">
-        <div className="flex items-center rounded-md bg-white pl-3 pr-2 outline outline-1 outline-gray-300 focus-within:outline-2 focus-within:outline-indigo-600">
+  <div className="flex items-center rounded-md bg-white pl-3 pr-2 outline-1 outline-gray-300 focus-within:outline-2 focus-within:outline-indigo-600">
           {prefix && (
             <span className="shrink-0 text-sm text-gray-500">{prefix}</span>
           )}
@@ -122,6 +126,8 @@ export default function InputText({
             type={isPassword && showPassword ? "text" : type}
             {...register(name, validationRules)}
             placeholder={placeholder}
+            disabled={disabled}
+            readOnly={readOnly}
             className="block w-full grow py-1.5 pl-1 pr-1 text-sm text-gray-900 placeholder-gray-400 focus:outline-none"
           />
 

@@ -13,6 +13,7 @@ import { emailNotificationOptions2 } from "todo/components/data/CheckList";
 import ConfirmDialog from "todo/components/forms/ConfirmDialog";
 import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
+import { useFormContext, useWatch } from "react-hook-form";
 import RadioGroupField from "todo/components/forms/RadioGroupField";
 import { landOrBuildingOwnerList } from "todo/components/data/RadioList";
 import toast from 'react-hot-toast';
@@ -86,6 +87,26 @@ export default function ProjectPage() {
     })();
     return () => { mounted = false; };
   }, [router.query?.draft_id]);
+
+  // Helper component to auto-calc processing fees based on openArea/closeArea
+  function ProcessingFeesAutoCalc() {
+    // This is inside the FormProvider, so we can use RHF hooks
+    // eslint-disable-next-line react-hooks/rules-of-hooks
+    const { control, setValue } = useFormContext();
+    // eslint-disable-next-line react-hooks/rules-of-hooks
+    const open = useWatch({ control, name: 'openArea' });
+    // eslint-disable-next-line react-hooks/rules-of-hooks
+    const close = useWatch({ control, name: 'closeArea' });
+    // eslint-disable-next-line react-hooks/rules-of-hooks
+    useEffect(() => {
+      const nOpen = Number(open) || 0;
+      const nClose = Number(close) || 0;
+      const fee = Math.max(140, nOpen * 0.75 + nClose * 1.5);
+      const rounded = Math.round((fee + Number.EPSILON) * 100) / 100;
+      setValue('processingFees', rounded, { shouldValidate: true, shouldDirty: true });
+    }, [open, close, setValue]);
+    return null;
+  }
 
   const handleSubmit = async (data: any) => {
     try {
@@ -211,13 +232,13 @@ export default function ProjectPage() {
 
         <LineSeparator />
 
-        <FormSectionHeader title="Processing Fees" description="Please fill in the details of your project. Minumum processing charges is RM 140.00" />
+    <FormSectionHeader title="Processing Fees" description="Please fill in the details of your project. Minumum processing charges is RM 140.00" />
         <Spacing size="lg" />
 
-        <InputText id="openArea" name="openArea" label="Open Area (m2) x RM 0.75" type="number" requiredMessage="Open Area is required" />
+    <InputText id="openArea" name="openArea" label="Open Area (m2) x RM 0.75" type="number" requiredMessage="Open Area is required" />
         <Spacing size="sm" />
 
-        <InputText id="closeArea" name="closeArea" label="Close Area (m2) x RM 1.50" type="number" requiredMessage="Close Area is required" />
+    <InputText id="closeArea" name="closeArea" label="Close Area (m2) x RM 1.50" type="number" requiredMessage="Close Area is required" />
         <Spacing size="sm" />
 
 
@@ -228,7 +249,12 @@ export default function ProjectPage() {
           type="number"
           prefix="RM"
           requiredMessage="Processing Fees is required"
+          readOnly
+          rightElement={<span className="text-xs text-gray-500">Auto</span>}
         />
+
+        {/* Auto-calc syncer (invisible) */}
+        <ProcessingFeesAutoCalc />
 
 
 
