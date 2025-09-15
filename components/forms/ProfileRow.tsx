@@ -37,7 +37,12 @@ export default function ProfileRow({ profile, actions, onlineLabel }: ProfileRow
                                 <div className="mt-1 flex items-center gap-x-1.5">
                                     {/* Status pill colors: Pending=yellow, Approved=green, Rejected=red */}
                                     {data.status === 'Pending' && (
-                                        <span className="inline-flex items-center rounded-full bg-yellow-100 px-2 py-0.5 text-xs font-medium text-yellow-800">Pending</span>
+                                        <>
+                                            <span className="inline-flex items-center rounded-full bg-yellow-100 px-2 py-0.5 text-xs font-medium text-yellow-800">Pending</span>
+                                            {data.createdAt && (
+                                                <span className="ml-2 text-xs text-gray-500">Requested on {new Date(data.createdAt).toLocaleDateString()}</span>
+                                            )}
+                                        </>
                                     )}
                                     {data.status === 'Approved' && (
                                         <span className="inline-flex items-center rounded-full bg-emerald-100 px-2 py-0.5 text-xs font-medium text-emerald-800">Approved</span>

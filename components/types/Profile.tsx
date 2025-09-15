@@ -8,4 +8,5 @@ export type Profile = {
     lastSeen?: string | null;
     lastSeenDateTime?: string;
     status?: 'Pending' | 'Approved' | 'Rejected';
+    createdAt?: string;
 };

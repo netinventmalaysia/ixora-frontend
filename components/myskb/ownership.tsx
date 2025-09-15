@@ -94,6 +94,7 @@ export default function Ownership() {
                         lastSeen: o.last_seen_iso ? 'recently' : null,
                         lastSeenDateTime: o.last_seen_iso || undefined,
                         status: o.status,
+                        createdAt: o.created_at,
                     } as Profile;
                 });
                 setProfiles(mapped);
@@ -132,6 +133,14 @@ export default function Ownership() {
         if (currentTab === 'Request') return profile.status === 'Pending';
         if (currentTab === 'Approved') return profile.status === 'Approved';
         return false;
+    }).sort((a, b) => {
+        const rank = (s?: string) => (s === 'Pending' ? 0 : s === 'Approved' ? 1 : 2);
+        const rA = rank(a.status);
+        const rB = rank(b.status);
+        if (rA !== rB) return rA - rB;
+        const tA = (a.createdAt || a.lastSeenDateTime) ? new Date(a.createdAt || a.lastSeenDateTime!).getTime() : 0;
+        const tB = (b.createdAt || b.lastSeenDateTime) ? new Date(b.createdAt || b.lastSeenDateTime!).getTime() : 0;
+        return tB - tA; // newest first
     });
 
     async function doSearch(event: React.MouseEvent<HTMLButtonElement, MouseEvent>): Promise<void> {
@@ -151,6 +160,7 @@ export default function Ownership() {
                 lastSeen: o.last_seen_iso ? 'recently' : null,
                 lastSeenDateTime: o.last_seen_iso || undefined,
                 status: o.status,
+                createdAt: o.created_at,
             };
             setProfiles((prev) => {
                 const exists = prev.find((p) => p.email.toLowerCase() === item.email.toLowerCase());
@@ -208,7 +218,7 @@ export default function Ownership() {
                         <ProfileActionMenu
                             profile={profile}
                             actions={[
-                                { label: 'Approve', onClick: async () => {
+                                ...(profile.status === 'Pending' ? [{ label: 'Approve', onClick: async () => {
                                     const id = ownerIdByEmail[profile.email.toLowerCase()];
                                     if (!id) { toast.error('Missing ownership id'); return; }
                                     try {
@@ -216,7 +226,7 @@ export default function Ownership() {
                                         setProfiles((prev) => prev.map((p) => p.email.toLowerCase() === profile.email.toLowerCase() ? { ...p, status: 'Approved' } : p));
                                         toast.success('Approved');
                                     } catch (e:any) { toast.error(getErrMsg(e, 'Failed to approve')); }
-                                } },
+                                } }] : []),
                                 { label: 'Remove', onClick: async () => {
                                     const id = ownerIdByEmail[profile.email.toLowerCase()];
                                     if (!id) { toast.error('Missing ownership id'); return; }
