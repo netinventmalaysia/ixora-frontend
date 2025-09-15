@@ -11,7 +11,7 @@ import SelectField from "todo/components/forms/SelectField";
 import CheckboxGroupField from "todo/components/forms/CheckboxGroupField";
 import { emailNotificationOptions2 } from "todo/components/data/CheckList";
 import ConfirmDialog from "todo/components/forms/ConfirmDialog";
-import router from "next/router";
+import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
 import RadioGroupField from "todo/components/forms/RadioGroupField";
 import { landOrBuildingOwnerList } from "todo/components/data/RadioList";
@@ -22,15 +22,16 @@ import InputText from "todo/components/forms/InputText";
 import { Label } from "@headlessui/react";
 import Heading from "../forms/Heading";
 import FileUploadField from "../forms/FileUpload";
-import { fetchMyBusinesses, saveProjectDraft, submitProject, listOwnerships } from '@/services/api';
+import { fetchMyBusinesses, saveProjectDraft, submitProject, listOwnerships, getProjectDraftById } from '@/services/api';
 export default function ProjectPage() {
-
+  const router = useRouter();
   const [showCancelDialog, setShowCancelDialog] = useState(false);
   const [loading, setLoading] = useState(false);
   const [savingDraft, setSavingDraft] = useState(false);
   const [businessOptions, setBusinessOptions] = useState<{ value: number; label: string }[]>([]);
   const [selectedBusinessId, setSelectedBusinessId] = useState<number | null>(null);
-  const [ownerOptions, setOwnerOptions] = useState<{ value: string; label: string }[]>([]);
+  const [ownerOptions, setOwnerOptions] = useState<{ value: number; label: string }[]>([]);
+  const [formDefaults, setFormDefaults] = useState<Record<string, any> | undefined>(undefined);
 
   useEffect(() => {
     fetchMyBusinesses()
@@ -62,6 +63,29 @@ export default function ProjectPage() {
       })
       .catch(() => setOwnerOptions([]));
   }, [selectedBusinessId]);
+
+  // If arriving with a draft_id in the URL, fetch the draft and prefill the form
+  useEffect(() => {
+    const draftId = router.query?.draft_id as string | undefined;
+    if (!draftId) return;
+    let mounted = true;
+    (async () => {
+      try {
+        const draft = await getProjectDraftById(draftId);
+        const defaults = { ...(draft?.data || {}) } as Record<string, any>;
+        if (draft?.business_id) defaults.business_id = draft.business_id;
+        if (!mounted) return;
+        setFormDefaults(defaults);
+        if (defaults?.business_id) {
+          const bid = Number(defaults.business_id);
+          if (!Number.isNaN(bid)) setSelectedBusinessId(bid);
+        }
+      } catch {
+        // ignore load failures for now
+      }
+    })();
+    return () => { mounted = false; };
+  }, [router.query?.draft_id]);
 
   const handleSubmit = async (data: any) => {
     try {
@@ -99,7 +123,7 @@ export default function ProjectPage() {
 
   return (
     <LayoutWithoutSidebar shiftY="-translate-y-0">
-      <FormWrapper onSubmit={handleSubmit}>
+      <FormWrapper onSubmit={handleSubmit} defaultValues={formDefaults}>
         {/* This section introduce about the project spesification for the consultant to register a new project and tie with all active ownership, after the registration is successful it will send to mbmb for review, once the review is completed and the consultant have to pay the amount of the project */}
   <FormSectionHeader title="Ownership Information" description="Please fill in the details of your project. This information will be used to register your project with MBMB." />
   <Spacing size="lg" />

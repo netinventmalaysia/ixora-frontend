@@ -32,13 +32,14 @@ type ItemListProps = {
   statusClasses: StatusMap;
   actions?: ActionItem[];
   onItemUpdated?: (updated: Item) => void;
+  onView?: (item: Item) => void; // optional override for View button
 };
 
 function classNames(...classes: string[]) {
   return classes.filter(Boolean).join(' ');
 }
 
-export default function ItemList({ items, statusClasses, actions = [], onItemUpdated }: ItemListProps) {
+export default function ItemList({ items, statusClasses, actions = [], onItemUpdated, onView }: ItemListProps) {
   const [isOpen, setIsOpen] = useState(false);
   const [selected, setSelected] = useState<Item | null>(null);
 
@@ -155,7 +156,7 @@ export default function ItemList({ items, statusClasses, actions = [], onItemUpd
             <div className="flex flex-none items-center gap-x-4">
               <button
                 type="button"
-                onClick={() => openModal(item)}
+                onClick={() => (onView ? onView(item) : openModal(item))}
                 className="hidden rounded-md bg-white px-2.5 py-1.5 text-sm font-semibold text-gray-900 shadow-xs ring-1 ring-gray-300 ring-inset hover:bg-gray-50 sm:block"
               >
                 View<span className="sr-only">, {item.name}</span>

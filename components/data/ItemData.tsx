@@ -5,6 +5,7 @@ export const statuses = {
   Rejected: 'text-red-700 bg-red-50 ring-red-600/20',
   'Pending Payment': 'text-yellow-700 bg-yellow-50 ring-yellow-600/20',
   'Submitted': 'text-blue-700 bg-blue-50 ring-blue-600/20',
+  'Draft': 'text-yellow-700 bg-yellow-50 ring-yellow-600/20',
 };
 
 export const BusinessRegistration = [

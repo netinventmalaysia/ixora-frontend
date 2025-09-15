@@ -484,3 +484,48 @@ export const listProjectDrafts = async (params: { limit?: number; offset?: numbe
         return { data: [] };
     }
 };
+
+// Get a single draft by id and normalize into { id, business_id, data }
+export const getProjectDraftById = async (id: number | string): Promise<{ id: number | string; business_id?: number; data: Record<string, any> }> => {
+    const normalize = (raw: any): { id: number | string; business_id?: number; data: Record<string, any> } => {
+        if (!raw) return { id, data: {} };
+        const draftId = raw.id ?? id;
+        const business_id = Number(raw.business_id ?? raw.businessId);
+        // Heuristic: backend may store form fields under one of these keys
+        const candidate = raw.data ?? raw.form_data ?? raw.payload ?? raw.content ?? raw.fields;
+        let form: Record<string, any> = {};
+        if (candidate && typeof candidate === 'object') {
+            form = { ...candidate };
+        } else if (raw && typeof raw === 'object') {
+            // If the object itself looks like the form, pick likely keys (non-meta)
+            const metaKeys = new Set(['id', 'createdAt', 'created_at', 'updatedAt', 'updated_at', 'status', 'business_id', 'businessId']);
+            form = Object.fromEntries(Object.entries(raw).filter(([k]) => !metaKeys.has(k)));
+        }
+        // Ensure top-level defaults align with our form field names
+        if (!Number.isNaN(business_id)) form.business_id = business_id;
+        return { id: draftId, business_id: Number.isNaN(business_id) ? undefined : business_id, data: form };
+    };
+
+    // Try primary endpoint
+    try {
+        const { data } = await api.get(`/myskb/project/draft/${id}`);
+        // Some backends wrap as { data }
+        if (data && data.data && typeof data.data === 'object') return normalize(data.data);
+        return normalize(data);
+    } catch (e) {
+        // Fallback 1: generic project by id (if drafts live together)
+        try {
+            const { data } = await api.get(`/myskb/project/${id}`);
+            if (data && data.data && typeof data.data === 'object') return normalize(data.data);
+            return normalize(data);
+        } catch {
+            // Fallback 2: list and find
+            try {
+                const list = await listProjectDrafts({ limit: 100, offset: 0 });
+                const found = (list.data || []).find((d) => String(d.id) === String(id));
+                if (found) return normalize(found);
+            } catch {}
+            return { id, data: {} };
+        }
+    }
+};

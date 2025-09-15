@@ -1,6 +1,7 @@
 import LayoutWithoutSidebar from "todo/components/main/LayoutWithoutSidebar";
 import { FormProvider, useForm } from "react-hook-form";
 import ItemList from "../forms/ItemList";
+import { useRouter } from 'next/router';
 import Tabs, { Tab } from '../forms/Tab'
 import { ProjectList, statuses } from '@/components/data/ItemData';
 import Heading from "../forms/Heading";
@@ -19,6 +20,7 @@ const baseTabs: Tab[] = [
 
 const Application: React.FC = () => {
   const methods = useForm();
+  const router = useRouter();
   const [currentTab, setCurrentTab] = useState('All');
   const [drafts, setDrafts] = useState<any[]>([]);
 
@@ -69,6 +71,13 @@ const Application: React.FC = () => {
           items={filteredProjects}
           statusClasses={statuses}
           actions={MySkbActions}
+          onView={(item) => {
+            if (currentTab === 'Draft') {
+              const id = typeof item.id === 'string' ? item.id : String(item.id);
+              router.push(`/myskb/project?draft_id=${encodeURIComponent(id)}`);
+              return;
+            }
+          }}
         />
       </LayoutWithoutSidebar>
     </FormProvider>
