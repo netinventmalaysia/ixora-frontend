@@ -480,7 +480,7 @@ export const listProjectDrafts = async (params: { limit?: number; offset?: numbe
             const { data } = await api.get('/myskb/project', { params: { ...params, status: 'Draft' } });
             if (Array.isArray(data)) return { data, total: data.length, limit: data.length, offset: 0 } as any;
             if (data && Array.isArray(data.data)) return data as ProjectDraftListResponse;
-        } catch {}
+        } catch { }
         return { data: [] };
     }
 };
