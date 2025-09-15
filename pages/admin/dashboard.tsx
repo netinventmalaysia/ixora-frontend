@@ -16,6 +16,7 @@ export default function AdminDashboard() {
       <Spacing size="md" />
       <div className="flex gap-3">
         <Button onClick={() => router.push('/admin/verifications')}>Document Verifications</Button>
+        <Button variant="secondary" onClick={() => router.push('/admin/push-test')}>Push Notification Test</Button>
       </div>
     </SidebarLayout>
   );
