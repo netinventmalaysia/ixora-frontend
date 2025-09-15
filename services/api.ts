@@ -390,11 +390,10 @@ export default api;
 // NOTE: If your backend uses different paths, update these endpoints only.
 export type ProjectFormPayload = Record<string, any>;
 
-// Best-effort cleanup: remove empty strings and coerce simple numerics
+// Best-effort cleanup: remove empty strings and coerce simple numerics (excluding business_id which is handled separately)
 const sanitizeProjectPayload = (src: ProjectFormPayload) => {
     const cleaned: Record<string, any> = {};
     const numericKeys = new Set([
-        'business_id',
         'landArea',
         'existingBuilding',
         'residentialBuilding',
@@ -405,6 +404,7 @@ const sanitizeProjectPayload = (src: ProjectFormPayload) => {
         'processingFees',
     ]);
     for (const [k, v] of Object.entries(src || {})) {
+        if (k === 'business_id' || k === 'businessId' || k === 'owner_id' || k === 'ownerId' || k === 'draft') continue; // handled separately
         if (v === '' || v === undefined || v === null) continue;
         if (numericKeys.has(k)) {
             const n = Number(v);
@@ -420,35 +420,32 @@ const sanitizeProjectPayload = (src: ProjectFormPayload) => {
 
 // Save project as draft
 export const saveProjectDraft = async (payload: ProjectFormPayload) => {
-    const cleaned = sanitizeProjectPayload(payload);
-    const body = { data: cleaned };
-    try {
-        const { data } = await api.post('/myskb/project/draft', body, { headers: { 'Content-Type': 'application/json' } });
-        return data;
-    } catch (e: any) {
-        const msg = e?.response?.data?.message;
-        if (e?.response?.status === 400 && typeof msg === 'string' && /data must be an object/i.test(msg)) {
-            // Backend might expect top-level payload; retry unwrapped for compatibility
-            const { data } = await api.post('/myskb/project/draft', cleaned, { headers: { 'Content-Type': 'application/json' } });
-            return data;
-        }
-        throw e;
+    const businessIdRaw = payload?.business_id ?? (payload as any)?.businessId;
+    const business_id = Number(businessIdRaw);
+    if (Number.isNaN(business_id)) {
+        throw new Error('business_id is required and must be a number');
     }
+    const ownerIdRaw = (payload as any)?.owner_id ?? (payload as any)?.ownerId;
+    const owner_id = ownerIdRaw !== undefined ? Number(ownerIdRaw) : undefined;
+    const cleaned = sanitizeProjectPayload(payload);
+    const body: any = { business_id, data: cleaned };
+    if (!Number.isNaN(owner_id!) && owner_id !== undefined) body.data.owner_id = owner_id;
+    const { data } = await api.post('/myskb/project/draft', body, { headers: { 'Content-Type': 'application/json' } });
+    return data;
 };
 
 // Submit project (final)
 export const submitProject = async (payload: ProjectFormPayload) => {
-    const cleaned = sanitizeProjectPayload(payload);
-    const body = { data: cleaned };
-    try {
-        const { data } = await api.post('/myskb/project/submit', body, { headers: { 'Content-Type': 'application/json' } });
-        return data;
-    } catch (e: any) {
-        const msg = e?.response?.data?.message;
-        if (e?.response?.status === 400 && typeof msg === 'string' && /data must be an object/i.test(msg)) {
-            const { data } = await api.post('/myskb/project/submit', cleaned, { headers: { 'Content-Type': 'application/json' } });
-            return data;
-        }
-        throw e;
+    const businessIdRaw = payload?.business_id ?? (payload as any)?.businessId;
+    const business_id = Number(businessIdRaw);
+    if (Number.isNaN(business_id)) {
+        throw new Error('business_id is required and must be a number');
     }
+    const ownerIdRaw = (payload as any)?.owner_id ?? (payload as any)?.ownerId;
+    const owner_id = ownerIdRaw !== undefined ? Number(ownerIdRaw) : undefined;
+    const cleaned = sanitizeProjectPayload(payload);
+    const body: any = { business_id, useDraft: false, data: cleaned };
+    if (!Number.isNaN(owner_id!) && owner_id !== undefined) body.data.owner_id = owner_id;
+    const { data } = await api.post('/myskb/project/submit', body, { headers: { 'Content-Type': 'application/json' } });
+    return data;
 };

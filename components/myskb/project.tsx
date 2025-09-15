@@ -55,7 +55,7 @@ export default function ProjectPage() {
     listOwnerships({ business_id: selectedBusinessId, status: 'Approved', limit: 100, offset: 0 })
       .then(({ data }) => {
         const opts = (data || []).map((o: any) => ({
-          value: o.email, // use email as selection value
+          value: o.id, // use ownership id as selection value
           label: o.name || o.email,
         }));
         setOwnerOptions(opts);
@@ -105,7 +105,7 @@ export default function ProjectPage() {
   <Spacing size="lg" />
   <SelectField id="business_id" name="business_id" label="Business" options={businessOptions} requiredMessage="Business is required" onChange={(e) => setSelectedBusinessId(Number(e.target.value))} />
   <Spacing size="lg" />
-  <SelectField id="owner" name="owner" label="Project Owner" options={ownerOptions} requiredMessage="Project Owner is required" placeholder={selectedBusinessId ? 'Select approved owner' : 'Select business first'} />
+  <SelectField id="owner_id" name="owner_id" label="Project Owner" options={ownerOptions} requiredMessage="Project Owner is required" placeholder={selectedBusinessId ? 'Select approved owner' : 'Select business first'} />
         <Spacing size="sm" />
         <SelectField id="ownerCategory" name="ownerCategory" label="Ownership Category" options={OwnershipCategory} requiredMessage="Country is required" />
         <Spacing size="lg" />
