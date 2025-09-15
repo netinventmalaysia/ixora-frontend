@@ -529,3 +529,38 @@ export const getProjectDraftById = async (id: number | string): Promise<{ id: nu
         }
     }
 };
+
+// ================= PWA Push (Frontend helpers to call backend) =================
+// These call your backend endpoints which should be implemented server-side.
+
+// Get VAPID public key from backend
+export const getPushPublicKey = async (): Promise<string | null> => {
+    try {
+        const { data } = await api.get('/push/public-key');
+        // accept either { publicKey } or raw string
+        const key = typeof data === 'string' ? data : data?.publicKey || data?.key || null;
+        return (key && typeof key === 'string') ? key : null;
+    } catch (e) {
+        return null;
+    }
+};
+
+// Save a browser subscription on server
+export const savePushSubscription = async (subscription: PushSubscription | PushSubscriptionJSON) => {
+    const payload = (typeof (subscription as any).toJSON === 'function') ? (subscription as any).toJSON() : subscription;
+    const { data } = await api.post('/push/subscription', payload, { headers: { 'Content-Type': 'application/json' } });
+    return data;
+};
+
+// Delete/unregister a subscription on server
+export const deletePushSubscription = async (endpoint: string) => {
+    // Prefer body payload; if backend expects query, adjust accordingly
+    const { data } = await api.delete('/push/subscription', { data: { endpoint } });
+    return data;
+};
+
+// Admin-only: trigger a test push from server
+export const sendAdminTestPush = async (payload: { title?: string; body?: string; url?: string } = {}) => {
+    const { data } = await api.post('/push/test', payload);
+    return data;
+};
