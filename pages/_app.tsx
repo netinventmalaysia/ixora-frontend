@@ -8,6 +8,18 @@ import { useRouter } from 'next/router';
 export default function App({ Component, pageProps }: AppProps) {
   const [hydrated, setHydrated] = useState(false);
   useEffect(() => setHydrated(true), []);
+  // Register service worker for PWA
+  useEffect(() => {
+    if ('serviceWorker' in navigator) {
+      // avoid duplicate registration in dev HMR
+      navigator.serviceWorker.getRegistrations().then((regs) => {
+        const hasPwa = regs.some((r) => r.active && r.active.scriptURL.endsWith('/sw.js'));
+        if (!hasPwa) {
+          navigator.serviceWorker.register('/sw.js').catch(() => {/* ignore */});
+        }
+      });
+    }
+  }, []);
   return (
     <>
       <Toaster
