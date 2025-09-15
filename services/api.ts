@@ -524,7 +524,7 @@ export const getProjectDraftById = async (id: number | string): Promise<{ id: nu
                 const list = await listProjectDrafts({ limit: 100, offset: 0 });
                 const found = (list.data || []).find((d) => String(d.id) === String(id));
                 if (found) return normalize(found);
-            } catch {}
+            } catch { }
             return { id, data: {} };
         }
     }
