@@ -6,7 +6,7 @@ import InputWithPrefix from "todo/components/forms/InputText";
 import Spacing from "todo/components/forms/Spacing";
 import LineSeparator from "todo/components/forms/LineSeparator";
 import FormRow from "todo/components/forms/FormRow";
-import { buildingUseOptions, countryOptions, landStatusOptions, OwnershipCategory, ProjectOwner, typeGrantOptions } from "todo/components/data/SelectionList";
+import { buildingUseOptions, countryOptions, landStatusOptions, OwnershipCategory, typeGrantOptions } from "todo/components/data/SelectionList";
 import SelectField from "todo/components/forms/SelectField";
 import CheckboxGroupField from "todo/components/forms/CheckboxGroupField";
 import { emailNotificationOptions2 } from "todo/components/data/CheckList";
@@ -22,13 +22,15 @@ import InputText from "todo/components/forms/InputText";
 import { Label } from "@headlessui/react";
 import Heading from "../forms/Heading";
 import FileUploadField from "../forms/FileUpload";
-import { fetchMyBusinesses, saveProjectDraft, submitProject } from '@/services/api';
+import { fetchMyBusinesses, saveProjectDraft, submitProject, listOwnerships } from '@/services/api';
 export default function ProjectPage() {
 
   const [showCancelDialog, setShowCancelDialog] = useState(false);
   const [loading, setLoading] = useState(false);
   const [savingDraft, setSavingDraft] = useState(false);
   const [businessOptions, setBusinessOptions] = useState<{ value: number; label: string }[]>([]);
+  const [selectedBusinessId, setSelectedBusinessId] = useState<number | null>(null);
+  const [ownerOptions, setOwnerOptions] = useState<{ value: string; label: string }[]>([]);
 
   useEffect(() => {
     fetchMyBusinesses()
@@ -46,6 +48,20 @@ export default function ProjectPage() {
       })
       .catch(() => {/* ignore non-fatal */});
   }, []);
+
+  // Load approved ownerships when business changes
+  useEffect(() => {
+    if (!selectedBusinessId) { setOwnerOptions([]); return; }
+    listOwnerships({ business_id: selectedBusinessId, status: 'Approved', limit: 100, offset: 0 })
+      .then(({ data }) => {
+        const opts = (data || []).map((o: any) => ({
+          value: o.email, // use email as selection value
+          label: o.name || o.email,
+        }));
+        setOwnerOptions(opts);
+      })
+      .catch(() => setOwnerOptions([]));
+  }, [selectedBusinessId]);
 
   const handleSubmit = async (data: any) => {
     try {
@@ -87,9 +103,9 @@ export default function ProjectPage() {
         {/* This section introduce about the project spesification for the consultant to register a new project and tie with all active ownership, after the registration is successful it will send to mbmb for review, once the review is completed and the consultant have to pay the amount of the project */}
   <FormSectionHeader title="Ownership Information" description="Please fill in the details of your project. This information will be used to register your project with MBMB." />
   <Spacing size="lg" />
-  <SelectField id="business_id" name="business_id" label="Business" options={businessOptions} requiredMessage="Business is required" />
+  <SelectField id="business_id" name="business_id" label="Business" options={businessOptions} requiredMessage="Business is required" onChange={(e) => setSelectedBusinessId(Number(e.target.value))} />
   <Spacing size="lg" />
-        <SelectField id="owner" name="owner" label="Project Owner" options={ProjectOwner} requiredMessage="Country is required" />
+  <SelectField id="owner" name="owner" label="Project Owner" options={ownerOptions} requiredMessage="Project Owner is required" placeholder={selectedBusinessId ? 'Select approved owner' : 'Select business first'} />
         <Spacing size="sm" />
         <SelectField id="ownerCategory" name="ownerCategory" label="Ownership Category" options={OwnershipCategory} requiredMessage="Country is required" />
         <Spacing size="lg" />
