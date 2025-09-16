@@ -45,7 +45,7 @@ self.addEventListener('fetch', (event) => {
                     const resClone = res.clone();
                     caches.open(CACHE_NAME).then((cache) => {
                         // Cache.put only supports GET requests (already ensured above)
-                        cache.put(req, resClone).catch(() => {});
+                        cache.put(req, resClone).catch(() => { });
                     });
                 }
                 return res;
