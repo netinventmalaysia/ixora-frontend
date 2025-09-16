@@ -186,6 +186,8 @@ export default function ProjectPage() {
       const res = await submitProject(payload, { draftId: (router.query?.draft_id as string) || undefined });
       toast.success('Project submitted');
       console.log('Submit result:', res);
+      // Navigate to MySKB Application tab after successful submission
+      router.push('/myskb/application');
     } catch (e: any) {
       toast.error(e?.response?.data?.message || e?.message || 'Failed to submit project');
     } finally {
