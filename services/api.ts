@@ -419,7 +419,7 @@ const sanitizeProjectPayload = (src: ProjectFormPayload) => {
 };
 
 // Save project as draft
-export const saveProjectDraft = async (payload: ProjectFormPayload) => {
+export const saveProjectDraft = async (payload: ProjectFormPayload, opts: { draftId?: number | string } = {}) => {
     const businessIdRaw = payload?.business_id ?? (payload as any)?.businessId;
     const business_id = Number(businessIdRaw);
     if (Number.isNaN(business_id)) {
@@ -430,12 +430,23 @@ export const saveProjectDraft = async (payload: ProjectFormPayload) => {
     const cleaned = sanitizeProjectPayload(payload);
     const body: any = { business_id, data: cleaned };
     if (!Number.isNaN(owner_id!) && owner_id !== undefined) body.data.owner_id = owner_id;
+    const draftId = opts?.draftId;
+    if (draftId !== undefined && draftId !== null && String(draftId).length > 0) {
+        try {
+            const { data } = await api.put(`/myskb/project/draft/${draftId}`, body, { headers: { 'Content-Type': 'application/json' } });
+            return data;
+        } catch (e) {
+            // Fallback to POST if PUT not supported
+            const { data } = await api.post('/myskb/project/draft', { ...body, id: draftId }, { headers: { 'Content-Type': 'application/json' } });
+            return data;
+        }
+    }
     const { data } = await api.post('/myskb/project/draft', body, { headers: { 'Content-Type': 'application/json' } });
     return data;
 };
 
 // Submit project (final)
-export const submitProject = async (payload: ProjectFormPayload) => {
+export const submitProject = async (payload: ProjectFormPayload, opts: { draftId?: number | string } = {}) => {
     const businessIdRaw = payload?.business_id ?? (payload as any)?.businessId;
     const business_id = Number(businessIdRaw);
     if (Number.isNaN(business_id)) {
@@ -446,8 +457,26 @@ export const submitProject = async (payload: ProjectFormPayload) => {
     const cleaned = sanitizeProjectPayload(payload);
     const body: any = { business_id, useDraft: false, data: cleaned };
     if (!Number.isNaN(owner_id!) && owner_id !== undefined) body.data.owner_id = owner_id;
-    const { data } = await api.post('/myskb/project/submit', body, { headers: { 'Content-Type': 'application/json' } });
-    return data;
+    const draftId = opts?.draftId;
+    if (draftId !== undefined && draftId !== null && String(draftId).length > 0) {
+        // Prefer dedicated submit endpoint for an existing draft if available
+        try {
+            const { data } = await api.post(`/myskb/project/draft/${draftId}/submit`, body, { headers: { 'Content-Type': 'application/json' } });
+            return data;
+        } catch (e) {
+            // Fallback: submit endpoint that accepts draft_id in body
+            try {
+                const { data } = await api.post('/myskb/project/submit', { ...body, draft_id: draftId, useDraft: true }, { headers: { 'Content-Type': 'application/json' } });
+                return data;
+            } catch (e2) {
+                // Last resort: rethrow the original error
+                throw e2;
+            }
+        }
+    } else {
+        const { data } = await api.post('/myskb/project/submit', body, { headers: { 'Content-Type': 'application/json' } });
+        return data;
+    }
 };
 
 // List project drafts for current user

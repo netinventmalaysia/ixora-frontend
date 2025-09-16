@@ -183,7 +183,7 @@ export default function ProjectPage() {
         }));
       }
       payload.processingFees = Number(payload.processingFees || 0);
-      const res = await submitProject(payload);
+      const res = await submitProject(payload, { draftId: (router.query?.draft_id as string) || undefined });
       toast.success('Project submitted');
       console.log('Submit result:', res);
     } catch (e: any) {
@@ -211,7 +211,7 @@ export default function ProjectPage() {
         }));
       }
       payload.processingFees = Number(payload.processingFees || 0);
-      const res = await saveProjectDraft({ ...payload, draft: true });
+      const res = await saveProjectDraft({ ...payload, draft: true }, { draftId: (router.query?.draft_id as string) || undefined });
       toast.success('Draft saved');
       console.log('Draft result:', res);
     } catch (e: any) {
