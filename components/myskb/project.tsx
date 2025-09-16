@@ -74,6 +74,28 @@ export default function ProjectPage() {
       try {
         const draft = await getProjectDraftById(draftId);
         const defaults = { ...(draft?.data || {}) } as Record<string, any>;
+        // Transform legacy flat keys like 'buildings.0.openArea' into array form expected by useFieldArray
+        if (!Array.isArray(defaults.buildings)) {
+          const map: Record<number, any> = {};
+          Object.keys(defaults).forEach((k) => {
+            const m = k.match(/^buildings\.(\d+)\.(\w+)$/);
+            if (m) {
+              const idx = Number(m[1]);
+              const prop = m[2];
+              if (!map[idx]) map[idx] = {};
+              map[idx][prop] = (defaults as any)[k];
+              // Optionally remove flat keys to avoid confusion
+              delete (defaults as any)[k];
+            }
+          });
+          const idxs = Object.keys(map)
+            .map((s) => Number(s))
+            .filter((n) => !Number.isNaN(n))
+            .sort((a, b) => a - b);
+          if (idxs.length > 0) {
+            defaults.buildings = idxs.map((i) => map[i]);
+          }
+        }
         if (draft?.business_id) defaults.business_id = draft.business_id;
         if (!mounted) return;
         setFormDefaults(defaults);
@@ -182,6 +204,25 @@ export default function ProjectPage() {
     );
   }
 
+  // Button that saves a draft using react-hook-form values (keeps nested arrays like buildings)
+  function DraftSaveButton({ onSave, loading }: { onSave: (data: any) => void | Promise<void>; loading: boolean }) {
+    // eslint-disable-next-line react-hooks/rules-of-hooks
+    const { getValues } = useFormContext();
+    return (
+      <Button
+        type="button"
+        variant="secondary"
+        loading={loading}
+        onClick={() => {
+          const data = getValues();
+          onSave(data);
+        }}
+      >
+        Save draft
+      </Button>
+    );
+  }
+
   const handleSubmit = async (data: any) => {
     try {
       setLoading(true);
@@ -271,8 +312,6 @@ export default function ProjectPage() {
         <SelectField id="typeGrant" name="typeGrant" label="Type of Grant" options={typeGrantOptions} requiredMessage="Type of Grant is required" />
         <Spacing size="sm" />
 
-        <SelectField id="typeGrant" name="typeGrant" label="Type of Grant" options={typeGrantOptions} requiredMessage="Type of Grant is required" />
-        <Spacing size="sm" />
 
         <InputText id="spesificCondition" name="spesificCondition" label="Specific Conditions" />
         <Spacing size="sm" />
@@ -334,14 +373,7 @@ export default function ProjectPage() {
 
         <FormActions>
           <Button type="button" variant="ghost" onClick={() => setShowCancelDialog(true)}>Cancel</Button>
-          <Button type="button" variant="secondary" loading={savingDraft} onClick={() => {
-            const form = document.querySelector('form');
-            if (!form) return;
-            const formData = new FormData(form as HTMLFormElement);
-            const data: any = {};
-            formData.forEach((v, k) => { data[k] = v; });
-            handleSaveDraft(data);
-          }}>Save draft</Button>
+          <DraftSaveButton onSave={handleSaveDraft} loading={savingDraft} />
           <Button type="submit" variant="primary" loading={loading}>Submit</Button>
         </FormActions>
 
