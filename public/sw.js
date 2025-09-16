@@ -90,7 +90,7 @@ self.addEventListener('notificationclick', (event) => {
 self.addEventListener('message', (event) => {
     if (!event.data) return;
     if (event.data.type === 'LOCAL_NOTIFY') {
-    const { title = 'Test Notification', body = 'Hello from Ixora MBMB', url = '/' } = event.data.payload || {};
+        const { title = 'Test Notification', body = 'Hello from Ixora MBMB', url = '/' } = event.data.payload || {};
         event.waitUntil(
             self.registration.showNotification(title, {
                 body,
