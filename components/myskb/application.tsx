@@ -3,19 +3,19 @@ import { FormProvider, useForm } from "react-hook-form";
 import ItemList from "../forms/ItemList";
 import { useRouter } from 'next/router';
 import Tabs, { Tab } from '../forms/Tab'
-import { ProjectList, statuses } from '@/components/data/ItemData';
+import { statuses } from '@/components/data/ItemData';
 import Heading from "../forms/Heading";
 import { MySkbActions } from "todo/components/config/ActionList";
 import { useEffect, useMemo, useState } from 'react';
 import FilterTabs from "../forms/FilterTabs";
-import { listProjectDrafts } from '@/services/api';
+import { listProjectDrafts, listProjects } from '@/services/api';
 
 const baseTabs: Tab[] = [
   { name: 'All', href: '#' },
-  { name: 'Submitted', href: '#', badge: `${ProjectList.filter(p => p.status === 'Submitted').length}`, badgeColor: 'gray' },
-  { name: 'Pending', href: '#', badge: `${ProjectList.filter(p => p.status === 'Pending').length}`, badgeColor: 'gray' },
-  { name: 'Rejected', href: '#', badge: `${ProjectList.filter(p => p.status === 'Rejected').length}`, badgeColor: 'gray' },
-  { name: 'Complete', href: '#', badge: `${ProjectList.filter(p => p.status === 'Complete').length}`, badgeColor: 'gray' },
+  { name: 'Submitted', href: '#', badgeColor: 'gray' },
+  { name: 'Pending', href: '#', badgeColor: 'gray' },
+  { name: 'Rejected', href: '#', badgeColor: 'gray' },
+  { name: 'Complete', href: '#', badgeColor: 'gray' },
 ];
 
 const Application: React.FC = () => {
@@ -23,34 +23,64 @@ const Application: React.FC = () => {
   const router = useRouter();
   const [currentTab, setCurrentTab] = useState('All');
   const [drafts, setDrafts] = useState<any[]>([]);
+  const [projects, setProjects] = useState<any[]>([]);
 
   useEffect(() => {
     let mounted = true;
-    listProjectDrafts({ limit: 50, offset: 0 })
-      .then(({ data }) => { if (mounted) setDrafts(data || []); })
-      .catch(() => { if (mounted) setDrafts([]); });
+    Promise.all([
+      listProjectDrafts({ limit: 100, offset: 0 }),
+      listProjects({ limit: 100, offset: 0 }),
+    ])
+      .then(([draftRes, projRes]) => {
+        if (!mounted) return;
+        setDrafts(draftRes?.data || []);
+        setProjects(projRes?.data || []);
+      })
+      .catch(() => {
+        if (!mounted) return;
+        setDrafts([]);
+        setProjects([]);
+      });
     return () => { mounted = false; };
   }, []);
 
   const projectTabs: Tab[] = useMemo(() => {
     const draftCount = drafts.length;
+    const submittedCount = projects.filter((p) => (p.status || p.applicationStatus || p.statusName || '').toLowerCase() === 'submitted').length;
+    const pendingCount = projects.filter((p) => (p.status || p.applicationStatus || p.statusName || '').toLowerCase() === 'pending').length;
+    const rejectedCount = projects.filter((p) => (p.status || p.applicationStatus || p.statusName || '').toLowerCase() === 'rejected').length;
+    const completeCount = projects.filter((p) => (p.status || p.applicationStatus || p.statusName || '').toLowerCase() === 'complete').length;
     return [
-      ...baseTabs,
+      { ...baseTabs[0] },
+      { ...baseTabs[1], badge: String(submittedCount || 0) },
+      { ...baseTabs[2], badge: String(pendingCount || 0) },
+      { ...baseTabs[3], badge: String(rejectedCount || 0) },
+      { ...baseTabs[4], badge: String(completeCount || 0) },
       { name: 'Draft', href: '#', badge: String(draftCount), badgeColor: 'yellow' },
     ];
-  }, [drafts]);
+  }, [projects, drafts]);
 
-  const filteredProjects = currentTab === 'Draft'
-    ? drafts.map((d) => ({
+  const filteredProjects = useMemo(() => {
+    if (currentTab === 'Draft') {
+      return drafts.map((d) => ({
         id: d.id,
         name: d.name || d.projectTitle || `Draft #${d.id}`,
         status: 'Draft',
         createdAt: d.created_at || d.createdAt,
-      }))
-    : ProjectList.filter((project) => {
-        if (currentTab === 'All') return true;
-        return project.status === currentTab;
-      });
+      }));
+    }
+    // Build items from backend projects
+    const items = (projects || []).map((p) => ({
+      id: p.id,
+      name: p.name || p.projectTitle || p.title || `#${p.id}`,
+      status: p.status || p.applicationStatus || p.statusName || p.currentStatus || 'Submitted',
+      createdAt: p.created_at || p.createdAt,
+      ...p,
+    }));
+    if (currentTab === 'All') return items;
+    const wanted = currentTab.toLowerCase();
+    return items.filter((it) => String(it.status || '').toLowerCase() === wanted);
+  }, [currentTab, drafts, projects]);
 
   return (
     <FormProvider {...methods}>
@@ -77,6 +107,7 @@ const Application: React.FC = () => {
               router.push(`/myskb/project?draft_id=${encodeURIComponent(id)}`);
               return;
             }
+            // Default: do nothing or navigate to a project view if available later
           }}
         />
       </LayoutWithoutSidebar>

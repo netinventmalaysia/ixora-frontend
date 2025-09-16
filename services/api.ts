@@ -559,6 +559,32 @@ export const getProjectDraftById = async (id: number | string): Promise<{ id: nu
     }
 };
 
+// List submitted/active projects (non-drafts)
+export interface ProjectListParams {
+    status?: string | string[]; // e.g., 'Submitted' | 'Pending' | 'Rejected' | 'Complete'
+    limit?: number;
+    offset?: number;
+}
+
+export interface ProjectListResponse {
+    data: Array<Record<string, any>>;
+    total?: number;
+    limit?: number;
+    offset?: number;
+}
+
+export const listProjects = async (params: ProjectListParams = {}): Promise<ProjectListResponse> => {
+    try {
+        const { data } = await api.get('/myskb/project', { params });
+        if (Array.isArray(data)) return { data, total: data.length, limit: data.length, offset: 0 } as any;
+        if (data && Array.isArray(data.data)) return data as ProjectListResponse;
+        return { data: [] };
+    } catch (e) {
+        // Fallback: return empty list on failure
+        return { data: [] };
+    }
+};
+
 // ================= PWA Push (Frontend helpers to call backend) =================
 // These call your backend endpoints which should be implemented server-side.
 
