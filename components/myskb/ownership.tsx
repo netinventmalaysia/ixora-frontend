@@ -1,49 +1,23 @@
 import { useEffect, useMemo, useState } from 'react';
-import PersonList from '@/components/staff/StaffList';
-import { people as initialPeople, Person } from '@/components/data/StaffList';
 import { FormProvider, useForm } from 'react-hook-form';
 import Heading from '../forms/Heading';
 import Spacing from '../forms/Spacing';
 import LayoutWithoutSidebar from '../main/LayoutWithoutSidebar';
-import { businessNameOptions } from '../data/SelectionList';
 import SelectField from '../forms/SelectField';
 import InputText from '../forms/InputText';
 import { MagnifyingGlassIcon } from '@heroicons/react/24/outline';
-import LineSeparator from '../forms/LineSeparator';
 import Button from '../forms/Button';
 import ProfileRow from '../forms/ProfileRow';
 import ProfileActionMenu from '../forms/ProfileActionMenu';
 import { Profile } from '@/components/types/Profile';
-import { owner } from '../data/OwnershipList';
 import toast from 'react-hot-toast';
 import { inviteOwnership, listOwnerships, removeOwnership, updateOwnership, fetchMyBusinesses } from '@/services/api';
-import {
-    handleDownload,
-    handlePay,
-    handleAssignRole,
-    handleRemove,
-} from '../actions/actionHandler';
-
-import Tabs, { Tab } from '../forms/Tab'
 import FilterTabs from '../forms/FilterTabs';
-
-const initialTabs: Tab[] = [
-    { name: 'All', href: '#' },
-    { name: 'Request', href: '#', badge: `0`, badgeColor: 'yellow' },
-    { name: 'Approved', href: '#', badge: `0`, badgeColor: 'green' },
-];
-
-export const businessTabs: Tab[] = [
-    { name: 'Home', href: '#' },
-    { name: 'Registration', href: '#' },
-    { name: 'Application', href: '#', badge: '5', badgeColor: 'blue' },
-    { name: 'Team', href: '#' },
-    { name: 'Billing', href: '#' },
-]
+import { Tab } from '../forms/Tab';
 
 export default function Ownership() {
     const methods = useForm();
-    const [profiles, setProfiles] = useState<Profile[]>(owner);
+    const [profiles, setProfiles] = useState<Profile[]>([]);
     const [currentTab, setCurrentTab] = useState<string>('All');
     const [businessId, setBusinessId] = useState<number | null>(null);
     const [ownerIdByEmail, setOwnerIdByEmail] = useState<Record<string, number>>({});
@@ -65,11 +39,11 @@ export default function Ownership() {
             return fallback;
         }
     };
-    
+
     // Dynamic tab counts from current profiles
     const tabOptions = useMemo<Tab[]>(() => {
-        const pending = profiles.filter(p => p.status === 'Pending').length;
-        const approved = profiles.filter(p => p.status === 'Approved').length;
+        const pending = profiles.filter((p) => p.status === 'Pending').length;
+        const approved = profiles.filter((p) => p.status === 'Approved').length;
         return [
             { name: 'All', href: '#' },
             { name: 'Request', href: '#', badge: String(pending), badgeColor: 'yellow' },
@@ -109,7 +83,7 @@ export default function Ownership() {
             .then((data: any) => {
                 if (!data || (Array.isArray(data) && data.length === 0)) return;
                 const isWithdrawn = (item: any) => {
-                    const direct = (item && (item.status || item.state || item.applicationStatus || item.statusName || item.currentStatus || item.application_status || item.status_name || item.current_status));
+                    const direct = item && (item.status || item.state || item.applicationStatus || item.statusName || item.currentStatus || item.application_status || item.status_name || item.current_status);
                     if (typeof direct === 'string') {
                         return String(direct).toLowerCase() === 'withdrawn';
                     }
@@ -128,26 +102,36 @@ export default function Ownership() {
                 toast.error('Failed to load your businesses');
             });
     }, []);
-    const filteredProfiles = profiles.filter((profile) => {
-        if (currentTab === 'All') return true;
-        if (currentTab === 'Request') return profile.status === 'Pending';
-        if (currentTab === 'Approved') return profile.status === 'Approved';
-        return false;
-    }).sort((a, b) => {
-        const rank = (s?: string) => (s === 'Pending' ? 0 : s === 'Approved' ? 1 : 2);
-        const rA = rank(a.status);
-        const rB = rank(b.status);
-        if (rA !== rB) return rA - rB;
-        const tA = (a.createdAt || a.lastSeenDateTime) ? new Date(a.createdAt || a.lastSeenDateTime!).getTime() : 0;
-        const tB = (b.createdAt || b.lastSeenDateTime) ? new Date(b.createdAt || b.lastSeenDateTime!).getTime() : 0;
-        return tB - tA; // newest first
-    });
+
+    const filteredProfiles = useMemo(() => {
+        const arr = profiles.filter((profile) => {
+            if (currentTab === 'All') return true;
+            if (currentTab === 'Request') return profile.status === 'Pending';
+            if (currentTab === 'Approved') return profile.status === 'Approved';
+            return false;
+        });
+        return arr.sort((a, b) => {
+            const rank = (s?: string) => (s === 'Pending' ? 0 : s === 'Approved' ? 1 : 2);
+            const rA = rank(a.status);
+            const rB = rank(b.status);
+            if (rA !== rB) return rA - rB;
+            const tA = (a.createdAt || a.lastSeenDateTime) ? new Date(a.createdAt || a.lastSeenDateTime!).getTime() : 0;
+            const tB = (b.createdAt || b.lastSeenDateTime) ? new Date(b.createdAt || b.lastSeenDateTime!).getTime() : 0;
+            return tB - tA; // newest first
+        });
+    }, [profiles, currentTab]);
 
     async function doSearch(event: React.MouseEvent<HTMLButtonElement, MouseEvent>): Promise<void> {
         event.preventDefault();
         const email = String(methods.getValues('search') || '').trim();
-        if (!email) { toast('Enter an email to invite'); return; }
-        if (!businessId) { toast('Select a business first'); return; }
+        if (!email) {
+            toast('Enter an email to invite');
+            return;
+        }
+        if (!businessId) {
+            toast('Select a business first');
+            return;
+        }
         try {
             const res = await inviteOwnership({ business_id: businessId, email });
             const o = res.created;
@@ -188,7 +172,13 @@ export default function Ownership() {
                     Project Ownership Management
                 </Heading>
                 <Spacing size="lg" />
-                <SelectField id="businessName" name="businessName" label="Business Name" options={businessOptions.length > 0 ? businessOptions : businessNameOptions} onChange={(e) => setBusinessId(Number(e.target.value))} />
+                <SelectField
+                    id="businessName"
+                    name="businessName"
+                    label="Business Name"
+                    options={businessOptions}
+                    onChange={(e) => setBusinessId(Number(e.target.value))}
+                />
                 <Spacing size="lg" />
 
                 <InputText
@@ -198,18 +188,21 @@ export default function Ownership() {
                     type="email"
                     placeholder="Search by registered email address"
                     icon={MagnifyingGlassIcon}
-                    rightElement={<Button type="button" variant="ghost" size="sm" className={`  bg-transparent shadow-none px-3 py-1 text-sm text-indigo-600 hover:bg-indigo-50`} onClick={doSearch}>Invite</Button>}
-
-
+                    rightElement={
+                        <Button
+                            type="button"
+                            variant="ghost"
+                            size="sm"
+                            className="bg-transparent shadow-none px-3 py-1 text-sm text-indigo-600 hover:bg-indigo-50"
+                            onClick={doSearch}
+                        >
+                            Invite
+                        </Button>
+                    }
                 />
 
                 <Spacing size="lg" />
-                <FilterTabs
-                    tabs={tabOptions}
-                    currentTab={currentTab}
-                    onTabChange={(tab) => setCurrentTab(tab.name)}
-                />
-      
+                <FilterTabs tabs={tabOptions} currentTab={currentTab} onTabChange={(tab) => setCurrentTab(tab.name)} />
 
                 <ProfileRow
                     profile={filteredProfiles}
@@ -218,31 +211,59 @@ export default function Ownership() {
                         <ProfileActionMenu
                             profile={profile}
                             actions={[
-                                ...(profile.status === 'Pending' ? [{ label: 'Approve', onClick: async () => {
-                                    const id = ownerIdByEmail[profile.email.toLowerCase()];
-                                    if (!id) { toast.error('Missing ownership id'); return; }
-                                    try {
-                                        const updated = await updateOwnership(id, { status: 'Approved' });
-                                        setProfiles((prev) => prev.map((p) => p.email.toLowerCase() === profile.email.toLowerCase() ? { ...p, status: 'Approved' } : p));
-                                        toast.success('Approved');
-                                    } catch (e:any) { toast.error(getErrMsg(e, 'Failed to approve')); }
-                                } }] : []),
-                                { label: 'Remove', onClick: async () => {
-                                    const id = ownerIdByEmail[profile.email.toLowerCase()];
-                                    if (!id) { toast.error('Missing ownership id'); return; }
-                                    try {
-                                        await removeOwnership(id);
-                                        setProfiles((prev) => prev.filter((p) => p.email.toLowerCase() !== profile.email.toLowerCase()));
-                                        setOwnerIdByEmail((m) => { const n = { ...m }; delete n[profile.email.toLowerCase()]; return n; });
-                                        toast.success('Removed');
-                                    } catch (e:any) { toast.error(getErrMsg(e, 'Failed to remove')); }
-                                }, danger: true },
+                                ...(profile.status === 'Pending'
+                                    ? [
+                                            {
+                                                label: 'Approve',
+                                                onClick: async () => {
+                                                    const id = ownerIdByEmail[profile.email.toLowerCase()];
+                                                    if (!id) {
+                                                        toast.error('Missing ownership id');
+                                                        return;
+                                                    }
+                                                    try {
+                                                        await updateOwnership(id, { status: 'Approved' });
+                                                        setProfiles((prev) =>
+                                                            prev.map((p) =>
+                                                                p.email.toLowerCase() === profile.email.toLowerCase() ? { ...p, status: 'Approved' } : p,
+                                                            ),
+                                                        );
+                                                        toast.success('Approved');
+                                                    } catch (e: any) {
+                                                        toast.error(getErrMsg(e, 'Failed to approve'));
+                                                    }
+                                                },
+                                            },
+                                        ]
+                                    : []),
+                                {
+                                    label: 'Remove',
+                                    onClick: async () => {
+                                        const id = ownerIdByEmail[profile.email.toLowerCase()];
+                                        if (!id) {
+                                            toast.error('Missing ownership id');
+                                            return;
+                                        }
+                                        try {
+                                            await removeOwnership(id);
+                                            setProfiles((prev) => prev.filter((p) => p.email.toLowerCase() !== profile.email.toLowerCase()));
+                                            setOwnerIdByEmail((m) => {
+                                                const n = { ...m };
+                                                delete n[profile.email.toLowerCase()];
+                                                return n;
+                                            });
+                                            toast.success('Removed');
+                                        } catch (e: any) {
+                                            toast.error(getErrMsg(e, 'Failed to remove'));
+                                        }
+                                    },
+                                    danger: true,
+                                },
                             ]}
                         />
                     )}
                 />
             </LayoutWithoutSidebar>
         </FormProvider>
-
     );
 }
