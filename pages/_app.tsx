@@ -10,13 +10,19 @@ export default function App({ Component, pageProps }: AppProps) {
   useEffect(() => setHydrated(true), []);
   // Register service worker for PWA
   useEffect(() => {
-    if ('serviceWorker' in navigator) {
-      // avoid duplicate registration in dev HMR
+    if (typeof window === 'undefined' || !('serviceWorker' in navigator)) return;
+    // Only register SW in production; in development, unregister to avoid HMR/cache issues
+    if (process.env.NODE_ENV === 'production') {
       navigator.serviceWorker.getRegistrations().then((regs) => {
         const hasPwa = regs.some((r) => r.active && r.active.scriptURL.endsWith('/sw.js'));
         if (!hasPwa) {
           navigator.serviceWorker.register('/sw.js').catch(() => {/* ignore */});
         }
+      });
+    } else {
+      // Dev: ensure no service worker controls the page to prevent stale module caches
+      navigator.serviceWorker.getRegistrations().then((regs) => {
+        regs.forEach((r) => r.unregister().catch(() => {}));
       });
     }
   }, []);

@@ -4,6 +4,9 @@
   "private": true,
   "scripts": {
     "dev": "cross-env PORT=3001 next dev --port 3001 --turbopack",
+    "dev:slow": "cross-env PORT=3001 next dev --port 3001",
+    "clean": "node -e \"require('fs').rmSync('.next',{recursive:true,force:true})\"",
+    "dev:clean": "npm run clean && npm run dev",
     "build": "next build",
     "start": "next start --port 3001",
     "lint": "next lint"

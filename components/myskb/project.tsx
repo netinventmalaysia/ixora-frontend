@@ -13,7 +13,7 @@ import { emailNotificationOptions2 } from "todo/components/data/CheckList";
 import ConfirmDialog from "todo/components/forms/ConfirmDialog";
 import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
-import { useFormContext, useWatch } from "react-hook-form";
+import { useFormContext, useWatch, useFieldArray } from "react-hook-form";
 import RadioGroupField from "todo/components/forms/RadioGroupField";
 import { landOrBuildingOwnerList } from "todo/components/data/RadioList";
 import toast from 'react-hot-toast';
@@ -88,24 +88,98 @@ export default function ProjectPage() {
     return () => { mounted = false; };
   }, [router.query?.draft_id]);
 
-  // Helper component to auto-calc processing fees based on openArea/closeArea
-  function ProcessingFeesAutoCalc() {
-    // This is inside the FormProvider, so we can use RHF hooks
+  // Helper: compute per-building fee and total fee (min RM 140 per row)
+  function BuildingsFeesAutoCalc() {
     // eslint-disable-next-line react-hooks/rules-of-hooks
     const { control, setValue } = useFormContext();
     // eslint-disable-next-line react-hooks/rules-of-hooks
-    const open = useWatch({ control, name: 'openArea' });
-    // eslint-disable-next-line react-hooks/rules-of-hooks
-    const close = useWatch({ control, name: 'closeArea' });
+    const buildings = useWatch({ control, name: 'buildings' }) as Array<any> | undefined;
     // eslint-disable-next-line react-hooks/rules-of-hooks
     useEffect(() => {
-      const nOpen = Number(open) || 0;
-      const nClose = Number(close) || 0;
-      const fee = Math.max(140, nOpen * 0.75 + nClose * 1.5);
-      const rounded = Math.round((fee + Number.EPSILON) * 100) / 100;
-      setValue('processingFees', rounded, { shouldValidate: true, shouldDirty: true });
-    }, [open, close, setValue]);
+      if (!Array.isArray(buildings) || buildings.length === 0) {
+        setValue('processingFees', 0, { shouldValidate: true, shouldDirty: true });
+        return;
+      }
+      let total = 0;
+      buildings.forEach((b, idx) => {
+        const open = Number(b?.openArea) || 0;
+        const close = Number(b?.closeArea) || 0;
+        const fee = Math.max(140, open * 0.75 + close * 1.5);
+        const rounded = Math.round((fee + Number.EPSILON) * 100) / 100;
+        total += rounded;
+        // Write back per-row fee without triggering loops unnecessarily
+        setValue(`buildings.${idx}.processingFee`, rounded, { shouldValidate: true, shouldDirty: true });
+      });
+      setValue('processingFees', Math.round((total + Number.EPSILON) * 100) / 100, { shouldValidate: true, shouldDirty: true });
+    }, [JSON.stringify(buildings), setValue]);
     return null;
+  }
+
+  // Table-like component for multiple buildings
+  function BuildingsTable() {
+    // eslint-disable-next-line react-hooks/rules-of-hooks
+    const { control } = useFormContext();
+    // eslint-disable-next-line react-hooks/rules-of-hooks
+    const { fields, append, remove } = useFieldArray({ control, name: 'buildings' });
+
+    return (
+      <div>
+        <div className="flex justify-between items-center mb-2">
+          <div>
+            <Heading level={3}>Buildings</Heading>
+            <p className="text-xs text-gray-600">Add one or more building entries</p>
+          </div>
+          <Button type="button" variant="secondary" onClick={() => append({ buildingUse: '', openArea: '', closeArea: '', processingFee: 140 })}>
+            + Add Building
+          </Button>
+        </div>
+
+        {fields.length === 0 ? (
+          <p className="text-sm text-gray-600">No buildings added yet. Click "+ Add Building" to start.</p>
+        ) : (
+          <div className="overflow-auto border rounded">
+            <table className="min-w-full text-sm">
+              <thead className="bg-gray-50">
+                <tr>
+                  <th className="px-2 py-2 text-left">Use</th>
+                  <th className="px-2 py-2 text-left">Open Area (m²)</th>
+                  <th className="px-2 py-2 text-left">Close Area (m²)</th>
+                  <th className="px-2 py-2 text-left">Processing Fee (RM)</th>
+                  <th className="px-2 py-2 text-left">Action</th>
+                </tr>
+              </thead>
+              <tbody>
+                {fields.map((f, idx) => {
+                  const base = `buildings.${idx}`;
+                  return (
+                    <tr key={f.id} className="border-t align-top">
+                      <td className="px-2 py-2 min-w-[220px]">
+                        <SelectField id={`${base}.buildingUse`} name={`${base}.buildingUse`} label="" options={buildingUseOptions} placeholder="Select use" requiredMessage="Required" />
+                      </td>
+                      <td className="px-2 py-2 min-w-[180px]">
+                        <InputText id={`${base}.openArea`} name={`${base}.openArea`} label="" type="number" placeholder="0" />
+                        <p className="text-[11px] text-gray-500 mt-1">x RM 0.75</p>
+                      </td>
+                      <td className="px-2 py-2 min-w-[180px]">
+                        <InputText id={`${base}.closeArea`} name={`${base}.closeArea`} label="" type="number" placeholder="0" />
+                        <p className="text-[11px] text-gray-500 mt-1">x RM 1.50</p>
+                      </td>
+                      <td className="px-2 py-2 min-w-[180px]">
+                        <InputText id={`${base}.processingFee`} name={`${base}.processingFee`} label="" type="number" prefix="RM" readOnly rightElement={<span className="text-xs text-gray-500">Auto</span>} />
+                        <p className="text-[11px] text-gray-500 mt-1">Min RM 140</p>
+                      </td>
+                      <td className="px-2 py-2">
+                        <Button type="button" variant="ghost" onClick={() => remove(idx)}>Remove</Button>
+                      </td>
+                    </tr>
+                  );
+                })}
+              </tbody>
+            </table>
+          </div>
+        )}
+      </div>
+    );
   }
 
   const handleSubmit = async (data: any) => {
@@ -225,27 +299,16 @@ export default function ProjectPage() {
 
         <LineSeparator />
 
-        <FormSectionHeader title="Propose Usage Information" description="Please fill in the details of your project. This information will be used to register your project with MBMB." />
-        <Spacing size="lg" />
-        <SelectField id="buildingUse" name="buildingUse" label="Building will be used as" options={buildingUseOptions} requiredMessage="Building will be used as is required" />
+        <FormSectionHeader title="Propose Usage Information" description="Add one or more buildings and their areas. Each building's processing fee is auto-calculated with a minimum of RM 140." />
         <Spacing size="lg" />
 
-        <LineSeparator />
+        <BuildingsTable />
 
-    <FormSectionHeader title="Processing Fees" description="Please fill in the details of your project. Minumum processing charges is RM 140.00" />
-        <Spacing size="lg" />
-
-    <InputText id="openArea" name="openArea" label="Open Area (m2) x RM 0.75" type="number" requiredMessage="Open Area is required" />
-        <Spacing size="sm" />
-
-    <InputText id="closeArea" name="closeArea" label="Close Area (m2) x RM 1.50" type="number" requiredMessage="Close Area is required" />
-        <Spacing size="sm" />
-
-
+        <Spacing size="md" />
         <InputText
           id="processingFees"
           name="processingFees"
-          label="Processing Fees"
+          label="Total Processing Fees"
           type="number"
           prefix="RM"
           requiredMessage="Processing Fees is required"
@@ -254,7 +317,7 @@ export default function ProjectPage() {
         />
 
         {/* Auto-calc syncer (invisible) */}
-        <ProcessingFeesAutoCalc />
+        <BuildingsFeesAutoCalc />
 
 
 

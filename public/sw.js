@@ -23,6 +23,13 @@ self.addEventListener('activate', (event) => {
 
 self.addEventListener('fetch', (event) => {
     const req = event.request;
+    // Only handle GET requests for caching — Cache API does not support POST/PUT/etc.
+    if (req.method !== 'GET') return;
+    // Skip caching Next.js dev assets and HMR endpoints
+    const url = new URL(req.url);
+    if (url.pathname.startsWith('/_next/') || url.pathname.includes('__next')) {
+        return; // let the network handle it
+    }
     // Network-first for navigation, cache-first for same-origin static assets
     if (req.mode === 'navigate') {
         event.respondWith(
@@ -30,13 +37,19 @@ self.addEventListener('fetch', (event) => {
         );
         return;
     }
-    if (new URL(req.url).origin === self.location.origin) {
+    if (url.origin === self.location.origin) {
         event.respondWith(
             caches.match(req).then((cached) => cached || fetch(req).then((res) => {
-                const resClone = res.clone();
-                caches.open(CACHE_NAME).then((cache) => cache.put(req, resClone));
+                // Cache successful basic responses only
+                if (res && res.status === 200 && (res.type === 'basic' || res.type === 'opaque')) {
+                    const resClone = res.clone();
+                    caches.open(CACHE_NAME).then((cache) => {
+                        // Cache.put only supports GET requests (already ensured above)
+                        cache.put(req, resClone).catch(() => {});
+                    });
+                }
                 return res;
-            }))
+            }).catch(() => cached))
         );
     }
 });
@@ -88,7 +101,7 @@ self.addEventListener('notificationclick', (event) => {
 
 // Allow the page to message the SW to show a local test notification without a push server
 self.addEventListener('message', (event) => {
-    if (!event.data) return;
+    if (!event || !event.data) return;
     if (event.data.type === 'LOCAL_NOTIFY') {
         const { title = 'Test Notification', body = 'Hello from Ixora MBMB', url = '/' } = event.data.payload || {};
         event.waitUntil(
