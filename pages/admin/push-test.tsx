@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { getPushPublicKey, savePushSubscription, deletePushSubscription, sendAdminTestPush, generatePushVapidKeys } from '@/services/api';
+import { getPushPublicKey, savePushSubscription, deletePushSubscription, sendAdminTestPush, generatePushVapidKeys, listPushSubscriptions } from '@/services/api';
 import SidebarLayout from '@/components/main/SidebarLayout';
 
 // Helper: convert base64 VAPID public key to Uint8Array
@@ -31,6 +31,10 @@ export default function PushTestPage() {
   const [genBusy, setGenBusy] = useState(false);
   const [genMessage, setGenMessage] = useState<string>('');
   const [generatedPublicKey, setGeneratedPublicKey] = useState<string>('');
+  const [lookupUserId, setLookupUserId] = useState<string>('');
+  const [subs, setSubs] = useState<any[]>([]);
+  const [subsBusy, setSubsBusy] = useState(false);
+  const [subsMsg, setSubsMsg] = useState<string>('');
 
   useEffect(() => {
     setSupported('serviceWorker' in navigator && 'PushManager' in window);
@@ -191,6 +195,42 @@ export default function PushTestPage() {
     }
   };
 
+  const loadSubscriptions = async (scope: 'user' | 'all') => {
+    setSubsBusy(true);
+    setSubsMsg('');
+    try {
+      let res: any;
+      if (scope === 'user') {
+        const uid = Number(lookupUserId || myUserId || 0);
+        if (!uid || Number.isNaN(uid)) throw new Error('Enter a valid userId to lookup.');
+        res = await listPushSubscriptions({ userId: uid, limit: 50, offset: 0 });
+      } else {
+        res = await listPushSubscriptions({ limit: 50, offset: 0 });
+      }
+      const arr = Array.isArray(res?.data) ? res.data : (Array.isArray(res) ? res : (Array.isArray(res?.items) ? res.items : []));
+      setSubs(arr);
+      setSubsMsg(`Loaded ${arr.length} subscription(s).`);
+    } catch (e: any) {
+      setSubsMsg('Load failed: ' + (e?.response?.data?.message || e?.message || 'Unknown error'));
+      setSubs([]);
+    } finally {
+      setSubsBusy(false);
+    }
+  };
+
+  const sendToSubscription = async (id: string | number) => {
+    setBusy(true);
+    setServerMessage('');
+    try {
+      const res = await sendAdminTestPush({ subscriptionId: id, title: 'Admin Server Push', body: 'This is a server-sent test', url: '/myskb/home' });
+      setServerMessage(typeof res?.message === 'string' ? res.message : `Requested push for subscription ${id}.`);
+    } catch (e: any) {
+      setServerMessage('Server push failed: ' + (e?.response?.data?.message || e?.message || 'Unknown error'));
+    } finally {
+      setBusy(false);
+    }
+  };
+
   return (
     <SidebarLayout>
       <div className="max-w-2xl mx-auto p-6">
@@ -332,6 +372,45 @@ Specific subscription: { "subscriptionId": 456, "title": "Admin Server Push", "b
             <p className="mt-2 text-xs text-gray-700">{serverMessage}</p>
           )}
           <p className="mt-2 text-xs text-gray-500">Requires backend endpoints: GET /push/public-key, POST /push/subscription, DELETE /push/subscription, POST /push/test</p>
+        </div>
+
+        <div className="mt-6 border-t pt-4">
+          <p className="text-sm font-medium">Subscriptions (Admin)</p>
+          <div className="mt-2 flex items-end gap-2 flex-wrap">
+            <div>
+              <label className="block text-xs text-gray-700">Lookup User ID</label>
+              <input className="mt-1 w-40 rounded border px-2 py-1 text-sm" placeholder="e.g. 4" value={lookupUserId} onChange={(e)=>setLookupUserId(e.target.value)} />
+            </div>
+            <button className="px-3 py-1.5 rounded bg-slate-600 text-white text-sm" disabled={subsBusy} onClick={() => loadSubscriptions('user')}>Load for user</button>
+            <button className="px-3 py-1.5 rounded bg-slate-500 text-white text-sm" disabled={subsBusy} onClick={() => loadSubscriptions('all')}>Load all</button>
+            {subsMsg && <span className="text-xs text-gray-600">{subsMsg}</span>}
+          </div>
+          {subs.length > 0 && (
+            <div className="mt-3 overflow-auto border rounded">
+              <table className="min-w-full text-xs">
+                <thead className="bg-gray-50 text-gray-700">
+                  <tr>
+                    <th className="px-2 py-1 text-left">ID</th>
+                    <th className="px-2 py-1 text-left">Endpoint</th>
+                    <th className="px-2 py-1 text-left">User</th>
+                    <th className="px-2 py-1 text-left">Actions</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {subs.map((s: any) => (
+                    <tr key={String(s.id || s.subscriptionId || s.endpoint)} className="border-t">
+                      <td className="px-2 py-1 font-mono">{String(s.id ?? s.subscriptionId ?? '—')}</td>
+                      <td className="px-2 py-1 break-all text-gray-700">{String(s.endpoint || '—')}</td>
+                      <td className="px-2 py-1">{s.userId ?? '—'}</td>
+                      <td className="px-2 py-1">
+                        <button className="px-2 py-1 rounded bg-emerald-600 text-white" onClick={() => sendToSubscription(s.id ?? s.subscriptionId)}>Send test</button>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          )}
         </div>
       </div>
       </div>

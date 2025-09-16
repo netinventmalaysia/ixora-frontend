@@ -13,7 +13,8 @@ import {
 } from '@/components/main/SidebarConfig';
 import { useTranslation } from '@/utils/i18n';
 import SidebarNav from '@/components/main/SidebarNav';
-import { useRouter } from 'next/navigation';
+import { useRouter } from 'next/router';
+// (fixed) remove duplicate import
 
 export type NavigationItem = {
   name?: string;
@@ -47,15 +48,8 @@ export default function SidebarContent({
   username?: string;
 }) {
   const [sidebarOpen, setSidebarOpen] = useState(false);
-  const [mode, setMode] = useState<'Personal' | 'Business'>(() => {
-    try {
-      if (typeof window !== 'undefined') {
-        const saved = localStorage.getItem('user-mode') || 'Personal';
-        return saved === 'Business' || saved === 'Personal' ? (saved as 'Personal' | 'Business') : 'Personal';
-      }
-    } catch {}
-    return 'Personal';
-  });
+  // Initialize deterministically to avoid SSR/CSR mismatch. Read localStorage after mount.
+  const [mode, setMode] = useState<'Personal' | 'Business'>('Personal');
 
   const [generalNav, setGeneralNav] = useState<NavigationItem[]>([]);
   const [personalNav, setPersonalNav] = useState<NavigationItem[]>([]);
@@ -66,13 +60,21 @@ export default function SidebarContent({
   // keep a local copy of userRole so the sidebar can update immediately when
   // storage or a custom event changes the value (same-window storage writes
   // don't fire the storage event). Initialize from prop or localStorage.
-  const [localUserRole, setLocalUserRole] = useState<string>(() => {
+  // Keep SSR-safe initial role; hydrate from localStorage after mount.
+  const [localUserRole, setLocalUserRole] = useState<string>(userRole || 'guest');
+
+  // Client-only hydration of mode and role from localStorage
+  useEffect(() => {
     try {
-      return userRole || (typeof window !== 'undefined' ? (localStorage.getItem('userRole') || 'guest') : 'guest');
-    } catch (e) {
-      return userRole || 'guest';
-    }
-  });
+      if (typeof window !== 'undefined') {
+        const saved = localStorage.getItem('user-mode');
+        if (saved === 'Business' || saved === 'Personal') setMode(saved);
+        const storedRole = localStorage.getItem('userRole');
+        if (storedRole) setLocalUserRole(storedRole);
+      }
+    } catch {}
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   // sync when parent prop changes
   useEffect(() => {
@@ -81,6 +83,7 @@ export default function SidebarContent({
 
   // listen for storage events (other tabs) and a custom event for same-window updates
   useEffect(() => {
+    if (typeof window === 'undefined') return;
     const onStorage = (e: StorageEvent) => {
       if (e.key === 'userRole') setLocalUserRole(e.newValue || 'guest');
       if (e.key === 'user-mode') {
@@ -92,7 +95,7 @@ export default function SidebarContent({
       try {
         const v = localStorage.getItem('userRole') || 'guest';
         setLocalUserRole(v);
-      } catch (e) {}
+      } catch {}
     };
     window.addEventListener('storage', onStorage);
     window.addEventListener('ixora:userchange', onUserChange as EventListener);
@@ -162,13 +165,13 @@ export default function SidebarContent({
   const toggleMode = () => {
     const newMode = mode === 'Personal' ? 'Business' : 'Personal';
     console.log('Toggling mode to', newMode);
-  try { localStorage.setItem('user-mode', newMode); } catch {}
+  try { if (typeof window !== 'undefined') localStorage.setItem('user-mode', newMode); } catch {}
     setMode(newMode);
     router.push('/dashboard');
   };
 
   useEffect(() => {
-    localStorage.setItem('user-mode', mode);
+    try { if (typeof window !== 'undefined') localStorage.setItem('user-mode', mode); } catch {}
   }, [mode]);
 
   const showModeToggle = userRole !== 'guest';
