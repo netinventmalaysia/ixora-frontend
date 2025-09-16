@@ -231,6 +231,66 @@ export default function PushTestPage() {
     }
   };
 
+  // iOS-friendly one-click enable with thorough logging and strict shape
+  const enableNotifications = async () => {
+    try {
+      // Feature detection
+      if (!('serviceWorker' in navigator) || !('PushManager' in window) || !('Notification' in window)) {
+        alert('Push not supported on this browser/device.');
+        return;
+      }
+
+      // Request permission from a user gesture
+      const perm = await Notification.requestPermission();
+      setPermission(perm);
+      if (perm !== 'granted') {
+        alert('Permission not granted. On iOS, ensure the app is installed to Home Screen.');
+        return;
+      }
+
+      // Ensure SW is ready (already registered by _app.tsx)
+      const reg = await navigator.serviceWorker.ready;
+
+      // Fetch server key if not set
+      let pk = vapid || serverKey || '';
+      if (!pk) {
+        pk = (await getPushPublicKey()) || '';
+        setServerKey(pk);
+      }
+      if (!/^[A-Za-z0-9-_]+$/.test(pk) || pk.length < 80) {
+        alert('Invalid or missing VAPID public key.');
+        return;
+      }
+
+      const applicationServerKey = urlBase64ToUint8Array(pk);
+      const sub = await reg.pushManager.subscribe({ userVisibleOnly: true, applicationServerKey: (applicationServerKey as unknown as BufferSource) });
+
+      const subJson = sub.toJSON?.() ?? sub;
+      console.log('[Push] subscription.toJSON()', subJson);
+      const endpointOk = !!subJson?.endpoint && typeof subJson.endpoint === 'string';
+      const p256dhOk = !!subJson?.keys?.p256dh && typeof subJson.keys.p256dh === 'string';
+      const authOk = !!subJson?.keys?.auth && typeof subJson.keys.auth === 'string';
+      if (!endpointOk || !p256dhOk || !authOk) {
+        alert('Invalid subscription returned by browser. On iOS, ensure PWA is installed to Home Screen and try again.');
+        return;
+      }
+
+      setSubscription(sub);
+      try {
+        const res = await savePushSubscription(sub, { userAgent: typeof navigator !== 'undefined' ? navigator.userAgent : undefined });
+        const id = (res && (res.id || res.subscriptionId)) ?? null;
+        if (id !== null) setSavedSubId(id);
+        setServerMessage('Subscription saved on server.');
+      } catch (e: any) {
+        console.error('Save subscription failed:', e);
+        setServerMessage('Save subscription failed: ' + (e?.response?.data?.message || e?.message || 'Unknown error'));
+      }
+    } catch (e) {
+      console.error('Enable push failed:', e);
+      alert('Enable push failed. See console for details.');
+    }
+  };
+
   return (
     <SidebarLayout>
       <div className="max-w-2xl mx-auto p-6">
@@ -261,6 +321,11 @@ export default function PushTestPage() {
             <p className="mt-1 text-xs text-gray-600">Using server key from /push/public-key</p>
           )}
           <div className="mt-2 flex gap-2">
+            <button
+              className="px-3 py-1.5 rounded bg-teal-600 text-white text-sm"
+              onClick={enableNotifications}
+              disabled={!swReady}
+            >Enable Notifications (iOS-friendly)</button>
             <button
               className="px-3 py-1.5 rounded bg-green-600 text-white text-sm"
               onClick={subscribe}

@@ -546,16 +546,29 @@ export const getPushPublicKey = async (): Promise<string | null> => {
 };
 
 // Save a browser subscription on server
-export const savePushSubscription = async (subscription: PushSubscription | PushSubscriptionJSON) => {
-    const payload = (typeof (subscription as any).toJSON === 'function') ? (subscription as any).toJSON() : subscription;
-    const { data } = await api.post('/push/subscription', payload, { headers: { 'Content-Type': 'application/json' } });
-    return data;
+export const savePushSubscription = async (
+    subscription: PushSubscription | PushSubscriptionJSON,
+    extras?: { userAgent?: string }
+) => {
+    const subJson = (typeof (subscription as any).toJSON === 'function') ? (subscription as any).toJSON() : subscription;
+    // Prefer provided userAgent; otherwise try to read from browser
+    const ua = extras?.userAgent ?? (typeof navigator !== 'undefined' ? navigator.userAgent : undefined);
+    const body: any = { subscription: subJson };
+    if (ua) body.userAgent = ua;
+    const { data } = await api.post('/push/subscription', body, { headers: { 'Content-Type': 'application/json' } });
+    return data; // expected: { id, status: 'ok' }
 };
 
 // Delete/unregister a subscription on server
 export const deletePushSubscription = async (endpoint: string) => {
     // Prefer body payload; if backend expects query, adjust accordingly
     const { data } = await api.delete('/push/subscription', { data: { endpoint } });
+    return data;
+};
+
+// Alternative: delete by stored id (if backend supports it)
+export const deletePushSubscriptionById = async (id: number | string) => {
+    const { data } = await api.delete('/push/subscription', { data: { id } });
     return data;
 };
 
