@@ -566,7 +566,13 @@ export const listPushSubscriptions = async (params: { userId?: number; limit?: n
 };
 
 // Admin-only: trigger a test push from server
-export const sendAdminTestPush = async (payload: { title?: string; body?: string; url?: string; all?: boolean; userId?: number; subscriptionId?: number | string } = {}) => {
+export const sendAdminTestPush = async (payload: { title?: string; body?: string; url?: string; icon?: string; ttl?: number; all?: boolean; userId?: number; subscriptionId?: number | string } = {}) => {
     const { data } = await api.post('/push/test', payload);
     return data;
+};
+
+// Admin-only: generate VAPID key pair (save to vault and set envs on backend)
+export const generatePushVapidKeys = async () => {
+    const { data } = await api.post('/push/generate-keys');
+    return data; // { publicKey, privateKey } or backend-specific shape
 };

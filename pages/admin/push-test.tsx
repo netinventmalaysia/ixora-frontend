@@ -132,6 +132,37 @@ export default function PushTestPage() {
     }
   };
 
+  // Quick actions: Broadcast and Send-to-me
+  const sendServerAll = async () => {
+    setBusy(true);
+    setServerMessage('');
+    try {
+      const res = await sendAdminTestPush({ all: true, title: 'Admin Server Push', body: 'This is a server-sent test', url: '/myskb/home' });
+      setServerMessage(typeof res?.message === 'string' ? res.message : 'Requested broadcast push.');
+    } catch (e: any) {
+      setServerMessage('Server push failed: ' + (e?.response?.data?.message || e?.message || 'Unknown error'));
+    } finally {
+      setBusy(false);
+    }
+  };
+
+  const sendServerMe = async () => {
+    if (!myUserId || Number.isNaN(myUserId)) {
+      alert('No userId found in localStorage; cannot target "me". Try Broadcast or specify a User ID.');
+      return;
+    }
+    setBusy(true);
+    setServerMessage('');
+    try {
+      const res = await sendAdminTestPush({ userId: myUserId, title: 'Admin Server Push', body: 'This is a server-sent test', url: '/myskb/home' });
+      setServerMessage(typeof res?.message === 'string' ? res.message : `Requested push for user ${myUserId}.`);
+    } catch (e: any) {
+      setServerMessage('Server push failed: ' + (e?.response?.data?.message || e?.message || 'Unknown error'));
+    } finally {
+      setBusy(false);
+    }
+  };
+
   return (
     <div className="max-w-2xl mx-auto p-6">
       <h1 className="text-xl font-semibold mb-4">PWA Push Test (Admin)</h1>
@@ -226,12 +257,22 @@ Specific subscription: { "subscriptionId": 456, "title": "Admin Server Push", "b
               <p className="mt-2 text-xs text-gray-500">Ensure at least one subscription exists for the selected target.</p>
             </div>
           </div>
-          <div className="mt-2 flex gap-2">
+          <div className="mt-2 flex gap-2 flex-wrap">
             <button
               className="px-3 py-1.5 rounded bg-emerald-600 text-white text-sm"
               onClick={sendServer}
               disabled={busy}
             >Send Server Push</button>
+            <button
+              className="px-3 py-1.5 rounded bg-amber-600 text-white text-sm"
+              onClick={sendServerAll}
+              disabled={busy}
+            >Broadcast (all)</button>
+            <button
+              className="px-3 py-1.5 rounded bg-indigo-600 text-white text-sm"
+              onClick={sendServerMe}
+              disabled={busy}
+            >Send to me</button>
           </div>
           {serverMessage && (
             <p className="mt-2 text-xs text-gray-700">{serverMessage}</p>
