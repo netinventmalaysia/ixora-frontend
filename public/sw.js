@@ -1,5 +1,5 @@
 // Basic service worker for PWA offline support
-const CACHE_NAME = 'ixora-cache-v1';
+const CACHE_NAME = 'ixora-mbmb-cache-v1';
 const ASSETS = [
     '/',
     '/favicon.ico',
@@ -52,7 +52,7 @@ self.addEventListener('push', (event) => {
         data = { body: event.data && event.data.text ? event.data.text() : 'New notification' };
     }
 
-    const title = data.title || 'Ixora Notification';
+    const title = data.title || 'Ixora MBMB Notification';
     const body = data.body || 'This is a test push notification.';
     const url = data.url || '/';
     const icon = data.icon || '/images/logo.png';
@@ -90,7 +90,7 @@ self.addEventListener('notificationclick', (event) => {
 self.addEventListener('message', (event) => {
     if (!event.data) return;
     if (event.data.type === 'LOCAL_NOTIFY') {
-        const { title = 'Test Notification', body = 'Hello from Ixora', url = '/' } = event.data.payload || {};
+    const { title = 'Test Notification', body = 'Hello from Ixora MBMB', url = '/' } = event.data.payload || {};
         event.waitUntil(
             self.registration.showNotification(title, {
                 body,
