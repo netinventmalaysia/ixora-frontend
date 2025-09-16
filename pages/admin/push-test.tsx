@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import { getPushPublicKey, savePushSubscription, deletePushSubscription, sendAdminTestPush } from '@/services/api';
+import SidebarLayout from '@/components/main/SidebarLayout';
 
 // Helper: convert base64 VAPID public key to Uint8Array
 function urlBase64ToUint8Array(base64String: string) {
@@ -164,8 +165,9 @@ export default function PushTestPage() {
   };
 
   return (
-    <div className="max-w-2xl mx-auto p-6">
-      <h1 className="text-xl font-semibold mb-4">PWA Push Test (Admin)</h1>
+    <SidebarLayout>
+      <div className="max-w-2xl mx-auto p-6">
+        <h1 className="text-xl font-semibold mb-4">PWA Push Test (Admin)</h1>
 
       {!supported && (
         <p className="text-red-600">This browser does not support Service Worker + Push API.</p>
@@ -280,6 +282,7 @@ Specific subscription: { "subscriptionId": 456, "title": "Admin Server Push", "b
           <p className="mt-2 text-xs text-gray-500">Requires backend endpoints: GET /push/public-key, POST /push/subscription, DELETE /push/subscription, POST /push/test</p>
         </div>
       </div>
-    </div>
+      </div>
+    </SidebarLayout>
   );
 }
