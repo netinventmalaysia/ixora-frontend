@@ -120,20 +120,26 @@ export default function ProjectPage() {
     // eslint-disable-next-line react-hooks/rules-of-hooks
     useEffect(() => {
       if (!Array.isArray(buildings) || buildings.length === 0) {
-        setValue('processingFees', 0, { shouldValidate: true, shouldDirty: true });
+        setValue('processingFees', '0.00', { shouldValidate: true, shouldDirty: true });
         return;
       }
       let total = 0;
       buildings.forEach((b, idx) => {
         const open = Number(b?.openArea) || 0;
         const close = Number(b?.closeArea) || 0;
-        const fee = Math.max(140, open * 0.75 + close * 1.5);
-        const rounded = Math.round((fee + Number.EPSILON) * 100) / 100;
+        const feeRaw = Math.max(140, open * 0.75 + close * 1.5);
+        const rounded = Math.round((feeRaw + Number.EPSILON) * 100) / 100;
         total += rounded;
-        // Write back per-row fee without triggering loops unnecessarily
-        setValue(`buildings.${idx}.processingFee`, rounded, { shouldValidate: true, shouldDirty: true });
+        const fixed = rounded.toFixed(2);
+        // Write back per-row fee only if changed to avoid loops
+        const current = b?.processingFee;
+        if (`${current}` !== fixed) {
+          setValue(`buildings.${idx}.processingFee`, fixed, { shouldValidate: true, shouldDirty: true });
+        }
       });
-      setValue('processingFees', Math.round((total + Number.EPSILON) * 100) / 100, { shouldValidate: true, shouldDirty: true });
+      const totalRounded = Math.round((total + Number.EPSILON) * 100) / 100;
+      const totalFixed = totalRounded.toFixed(2);
+      setValue('processingFees', totalFixed, { shouldValidate: true, shouldDirty: true });
     }, [JSON.stringify(buildings), setValue]);
     return null;
   }
@@ -166,7 +172,18 @@ export default function ProjectPage() {
         toast.error('Please select a Business');
         return;
       }
-      const res = await submitProject(data);
+      // Normalize numeric fields for backend
+      const payload: any = { ...data };
+      if (Array.isArray(payload.buildings)) {
+        payload.buildings = payload.buildings.map((b: any) => ({
+          ...b,
+          openArea: Number(b?.openArea || 0),
+          closeArea: Number(b?.closeArea || 0),
+          processingFee: Number(b?.processingFee || 0),
+        }));
+      }
+      payload.processingFees = Number(payload.processingFees || 0);
+      const res = await submitProject(payload);
       toast.success('Project submitted');
       console.log('Submit result:', res);
     } catch (e: any) {
@@ -183,7 +200,18 @@ export default function ProjectPage() {
         toast.error('Please select a Business');
         return;
       }
-      const res = await saveProjectDraft({ ...data, draft: true });
+      // Normalize numeric fields for backend while saving draft
+      const payload: any = { ...data };
+      if (Array.isArray(payload.buildings)) {
+        payload.buildings = payload.buildings.map((b: any) => ({
+          ...b,
+          openArea: Number(b?.openArea || 0),
+          closeArea: Number(b?.closeArea || 0),
+          processingFee: Number(b?.processingFee || 0),
+        }));
+      }
+      payload.processingFees = Number(payload.processingFees || 0);
+      const res = await saveProjectDraft({ ...payload, draft: true });
       toast.success('Draft saved');
       console.log('Draft result:', res);
     } catch (e: any) {
@@ -284,7 +312,7 @@ export default function ProjectPage() {
           id="processingFees"
           name="processingFees"
           label="Total Processing Fees"
-          type="number"
+          type="text"
           prefix="RM"
           requiredMessage="Processing Fees is required"
           readOnly
@@ -294,19 +322,6 @@ export default function ProjectPage() {
         {/* Auto-calc syncer (invisible) */}
         <BuildingsFeesAutoCalc />
 
-
-
-
-
-
-
-
-
-
-
-
-
-
         <FormActions>
           <Button type="button" variant="ghost" onClick={() => setShowCancelDialog(true)}>Cancel</Button>
           <DraftSaveButton onSave={handleSaveDraft} loading={savingDraft} />
@@ -314,7 +329,7 @@ export default function ProjectPage() {
         </FormActions>
 
 
-      </FormWrapper>
+  </FormWrapper>
 
 
       <ConfirmDialog
