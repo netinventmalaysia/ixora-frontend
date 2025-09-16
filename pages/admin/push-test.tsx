@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { getPushPublicKey, savePushSubscription, deletePushSubscription, sendAdminTestPush } from '@/services/api';
+import { getPushPublicKey, savePushSubscription, deletePushSubscription, sendAdminTestPush, generatePushVapidKeys } from '@/services/api';
 import SidebarLayout from '@/components/main/SidebarLayout';
 
 // Helper: convert base64 VAPID public key to Uint8Array
@@ -28,6 +28,9 @@ export default function PushTestPage() {
   const [target, setTarget] = useState<'all' | 'me' | 'user' | 'sub'>('all');
   const [targetUserId, setTargetUserId] = useState<string>('');
   const [targetSubId, setTargetSubId] = useState<string>('');
+  const [genBusy, setGenBusy] = useState(false);
+  const [genMessage, setGenMessage] = useState<string>('');
+  const [generatedPublicKey, setGeneratedPublicKey] = useState<string>('');
 
   useEffect(() => {
     setSupported('serviceWorker' in navigator && 'PushManager' in window);
@@ -164,6 +167,30 @@ export default function PushTestPage() {
     }
   };
 
+  const copyToClipboard = async (text: string) => {
+    try { await navigator.clipboard.writeText(text); } catch {}
+  };
+
+  const generateKeys = async () => {
+    setGenBusy(true);
+    setGenMessage('');
+    try {
+      const res = await generatePushVapidKeys();
+      const pub = res?.publicKey || res?.data?.publicKey || '';
+      if (pub) {
+        setGeneratedPublicKey(pub);
+        setServerKey(pub);
+        setGenMessage('VAPID keys generated on server. Public key set for subscription. Private key is NOT shown.');
+      } else {
+        setGenMessage('Generated keys, but no public key found in response.');
+      }
+    } catch (e: any) {
+      setGenMessage('Key generation failed: ' + (e?.response?.data?.message || e?.message || 'Unknown error'));
+    } finally {
+      setGenBusy(false);
+    }
+  };
+
   return (
     <SidebarLayout>
       <div className="max-w-2xl mx-auto p-6">
@@ -230,6 +257,31 @@ export default function PushTestPage() {
             <p className="text-xs text-gray-600 mt-1">Send this to your server to send real push notifications.</p>
           </div>
         )}
+
+        <div className="mt-6 border-t pt-4">
+          <p className="text-sm font-medium">Server VAPID Keys</p>
+          <p className="mt-1 text-xs text-gray-600">One-time operation. Backend should store keys securely (vault/secrets). The private key is not displayed here.</p>
+          <div className="mt-2 flex gap-2 flex-wrap">
+            <button
+              className="px-3 py-1.5 rounded bg-slate-700 text-white text-sm"
+              onClick={generateKeys}
+              disabled={genBusy}
+            >Generate keys (admin)</button>
+            {generatedPublicKey && (
+              <button
+                className="px-3 py-1.5 rounded bg-slate-500 text-white text-sm"
+                onClick={() => copyToClipboard(generatedPublicKey)}
+              >Copy public key</button>
+            )}
+          </div>
+          {genMessage && <p className="mt-2 text-xs text-gray-700">{genMessage}</p>}
+          {generatedPublicKey && (
+            <div className="mt-2">
+              <label className="text-xs text-gray-700">Public Key</label>
+              <input className="mt-1 w-full rounded border px-2 py-1 text-sm" readOnly value={generatedPublicKey} />
+            </div>
+          )}
+        </div>
 
         <div className="mt-6 border-t pt-4">
           <p className="text-sm font-medium">Server Push Test</p>
