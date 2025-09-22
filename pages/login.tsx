@@ -7,7 +7,6 @@ import { useState } from "react";
 import toast from 'react-hot-toast';
 import LayoutWithoutSidebar from "todo/components/main/LayoutWithoutSidebar";
 import Heading from "todo/components/forms/Heading";
-import ImageDisplay from "todo/components/forms/ImageDisplay";
 import Hyperlink from "todo/components/forms/Hyperlink";
 import HyperText from "todo/components/forms/HyperText";
 import InputText from "todo/components/forms/InputText";
@@ -17,6 +16,7 @@ import { AxiosError } from 'axios'
 import { triggerUserRefresh } from "todo/components/actions/actionHandler";
 import { useTranslation } from '@/utils/i18n';
 import LanguageSelector from '@/components/common/LanguageSelector';
+import Image from 'next/image';
 
 export default function LoginPage() {
   const { t } = useTranslation();
@@ -73,19 +73,23 @@ export default function LoginPage() {
 
   return (
     <LayoutWithoutSidebar shiftY="-translate-y-0">
-      <LanguageSelector />
+      {/* Fixed language selector (consistent with landing/signup) */}
+      <div className="fixed right-3 top-20 sm:top-24 z-50">
+        <LanguageSelector className="!static" />
+      </div>
+
+      {/* Branding header clickable to home */}
+      <div className="relative mx-auto flex w-full max-w-md items-center justify-center px-6 pt-10 pb-4">
+        <a href="/" className="group flex flex-col items-center focus:outline-none" aria-label="Go to homepage">
+          <div className="relative mb-3 h-20 w-20 transition-transform group-hover:scale-105">
+            <Image src="/images/logo.png" alt="IXORA Logo" fill sizes="80px" className="object-contain" priority />
+          </div>
+          <h1 className="text-2xl font-extrabold tracking-tight text-[#B01C2F] group-hover:text-[#8c1423]">IXORA</h1>
+          <p className="mt-1 text-xs text-gray-500 dark:text-gray-400">{t('landing.hero.subtitle')}</p>
+        </a>
+      </div>
+
       <FormWrapper onSubmit={handleSubmit}>
-        <ImageDisplay
-          src="/images/logo.png"
-          alt="Centered Image"
-          align="center"
-          width={90}
-          height={90}
-          rounded={false}
-          shadow={false}
-          bordered={false}
-        />
-        <Spacing size="lg" />
         <Heading level={2} align="center" bold>
           {t('login.title')}
         </Heading>
