@@ -59,7 +59,7 @@ export default function SelectField({
   return (
     <div className={`w-full ${colSpan}`}>
       <label htmlFor={id} className="block text-sm font-medium text-gray-900">
-        {label}
+        {label}{requiredMessage && <span className="ml-0.5 text-red-600">*</span>}
       </label>
       <div className="mt-2">
         <select

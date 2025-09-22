@@ -50,7 +50,7 @@ export default function PhotoUploadField({
 
   return (
     <div className="col-span-full">
-      <label className="block text-sm font-medium text-gray-900">{label}</label>
+  <label className="block text-sm font-medium text-gray-900">{label}{requiredMessage && <span className="ml-0.5 text-red-600">*</span>}</label>
       <div className="mt-2 flex items-center gap-x-3">
         {uploadedUrl ? (
           <img

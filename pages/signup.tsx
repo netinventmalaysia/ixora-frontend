@@ -1,4 +1,6 @@
 import { useState } from "react";
+import Image from 'next/image';
+import LanguageSelector from '@/components/common/LanguageSelector';
 import { useTranslation } from '@/utils/i18n';
 import FormWrapper from "todo/components/forms/FormWrapper";
 import Button from 'todo/components/forms/Button';
@@ -76,6 +78,19 @@ export default function SignUpPage() {
 
   return (
     <LayoutWithoutSidebar>
+      {/* Top branding bar with logo and language selector */}
+      <div className="relative mx-auto flex w-full max-w-4xl items-center justify-center px-6 pt-10 pb-4">
+        <a href="/" className="group flex flex-col items-center focus:outline-none" aria-label="Go to homepage">
+          <div className="relative mb-3 h-20 w-20 transition-transform group-hover:scale-105">
+            <Image src="/images/logo.png" alt="IXORA Logo" fill sizes="80px" className="object-contain" priority />
+          </div>
+          <h1 className="text-2xl font-extrabold tracking-tight text-[#B01C2F] group-hover:text-[#8c1423]">IXORA</h1>
+          <p className="mt-1 text-xs text-gray-500 dark:text-gray-400">{t('landing.hero.subtitle')}</p>
+        </a>
+        <div className="absolute right-4 top-4">
+          <LanguageSelector className="!static" />
+        </div>
+      </div>
       <FormWrapper onSubmit={handleSubmit}>
   <Heading level={2} align="left" bold>{t('signup.title')}</Heading>
         <Spacing size="lg" />

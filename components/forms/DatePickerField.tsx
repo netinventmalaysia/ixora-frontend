@@ -32,7 +32,7 @@ export default function DatePickerField({
 
     return (
         <div className="mb-4">
-            <label className="block text-sm font-medium text-gray-700 mb-1">{label}</label>
+            <label className="block text-sm font-medium text-gray-700 mb-1">{label}{requiredMessage && <span className="ml-0.5 text-red-600">*</span>}</label>
             <Controller
                 control={control}
                 name={name}

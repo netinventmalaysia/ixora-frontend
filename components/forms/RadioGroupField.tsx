@@ -29,7 +29,7 @@ export default function RadioGroupField({
 
   return (
     <div className="mb-4">
-      <label className="block text-sm font-medium text-gray-900 mb-2">{label}</label>
+  <label className="block text-sm font-medium text-gray-900 mb-2">{label}{requiredMessage && <span className="ml-0.5 text-red-600">*</span>}</label>
       <div className={inline ? 'flex gap-4' : 'space-y-2'}>
         {options.map((option) => (
           <label key={option.value} className="flex items-center text-sm text-gray-700">
