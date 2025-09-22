@@ -295,7 +295,14 @@
       "panelTitle": "加入 MBMB 数字社区",
       "panelDesc": "创建您的 IXORA 账户，体验市政服务的数字化转型。",
       "ctaRegister": "注册",
-      "ctaLogin": "登录"
+      "ctaLogin": "登录",
+      "addressLabel": "地址",
+      "phoneLabel": "电话",
+      "emailLabel": "电子邮件",
+      "addressLines": [
+        "Majlis Bandaraya Melaka Bersejarah (MBMB)",
+        "Jalan Graha Makmur, 75450 Melaka"
+      ]
     },
     "footer": { "text": "IXORA – 马六甲智慧城市数字生态系统" },
     "table": {

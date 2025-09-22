@@ -296,7 +296,14 @@
       "panelTitle": "Join MBMB's Digital Community",
       "panelDesc": "Create your IXORA account and experience municipal service transformation.",
       "ctaRegister": "Register",
-      "ctaLogin": "Log In"
+      "ctaLogin": "Log In",
+      "addressLabel": "Address",
+      "phoneLabel": "Phone",
+      "emailLabel": "Email",
+      "addressLines": [
+        "Majlis Bandaraya Melaka Bersejarah (MBMB)",
+        "Jalan Graha Makmur, 75450 Melaka"
+      ]
     },
     "footer": { "text": "IXORA – Melaka Smart City Digital Ecosystem" },
     "table": {

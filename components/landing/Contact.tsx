@@ -10,11 +10,19 @@ export function Contact(){
   <h2 className="text-center text-3xl font-bold text-gray-900 dark:text-white">{t('landing.contact.title')}</h2>
         <div className="mt-10 grid gap-8 md:grid-cols-2">
           <div className="rounded-lg border border-gray-200 bg-white p-6 shadow-sm dark:border-gray-800 dark:bg-gray-800">
-            <h5 className="mb-3 flex items-center text-sm font-semibold"><span className="mr-2">📍</span>Alamat</h5>
-            <p className="text-sm text-gray-600 dark:text-gray-300">Majlis Bandaraya Melaka Bersejarah (MBMB)<br/> Jalan Graha Makmur, 75450 Melaka</p>
-            <h5 className="mt-5 mb-2 flex items-center text-sm font-semibold"><span className="mr-2">☎️</span>Telefon</h5>
+            <h5 className="mb-3 flex items-center text-sm font-semibold"><span className="mr-2">📍</span>{t('landing.contact.addressLabel')}</h5>
+            {(() => {
+              const lines = t('landing.contact.addressLines') as any;
+              const arr = Array.isArray(lines) ? lines : [];
+              return (
+                <p className="text-sm text-gray-600 dark:text-gray-300">
+                  {arr.map((ln:string,i:number)=>(<span key={i}>{ln}{i < arr.length-1 && <br/>}</span>))}
+                </p>
+              );
+            })()}
+            <h5 className="mt-5 mb-2 flex items-center text-sm font-semibold"><span className="mr-2">☎️</span>{t('landing.contact.phoneLabel')}</h5>
             <p className="text-sm"><a href="tel:+606xxxxxxx" className="text-[#B01C2F] hover:underline">+60 6-XXXX XXXX</a></p>
-            <h5 className="mt-5 mb-2 flex items-center text-sm font-semibold"><span className="mr-2">✉️</span>Emel</h5>
+            <h5 className="mt-5 mb-2 flex items-center text-sm font-semibold"><span className="mr-2">✉️</span>{t('landing.contact.emailLabel')}</h5>
             <p className="text-sm"><a href="mailto:ixora@mbmb.gov.my" className="text-[#B01C2F] hover:underline">ixora@mbmb.gov.my</a></p>
             <div className="mt-4 flex flex-wrap gap-2">
               <a className="rounded-md border border-gray-300 px-3 py-1.5 text-xs font-medium text-gray-700 hover:bg-gray-100 dark:border-gray-700 dark:text-gray-200 dark:hover:bg-gray-700" target="_blank" rel="noopener noreferrer" href="https://wa.me/60123456789">WhatsApp</a>
