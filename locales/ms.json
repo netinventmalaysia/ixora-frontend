@@ -204,4 +204,109 @@
   "report": {
     "title": "Laporan"
   }
+  ,
+  "landing": {
+    "nav": {
+      "intro": "Pengenalan",
+      "benefits": "Manfaat",
+      "components": "Komponen",
+      "achievements": "Pencapaian",
+      "faq": "FAQ",
+      "contact": "Hubungi Kami"
+    },
+    "hero": {
+      "title": "IXORA",
+      "subtitle": "Tadbir Urus Lebih Pintar, Komuniti Lebih Lancar",
+      "tagline": "Dibina dengan Kepercayaan · Dikuasakan oleh MBMB · Diilhamkan untuk Anda",
+      "ctaPrimary": "Mula Urusan Digital",
+      "ctaSecondary": "Muat Turun Aplikasi IXORA+"
+    },
+    "intro": {
+      "heading": "Mengenali IXORA",
+      "subheading": "Gerbang Digital MBMB Menuju Bandaraya Pintar",
+      "p1": "Ekosistem IXORA merupakan sebuah platform digital generasi baharu yang dibangunkan oleh Majlis Bandaraya Melaka Bersejarah (MBMB) untuk merevolusikan cara perkhidmatan kerajaan tempatan disampaikan kepada orang ramai.",
+      "p2": "Dibina dengan pendekatan berteraskan komuniti, IXORA menjadikan interaksi dengan pihak kerajaan jauh lebih mudah, cekap dan pantas. Platform menyeluruh ini menggabungkan pelbagai urusan perkhidmatan bandaraya dalam satu sistem bersepadu.",
+      "ctaExplore": "Terokai Perkhidmatan",
+      "ctaRegister": "Daftar Sekarang"
+    },
+    "benefits": {
+      "title": "Manfaat Utama",
+      "items": {
+        "oneStop": { "title": "One-Stop Center", "desc": "Akses semua perkhidmatan dalam satu portal" },
+        "access": { "title": "Akses 24/7", "desc": "Boleh digunakan bila-bila masa" },
+        "counterless": { "title": "Tanpa Kaunter", "desc": "Bebas hadir ke kaunter fizikal" },
+        "transparent": { "title": "Telus", "desc": "Status & notifikasi masa nyata" },
+        "dataDriven": { "title": "Data-Driven", "desc": "Analitik & dashboard pintar" },
+        "secure": { "title": "Selamat", "desc": "Private Cloud MBMB" }
+      }
+    },
+    "components": {
+      "title": "Komponen IXORA",
+      "items": ["Portal","Aplikasi Mudah Alih","Pembantu AI","Workspace","Akses","NotifyMe","Private Cloud","Analitik","Identiti"]
+    },
+    "achievements": {
+      "title": "Pencapaian Digital MBMB (2021–2025)",
+      "chartTitle": "Trend Transaksi Tunai vs Tanpa Tunai"
+    },
+    "faq": {
+      "title": "Soalan Lazim (FAQ) – Ekosistem Digital MBMB IXORA",
+      "groups": {
+        "1": {
+          "heading": "1. UMUM & PENGENALAN",
+          "q1": "Apa itu IXORA?",
+          "a1": "IXORA ialah ekosistem digital sehenti MBMB, bukan sekadar portal bayaran.",
+          "q2": "Apa itu IXORA GATEWAY?",
+          "a2": "Gerbang Digital MBMB untuk semua urusan rakyat/perniagaan.",
+          "q3": "Siapa boleh guna?",
+          "a3": "Individu, perniagaan, pelancong dan komuniti setempat."
+        },
+        "2": {
+          "heading": "2. MANFAAT KEPADA RAKYAT & PERNIAGAAN",
+          "list": [
+            "Pusat sehenti – semua perkhidmatan MBMB dalam 1 aplikasi.",
+            "Akses 24/7 – melalui IXORA GATEWAY.",
+            "Mudah & telus – semakan status masa nyata.",
+            "Inklusif – kiosk & terminal bergerak untuk warga emas/kurang celik digital."
+          ]
+        },
+        "3": {
+          "heading": "3. PERKHIDMATAN & MODUL",
+          "body": "Modul utama termasuk: Cukai Taksiran, Lesen Perniagaan, Permit Bangunan, Sewaan Gerai, Parkir, Kompaun, Lesen Haiwan, Pelan Ansuran. Operasi dalaman menggunakan IXORA Workspace untuk pemprosesan & kelulusan."
+        },
+        "4": {
+          "heading": "4. KOS & PENYELENGGARAAN",
+          "body": "Kos pembangunan meliputi integrasi pembayaran, MyData SSM & AI Chatbot. Penyelenggaraan ditanggung dalam bajet ICT tahunan MBMB. Tiada caj tambahan daripada MBMB untuk transaksi (caj bank/eWallet sahaja)."
+        },
+        "5": {
+          "heading": "5. KESELAMATAN & PEMATUHAN",
+          "body": "IXORA guna Private Cloud MBMB, SSO, penyulitan, jejak audit dan mematuhi PDPA 2010 & Dasar Keselamatan ICT MBMB."
+        },
+        "6": {
+          "heading": "6. OPERASI & KESINAMBUNGAN",
+          "body": "IXORA ada Pelan Pemulihan Bencana, sandaran harian, pelayan auto-skala & seni bina modular."
+        },
+        "7": {
+          "heading": "7. KPI & PRESTASI",
+          "body": "KPI: ≥95% kutipan digital, ≥80% permohonan dalam talian, ≤7 hari proses lesen baharu, ≥85% kepuasan pengguna. Prestasi dipantau melalui Papan Pemuka Analitik masa nyata."
+        }
+      }
+    },
+    "contact": {
+      "title": "Hubungi Kami",
+      "panelTitle": "Sertai Komuniti Digital MBMB",
+      "panelDesc": "Daftar akaun IXORA anda dan alami transformasi perkhidmatan bandaraya.",
+      "ctaRegister": "Daftar",
+      "ctaLogin": "Log Masuk"
+    },
+    "footer": { "text": "IXORA – Ekosistem Digital Bandaraya Pintar Melaka" },
+    "table": {
+      "channel": "Saluran",
+      "year": "Tahun",
+      "totalBills": "Jumlah Bil",
+      "channelType": {
+        "cash": "Tunai",
+        "cashless": "Tanpa Tunai"
+      }
+    }
+  }
 }

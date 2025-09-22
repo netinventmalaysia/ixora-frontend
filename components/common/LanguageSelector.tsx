@@ -10,7 +10,7 @@ export default function LanguageSelector({ codes = ['en', 'ms', 'zh'], className
   const { lang } = useTranslation();
 
   return (
-    <div className={`absolute top-4 right-4 z-50 ${className}`}>
+    <div className={`absolute top-0 right-0 z-50 ${className}`}>
       <div className="inline-flex rounded bg-white/80 shadow-sm p-0.5">
         {codes.map((code) => (
           <button

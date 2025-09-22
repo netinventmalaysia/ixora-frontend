@@ -204,4 +204,109 @@
   "report": {
     "title": "Reports"
   }
+  ,
+  "landing": {
+    "nav": {
+      "intro": "Introduction",
+      "benefits": "Benefits",
+      "components": "Components",
+      "achievements": "Achievements",
+      "faq": "FAQ",
+      "contact": "Contact Us"
+    },
+    "hero": {
+      "title": "IXORA",
+      "subtitle": "Smarter Governance, Smoother Community",
+      "tagline": "Built with Trust · Powered by MBMB · Inspired for You",
+      "ctaPrimary": "Start Digital Services",
+      "ctaSecondary": "Download IXORA+ App"
+    },
+    "intro": {
+      "heading": "Discover IXORA",
+      "subheading": "MBMB Digital Gateway to a Smart City",
+      "p1": "The IXORA ecosystem is a next-generation digital platform developed by Majlis Bandaraya Melaka Bersejarah (MBMB) to revolutionize how local government services are delivered to the public.",
+      "p2": "Community-centric by design, IXORA makes interactions with the authority easier, faster and more transparent. It unifies multiple municipal service processes into one integrated system, reducing the need for separate visits or disjointed portals.",
+      "ctaExplore": "Explore Services",
+      "ctaRegister": "Register Now"
+    },
+    "benefits": {
+      "title": "Key Benefits",
+      "items": {
+        "oneStop": { "title": "One-Stop Center", "desc": "Access all services in one portal" },
+        "access": { "title": "24/7 Access", "desc": "Available anytime" },
+        "counterless": { "title": "Counterless", "desc": "No need to visit physical counters" },
+        "transparent": { "title": "Transparent", "desc": "Real-time status & notifications" },
+        "dataDriven": { "title": "Data-Driven", "desc": "Smart analytics & dashboards" },
+        "secure": { "title": "Secure", "desc": "MBMB Private Cloud" }
+      }
+    },
+    "components": {
+      "title": "IXORA Components",
+      "items": ["Portal","Mobile App","AI Assistant","Workspace","Access","NotifyMe","Private Cloud","Analytics","Identity"]
+    },
+    "achievements": {
+      "title": "MBMB Digital Performance (2021–2025)",
+      "chartTitle": "Cash vs Cashless Transaction Trends"
+    },
+    "faq": {
+      "title": "Frequently Asked Questions – MBMB IXORA Digital Ecosystem",
+      "groups": {
+        "1": {
+          "heading": "1. GENERAL & INTRODUCTION",
+          "q1": "What is IXORA?",
+          "a1": "IXORA is MBMB's all-in-one digital ecosystem, not just a payment portal.",
+          "q2": "What is the IXORA GATEWAY?",
+          "a2": "The MBMB Digital Gateway for all resident and business transactions.",
+          "q3": "Who can use it?",
+          "a3": "Individuals, businesses, tourists and the local community."
+        },
+        "2": {
+          "heading": "2. BENEFITS TO CITIZENS & BUSINESSES",
+          "list": [
+            "One-stop – all MBMB services in 1 application.",
+            "24/7 access – via IXORA GATEWAY.",
+            "Easy & transparent – real-time status checks.",
+            "Inclusive – kiosks & mobile terminals for elderly / less digital users."
+          ]
+        },
+        "3": {
+          "heading": "3. SERVICES & MODULES",
+          "body": "Core modules include: Assessment Tax, Business Licensing, Building Permit, Stall Rental, Parking, Compounds, Animal Licensing, Instalment Plans. Internal operations use IXORA Workspace for processing & approvals."
+        },
+        "4": {
+          "heading": "4. COST & MAINTENANCE",
+          "body": "Development covers payment integration, MyData SSM & AI Chatbot. Maintenance is funded via MBMB annual ICT budget. No extra MBMB fees (only bank/eWallet charges)."
+        },
+        "5": {
+          "heading": "5. SECURITY & COMPLIANCE",
+          "body": "IXORA uses MBMB Private Cloud, SSO, encryption, audit trail and complies with PDPA 2010 & MBMB ICT Security Policy."
+        },
+        "6": {
+          "heading": "6. OPERATIONS & CONTINUITY",
+          "body": "IXORA has a Disaster Recovery Plan, daily backups, auto-scaling servers & modular architecture."
+        },
+        "7": {
+          "heading": "7. KPI & PERFORMANCE",
+          "body": "KPIs: ≥95% digital collection, ≥80% online applications, ≤7 days new license processing, ≥85% user satisfaction. Performance monitored via real-time Analytics Dashboard."
+        }
+      }
+    },
+    "contact": {
+      "title": "Contact Us",
+      "panelTitle": "Join MBMB's Digital Community",
+      "panelDesc": "Create your IXORA account and experience municipal service transformation.",
+      "ctaRegister": "Register",
+      "ctaLogin": "Log In"
+    },
+    "footer": { "text": "IXORA – Melaka Smart City Digital Ecosystem" },
+    "table": {
+      "channel": "Channel",
+      "year": "Year",
+      "totalBills": "Total Bills",
+      "channelType": {
+        "cash": "Cash",
+        "cashless": "Cashless"
+      }
+    }
+  }
 }

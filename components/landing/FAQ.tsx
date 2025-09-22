@@ -1,68 +1,62 @@
-import { useState } from 'react';
+import { useState, ReactNode } from 'react';
+import { useTranslation } from '@/utils/i18n';
 
-interface QAGroup { id: string; title: string; body: string | JSX.Element; open?: boolean }
-
-const groups: QAGroup[] = [
-  { id: 'faq1', title: '1. UMUM & PENGENALAN', body: (
-    <div>
-      <p><strong>Apa itu IXORA?</strong> IXORA ialah ekosistem digital sehenti MBMB, bukan sekadar portal bayaran.</p><br/>
-      <p><strong>Apa itu IXORA GATEWAY?</strong> Gerbang Digital MBMB untuk semua urusan rakyat/perniagaan.</p><br/>
-      <p><strong>Siapa boleh guna?</strong> Individu, perniagaan, pelancong dan komuniti setempat.</p>
-    </div>
-  ), open: true },
-  { id: 'faq2', title: '2. MANFAAT KEPADA RAKYAT & PERNIAGAAN', body: (
-    <ul className="list-disc pl-4 space-y-1">
-      <li>Pusat sehenti – semua perkhidmatan MBMB dalam 1 aplikasi.</li>
-      <li>Akses 24/7 – melalui IXORA GATEWAY.</li>
-      <li>Mudah & telus – semakan status masa nyata.</li>
-      <li>Inklusif – kiosk & terminal bergerak untuk warga emas/kurang celik digital.</li>
-    </ul>
-  ) },
-  { id: 'faq3', title: '3. PERKHIDMATAN & MODUL', body: (
-    <div>
-      Modul utama termasuk: Cukai Taksiran, Lesen Perniagaan, Permit Bangunan, Sewaan Gerai, Parkir, Kompaun, Lesen Haiwan, Pelan Ansuran.<br/><br/>
-      <strong>Operasi dalaman:</strong> Pegawai MBMB gunakan IXORA Workspace untuk pemprosesan & kelulusan.
-    </div>
-  ) },
-  { id: 'faq4', title: '4. KOS & PENYELENGGARAAN', body: (
-    <div>
-      Kos pembangunan meliputi integrasi pembayaran, MyData SSM & AI Chatbot.<br/>
-      Penyelenggaraan ditanggung dalam bajet ICT tahunan MBMB.<br/>
-      Tiada caj tambahan daripada MBMB untuk transaksi (caj bank/eWallet sahaja).
-    </div>
-  ) },
-  { id: 'faq5', title: '5. KESELAMATAN & PEMATUHAN', body: (
-    <div>
-      IXORA guna Private Cloud MBMB, SSO, encryption, audit trail, dan mematuhi PDPA 2010 & Dasar Keselamatan ICT MBMB.
-    </div>
-  ) },
-  { id: 'faq6', title: '6. OPERASI & KESINAMBUNGAN', body: (
-    <div>
-      IXORA ada Disaster Recovery Plan, backup harian, pelayan auto-skala & seni bina modular.
-    </div>
-  ) },
-  { id: 'faq7', title: '7. KPI & PRESTASI', body: (
-    <div>
-      KPI: ≥95% kutipan digital, ≥80% permohonan online, ≤7 hari proses lesen baharu, ≥85% kepuasan pengguna.<br/>
-      Prestasi dipantau melalui Analytics Dashboard masa nyata.
-    </div>
-  ) },
-];
+interface FaqGroup { id: string; heading: string; body: ReactNode; open?: boolean }
 
 export function FAQ(){
-  const [openItems, setOpen] = useState(() => groups.filter(g=>g.open).map(g=>g.id));
+  const { t } = useTranslation();
+  // Build groups from translation keys 1..7
+  const translated: FaqGroup[] = Array.from({ length: 7 }).map((_, idx) => {
+    const id = (idx + 1).toString();
+    const base = `landing.faq.groups.${id}`;
+    const heading = t(`${base}.heading`);
+    // Determine body content shape: questions (q1/a1 etc), list, or body string
+    const q1 = t(`${base}.q1`);
+    const a1 = t(`${base}.a1`);
+    let body: ReactNode;
+    const list = t(`${base}.list`);
+    const bodyText = t(`${base}.body`);
+    if (q1 !== `${base}.q1`) {
+      // Has question/answer pattern
+      const q2 = t(`${base}.q2`);
+      const a2 = t(`${base}.a2`);
+      const q3 = t(`${base}.q3`);
+      const a3 = t(`${base}.a3`);
+      body = (
+        <div>
+          {q1 !== `${base}.q1` && <p><strong>{q1}</strong> {a1}</p>}
+          {q2 !== `${base}.q2` && <><br/><p><strong>{q2}</strong> {a2}</p></>}
+          {q3 !== `${base}.q3` && <><br/><p><strong>{q3}</strong> {a3}</p></>}
+        </div>
+      );
+    } else if (Array.isArray(list)) {
+      body = (
+        <ul className="list-disc pl-4 space-y-1">
+          {list.map((li: string, i: number) => <li key={i}>{li}</li>)}
+        </ul>
+      );
+    } else if (bodyText !== `${base}.body`) {
+      body = <div>{bodyText}</div>;
+    } else {
+      body = null;
+    }
+    return { id: `faq${id}`, heading, body, open: idx === 0 };
+  }).filter(g => g.heading && g.body);
+
+  const [openItems, setOpen] = useState<string[]>(translated.filter(g=>g.open).map(g=>g.id));
   const toggle = (id: string) => setOpen(o => o.includes(id) ? o.filter(i=>i!==id) : [...o,id]);
+
   return (
     <section id="faq" className="py-20">
       <div className="mx-auto max-w-4xl px-4">
-        <h2 className="mb-8 text-center text-3xl font-bold text-gray-900 dark:text-white">Soalan Lazim (FAQ) – Ekosistem Digital MBMB IXORA</h2>
+        <h2 className="mb-8 text-center text-3xl font-bold text-gray-900 dark:text-white">{t('landing.faq.title')}</h2>
         <div className="space-y-4">
-          {groups.map(g => {
+          {translated.map(g => {
             const isOpen = openItems.includes(g.id);
             return (
               <div key={g.id} className="overflow-hidden rounded-lg border border-gray-200 dark:border-gray-800">
                 <button onClick={() => toggle(g.id)} className="flex w-full items-center justify-between bg-gray-50 px-4 py-3 text-left text-sm font-semibold text-gray-700 hover:bg-gray-100 dark:bg-gray-900 dark:text-gray-200 dark:hover:bg-gray-800">
-                  <span>{g.title}</span>
+                  <span>{g.heading}</span>
                   <span className="ml-4 text-xs">{isOpen ? '−' : '+'}</span>
                 </button>
                 {isOpen && (

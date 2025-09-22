@@ -1,16 +1,19 @@
 import { useState } from 'react';
+import { useTranslation } from '@/utils/i18n';
 import Button from '@/components/forms/Button';
 
-const navItems = [
-  { href: '#start', label: 'Pengenalan' },
-  { href: '#manfaat', label: 'Manfaat' },
-  { href: '#komponen', label: 'Komponen' },
-  { href: '#pencapaian', label: 'Pencapaian' },
-  { href: '#faq', label: 'FAQ' },
+const baseNav = [
+  { href: '#start', key: 'landing.nav.intro' },
+  { href: '#manfaat', key: 'landing.nav.benefits' },
+  { href: '#komponen', key: 'landing.nav.components' },
+  { href: '#pencapaian', key: 'landing.nav.achievements' },
+  { href: '#faq', key: 'landing.nav.faq' },
 ];
 
 export function Navbar() {
   const [open, setOpen] = useState(false);
+  const { t } = useTranslation();
+  const navItems = baseNav.map(i => ({ href: i.href, label: t(i.key) }));
   return (
     <nav className="sticky top-0 z-40 w-full border-b border-gray-200 bg-white/90 backdrop-blur dark:border-gray-800 dark:bg-gray-950/80">
       <div className="mx-auto flex max-w-6xl items-center justify-between px-4 py-3">
@@ -34,7 +37,7 @@ export function Navbar() {
           ))}
           <li>
             <a href="#hubungi">
-              <Button variant="danger" size="sm" className="bg-[#B01C2F] px-4 py-2 text-white hover:bg-[#951325]">Hubungi Kami</Button>
+              <Button variant="danger" size="sm" className="bg-[#B01C2F] px-4 py-2 text-white hover:bg-[#951325]">{t('landing.nav.contact')}</Button>
             </a>
           </li>
         </ul>

@@ -1,7 +1,9 @@
 import { StatsTable } from './StatsTable';
 import { useEffect, useRef } from 'react';
+import { useTranslation } from '@/utils/i18n';
 
 export function Achievements(){
+  const { t } = useTranslation();
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
   useEffect(()=>{
     if(!canvasRef.current) return;
@@ -26,12 +28,12 @@ export function Achievements(){
   return (
     <section id="pencapaian" className="bg-gray-50 py-20 dark:bg-gray-900">
       <div className="mx-auto max-w-5xl px-4">
-        <h2 className="text-center text-3xl font-bold text-gray-900 dark:text-white">Pencapaian Digital MBMB (2021–2025)</h2>
+        <h2 className="text-center text-3xl font-bold text-gray-900 dark:text-white">{t('landing.achievements.title')}</h2>
         <div className="mt-10">
           <StatsTable />
         </div>
         <div className="mt-12">
-          <h5 className="mb-4 text-center text-sm font-semibold tracking-wide text-gray-700 dark:text-gray-300">Trend Transaksi Tunai vs Tanpa Tunai</h5>
+          <h5 className="mb-4 text-center text-sm font-semibold tracking-wide text-gray-700 dark:text-gray-300">{t('landing.achievements.chartTitle')}</h5>
           <canvas ref={canvasRef} className="mx-auto h-72 w-full max-w-3xl" />
         </div>
       </div>

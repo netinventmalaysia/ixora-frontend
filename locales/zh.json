@@ -203,5 +203,109 @@
   },
   "report": {
     "title": "报告"
+  },
+  "landing": {
+    "nav": {
+      "intro": "介绍",
+      "benefits": "优势",
+      "components": "组件",
+      "achievements": "成就",
+      "faq": "常见问题",
+      "contact": "联系我们"
+    },
+    "hero": {
+      "title": "IXORA",
+      "subtitle": "更智慧的治理，更顺畅的社区",
+      "tagline": "以信任构建 · 由 MBMB 驱动 · 为您而生",
+      "ctaPrimary": "开始数字服务",
+      "ctaSecondary": "下载 IXORA+ 应用"
+    },
+    "intro": {
+      "heading": "了解 IXORA",
+      "subheading": "通往智慧城市的 MBMB 数字网关",
+      "p1": "IXORA 生态系统是由马六甲历史市政厅 (MBMB) 开发的新一代数字平台，用于革新地方政府服务的交付方式。",
+      "p2": "以社区为核心设计，IXORA 让与政府的互动更加简单、高效和透明。它将多个市政服务流程整合为一个统一的平台，减少多处往返或分散入口。",
+      "ctaExplore": "探索服务",
+      "ctaRegister": "立即注册"
+    },
+    "benefits": {
+      "title": "关键优势",
+      "items": {
+        "oneStop": { "title": "一站式中心", "desc": "在一个门户访问全部服务" },
+        "access": { "title": "24/7 访问", "desc": "随时可用" },
+        "counterless": { "title": "无柜台办理", "desc": "无需前往实体柜台" },
+        "transparent": { "title": "透明", "desc": "实时状态与通知" },
+        "dataDriven": { "title": "数据驱动", "desc": "智能分析与仪表盘" },
+        "secure": { "title": "安全", "desc": "MBMB 私有云" }
+      }
+    },
+    "components": {
+      "title": "IXORA 组件",
+      "items": ["门户","移动应用","AI 助手","工作空间","访问","NotifyMe","私有云","分析","身份"]
+    },
+    "achievements": {
+      "title": "MBMB 数字化表现 (2021–2025)",
+      "chartTitle": "现金 vs 无现金交易趋势"
+    },
+    "faq": {
+      "title": "常见问题 – MBMB IXORA 数字生态系统",
+      "groups": {
+        "1": {
+          "heading": "1. 总览与简介",
+          "q1": "什么是 IXORA?",
+          "a1": "IXORA 是 MBMB 的一体化数字生态系统，不只是支付门户。",
+          "q2": "什么是 IXORA GATEWAY?",
+          "a2": "这是 MBMB 面向居民与企业的统一数字入口。",
+          "q3": "谁可以使用？",
+          "a3": "个人、企业、游客以及本地社区。"
+        },
+        "2": {
+          "heading": "2. 对市民与企业的优势",
+          "list": [
+            "一站式——所有 MBMB 服务集于一个应用。",
+            "24/7 访问——通过 IXORA GATEWAY。",
+            "便捷透明——实时状态查询。",
+            "包容性——为长者 / 数字能力较弱者提供自助机与流动终端。"
+          ]
+        },
+        "3": {
+          "heading": "3. 服务与模块",
+          "body": "核心模块包括：评估税、营业执照、建筑许可、摊位租赁、停车、罚款、动物许可、分期计划。内部流程使用 IXORA Workspace 进行处理与审批。"
+        },
+        "4": {
+          "heading": "4. 成本与维护",
+          "body": "开发涵盖支付集成、MyData SSM 与 AI 聊天机器人。维护由 MBMB 年度 ICT 预算支持。MBMB 不额外收取费用（仅银行 / 电子钱包收费）。"
+        },
+        "5": {
+          "heading": "5. 安全与合规",
+          "body": "IXORA 采用 MBMB 私有云、单点登录、加密、审计追踪，并遵循 PDPA 2010 与 MBMB ICT 安全政策。"
+        },
+        "6": {
+          "heading": "6. 运营与持续性",
+          "body": "IXORA 拥有灾难恢复计划、每日备份、自动伸缩服务器与模块化架构。"
+        },
+        "7": {
+          "heading": "7. 关键指标与绩效",
+          "body": "KPI：≥95% 数字化收款，≥80% 在线申请，≤7 天新执照处理周期，≥85% 用户满意度。绩效通过实时分析仪表盘监控。"
+        }
+      }
+    },
+    "contact": {
+      "title": "联系我们",
+      "panelTitle": "加入 MBMB 数字社区",
+      "panelDesc": "创建您的 IXORA 账户，体验市政服务的数字化转型。",
+      "ctaRegister": "注册",
+      "ctaLogin": "登录"
+    },
+    "footer": { "text": "IXORA – 马六甲智慧城市数字生态系统" },
+    "table": {
+      "channel": "渠道",
+      "year": "年份",
+      "totalBills": "账单总数",
+      "channelType": {
+        "cash": "现金",
+        "cashless": "无现金"
+      }
+    }
   }
 }
