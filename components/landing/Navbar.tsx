@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { useTranslation } from '@/utils/i18n';
 import Button from '@/components/forms/Button';
+import Image from 'next/image';
 
 const baseNav = [
   { href: '#start', key: 'landing.nav.intro' },
@@ -17,7 +18,12 @@ export function Navbar() {
   return (
     <nav className="sticky top-0 z-40 w-full border-b border-gray-200 bg-white/90 backdrop-blur dark:border-gray-800 dark:bg-gray-950/80">
       <div className="mx-auto flex max-w-6xl items-center justify-between px-4 py-3">
-        <a href="#" className="text-lg font-bold tracking-tight text-[#B01C2F]">IXORA</a>
+        <a href="#" className="flex items-center gap-2 text-lg font-bold tracking-tight text-[#B01C2F]">
+          <span className="relative inline-block h-8 w-8">
+            <Image src="/images/logo.png" alt="IXORA Logo" fill sizes="32px" className="object-contain" />
+          </span>
+          <span>IXORA</span>
+        </a>
         <button
           onClick={() => setOpen(!open)}
           className="inline-flex h-10 w-10 items-center justify-center rounded-md border border-gray-200 text-gray-700 hover:bg-gray-100 focus:outline-none dark:border-gray-700 dark:text-gray-200 dark:hover:bg-gray-800 md:hidden"
