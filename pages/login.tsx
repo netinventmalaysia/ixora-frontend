@@ -26,6 +26,7 @@ export default function LoginPage() {
   const [showCancelDialog, setShowCancelDialog] = useState(false);
   const [loading, setLoading] = useState(false);
   const [playSuccessAnim, setPlaySuccessAnim] = useState(false);
+  const [shake, setShake] = useState(false);
   const navTimeoutRef = useRef<NodeJS.Timeout | null>(null);
   const routedRef = useRef(false);
 
@@ -62,8 +63,14 @@ export default function LoginPage() {
       if (error.response?.status === 401) {
         const msg = (error.response.data?.message as any)?.message || 'Invalid credentials'
         toast.error(msg)
+        // Trigger shake
+        setShake(true);
+        // Reset after animation duration so a second failure can retrigger
+        setTimeout(() => setShake(false), 500);
       } else {
         toast.error('Something went wrong')
+        setShake(true);
+        setTimeout(() => setShake(false), 500);
       }
     } finally {
       setLoading(false)
@@ -114,7 +121,7 @@ export default function LoginPage() {
       </div>
 
       {/* Branding header clickable to home */}
-      <div className="relative mx-auto flex w-full max-w-md items-center justify-center px-6 pt-10 pb-4">
+      <div className={`relative mx-auto flex w-full max-w-md items-center justify-center px-6 pt-10 pb-4 ${shake ? 'animate-logo-shake' : ''}`}>
         <a href="/" className="group flex flex-col items-center focus:outline-none" aria-label="Go to homepage">
           <div className="relative mb-3 h-20 w-20 transition-transform group-hover:scale-105">
             <Image src="/images/logo.png" alt="IXORA Logo" fill sizes="80px" className="object-contain" priority />

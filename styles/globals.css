@@ -196,6 +196,26 @@ body {
   100% { transform: scale(6.555); opacity: 0; }
 }
 
+/* Shake animation for invalid login attempts */
+@keyframes logo-shake {
+  0% { transform: translateX(0); }
+  10% { transform: translateX(-6px); }
+  20% { transform: translateX(6px); }
+  30% { transform: translateX(-5px); }
+  40% { transform: translateX(5px); }
+  50% { transform: translateX(-4px); }
+  60% { transform: translateX(4px); }
+  70% { transform: translateX(-3px); }
+  80% { transform: translateX(3px); }
+  90% { transform: translateX(-2px); }
+  100% { transform: translateX(0); }
+}
+
+.animate-logo-shake {
+  animation: logo-shake 480ms cubic-bezier(.36,.07,.19,.97) both;
+  will-change: transform;
+}
+
 .animate-logo-expand-fade {
   animation: logo-expand-fade 950ms cubic-bezier(0.7, 0.02, 0.22, 1) forwards;
   will-change: transform, opacity;
