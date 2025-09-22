@@ -3,7 +3,7 @@ import Button from 'todo/components/forms/Button';
 import FormActions from "todo/components/forms/FormActions";
 import InputWithPrefix from "todo/components/forms/InputText";
 import Spacing from "todo/components/forms/Spacing";
-import { useState } from "react";
+import { useState, useRef, useEffect } from "react";
 import toast from 'react-hot-toast';
 import LayoutWithoutSidebar from "todo/components/main/LayoutWithoutSidebar";
 import Heading from "todo/components/forms/Heading";
@@ -25,6 +25,15 @@ export default function LoginPage() {
 
   const [showCancelDialog, setShowCancelDialog] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [playSuccessAnim, setPlaySuccessAnim] = useState(false);
+  const navTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+  const routedRef = useRef(false);
+
+  useEffect(() => {
+    return () => {
+      if (navTimeoutRef.current) clearTimeout(navTimeoutRef.current);
+    };
+  }, []);
 
   const handleSubmit = async (data: any) => {
     try {
@@ -39,7 +48,15 @@ export default function LoginPage() {
         throw new Error('Login failed');
       }
       toast.success('Logged in!')
-      router.push('/dashboard')
+      // Trigger animation instead of immediate navigation
+      setPlaySuccessAnim(true);
+      // Fallback timeout in case animationend not fired
+      navTimeoutRef.current = setTimeout(() => {
+        if (!routedRef.current) {
+          routedRef.current = true;
+          router.push('/dashboard');
+        }
+  }, 1500); // animation 950ms + buffer
     } catch (err) {
       const error = err as AxiosError<{ message: string; error: string }>
       if (error.response?.status === 401) {
@@ -73,6 +90,24 @@ export default function LoginPage() {
 
   return (
     <LayoutWithoutSidebar shiftY="-translate-y-0">
+      {playSuccessAnim && (
+        <div
+          className="pointer-events-none fixed inset-0 z-[999] flex items-center justify-center bg-white/70 dark:bg-black/70"
+          aria-hidden="true"
+        >
+          <img
+            src="/images/logo.png"
+            alt="IXORA Logo"
+            className="h-24 w-24 object-contain opacity-100 animate-logo-expand-fade"
+            onAnimationEnd={() => {
+              if (!routedRef.current) {
+                routedRef.current = true;
+                router.push('/dashboard');
+              }
+            }}
+          />
+        </div>
+      )}
       {/* Fixed language selector (consistent with landing/signup) */}
       <div className="fixed right-3 top-20 sm:top-24 z-50">
         <LanguageSelector className="!static" />
