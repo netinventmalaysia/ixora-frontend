@@ -21,7 +21,7 @@ export default function LandingPage(){
       <Intro />
       <Benefits />
       <ComponentsGrid />
-      <Achievements />
+      {/* <Achievements /> */}
       <FAQ />
       <Contact />
       <Footer />
