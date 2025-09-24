@@ -9,6 +9,7 @@ import {
   Fingerprint,
   CheckCircle,
 } from "lucide-react";
+import { useTranslation } from "@/utils/i18n";
 
 type FeatureCardProps = {
   icon: React.ReactNode;
@@ -17,12 +18,12 @@ type FeatureCardProps = {
   tone?: "blue" | "green" | "purple" | "orange";
 };
 
-// Peta semula 'tone' kepada palet merah/aksen supaya kekal serasi dengan kod sedia ada
+// Peta semula 'tone' kepada palet merah/aksen
 const toneBg: Record<NonNullable<FeatureCardProps["tone"]>, string> = {
-  blue: "bg-rose-100",    // ganti biru -> rose lembut
-  green: "bg-red-100",    // ganti hijau -> merah lembut
-  purple: "bg-amber-100", // ganti ungu -> kuning/amber sebagai aksen hangat
-  orange: "bg-orange-100"
+  blue: "bg-rose-100",
+  green: "bg-red-100",
+  purple: "bg-amber-100",
+  orange: "bg-orange-100",
 };
 
 const FeatureCard = ({ icon, title, desc, tone = "blue" }: FeatureCardProps) => (
@@ -44,11 +45,16 @@ const TrustItem = ({ label }: { label: string }) => (
 );
 
 const LandingPage = () => {
+  const { t } = useTranslation();
+
   return (
     <>
       <PageMeta
-        title="IXORA – Ekosistem Digital MBMB"
-        description="Platform sehenti MBMB untuk permohonan, kelulusan, pembayaran, notifikasi dan analitik. Disokong AI, selamat, dan dihoskan dalam Private Cloud MBMB."
+        title={t("landing.meta.title") || "IXORA – Ekosistem Digital MBMB"}
+        description={
+          t("landing.meta.description") ||
+          "Platform sehenti MBMB untuk permohonan, kelulusan, pembayaran, notifikasi dan analitik. Disokong AI, selamat, dan dihoskan dalam Private Cloud MBMB."
+        }
       />
 
       {/* Gradien latar merah lembut */}
@@ -60,8 +66,8 @@ const LandingPage = () => {
               href="/"
               className="flex items-center gap-3 rounded-lg focus:outline-none focus-visible:ring-2 focus-visible:ring-[#B01C2F]"
             >
-              <img src="/images/logo.png" alt="Logo IXORA" className="h-8 w-8" />
-              <span className="text-lg font-bold text-gray-900">IXORA</span>
+              <img src="/images/logo.png" alt={t("landing.header.logoAlt") || "Logo IXORA"} className="h-8 w-8" />
+              <span className="text-lg font-bold text-gray-900">{t("landing.brand") || "IXORA"}</span>
             </a>
           </div>
         </header>
@@ -80,12 +86,14 @@ const LandingPage = () => {
               <div className="space-y-8">
                 <div className="space-y-4">
                   <h1 className="text-4xl font-bold leading-tight text-gray-900 md:text-6xl">
-                    Ekosistem Digital
-                    <span className="block text-[#B01C2F]">MBMB IXORA</span>
+                    {t("landing.hero.headingLine1") || "Ekosistem Digital"}
+                    <span className="block text-[#B01C2F]">
+                      {t("landing.hero.headingLine2") || "MBMB IXORA"}
+                    </span>
                   </h1>
                   <p className="max-w-2xl text-xl leading-relaxed text-gray-700">
-                    Platform sehenti generasi baharu untuk urusan bandaraya: permohonan → kelulusan → pembayaran → notifikasi → analitik.
-                    Lebih pantas, telus dan tanpa kaunter – disokong AI & Private Cloud MBMB.
+                    {t("landing.hero.subheading") ||
+                      "Platform sehenti generasi baharu untuk urusan bandaraya: permohonan → kelulusan → pembayaran → notifikasi → analitik. Lebih pantas, telus dan tanpa kaunter – disokong AI & Private Cloud MBMB."}
                   </p>
                 </div>
 
@@ -95,21 +103,21 @@ const LandingPage = () => {
                     href="/start"
                     className="inline-flex items-center justify-center gap-2 rounded-xl bg-[#B01C2F] px-8 py-4 font-semibold text-white shadow-lg transition-all duration-200 hover:-translate-y-0.5 hover:bg-[#951325] hover:shadow-xl focus:outline-none focus-visible:ring-2 focus-visible:ring-[#B01C2F] focus-visible:ring-offset-2"
                   >
-                    <Users size={20} /> Jelajah Perkhidmatan
+                    <Users size={20} /> {t("landing.cta.primary") || "Jelajah Perkhidmatan"}
                   </a>
                   <a
                     href="/hubungi"
                     className="inline-flex items-center justify-center gap-2 rounded-xl border-2 border-red-200 px-8 py-4 font-semibold text-gray-800 transition-all duration-200 hover:border-red-300 hover:bg-red-50 focus:outline-none focus-visible:ring-2 focus-visible:ring-[#B01C2F] focus-visible:ring-offset-2"
                   >
-                    <ArrowRight size={20} /> Lihat Demo
+                    <ArrowRight size={20} /> {t("landing.cta.secondary") || "Lihat Demo"}
                   </a>
                 </div>
 
                 {/* Trust */}
                 <div className="flex flex-wrap items-center gap-4 pt-2">
-                  <TrustItem label="Selamat & Dipercayai" />
-                  <TrustItem label="Private Cloud MBMB" />
-                  <TrustItem label="Cashless & Counterless" />
+                  <TrustItem label={t("landing.trust.secure") || "Selamat & Dipercayai"} />
+                  <TrustItem label={t("landing.trust.cloud") || "Private Cloud MBMB"} />
+                  <TrustItem label={t("landing.trust.cashless") || "Cashless & Counterless"} />
                 </div>
               </div>
 
@@ -117,26 +125,26 @@ const LandingPage = () => {
               <div className="grid grid-cols-1 gap-6 sm:grid-cols-2">
                 <FeatureCard
                   icon={<Shield className="h-6 w-6 text-[#B01C2F]" />}
-                  title="IXORA Hub"
-                  desc="Perkhidmatan rakyat sehenti (permit, lesen, cukai, kompaun) dalam satu portal bersepadu."
+                  title={t("landing.features.hub.title") || "IXORA Hub"}
+                  desc={t("landing.features.hub.desc") || "Perkhidmatan rakyat sehenti (permit, lesen, cukai, kompaun) dalam satu portal bersepadu."}
                   tone="blue"
                 />
                 <FeatureCard
                   icon={<Fingerprint className="h-6 w-6 text-[#B01C2F]" />}
-                  title="IXORA Workspace"
-                  desc="Operasi dalaman yang tersusun – kawalan akses, jejak audit, dan aliran kerja digital."
+                  title={t("landing.features.workspace.title") || "IXORA Workspace"}
+                  desc={t("landing.features.workspace.desc") || "Operasi dalaman yang tersusun – kawalan akses, jejak audit, dan aliran kerja digital."}
                   tone="green"
                 />
                 <FeatureCard
                   icon={<MessageSquare className="h-6 w-6 text-[#B01C2F]" />}
-                  title="IXORA+ AI Assist"
-                  desc="Chatbot AI 24/7: status permohonan, notifikasi OTP/resit & maklum balas pintar."
+                  title={t("landing.features.ai.title") || "IXORA+ AI Assist"}
+                  desc={t("landing.features.ai.desc") || "Chatbot AI 24/7: status permohonan, notifikasi OTP/resit & maklum balas pintar."}
                   tone="purple"
                 />
                 <FeatureCard
                   icon={<Printer className="h-6 w-6 text-[#B01C2F]" />}
-                  title="IXORA Access"
-                  desc="Kiosk/terminal layan diri & MyCetak untuk akses pantas di lokasi strategik."
+                  title={t("landing.features.access.title") || "IXORA Access"}
+                  desc={t("landing.features.access.desc") || "Kiosk/terminal layan diri & MyCetak untuk akses pantas di lokasi strategik."}
                   tone="orange"
                 />
               </div>
@@ -149,10 +157,11 @@ const LandingPage = () => {
           <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
             <div className="mx-auto mb-12 max-w-3xl text-center">
               <h2 className="mb-4 text-3xl font-bold text-gray-900 md:text-4xl">
-                Mengapa Pilih IXORA?
+                {t("landing.why.title") || "Mengapa Pilih IXORA?"}
               </h2>
               <p className="text-xl text-gray-600">
-                Reka bentuk berteraskan komuniti, dipacu data & AI, memudahkan urusan dan menjimatkan masa serta kos.
+                {t("landing.why.subtitle") ||
+                  "Reka bentuk berteraskan komuniti, dipacu data & AI, memudahkan urusan dan menjimatkan masa serta kos."}
               </p>
             </div>
 
@@ -161,9 +170,12 @@ const LandingPage = () => {
                 <div className="mx-auto mb-6 flex h-16 w-16 items-center justify-center rounded-2xl bg-rose-100">
                   <Wifi className="h-8 w-8 text-[#B01C2F]" />
                 </div>
-                <h3 className="mb-3 text-xl font-semibold text-gray-900">Akses Mudah</h3>
+                <h3 className="mb-3 text-xl font-semibold text-gray-900">
+                  {t("landing.why.access.title") || "Akses Mudah"}
+                </h3>
                 <p className="text-gray-600">
-                  Urus semua perkhidmatan MBMB dalam satu akaun & pengalaman seragam, bila-bila masa, di mana-mana.
+                  {t("landing.why.access.desc") ||
+                    "Urus semua perkhidmatan MBMB dalam satu akaun & pengalaman seragam, bila-bila masa, di mana-mana."}
                 </p>
               </div>
 
@@ -171,9 +183,12 @@ const LandingPage = () => {
                 <div className="mx-auto mb-6 flex h-16 w-16 items-center justify-center rounded-2xl bg-red-100">
                   <Shield className="h-8 w-8 text-[#B01C2F]" />
                 </div>
-                <h3 className="mb-3 text-xl font-semibold text-gray-900">Keselamatan Terjamin</h3>
+                <h3 className="mb-3 text-xl font-semibold text-gray-900">
+                  {t("landing.why.security.title") || "Keselamatan Terjamin"}
+                </h3>
                 <p className="text-gray-600">
-                  Private Cloud MBMB, kawalan akses berpusat, penyulitan data & audit berkala berpandukan amalan terbaik.
+                  {t("landing.why.security.desc") ||
+                    "Private Cloud MBMB, kawalan akses berpusat, penyulitan data & audit berkala berpandukan amalan terbaik."}
                 </p>
               </div>
 
@@ -181,9 +196,12 @@ const LandingPage = () => {
                 <div className="mx-auto mb-6 flex h-16 w-16 items-center justify-center rounded-2xl bg-amber-100">
                   <MessageSquare className="h-8 w-8 text-[#B01C2F]" />
                 </div>
-                <h3 className="mb-3 text-xl font-semibold text-gray-900">Notifikasi Masa Nyata</h3>
+                <h3 className="mb-3 text-xl font-semibold text-gray-900">
+                  {t("landing.why.realtime.title") || "Notifikasi Masa Nyata"}
+                </h3>
                 <p className="text-gray-600">
-                  Notifikasi status, OTP & resit digital terus ke peranti – mengurangkan kebergantungan kepada kaunter.
+                  {t("landing.why.realtime.desc") ||
+                    "Notifikasi status, OTP & resit digital terus ke peranti – mengurangkan kebergantungan kepada kaunter."}
                 </p>
               </div>
             </div>
@@ -199,18 +217,19 @@ const LandingPage = () => {
                   href="/security"
                   className="rounded transition-colors hover:text-red-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-[#B01C2F]"
                 >
-                  Dasar Keselamatan
+                  {t("landing.footer.security") || "Dasar Keselamatan"}
                 </a>
                 <span className="hidden text-gray-500 md:block">|</span>
                 <a
                   href="/terms"
                   className="rounded transition-colors hover:text-red-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-[#B01C2F]"
                 >
-                  Terma & Syarat
+                  {t("landing.footer.terms") || "Terma & Syarat"}
                 </a>
               </nav>
               <div className="text-center text-gray-300">
-                Hak Cipta Terpelihara © 2025 Majlis Bandaraya Melaka Bersejarah (MBMB)
+                {t("landing.footer.copy") ||
+                  "Hak Cipta Terpelihara © 2025 Majlis Bandaraya Melaka Bersejarah (MBMB)"}
               </div>
             </div>
           </div>
@@ -221,39 +240,3 @@ const LandingPage = () => {
 };
 
 export default LandingPage;
-
-// import Head from 'next/head';
-// import { useTranslation } from '@/utils/i18n';
-// import LanguageSelector from '@/components/common/LanguageSelector';
-// import { Navbar } from '@/components/landing/Navbar';
-// import { Hero } from '@/components/landing/Hero';
-// import { Intro } from '@/components/landing/Intro';
-// import { Benefits } from '@/components/landing/Benefits';
-// import { ComponentsGrid } from '@/components/landing/ComponentsGrid';
-// import { Achievements } from '@/components/landing/Achievements';
-// import { FAQ } from '@/components/landing/FAQ';
-// import { Contact } from '@/components/landing/Contact';
-// import { Footer } from '@/components/landing/Footer';
-
-// export default function LandingPage(){
-//   const { t } = useTranslation();
-//   return (
-//     <>
-//       <Head>
-//         <title>{t('landing.hero.title')} | MBMB</title>
-//         <meta name="description" content={t('landing.intro.subheading')} />
-//       </Head>
-//   <div className="fixed right-3 top-20 sm:top-24 z-50"><LanguageSelector className="!static" /></div>
-//       <Navbar />
-//       <Hero />
-//       <Intro />
-//       <Benefits />
-//       <ComponentsGrid />
-//       <Achievements />
-//       <FAQ />
-//       <Contact />
-//       <Footer />
-//     </>
-//   );
-// }
-
