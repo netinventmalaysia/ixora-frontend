@@ -7,10 +7,11 @@ export function Hero() {
   return (
     <header className="bg-gray-50 py-16 text-center dark:bg-gray-900">
       <div className="mx-auto max-w-4xl px-4">
-        <h1 className="flex flex-col items-center justify-center text-4xl font-extrabold tracking-tight text-[#B01C2F] sm:text-5xl">
-          <span className="relative mb-4 inline-block h-16 w-16 sm:h-20 sm:w-20">
-            <Image src="/images/logo.png" alt="IXORA Logo" fill sizes="(max-width: 640px) 64px, 80px" className="object-contain" priority />
+        <span className="relative mb-4 inline-block h-16 w-16 sm:h-20 sm:w-20">
+            <Image src="/images/Mascot.png" alt="IXORA Logo" fill sizes="(max-width: 640px) 64px, 80px" className="object-contain" priority />
           </span>
+        <h1 className="flex flex-col items-center justify-center text-4xl font-extrabold tracking-tight text-[#B01C2F] sm:text-5xl">
+          
           <span>{t('landing.hero.title')}</span>
         </h1>
         <p className="mt-4 text-xl font-medium text-gray-700 dark:text-gray-200">{t('landing.hero.subtitle')}</p>

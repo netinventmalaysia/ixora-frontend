@@ -22,7 +22,7 @@ export function Navbar() {
           <span className="relative inline-block h-8 w-8">
             <Image src="/images/logo.png" alt="IXORA Logo" fill sizes="32px" className="object-contain" />
           </span>
-          <span>IXORA</span>
+          <h1>IXORA</h1>
         </a>
         <button
           onClick={() => setOpen(!open)}

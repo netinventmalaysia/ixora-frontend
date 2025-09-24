@@ -181,8 +181,8 @@
     "countryRequired": "Country is required"
   },
   "dashboard": {
-    "welcome": "Welcome to MBMB IXORA",
-    "description": "MBMB IXORA is the official digital portal of Majlis Bandaraya Melaka Bersejarah that simplifies citizen and business transactions online.",
+    "welcome": "Welcome to IXORA MBMB",
+    "description": "IXORA MBMB is the official digital portal of Majlis Bandaraya Melaka Bersejarah that simplifies citizen and business transactions online.",
     "featuresTitle": "Key Features",
     "features": {
       "assessmentTax": "Assessment Tax Payments",
@@ -215,17 +215,17 @@
       "contact": "Contact Us"
     },
     "hero": {
-      "title": "IXORA",
+      "title": "IXORA MBMB",
       "subtitle": "Smarter Governance, Smoother Community",
-      "tagline": "Built with Trust · Powered by MBMB · Inspired for You",
+      "tagline": "Built with Trust · Powered by Melaka Historic City Council · Inspired for You",
       "ctaPrimary": "Start Digital Services",
       "ctaSecondary": "Download IXORA+ App"
     },
     "intro": {
-      "heading": "Discover IXORA",
+      "heading": "Discover IXORA MBMB",
       "subheading": "MBMB Digital Gateway to a Smart City",
-      "p1": "The IXORA ecosystem is a next-generation digital platform developed by Majlis Bandaraya Melaka Bersejarah (MBMB) to revolutionize how local government services are delivered to the public.",
-      "p2": "Community-centric by design, IXORA makes interactions with the authority easier, faster and more transparent. It unifies multiple municipal service processes into one integrated system, reducing the need for separate visits or disjointed portals.",
+      "p1": "The IXORA MBMB ecosystem is a next-generation digital platform developed by Majlis Bandaraya Melaka Bersejarah (MBMB) to revolutionize how local government services are delivered to the public.",
+      "p2": "Community-centric by design, IXORA MBMB makes interactions with the authority easier, faster and more transparent. It unifies multiple municipal service processes into one integrated system, reducing the need for separate visits or disjointed portals.",
       "ctaExplore": "Explore Services",
       "ctaRegister": "Register Now"
     },
@@ -241,7 +241,7 @@
       }
     },
     "components": {
-      "title": "IXORA Components",
+      "title": "IXORA MBMB Components",
       "items": ["Portal","Mobile App","AI Assistant","Workspace","Access","NotifyMe","Private Cloud","Analytics","Identity"]
     },
     "achievements": {
@@ -249,12 +249,12 @@
       "chartTitle": "Cash vs Cashless Transaction Trends"
     },
     "faq": {
-      "title": "Frequently Asked Questions – MBMB IXORA Digital Ecosystem",
+      "title": "Frequently Asked Questions – IXORA MBMB Digital Ecosystem",
       "groups": {
         "1": {
           "heading": "1. GENERAL & INTRODUCTION",
-          "q1": "What is IXORA?",
-          "a1": "IXORA is MBMB's all-in-one digital ecosystem, not just a payment portal.",
+          "q1": "What is IXORA MBMB?",
+          "a1": "IXORA MBMB is MBMB's all-in-one digital ecosystem, not just a payment portal.",
           "q2": "What is the IXORA GATEWAY?",
           "a2": "The MBMB Digital Gateway for all resident and business transactions.",
           "q3": "Who can use it?",
@@ -279,11 +279,11 @@
         },
         "5": {
           "heading": "5. SECURITY & COMPLIANCE",
-          "body": "IXORA uses MBMB Private Cloud, SSO, encryption, audit trail and complies with PDPA 2010 & MBMB ICT Security Policy."
+          "body": "IXORA MBMB uses MBMB Private Cloud, SSO, encryption, audit trail and complies with PDPA 2010 & MBMB ICT Security Policy."
         },
         "6": {
           "heading": "6. OPERATIONS & CONTINUITY",
-          "body": "IXORA has a Disaster Recovery Plan, daily backups, auto-scaling servers & modular architecture."
+          "body": "IXORA MBMB has a Disaster Recovery Plan, daily backups, auto-scaling servers & modular architecture."
         },
         "7": {
           "heading": "7. KPI & PERFORMANCE",
@@ -294,7 +294,7 @@
     "contact": {
       "title": "Contact Us",
       "panelTitle": "Join MBMB's Digital Community",
-      "panelDesc": "Create your IXORA account and experience municipal service transformation.",
+      "panelDesc": "Create your IXORA MBMB account and experience municipal service transformation.",
       "ctaRegister": "Register",
       "ctaLogin": "Log In",
       "addressLabel": "Address",
@@ -305,7 +305,7 @@
         "Jalan Graha Makmur, 75450 Melaka"
       ]
     },
-    "footer": { "text": "IXORA – Melaka Smart City Digital Ecosystem" },
+    "footer": { "text": "IXORA MBMB – Melaka Smart City Digital Ecosystem" },
     "table": {
       "channel": "Channel",
       "year": "Year",
