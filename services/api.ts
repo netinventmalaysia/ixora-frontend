@@ -386,6 +386,29 @@ export const getMySkbAccess = async (): Promise<MySkbAccess> => {
 
 export default api;
 
+// ================= Assessment Tax =================
+export interface AssessmentBill {
+    id: string | number;
+    bill_no: string;
+    amount: number;
+    due_date: string; // ISO or yyyy-mm-dd
+    description?: string;
+}
+
+export interface AssessmentSearchParams {
+    ic?: string;
+    assessment_no?: string; // account or assessment tax number
+}
+
+// Fetch outstanding assessment bills by IC or assessment number
+export const fetchAssessmentOutstanding = async (params: AssessmentSearchParams) => {
+    const query: any = {};
+    if (params.ic) query.ic = params.ic;
+    if (params.assessment_no) query.assessment_no = params.assessment_no;
+    const { data } = await api.get('/mbmb/public/api/assessment/outstanding', { params: query });
+    return data as { data?: AssessmentBill[] } | AssessmentBill[];
+};
+
 // ================= MySKB Project (Draft & Submit) =================
 // NOTE: If your backend uses different paths, update these endpoints only.
 export type ProjectFormPayload = Record<string, any>;
