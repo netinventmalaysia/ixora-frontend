@@ -11,6 +11,7 @@ import { useForm, FormProvider } from 'react-hook-form';
 import { useTranslation } from '@/utils/i18n';
 import AssessmentBillsTable from '@/components/assessment/AssessmentBillsTable';
 import SearchControls from '@/components/assessment/SearchControls';
+import LogoSpinner from '@/components/common/LogoSpinner';
 
 type SearchType = 'ic' | 'misc';
 type FormValues = { searchType: SearchType; query: string };
@@ -85,6 +86,11 @@ export default function MiscBillsPage() {
 
   return (
     <SidebarLayout>
+      {loading && (
+        <div className="fixed inset-0 z-[999] flex items-center justify-center bg-white/60 dark:bg-black/60" aria-hidden="true">
+          <LogoSpinner size={56} className="drop-shadow-md" title={t('common.loading', 'Loading...')} />
+        </div>
+      )}
       <FormProvider {...methods}>
         <FormWrapper onSubmit={handleSubmit(onSearch)}>
           <Heading level={2} align="left" bold>

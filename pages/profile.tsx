@@ -33,6 +33,7 @@ import { AxiosResponse } from "axios";
 import SidebarContent from "todo/components/main/Sidebar";
 import { logoUrl } from "todo/components/main/SidebarConfig";
 import { useTranslation } from '@/utils/i18n';
+import LogoSpinner from '@/components/common/LogoSpinner';
 
 type UserProfile = {
   id: number;
@@ -176,7 +177,11 @@ export default function ProfilePage() {
     }
   };
 
-  if (loading) return <div className="p-6">{t('common.loading')}</div>;
+  if (loading) return (
+    <div className="fixed inset-0 z-[999] flex items-center justify-center bg-white/60 dark:bg-black/60" aria-hidden="true">
+      <LogoSpinner size={56} className="drop-shadow-md" title={t('common.loading')} />
+    </div>
+  );
   if (!userProfile)
     return <div className="p-6 text-red-500">{t('profile.failedLoad')}</div>;
 

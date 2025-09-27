@@ -1,4 +1,4 @@
-import React, { useMemo } from 'react';
+import React, { useMemo, useState } from 'react';
 import SummaryCards from '@/components/dashboard/SummaryCards';
 import SidebarLayout from '@/components/main/SidebarLayout';
 import Heading from '@/components/forms/Heading';
@@ -7,6 +7,7 @@ import LineSeparator from '@/components/forms/LineSeparator';
 import TextLine from '@/components/forms/HyperText';
 import { CheckCircleIcon } from '@heroicons/react/24/solid';
 import { useTranslation } from '@/utils/i18n';
+import LogoSpinner from '@/components/common/LogoSpinner';
 import {
   Table,
   TableBody,
@@ -35,6 +36,7 @@ type Invoice = {
 
 export default function DashboardPage() {
   const { t } = useTranslation();
+  const [loading] = useState(false);
 
   // ====== Mock data dari mesej anda (tukar RM-->number) ======
   const bills: Bill[] = [
@@ -75,6 +77,11 @@ export default function DashboardPage() {
 
   return (
     <SidebarLayout>
+      {loading && (
+        <div className="fixed inset-0 z-[999] flex items-center justify-center bg-white/60 dark:bg-black/60" aria-hidden="true">
+          <LogoSpinner size={56} className="drop-shadow-md" title={t('common.loading', 'Loading...')} />
+        </div>
+      )}
       <Heading level={1} align="left" bold>
         {t('dashboard.welcome', 'Welcome to MBMB IXORA')}
       </Heading>

@@ -17,6 +17,7 @@ import { triggerUserRefresh } from "todo/components/actions/actionHandler";
 import { useTranslation } from '@/utils/i18n';
 import LanguageSelector from '@/components/common/LanguageSelector';
 import Image from 'next/image';
+import LogoSpinner from '@/components/common/LogoSpinner';
 
 export default function LoginPage() {
   const { t } = useTranslation();
@@ -97,6 +98,11 @@ export default function LoginPage() {
 
   return (
     <LayoutWithoutSidebar shiftY="-translate-y-0">
+      {loading && !playSuccessAnim && (
+        <div className="fixed inset-0 z-[999] flex items-center justify-center bg-white/60 dark:bg-black/60" aria-hidden="true">
+          <LogoSpinner size={56} className="drop-shadow-md" title={t('common.loading')} />
+        </div>
+      )}
       {playSuccessAnim && (
         <div
           className="pointer-events-none fixed inset-0 z-[999] flex items-center justify-center bg-white/70 dark:bg-black/70"

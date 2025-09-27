@@ -25,6 +25,7 @@ import router from "next/router";
 import RadioGroupField from "todo/components/forms/RadioGroupField";
 import { identificationTypeList } from "todo/components/data/RadioList";
 import { useFormContext, useWatch } from "react-hook-form";
+import LogoSpinner from '@/components/common/LogoSpinner';
 
 
 type UserProfile = {
@@ -78,6 +79,11 @@ export default function SignUpPage() {
 
   return (
     <LayoutWithoutSidebar>
+      {loading && (
+        <div className="fixed inset-0 z-[999] flex items-center justify-center bg-white/60 dark:bg-black/60" aria-hidden="true">
+          <LogoSpinner size={56} className="drop-shadow-md" title={t('common.loading')} />
+        </div>
+      )}
       {/* Top branding bar (logo + subtitle) */}
       <div className="relative mx-auto flex w-full max-w-4xl items-center justify-center px-6 pt-10 pb-4">
         <a href="/" className="group flex flex-col items-center focus:outline-none" aria-label="Go to homepage">
