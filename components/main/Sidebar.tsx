@@ -236,7 +236,7 @@ export default function SidebarContent({
       </div>
 
       {/* Top Bar Mobile */}
-      <div className={`sticky top-0 z-40 mb-8 flex items-center gap-x-6 px-4 py-4 shadow-xs sm:px-6 lg:hidden ${sidebarBg}`}>
+  <div className={`sticky top-0 z-40 mb-3 flex items-center gap-x-6 px-4 py-3 shadow-xs sm:px-6 lg:hidden ${sidebarBg}`}>
         <button onClick={() => setSidebarOpen(true)} className="-m-2.5 p-2.5 text-gray-400">
           <Bars3Icon className="size-6" />
         </button>
@@ -254,10 +254,9 @@ export default function SidebarContent({
         )}
       </div>
 
-      {/* Extra breathing room below mobile top bar */}
-      <div className="lg:hidden h-8" aria-hidden="true" />
+  {/* Mobile spacing is lean; desktop spacing handled below */}
 
-      <main className="py-10 lg:pl-72 bg-white">
+  <main className="pt-24 sm:pt-24 lg:pt-24 pb-10 lg:pl-72 bg-white">
         <PullToRefresh onRefresh={async () => {
           try {
             window.dispatchEvent(new CustomEvent('ixora:pulltorefresh'));
