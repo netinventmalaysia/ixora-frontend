@@ -58,7 +58,9 @@
   "resetPassword": {
     "title": "Reset Password",
     "submit": "Reset Password",
-    "resetting": "Resetting..."
+    "resetting": "Resetting...",
+    "success": "Password has been reset. You may now log in.",
+    "failed": "Reset failed"
   },
   "verifyEmail": {
     "title": "Verify Email",
@@ -132,7 +134,9 @@
     "emailPlaceholder": "Enter your email address",
     "send": "Send Reset Link",
     "sent": "Link Sent",
-    "checkEmail": "Please check your email for the password reset link."
+    "checkEmail": "Please check your email for the password reset link.",
+    "toastSent": "Reset link sent! Please check your email.",
+    "toastFailed": "Failed to send reset link"
   }
   ,
   "form": {

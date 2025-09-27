@@ -58,7 +58,9 @@
   "resetPassword": {
     "title": "Tetapkan Semula Kata Laluan",
     "submit": "Tetapkan Semula Kata Laluan",
-    "resetting": "Sedang menetapkan semula..."
+    "resetting": "Sedang menetapkan semula...",
+    "success": "Kata laluan telah ditetapkan semula. Anda boleh log masuk sekarang.",
+    "failed": "Tetapan semula gagal"
   },
   "verifyEmail": {
     "title": "Sahkan Emel",
@@ -132,7 +134,9 @@
     "emailPlaceholder": "Masukkan alamat emel anda",
     "send": "Hantar Pautan Tetapan Semula",
     "sent": "Pautan Dihantar",
-    "checkEmail": "Sila semak emel anda untuk pautan tetapan semula kata laluan."
+    "checkEmail": "Sila semak emel anda untuk pautan tetapan semula kata laluan.",
+    "toastSent": "Pautan tetapan semula dihantar! Sila semak emel anda.",
+    "toastFailed": "Gagal menghantar pautan tetapan semula"
   }
   ,
   "form": {

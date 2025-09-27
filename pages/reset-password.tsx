@@ -1,6 +1,5 @@
 import { useRouter } from 'next/router';
 import { useForm, FormProvider } from 'react-hook-form';
-import { useEffect, useState } from 'react';
 import LayoutWithoutSidebar from '@/components/main/LayoutWithoutSidebar';
 import FormWrapper from '@/components/forms/FormWrapper';
 import Heading from '@/components/forms/Heading';
@@ -11,7 +10,9 @@ import Spacing from '@/components/forms/Spacing';
 import LineSeparator from '@/components/forms/LineSeparator';
 import toast from 'react-hot-toast';
 import { resetPassword } from '@/services/api';
-import t from '@/utils/i18n';
+import { useTranslation } from '@/utils/i18n';
+import Image from 'next/image';
+import LanguageSelector from '@/components/common/LanguageSelector';
 
 type ResetPasswordFormValues = {
     newPassword: string;
@@ -20,6 +21,7 @@ type ResetPasswordFormValues = {
 export default function ResetPasswordPage() {
     const router = useRouter();
     const { token } = router.query;
+    const { t } = useTranslation();
 
     const methods = useForm<ResetPasswordFormValues>();
     const {
@@ -34,25 +36,33 @@ export default function ResetPasswordPage() {
             }
 
             await resetPassword({ token, newPassword: data.newPassword });
-            toast.success('Password has been reset. You may now log in.');
+            toast.success(t('resetPassword.success'));
             router.push('/');
         } catch (error: any) {
-
             const apiMessage = error?.response?.data?.message;
-            console.log('API error message:', apiMessage);
-            const message =
-                Array.isArray(apiMessage)
-                    ? apiMessage.join(', ')
-                    : typeof apiMessage === 'string'
-                        ? apiMessage
-                        : error.message || 'Reset failed';
-
-            toast.error(message + ', ' + apiMessage.message || 'Reset failed');
+            const message = Array.isArray(apiMessage)
+                ? apiMessage.join(', ')
+                : (typeof apiMessage === 'string' ? apiMessage : '');
+            toast.error(message || t('resetPassword.failed'));
         }
     };
 
     return (
         <LayoutWithoutSidebar>
+            {/* Fixed language selector (consistent with landing/login) */}
+            <div className="fixed right-3 top-20 sm:top-24 z-50">
+                <LanguageSelector className="!static" />
+            </div>
+            {/* Branding header (same style as login) */}
+            <div className="relative mx-auto flex w-full max-w-md items-center justify-center px-6 pt-10 pb-4">
+                <a href="/" className="group flex flex-col items-center focus:outline-none" aria-label="Go to homepage">
+                    <div className="relative mb-3 h-20 w-20 transition-transform group-hover:scale-105">
+                        <Image src="/images/logo.png" alt="IXORA Logo" fill sizes="80px" className="object-contain" priority />
+                    </div>
+                    <h1 className="text-2xl font-extrabold tracking-tight text-[#B01C2F] group-hover:text-[#8c1423]">IXORA</h1>
+                    <p className="mt-1 text-xs text-gray-500 dark:text-gray-400">{t('landing.hero.subtitle')}</p>
+                </a>
+            </div>
             <FormProvider {...methods}>
                 <FormWrapper onSubmit={onSubmit}>
                     <Heading level={1} align="center" bold>
