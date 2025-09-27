@@ -15,7 +15,7 @@ import { useTranslation } from '@/utils/i18n';
 import SidebarNav from '@/components/main/SidebarNav';
 import { useRouter } from 'next/router';
 // (fixed) remove duplicate import
-import Spacing from 'todo/components/forms/Spacing';
+import PullToRefresh from '@/components/common/PullToRefresh';
 
 export type NavigationItem = {
   name?: string;
@@ -236,7 +236,7 @@ export default function SidebarContent({
       </div>
 
       {/* Top Bar Mobile */}
-      <div className={`sticky top-0 z-40 flex items-center gap-x-6 px-4 py-4 shadow-xs sm:px-6 lg:hidden ${sidebarBg}`}>
+      <div className={`sticky top-0 z-40 mb-8 flex items-center gap-x-6 px-4 py-4 shadow-xs sm:px-6 lg:hidden ${sidebarBg}`}>
         <button onClick={() => setSidebarOpen(true)} className="-m-2.5 p-2.5 text-gray-400">
           <Bars3Icon className="size-6" />
         </button>
@@ -255,14 +255,19 @@ export default function SidebarContent({
       </div>
 
       {/* Extra breathing room below mobile top bar */}
-      <div className="lg:hidden">
-        <Spacing size="lg" />
-      </div>
+      <div className="lg:hidden h-8" aria-hidden="true" />
 
       <main className="py-10 lg:pl-72 bg-white">
-        <div className="px-2 sm:px-4 lg:px-6 xl:px-8 2xl:px-10 max-w-screen-2xl mx-auto w-full">
-          {children}
-        </div>
+        <PullToRefresh onRefresh={async () => {
+          try {
+            window.dispatchEvent(new CustomEvent('ixora:pulltorefresh'));
+            await new Promise((r) => setTimeout(r, 150));
+          } catch {}
+        }}>
+          <div className="px-2 sm:px-4 lg:px-6 xl:px-8 2xl:px-10 max-w-screen-2xl mx-auto w-full">
+            {children}
+          </div>
+        </PullToRefresh>
       </main>
     </div>
   );

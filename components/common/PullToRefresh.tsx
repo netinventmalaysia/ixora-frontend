@@ -67,8 +67,13 @@ export default function PullToRefresh({ onRefresh, threshold = 70, maxPull = 120
     };
   }, [onRefresh, threshold, maxPull, refreshing, offset]);
 
+  const wrapperStyle: React.CSSProperties = {
+    transform: offset ? `translateY(${offset}px)` : undefined,
+    transition: pulling.current || offset ? 'transform 200ms ease' : undefined,
+  };
+
   return (
-    <div style={{ transform: `translateY(${offset}px)`, transition: pulling.current ? 'none' : 'transform 200ms ease' }}>
+    <div style={wrapperStyle}>
       {/* Indicator */}
       <div className="pointer-events-none h-0 overflow-visible">
         <div className="mx-auto mt-[-48px] flex h-10 w-10 items-center justify-center rounded-full bg-gray-200 text-gray-600 shadow-md"

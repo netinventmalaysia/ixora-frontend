@@ -4,7 +4,6 @@ import { Toaster } from 'react-hot-toast';
 import 'react-datepicker/dist/react-datepicker.css';
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/router';
-import PullToRefresh from '@/components/common/PullToRefresh';
 
 export default function App({ Component, pageProps }: AppProps) {
   const [hydrated, setHydrated] = useState(false);
@@ -41,17 +40,8 @@ export default function App({ Component, pageProps }: AppProps) {
           },
         }}
       />
-  {/* Global pull-to-refresh: dispatch a custom event that pages can handle */}
-  <PullToRefresh onRefresh={async () => {
-    try {
-      window.dispatchEvent(new CustomEvent('ixora:pulltorefresh'));
-      // optional: small delay for UX
-      await new Promise((r) => setTimeout(r, 200));
-    } catch {}
-  }}>
-    {/* pass hydration flag to pages so they can avoid reading localStorage on SSR */}
-    <Component {...pageProps} hydrated={hydrated} />
-  </PullToRefresh>
+  {/* pass hydration flag to pages so they can avoid reading localStorage on SSR */}
+  <Component {...pageProps} hydrated={hydrated} />
     </>
   );
 }
