@@ -257,7 +257,7 @@ export default function SidebarContent({
   {/* Mobile spacing is lean; desktop spacing handled below */}
 
   <main className="pt-12 sm:pt-12 lg:pt-24 pb-10 lg:pl-72 bg-white">
-          <div className="px-2 sm:px-4 lg:px-6 xl:px-8 2xl:px-10 max-w-screen-2xl mx-auto w-full">
+          <div className="px-10 sm:px-4 lg:px-6 xl:px-8 2xl:px-10 max-w-screen-2xl mx-auto w-full">
             {children}
           </div>
       </main>
