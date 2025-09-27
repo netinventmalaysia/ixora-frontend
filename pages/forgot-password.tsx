@@ -12,6 +12,7 @@ import { forgotPassword } from '@/services/api';
 import { useTranslation } from '@/utils/i18n';
 import Image from 'next/image';
 import LanguageSelector from '@/components/common/LanguageSelector';
+import LogoSpinner from '@/components/common/LogoSpinner';
 
 
 type ForgotPasswordFormValues = {
@@ -40,6 +41,11 @@ export default function ForgotPasswordPage() {
 
   return (
     <LayoutWithoutSidebar>
+      {loading && (
+        <div className="fixed inset-0 z-[999] flex items-center justify-center bg-white/60 dark:bg-black/60" aria-hidden="true">
+          <LogoSpinner size={56} className="drop-shadow-md" title={t('common.loading')} />
+        </div>
+      )}
       {/* Fixed language selector (consistent with landing/login) */}
       <div className="fixed right-3 top-20 sm:top-24 z-50">
         <LanguageSelector className="!static" />
@@ -80,7 +86,6 @@ export default function ForgotPasswordPage() {
             variant="primary"
             fullWidth
             disabled={submitted || loading}
-            loading={loading}
           >
             {submitted ? t('forgotPassword.sent') : t('forgotPassword.send')}
           </Button>
