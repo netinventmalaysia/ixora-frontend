@@ -52,7 +52,7 @@ export const generalAppNavigation = [
   { nameKey: 'sidebar.assessmentTax', href: '/assessment-tax', icon: HomeIcon, current: false },
   { nameKey: 'sidebar.compound', href: '/compound', icon: ReceiptPercentIcon, current: false },
   { nameKey: 'sidebar.boothRental', href: '/booth-rental', icon: BuildingStorefrontIcon, current: false },
-  { nameKey: 'sidebar.miscBills', href: '/', icon: RectangleStackIcon, current: false },
+  { nameKey: 'sidebar.miscBills', href: '/misc-bills', icon: RectangleStackIcon, current: false },
 ];
 
 export const businessAppNavigation = [

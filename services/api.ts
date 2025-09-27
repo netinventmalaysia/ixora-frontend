@@ -454,6 +454,30 @@ export const fetchBoothOutstanding = async (params: BoothSearchParams) => {
     return data as { data?: BoothBill[] } | BoothBill[];
 };
 
+// ================= Miscellaneous Bills =================
+export interface MiscBill {
+    id: string | number;
+    bill_no: string;
+    amount: number;
+    due_date: string;
+    description?: string;
+}
+
+export interface MiscSearchParams {
+    ic?: string;
+    misc_no?: string; // reference or bill number
+    bill_no?: string; // alias for misc_no
+}
+
+export const fetchMiscOutstanding = async (params: MiscSearchParams) => {
+    const query: any = {};
+    if (params.ic) query.ic = params.ic;
+    if (params.misc_no) query.misc_no = params.misc_no;
+    else if (params.bill_no) query.misc_no = params.bill_no;
+    const { data } = await api.get('/mbmb/public/api/misc/outstanding', { params: query });
+    return data as { data?: MiscBill[] } | MiscBill[];
+};
+
 // ================= MySKB Project (Draft & Submit) =================
 // NOTE: If your backend uses different paths, update these endpoints only.
 export type ProjectFormPayload = Record<string, any>;
