@@ -15,6 +15,7 @@ import { useTranslation } from '@/utils/i18n';
 import SidebarNav from '@/components/main/SidebarNav';
 import { useRouter } from 'next/router';
 // (fixed) remove duplicate import
+import Spacing from 'todo/components/forms/Spacing';
 
 export type NavigationItem = {
   name?: string;
@@ -251,6 +252,11 @@ export default function SidebarContent({
             <div>{email}</div>
           </div>
         )}
+      </div>
+
+      {/* Extra breathing room below mobile top bar */}
+      <div className="lg:hidden">
+        <Spacing size="lg" />
       </div>
 
       <main className="py-10 lg:pl-72 bg-white">
