@@ -13,6 +13,7 @@ import { useForm, FormProvider } from 'react-hook-form';
 import { useTranslation } from '@/utils/i18n';
 import AssessmentBillsTable from '@/components/assessment/AssessmentBillsTable';
 import SearchControls from '@/components/assessment/SearchControls';
+import PullToRefresh from '@/components/common/PullToRefresh';
 
 type SearchType = 'ic' | 'assessment';
 type FormValues = {
@@ -99,6 +100,7 @@ export default function AssessmentTaxPage() {
   return (
     <SidebarLayout>
       <FormProvider {...methods}>
+        <PullToRefresh onRefresh={() => fetchData(getValues())}>
         <FormWrapper onSubmit={handleSubmit(onSearch)}>
           <Heading level={2} align="left" bold>
             {t('assessment.title', 'Assessment Tax')}
@@ -130,6 +132,7 @@ export default function AssessmentTaxPage() {
             </Button>
           </FormActions>
         </FormWrapper>
+        </PullToRefresh>
       </FormProvider>
     </SidebarLayout>
   );

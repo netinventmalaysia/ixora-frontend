@@ -1,6 +1,7 @@
 'use client';
 import dynamic from 'next/dynamic';
 import { useMemo, useEffect, useState } from 'react';
+import type { ApexOptions } from 'apexcharts';
 import { StatsTable } from './StatsTable';
 import { useTranslation } from '@/utils/i18n';
 
@@ -34,7 +35,7 @@ export function Achievements() {
     []
   );
 
-  const options = useMemo((): ApexCharts.ApexOptions => ({
+  const options = useMemo((): ApexOptions => ({
     chart: {
       type: 'bar',
       toolbar: { show: false },

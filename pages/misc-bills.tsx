@@ -11,6 +11,7 @@ import { useForm, FormProvider } from 'react-hook-form';
 import { useTranslation } from '@/utils/i18n';
 import AssessmentBillsTable from '@/components/assessment/AssessmentBillsTable';
 import SearchControls from '@/components/assessment/SearchControls';
+import PullToRefresh from '@/components/common/PullToRefresh';
 
 type SearchType = 'ic' | 'misc';
 type FormValues = { searchType: SearchType; query: string };
@@ -80,6 +81,7 @@ export default function MiscBillsPage() {
   return (
     <SidebarLayout>
       <FormProvider {...methods}>
+        <PullToRefresh onRefresh={() => fetchData(getValues())}>
         <FormWrapper onSubmit={handleSubmit(onSearch)}>
           <Heading level={2} align="left" bold>
             {t('misc.title', 'Miscellaneous Bills')}
@@ -132,6 +134,7 @@ export default function MiscBillsPage() {
             </Button>
           </FormActions>
         </FormWrapper>
+        </PullToRefresh>
       </FormProvider>
     </SidebarLayout>
   );

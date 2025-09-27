@@ -11,6 +11,7 @@ import { useForm, FormProvider } from 'react-hook-form';
 import { useTranslation } from '@/utils/i18n';
 import AssessmentBillsTable from '@/components/assessment/AssessmentBillsTable';
 import SearchControls from '@/components/assessment/SearchControls';
+import PullToRefresh from '@/components/common/PullToRefresh';
 
 type SearchType = 'ic' | 'booth';
 type FormValues = {
@@ -85,6 +86,7 @@ export default function BoothRentalPage() {
   return (
     <SidebarLayout>
       <FormProvider {...methods}>
+        <PullToRefresh onRefresh={() => fetchData(getValues())}>
         <FormWrapper onSubmit={handleSubmit(onSearch)}>
           <Heading level={2} align="left" bold>
             {t('booth.title', 'Booth Rental')}
@@ -137,6 +139,7 @@ export default function BoothRentalPage() {
             </Button>
           </FormActions>
         </FormWrapper>
+        </PullToRefresh>
       </FormProvider>
     </SidebarLayout>
   );
