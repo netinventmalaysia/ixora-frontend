@@ -409,6 +409,29 @@ export const fetchAssessmentOutstanding = async (params: AssessmentSearchParams)
     return data as { data?: AssessmentBill[] } | AssessmentBill[];
 };
 
+// ================= Compound =================
+export interface CompoundBill {
+    id: string | number;
+    bill_no: string;
+    amount: number;
+    due_date: string; // ISO or yyyy-mm-dd
+    description?: string;
+}
+
+export interface CompoundSearchParams {
+    ic?: string;
+    compound_no?: string;
+}
+
+// Fetch outstanding compound by IC or compound number
+export const fetchCompoundOutstanding = async (params: CompoundSearchParams) => {
+    const query: any = {};
+    if (params.ic) query.ic = params.ic;
+    if (params.compound_no) query.compound_no = params.compound_no;
+    const { data } = await api.get('/mbmb/public/api/compound/outstanding', { params: query });
+    return data as { data?: CompoundBill[] } | CompoundBill[];
+};
+
 // ================= MySKB Project (Draft & Submit) =================
 // NOTE: If your backend uses different paths, update these endpoints only.
 export type ProjectFormPayload = Record<string, any>;

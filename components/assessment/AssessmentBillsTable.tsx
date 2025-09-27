@@ -1,8 +1,16 @@
 import React from 'react';
-import { AssessmentBill } from '@/services/api';
+
+// Minimal shape for bills used by this table (works for Assessment & Compound)
+export type BillItem = {
+  id: string | number;
+  bill_no: string;
+  amount: number | string;
+  due_date: string;
+  description?: string | null;
+};
 
 type Props = {
-  bills: AssessmentBill[];
+  bills: BillItem[];
   selectedIds: Set<string | number>;
   onToggle: (id: string | number) => void;
   onToggleAll: () => void;

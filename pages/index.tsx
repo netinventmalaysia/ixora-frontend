@@ -17,7 +17,7 @@ export default function LandingPage(){
   return (
     <>
       <Head>
-        <title>{t('landing.hero.title')} | MBMB</title>
+        <title>{`${t('landing.hero.title')} | MBMB`}</title>
         <meta name="description" content={t('landing.intro.subheading')} />
       </Head>
       <ClientOnly>

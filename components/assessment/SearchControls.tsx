@@ -1,29 +1,38 @@
-import React, { useEffect, useRef } from 'react';
+import React from 'react';
 import { useFormContext, useWatch } from 'react-hook-form';
 import RadioGroupField from 'todo/components/forms/RadioGroupField';
 import InputText from 'todo/components/forms/InputText';
 import Button from 'todo/components/forms/Button';
 import { useTranslation } from '@/utils/i18n';
 
-type SearchType = 'ic' | 'assessment';
+type SearchType = string; // treat as flexible; 'ic' is special-cased below
+
+type SecondOption = {
+  label: string;
+  value: string; // e.g., 'assessment' | 'compound'
+};
 
 export default function SearchControls({
   loading,
   onRefresh,
   t,
+  secondOption = { label: t('assessment.byAssessment', 'Assessment No.'), value: 'assessment' },
+  numberFieldLabel = t('assessment.assessmentNo', 'Assessment No.'),
+  numberFieldPlaceholder = t('assessment.assessmentPlaceholder', 'Enter Assessment No.'),
+  icFieldLabel = t('assessment.ic', 'IC Number'),
+  icFieldPlaceholder = t('assessment.icPlaceholder', 'Enter IC Number'),
 }: {
   loading: boolean;
   onRefresh: () => void;
   t: ReturnType<typeof useTranslation>['t'];
+  secondOption?: SecondOption;
+  numberFieldLabel?: string;
+  numberFieldPlaceholder?: string;
+  icFieldLabel?: string;
+  icFieldPlaceholder?: string;
 }) {
   const { control } = useFormContext();
   const currentType = useWatch({ control, name: 'searchType' }) as SearchType | undefined;
-
-  // No debug logs here to keep UI clean
-  // const didMountRef = useRef(false);
-  // useEffect(() => {
-  //   if (!didMountRef.current) { didMountRef.current = true; return; }
-  // }, [currentType]);
 
   return (
     <div className="grid grid-cols-1 gap-4">
@@ -34,7 +43,7 @@ export default function SearchControls({
           inline
           options={[
             { label: t('assessment.byIc', 'IC Number'), value: 'ic' },
-            { label: t('assessment.byAssessment', 'Assessment No.'), value: 'assessment' },
+            { label: secondOption.label, value: secondOption.value },
           ]}
         />
       </div>
@@ -44,8 +53,8 @@ export default function SearchControls({
             key={currentType || 'ic'}
             id="query"
             name="query"
-            label={currentType === 'ic' ? t('assessment.ic', 'IC Number') : t('assessment.assessmentNo', 'Assessment No.')}
-            placeholder={currentType === 'ic' ? t('assessment.icPlaceholder', 'Enter IC Number') : t('assessment.assessmentPlaceholder', 'Enter Assessment No.')}
+            label={currentType === 'ic' ? icFieldLabel : numberFieldLabel}
+            placeholder={currentType === 'ic' ? icFieldPlaceholder : numberFieldPlaceholder}
           />
         </div>
         <div className="flex gap-2">

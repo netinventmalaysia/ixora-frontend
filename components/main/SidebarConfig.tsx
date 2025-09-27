@@ -50,7 +50,7 @@ export const teams = [
 
 export const generalAppNavigation = [
   { nameKey: 'sidebar.assessmentTax', href: '/assessment-tax', icon: HomeIcon, current: false },
-  { nameKey: 'sidebar.compound', href: '/', icon: ReceiptPercentIcon, current: false },
+  { nameKey: 'sidebar.compound', href: '/compound', icon: ReceiptPercentIcon, current: false },
   { nameKey: 'sidebar.boothRental', href: '/', icon: BuildingStorefrontIcon, current: false },
   { nameKey: 'sidebar.miscBills', href: '/', icon: RectangleStackIcon, current: false },
 ];
