@@ -432,6 +432,28 @@ export const fetchCompoundOutstanding = async (params: CompoundSearchParams) => 
     return data as { data?: CompoundBill[] } | CompoundBill[];
 };
 
+// ================= Booth Rental =================
+export interface BoothBill {
+    id: string | number;
+    bill_no: string;
+    amount: number;
+    due_date: string;
+    description?: string;
+}
+
+export interface BoothSearchParams {
+    ic?: string;
+    booth_no?: string;
+}
+
+export const fetchBoothOutstanding = async (params: BoothSearchParams) => {
+    const query: any = {};
+    if (params.ic) query.ic = params.ic;
+    if (params.booth_no) query.booth_no = params.booth_no;
+    const { data } = await api.get('/mbmb/public/api/booth/outstanding', { params: query });
+    return data as { data?: BoothBill[] } | BoothBill[];
+};
+
 // ================= MySKB Project (Draft & Submit) =================
 // NOTE: If your backend uses different paths, update these endpoints only.
 export type ProjectFormPayload = Record<string, any>;
