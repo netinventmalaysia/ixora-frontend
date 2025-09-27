@@ -179,8 +179,8 @@ function Hero() {
         <div className="flex items-center justify-center lg:col-span-6">
           <div className="relative aspect-[4/3] w-full max-w-md sm:max-w-lg lg:max-w-xl">
             <Image
-              src="/images/mascot.png"
-              alt="IXORA mascot"
+              src="/images/ixora-hero.png"
+              alt="IXORA MBMB mascot"
               fill
               priority
               className="object-contain drop-shadow-xl"
