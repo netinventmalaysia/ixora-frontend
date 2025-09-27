@@ -11,7 +11,6 @@ import { useForm, FormProvider } from 'react-hook-form';
 import { useTranslation } from '@/utils/i18n';
 import AssessmentBillsTable from '@/components/assessment/AssessmentBillsTable';
 import SearchControls from '@/components/assessment/SearchControls';
-import PullToRefresh from '@/components/common/PullToRefresh';
 
 type SearchType = 'ic' | 'compound';
 type FormValues = {
@@ -66,6 +65,12 @@ export default function CompoundPage() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
+  useEffect(() => {
+    const handler = () => fetchData(getValues());
+    window.addEventListener('ixora:pulltorefresh', handler as EventListener);
+    return () => window.removeEventListener('ixora:pulltorefresh', handler as EventListener);
+  }, [getValues]);
+
   const onSearch = (data: FormValues) => fetchData(data);
 
   const toggleSelect = (id: string | number) => {
@@ -90,7 +95,6 @@ export default function CompoundPage() {
   return (
     <SidebarLayout>
       <FormProvider {...methods}>
-        <PullToRefresh onRefresh={() => fetchData(getValues())}>
         <FormWrapper onSubmit={handleSubmit(onSearch)}>
           <Heading level={2} align="left" bold>
             {t('compound.title', 'Compound')}
@@ -143,7 +147,6 @@ export default function CompoundPage() {
             </Button>
           </FormActions>
         </FormWrapper>
-        </PullToRefresh>
       </FormProvider>
     </SidebarLayout>
   );
