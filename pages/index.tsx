@@ -325,16 +325,16 @@ function Services() {
 
               <div
                 className="inline-flex h-11 w-11 items-center justify-center rounded-xl mb-3"
-                style={{ backgroundColor: "#FFF1F2", color: PRIMARY }}
+                style={{ background: "linear-gradient(135deg,#B01C2F20,#FFF1F2)" }}
               >
                 <s.icon className="h-6 w-6" />
               </div>
               <h3 className="text-base font-semibold text-gray-900">{s.title}</h3>
               <p className="mt-1 text-sm text-gray-600">{s.desc}</p>
               {s.status !== "coming-soon" && (
-                <span className="mt-2 inline-block text-xs font-medium text-gray-600 group-hover:text-gray-900">
-                  Buka →
-                </span>
+                <button className="mt-3 text-xs font-medium text-[#B01C2F] hover:underline">
+                  {s.status === "coming-soon" ? "Segera Hadir" : "Buka →"}
+                </button>
               )}
             </a>
           ))}
