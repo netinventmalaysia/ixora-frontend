@@ -5,6 +5,9 @@ import { useMemo, useState } from "react";
 import LanguageSelector from "@/components/common/LanguageSelector";
 import { useTranslation } from "@/utils/i18n";
 
+const PRIMARY = "#B01C2F";
+const PRIMARY_HOVER = "#951325";
+
 export default function LandingPage() {
   const { t } = useTranslation();
 
@@ -21,9 +24,6 @@ export default function LandingPage() {
         />
         <meta name="viewport" content="width=device-width, initial-scale=1" />
       </Head>
-
-      {/* Language switcher — fixed, subtle */}
-      {/* <LanguageSelector className="!static fixed right-3 top-20 sm:top-24" /> */}
 
       <Navbar />
 
@@ -53,11 +53,11 @@ function Navbar() {
   ];
 
   return (
-    <header className="sticky top-0 z-50 border-b border-gray-100 bg-white/90 backdrop-blur supports-[backdrop-filter]:bg-white/70 dark:border-gray-800 dark:bg-gray-900/80">
+    <header className="sticky top-0 z-50 border-b border-gray-200/70 bg-white/90 backdrop-blur supports-[backdrop-filter]:bg-white/70">
       <div className="mx-auto flex h-16 max-w-7xl items-center justify-between px-4 sm:px-6 lg:px-8">
         <a href="/" className="flex items-center gap-2">
-          <Image src="/images/logo.png" alt="IXORA MBMB" width={28} height={28} className="h-7 w-auto" priority />
-          <span className="text-sm font-semibold tracking-wide">IXORA MBMB</span>
+          <Image src="/images/logo.png" alt="IXORA MBMB" width={18} height={18} className="h-7 w-auto" priority />
+          <span className="text-sm font-semibold tracking-wide text-gray-900">IXORA MBMB</span>
         </a>
 
         <nav className="hidden items-center gap-6 md:flex">
@@ -65,23 +65,29 @@ function Navbar() {
             <a
               key={n.href}
               href={n.href}
-              className="text-sm text-gray-600 transition-colors hover:text-gray-900 dark:text-gray-300 dark:hover:text-white"
+              className="text-sm text-gray-600 transition-colors hover:text-gray-900"
             >
               {n.label}
             </a>
           ))}
           <a
             href="#contact"
-            className="inline-flex items-center rounded-lg bg-gray-900 px-3.5 py-2 text-sm font-medium text-white hover:bg-gray-800 dark:bg-white dark:text-gray-900 dark:hover:bg-gray-100"
+            className="inline-flex items-center rounded-lg px-3.5 py-2 text-sm font-medium text-white"
+            style={{ backgroundColor: PRIMARY }}
+            onMouseOver={(e) => ((e.currentTarget.style.backgroundColor = PRIMARY_HOVER))}
+            onMouseOut={(e) => ((e.currentTarget.style.backgroundColor = PRIMARY))}
           >
-            {t("landing.nav.cta", "Contact Us")}
+            {t("landing.nav.cta", "Contact")}
           </a>
+
+          {/* Language selector right after Contact */}
+          <LanguageSelector className="!static ml-1" />
         </nav>
 
         <button
           aria-label="Open menu"
           onClick={() => setOpen((s) => !s)}
-          className="inline-flex items-center rounded-md p-2 text-gray-600 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-800 md:hidden"
+          className="inline-flex items-center rounded-md p-2 text-gray-600 hover:bg-gray-100 md:hidden"
         >
           <svg className="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
@@ -91,14 +97,14 @@ function Navbar() {
 
       {/* Mobile menu */}
       {open && (
-        <div className="border-t border-gray-100 dark:border-gray-800 md:hidden">
+        <div className="border-t border-gray-200 md:hidden">
           <div className="mx-auto max-w-7xl space-y-1 px-4 py-3">
             {nav.map((n) => (
               <a
                 key={n.href}
                 href={n.href}
                 onClick={() => setOpen(false)}
-                className="block rounded-md px-3 py-2 text-sm text-gray-700 hover:bg-gray-100 dark:text-gray-200 dark:hover:bg-gray-800"
+                className="block rounded-md px-3 py-2 text-sm text-gray-700 hover:bg-gray-100"
               >
                 {n.label}
               </a>
@@ -106,10 +112,18 @@ function Navbar() {
             <a
               href="#contact"
               onClick={() => setOpen(false)}
-              className="mt-2 block rounded-md bg-gray-900 px-3 py-2 text-center text-sm font-medium text-white hover:bg-gray-800 dark:bg-white dark:text-gray-900 dark:hover:bg-gray-100"
+              className="mt-2 block rounded-md px-3 py-2 text-center text-sm font-medium text-white"
+              style={{ backgroundColor: PRIMARY }}
+              onMouseOver={(e) => ((e.currentTarget.style.backgroundColor = PRIMARY_HOVER))}
+              onMouseOut={(e) => ((e.currentTarget.style.backgroundColor = PRIMARY))}
             >
-              {t("landing.nav.cta", "Contact Us")}
+              {t("landing.nav.cta", "Contact")}
             </a>
+
+            {/* Language selector in mobile list */}
+            <div className="pt-2">
+              <LanguageSelector className="!static" />
+            </div>
           </div>
         </div>
       )}
@@ -121,74 +135,123 @@ function Navbar() {
 function Hero() {
   const { t } = useTranslation();
   const stats = [
-    { label: t("landing.hero.uptime", "Uptime"), value: "98.9%" },
+    { label: t("landing.hero.uptime", "Uptime"), value: "99.9%" },
     { label: t("landing.hero.transactions", "Transactions"), value: "150k+" },
     { label: t("landing.hero.security", "Security"), value: "PDPA-Act" },
   ];
 
   return (
-    <section
-      id="intro"
-      className="relative isolate overflow-hidden bg-gradient-to-b from-white via-white to-gray-50 dark:from-gray-900 dark:via-gray-900 dark:to-gray-950"
-    >
-      {/* subtle blob */}
-      <div className="pointer-events-none absolute inset-x-0 -top-40 -z-10 transform-gpu blur-3xl">
-        <div className="mx-auto h-56 w-[36rem] rounded-full bg-gradient-to-r from-sky-300 via-fuchsia-300 to-teal-300 opacity-25" />
-      </div>
+    <section id="intro" className="relative isolate overflow-hidden bg-white">
+      {/* top-right soft red glow */}
+      <div
+        aria-hidden
+        className="pointer-events-none absolute right-[-10%] top-[-20%] -z-10 h-[36rem] w-[36rem] blur-3xl"
+        style={{
+          background:
+            "radial-gradient(50% 50% at 50% 50%, rgba(176,28,47,0.18) 0%, rgba(176,28,47,0) 60%)",
+        }}
+      />
 
-      <div className="mx-auto grid max-w-7xl grid-cols-1 gap-10 px-4 py-16 sm:py-20 lg:grid-cols-12 lg:gap-8 lg:py-24">
-        {/* copy */}
-        <div className="place-self-center lg:col-span-6">
-          <h1 className="text-4xl font-extrabold tracking-tight sm:text-5xl">IXORA MBMB</h1>
-          <p className="mt-3 text-lg text-gray-600 dark:text-gray-300">
-            {t(
-              "landing.hero.subtitle",
-              "Smarter Governance, Smoother Community—one digital gateway for residents, businesses, tourists, and the local community."
-            )}
-          </p>
+      {/* subtle grid texture (desktop only) */}
+      <div
+        aria-hidden
+        className="pointer-events-none absolute inset-0 -z-10 hidden lg:block"
+        style={{
+          maskImage:
+            "linear-gradient(to bottom, rgba(0,0,0,.15), rgba(0,0,0,0.02) 40%, transparent)",
+          WebkitMaskImage:
+            "linear-gradient(to bottom, rgba(0,0,0,.15), rgba(0,0,0,0.02) 40%, transparent)",
+          backgroundSize: "32px 32px",
+          backgroundImage:
+            "linear-gradient(to right, rgba(0,0,0,0.04) 1px, transparent 1px), linear-gradient(to bottom, rgba(0,0,0,0.04) 1px, transparent 1px)",
+        }}
+      />
 
-          <div className="mt-6 flex flex-col gap-3 sm:flex-row sm:items-center">
-            <a
-              href="login"
-              className="inline-flex items-center justify-center rounded-lg bg-gray-900 px-5 py-3 text-sm font-medium text-white hover:bg-gray-800 dark:bg-white dark:text-gray-900 dark:hover:bg-gray-100"
+      <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+        {/* desktop-friendly height and spacing */}
+        <div className="grid grid-cols-1 items-center gap-10 py-14 sm:py-20 lg:grid-cols-12 lg:gap-8 lg:py-24 min-h-[72vh]">
+          {/* Left column: copy */}
+          <div className="lg:col-span-6">
+            {/* small badge */}
+            {/* <div
+              className="inline-flex items-center rounded-full border px-2.5 py-1 text-[11px] font-medium tracking-wide text-gray-700"
+              style={{ borderColor: "#E5E7EB", backgroundColor: "#FFF1F2", color: PRIMARY }}
             >
-              {t("landing.cta.getStarted", "Get Started")}
-            </a>
-            <a
-              href="#benefits"
-              className="inline-flex items-center justify-center rounded-lg border border-gray-300 px-5 py-3 text-sm font-medium text-gray-800 hover:bg-gray-50 dark:border-gray-700 dark:text-gray-200 dark:hover:bg-gray-800"
-            >
-              {t("landing.cta.explore", "Explore Features")}
-            </a>
-          </div>
+              {t("landing.badge", "Introducing")} · IXORA Ecosystem
+            </div> */}
 
-          <dl className="mt-8 grid grid-cols-3 gap-4 sm:gap-6">
-            {stats.map((s) => (
-              <div
-                key={s.label}
-                className="rounded-xl border border-gray-200 bg-white p-4 text-center shadow-sm dark:border-gray-800 dark:bg-gray-900"
+            <h1 className="mt-4 text-4xl font-extrabold tracking-tight text-gray-900 sm:text-5xl lg:text-[52px] lg:leading-[1.1]">
+              IXORA MBMB
+            </h1>
+            <p className="mt-4 max-w-xl text-base leading-relaxed text-gray-600 lg:text-lg">
+              {t(
+                "landing.hero.subtitle",
+                "Smarter Governance, Smoother Community — one digital gateway for residents, businesses, tourists, and the local community."
+              )}
+            </p>
+
+            {/* CTAs */}
+            <div className="mt-7 flex flex-col gap-3 sm:flex-row sm:items-center">
+              <a
+                href="login"
+                className="inline-flex items-center justify-center rounded-lg px-5 py-3 text-sm font-semibold text-white"
+                style={{ backgroundColor: PRIMARY }}
+                onMouseOver={(e) => (e.currentTarget.style.backgroundColor = PRIMARY_HOVER)}
+                onMouseOut={(e) => (e.currentTarget.style.backgroundColor = PRIMARY)}
               >
-                <dt className="text-xs text-gray-500">{s.label}</dt>
-                <dd className="mt-1 text-lg font-semibold">{s.value}</dd>
-              </div>
-            ))}
-          </dl>
-        </div>
+                {t("landing.cta.getStarted", "Get Started")}
+              </a>
+              <a
+                href="#benefits"
+                className="inline-flex items-center justify-center rounded-lg border px-5 py-3 text-sm font-semibold text-gray-900 hover:bg-gray-50"
+                style={{ borderColor: "#E5E7EB" }}
+              >
+                {t("landing.cta.explore", "Explore Features")}
+              </a>
+            </div>
 
-        {/* image */}
-        <div className="flex items-center justify-center lg:col-span-6">
-          <div className="relative aspect-[4/3] w-full max-w-md sm:max-w-lg lg:max-w-xl">
-            <Image
-              src="/images/ixora-hero.png"
-              alt="IXORA MBMB mascot"
-              fill
-              priority
-              className="object-contain drop-shadow-xl"
-              sizes="(max-width: 640px) 90vw, (max-width: 1024px) 50vw, 600px"
-            />
+            {/* stats: cleaner on desktop, compact on mobile */}
+            <dl className="mt-8 grid grid-cols-3 gap-3 sm:gap-4 lg:max-w-none lg:gap-6">
+              {stats.map((s) => (
+                <div
+                  key={s.label}
+                  className="rounded-xl border bg-white p-4 text-center shadow-sm"
+                  style={{ borderColor: "#E5E7EB" }}
+                >
+                  <dt className="text-[11px] uppercase tracking-wide text-gray-500">{s.label}</dt>
+                  <dd className="mt-0.5 text-lg font-semibold text-gray-900 lg:text-xl">
+                    {s.value}
+                  </dd>
+                </div>
+              ))}
+            </dl>
+          </div>
+
+          {/* Right column: image (bigger on desktop, keeps aspect) */}
+          <div className="lg:col-span-6">
+            <div className="relative mx-auto aspect-[5/4] w-full max-w-xl sm:max-w-2xl">
+              <Image
+                src="/images/ixora-hero.png"
+                alt="IXORA MBMB mascot"
+                fill
+                priority
+                className="object-contain drop-shadow"
+                sizes="(max-width: 640px) 90vw, (max-width: 1024px) 55vw, 720px"
+              />
+            </div>
           </div>
         </div>
       </div>
+
+      {/* bottom-left soft red glow */}
+      <div
+        aria-hidden
+        className="pointer-events-none absolute left-[-20%] bottom-[-30%] -z-10 h-[30rem] w-[30rem] blur-3xl"
+        style={{
+          background:
+            "radial-gradient(50% 50% at 50% 50%, rgba(255,179,186,0.28) 0%, rgba(255,255,255,0) 65%)",
+        }}
+      />
     </section>
   );
 }
@@ -206,21 +269,27 @@ function Benefits() {
   ];
 
   return (
-    <section id="benefits" className="bg-gray-50 dark:bg-gray-950">
+    <section id="benefits" className="bg-white">
       <div className="mx-auto max-w-7xl px-4 py-16 sm:py-20">
-        <h2 className="text-center text-2xl font-bold sm:text-3xl">{t("landing.benefits.title", "Key Benefits")}</h2>
+        <h2 className="text-center mt-6 text-2xl font-bold sm:text-3xl text-gray-900">
+          {t("landing.benefits.title", "Key Benefits")}
+        </h2>
 
         <div className="mt-10 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
           {items.map((b) => (
             <div
               key={b.title}
-              className="group rounded-2xl border border-gray-200 bg-white p-5 shadow-sm transition hover:-translate-y-0.5 hover:shadow-md dark:border-gray-800 dark:bg-gray-900"
+              className="group rounded-2xl border bg-white p-5 shadow-sm transition hover:-translate-y-0.5 hover:shadow-md"
+              style={{ borderColor: "#E5E7EB" }}
             >
-              <div className="mb-3 inline-flex h-10 w-10 items-center justify-center rounded-xl bg-gray-50 text-lg group-hover:scale-105">
+              <div
+                className="mb-3 inline-flex h-10 w-10 items-center justify-center rounded-xl text-lg group-hover:scale-105"
+                style={{ backgroundColor: "#FFF1F2", color: PRIMARY }}
+              >
                 <span aria-hidden>{b.icon}</span>
               </div>
-              <h3 className="text-base font-semibold">{b.title}</h3>
-              <p className="mt-1 text-sm text-gray-600 dark:text-gray-300">{b.desc}</p>
+              <h3 className="text-base font-semibold text-gray-900">{b.title}</h3>
+              <p className="mt-1 text-sm text-gray-600">{b.desc}</p>
             </div>
           ))}
         </div>
@@ -245,16 +314,22 @@ function ComponentsGrid() {
   ];
 
   return (
-    <section id="components" className="bg-white dark:bg-gray-900">
+    <section id="components" className="bg-white">
       <div className="mx-auto max-w-7xl px-4 py-16 sm:py-20">
-        <h2 className="text-center text-2xl font-bold sm:text-3xl">{t("landing.components.title", "IXORA MBMB Components")}</h2>
+        <h2 className="text-center text-2xl font-bold sm:text-3xl text-gray-900">
+          {t("landing.components.title", "IXORA MBMB Components")}
+        </h2>
 
         <div className="mt-10 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
           {components.map((c) => (
-            <div key={c.name} className="rounded-2xl border border-gray-200 bg-white p-5 shadow-sm transition hover:shadow-md dark:border-gray-800 dark:bg-gray-900">
-              <div className="mb-2 text-2xl">{c.icon}</div>
-              <h3 className="text-base font-semibold">{c.name}</h3>
-              <p className="mt-1 text-sm text-gray-600 dark:text-gray-300">{c.blurb}</p>
+            <div
+              key={c.name}
+              className="rounded-2xl border bg-white p-5 shadow-sm transition hover:shadow-md"
+              style={{ borderColor: "#E5E7EB" }}
+            >
+              <div className="mb-2 text-2xl" style={{ color: PRIMARY }}>{c.icon}</div>
+              <h3 className="text-base font-semibold text-gray-900">{c.name}</h3>
+              <p className="mt-1 text-sm text-gray-600">{c.blurb}</p>
             </div>
           ))}
         </div>
@@ -290,9 +365,12 @@ function FAQ() {
   );
 
   return (
-    <section id="faq" className="bg-gray-50 dark:bg-gray-950">
+    <section id="faq" className="bg-white">
       <div className="mx-auto max-w-3xl px-4 py-16 sm:py-20">
-        <h2 className="text-center text-2xl font-bold sm:text-3xl">{t("landing.faq.title", "Frequently Asked Questions")}</h2>
+        <h2 className="text-center text-2xl font-bold sm:text-3xl text-gray-900">
+          {t("landing.faq.title", "Frequently Asked Questions")}
+        </h2>
+
         <div className="mt-8 space-y-3">
           {items.map((item, i) => (
             <FAQItem key={i} q={item.q} a={item.a} />
@@ -306,14 +384,14 @@ function FAQ() {
 function FAQItem({ q, a }: { q: string; a: string }) {
   const [open, setOpen] = useState(false);
   return (
-    <div className="rounded-xl border border-gray-200 bg-white dark:border-gray-800 dark:bg-gray-900">
+    <div className="rounded-xl border bg-white" style={{ borderColor: "#E5E7EB" }}>
       <button
         className="flex w-full items-center justify-between px-4 py-3 text-left"
         aria-expanded={open}
         onClick={() => setOpen((s) => !s)}
       >
-        <span className="font-medium">{q}</span>
-        <svg className={`h-5 w-5 transition-transform ${open ? "rotate-180" : ""}`} viewBox="0 0 20 20" fill="currentColor">
+        <span className="font-medium text-gray-900">{q}</span>
+        <svg className={`h-5 w-5 text-gray-600 transition-transform ${open ? "rotate-180" : ""}`} viewBox="0 0 20 20" fill="currentColor">
           <path
             fillRule="evenodd"
             d="M5.23 7.21a.75.75 0 011.06.02L10 10.94l3.71-3.71a.75.75 0 011.08 1.04l-4.25 4.25a.75.75 0 01-1.06 0L5.25 8.27a.75.75 0 01-.02-1.06z"
@@ -321,7 +399,7 @@ function FAQItem({ q, a }: { q: string; a: string }) {
           />
         </svg>
       </button>
-      {open && <p className="px-4 pb-4 text-sm text-gray-600 dark:text-gray-300">{a}</p>}
+      {open && <p className="px-4 pb-4 text-sm text-gray-600">{a}</p>}
     </div>
   );
 }
@@ -331,20 +409,26 @@ function Contact() {
   const { t } = useTranslation();
 
   return (
-    <section id="contact" className="bg-white dark:bg-gray-900">
+    <section id="contact" className="bg-white">
       <div className="mx-auto max-w-7xl px-4 py-16 sm:py-20">
-        <h2 className="text-center text-2xl font-bold sm:text-3xl">{t("landing.contact.title", "Contact Us")}</h2>
+        <h2 className="text-center text-2xl font-bold sm:text-3xl text-gray-900">
+          {t("landing.contact.title", "Contact Us")}
+        </h2>
 
         <div className="mt-10 grid grid-cols-1 gap-6 lg:grid-cols-3">
-          <div className="rounded-2xl border border-gray-200 bg-white p-6 shadow-sm dark:border-gray-800 dark:bg-gray-900">
-            <h3 className="text-base font-semibold">{t("landing.contact.address", "Address")}</h3>
-            <p className="mt-2 text-sm text-gray-600 dark:text-gray-300">
+          {/* Address */}
+          <div className="rounded-2xl border bg-white p-6 shadow-sm" style={{ borderColor: "#E5E7EB" }}>
+            <h3 className="text-base font-semibold text-gray-900">
+              {t("landing.contact.address", "Address")}
+            </h3>
+            <p className="mt-2 text-sm text-gray-600">
               Majlis Bandaraya Melaka Bersejarah (MBMB) <br />
               Jalan Graha Maju, 75450 Melaka
             </p>
             <div className="mt-4 flex gap-2">
               <a
-                className="rounded-md border border-gray-300 px-3 py-1.5 text-sm hover:bg-gray-50 dark:border-gray-700 dark:hover:bg-gray-800"
+                className="rounded-md border px-3 py-1.5 text-sm text-gray-800 hover:bg-gray-50"
+                style={{ borderColor: "#E5E7EB" }}
                 href="https://maps.google.com"
                 target="_blank"
                 rel="noreferrer"
@@ -352,7 +436,8 @@ function Contact() {
                 Google Maps
               </a>
               <a
-                className="rounded-md border border-gray-300 px-3 py-1.5 text-sm hover:bg-gray-50 dark:border-gray-700 dark:hover:bg-gray-800"
+                className="rounded-md border px-3 py-1.5 text-sm text-gray-800 hover:bg-gray-50"
+                style={{ borderColor: "#E5E7EB" }}
                 href="https://wa.me/"
                 target="_blank"
                 rel="noreferrer"
@@ -362,31 +447,47 @@ function Contact() {
             </div>
           </div>
 
-          <div className="rounded-2xl border border-gray-200 bg-white p-6 shadow-sm dark:border-gray-800 dark:bg-gray-900">
-            <h3 className="text-base font-semibold">{t("landing.contact.contact", "Contact")}</h3>
-            <ul className="mt-2 space-y-2 text-sm text-gray-700 dark:text-gray-300">
+          {/* Contact */}
+          <div className="rounded-2xl border bg-white p-6 shadow-sm" style={{ borderColor: "#E5E7EB" }}>
+            <h3 className="text-base font-semibold text-gray-900">
+              {t("landing.contact.contact", "Contact")}
+            </h3>
+            <ul className="mt-2 space-y-2 text-sm text-gray-700">
               <li>
                 <strong>{t("landing.contact.phone", "Phone")}:</strong> +60 X-XXXX XXXX
               </li>
               <li>
                 <strong>Email:</strong>{" "}
-                <a className="text-gray-900 underline-offset-2 hover:underline dark:text-white" href="mailto:ixora@mbmb.gov.my">
+                <a className="text-gray-900 underline-offset-2 hover:underline" href="mailto:ixora@mbmb.gov.my">
                   ixora@mbmb.gov.my
                 </a>
               </li>
             </ul>
           </div>
 
-          <div className="rounded-2xl border border-gray-200 bg-gradient-to-br from-gray-900 to-black p-6 text-white shadow-sm dark:border-gray-800">
-            <h3 className="text-base font-semibold">{t("landing.join.title", "Join MBMB’s Digital Community")}</h3>
-            <p className="mt-2 text-sm text-gray-200">
+          {/* CTA */}
+          <div className="rounded-2xl border bg-white p-6 shadow-sm" style={{ borderColor: "#E5E7EB" }}>
+            <h3 className="text-base font-semibold text-gray-900">
+              {t("landing.join.title", "Join MBMB’s Digital Community")}
+            </h3>
+            <p className="mt-2 text-sm text-gray-600">
               {t("landing.join.desc", "Create your IXORA MBMB account and experience seamless municipal services.")}
             </p>
             <div className="mt-4 flex gap-2">
-              <a href="#" className="rounded-md bg-white px-3 py-1.5 text-sm font-medium text-gray-900 hover:bg-gray-100">
+              <a
+                href="#"
+                className="rounded-md px-3 py-1.5 text-sm font-medium text-white"
+                style={{ backgroundColor: PRIMARY }}
+                onMouseOver={(e) => ((e.currentTarget.style.backgroundColor = PRIMARY_HOVER))}
+                onMouseOut={(e) => ((e.currentTarget.style.backgroundColor = PRIMARY))}
+              >
                 {t("landing.join.register", "Register")}
               </a>
-              <a href="login" className="rounded-md border border-white/30 px-3 py-1.5 text-sm text-white hover:bg-white/10">
+              <a
+                href="login"
+                className="rounded-md border px-3 py-1.5 text-sm text-gray-800 hover:bg-gray-50"
+                style={{ borderColor: "#E5E7EB" }}
+              >
                 {t("landing.join.login", "Log In")}
               </a>
             </div>
@@ -402,32 +503,30 @@ function Footer() {
   const year = new Date().getFullYear();
 
   return (
-    <footer className="border-t border-gray-100 bg-gradient-to-b from-gray-900 to-black text-gray-300 dark:border-gray-800">
-      <div className="mx-auto max-w-7xl px-4 py-10">
-        <div className="flex flex-col items-center justify-between gap-6 sm:flex-row">
-          <div className="flex items-center gap-2">
-            <Image src="/images/logo.png" alt="IXORA MBMB" width={22} height={22} className="h-5 w-auto" />
-            <span className="text-sm font-semibold text-white">IXORA MBMB</span>
+    <footer className="bg-[#B01C2F] text-white">
+      <div className="mx-auto max-w-7xl px-4">
+        <div className="flex h-12 items-center gap-4 overflow-x-auto whitespace-nowrap text-xs sm:text-sm">
+          {/* brand */}
+          <div className="flex items-center gap-2 shrink-0">
+            <Image src="/images/logo.png" alt="IXORA MBMB" width={18} height={18} className="h-4 w-auto sm:h-5" />
+            <span className="font-semibold">IXORA MBMB</span>
           </div>
-          <nav className="flex flex-wrap items-center gap-4 text-sm">
-            <a href="#" className="hover:text-white">
-              Privacy
-            </a>
-            <a href="#" className="hover:text-white">
-              Terms
-            </a>
-            <a href="#" className="hover:text-white">
-              Status
-            </a>
-            <a href="#" className="hover:text-white">
-              Help
-            </a>
-          </nav>
-        </div>
 
-        <p className="mt-6 text-center text-xs text-gray-400">
-          © {year} MBMB — Melaka Smart City Digital Ecosystem. All rights reserved.
-        </p>
+          <span className="opacity-50">•</span>
+
+          {/* nav */}
+          <nav className="flex items-center gap-4">
+            <a href="#" className="opacity-90 transition hover:opacity-100">Privacy</a>
+            <a href="#" className="opacity-90 transition hover:opacity-100">Terms</a>
+            <a href="#" className="opacity-90 transition hover:opacity-100">Status</a>
+            <a href="#" className="opacity-90 transition hover:opacity-100">Help</a>
+          </nav>
+
+          {/* right-aligned copyright */}
+          <span className="ml-auto shrink-0 opacity-90">
+            © {year} MBMB — Melaka Smart City Digital Ecosystem
+          </span>
+        </div>
       </div>
     </footer>
   );
