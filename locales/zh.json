@@ -2,110 +2,108 @@
   "sidebar": {
     "assessmentTax": "评估税",
     "compound": "罚款",
-    "boothRental": "展位租赁",
+    "boothRental": "摊位租赁",
     "miscBills": "杂项账单",
     "dashboard": "仪表板",
     "profile": "个人资料",
     "settings": "设置",
-    "signOut": "登出"
+    "signOut": "退出登录"
   },
   "settings": {
     "title": "设置",
     "language": "语言",
     "location": "位置",
-    "locationDesc": "允许访问您的位置以用于需要的位置功能。",
+    "locationDesc": "允许访问您的位置以启用相关功能。",
     "notifications": "推送通知",
-    "notificationsDesc": "允许此应用程序的推送通知。",
+    "notificationsDesc": "允许此应用发送推送通知。",
     "request": "请求权限",
-    "requestLocation": "请求位置",
+    "requestLocation": "请求位置信息",
     "savedLocal": "语言已保存在本地",
-    "savedSynced": "语言已同步到您的帐户"
-  }
-  ,
+    "savedSynced": "语言已同步到您的账户"
+  },
   "common": {
     "cancel": "取消",
     "loading": "加载中..."
   },
   "signup": {
     "title": "注册",
-    "createAccountTitle": "创建您的帐户",
-    "createAccountDesc": "请填写以下信息以创建您的帐户。",
+    "createAccountTitle": "创建您的账户",
+    "createAccountDesc": "请填写以下信息以创建账户。",
     "uploadPhoto": "上传照片",
-    "submit": "注册"
-  ,"username": "用户名",
-  "usernameRequired": "需要用户名",
-  "emailLabel": "电子邮件地址",
-  "emailRequired": "需要电子邮件",
-  "identificationType": "身份证明类型",
-  "identificationTypeRequired": "请选择身份证明类型",
-  "identificationNumber": "身份证号码",
-  "identificationNumberRequired": "需要身份证号码",
-  "userInfoTitle": "用户信息",
-  "userInfoDesc": "请提供您的个人资料详细信息。",
-  "profilePicture": "个人资料照片",
-  "profilePictureRequired": "需要个人资料照片",
-  "dateOfBirth": "出生日期",
-  "dateOfBirthPlaceholder": "DD/MM/YYYY",
-  "dateOfBirthRequired": "请选择您的出生日期",
-  "phoneNumber": "电话号码",
-  "phoneNumberRequired": "需要电话号码",
-  "address": "房产/地段/街道地址",
-  "addressRequired": "需要地址",
-  "discardTitle": "放弃更改？",
-  "discardDesc": "您未保存的更改将丢失。您确定要离开此表单吗？",
-  "discardConfirm": "是的，放弃"
+    "submit": "注册",
+    "username": "用户名",
+    "usernameRequired": "用户名为必填项",
+    "emailLabel": "电子邮箱地址",
+    "emailRequired": "电子邮箱为必填项",
+    "identificationType": "证件类型",
+    "identificationTypeRequired": "请选择证件类型",
+    "identificationNumber": "证件号码",
+    "identificationNumberRequired": "证件号码为必填项",
+    "userInfoTitle": "用户信息",
+    "userInfoDesc": "请完善您的个人资料。",
+    "profilePicture": "个人头像",
+    "profilePictureRequired": "请上传个人头像",
+    "dateOfBirth": "出生日期",
+    "dateOfBirthPlaceholder": "DD/MM/YYYY",
+    "dateOfBirthRequired": "请选择您的出生日期",
+    "phoneNumber": "电话号码",
+    "phoneNumberRequired": "电话号码为必填项",
+    "address": "房产/地段/街道地址",
+    "addressRequired": "地址为必填项",
+    "discardTitle": "放弃更改？",
+    "discardDesc": "未保存的更改将会丢失。确定要离开此表单吗？",
+    "discardConfirm": "是，放弃"
   },
   "resetPassword": {
     "title": "重置密码",
     "submit": "重置密码",
     "resetting": "正在重置...",
-    "success": "密码已重置。现在可以登录。",
+    "success": "密码已重置，您现在可以登录。",
     "failed": "重置失败"
   },
   "verifyEmail": {
-    "title": "验证电子邮件",
+    "title": "验证邮箱",
     "validating": "正在验证令牌…",
     "missingToken": "缺少令牌。",
     "invalidToken": "令牌无效或已过期。",
-    "verifyYourEmail": "验证您的电子邮件",
-    "verifyDesc": "验证您的电子邮件以完成帐户设置。",
+    "verifyYourEmail": "验证您的邮箱",
+    "verifyDesc": "验证邮箱以完成账户设置。",
     "verifying": "正在验证…",
-    "submit": "验证电子邮件"
+    "submit": "验证邮箱"
   },
   "profile": {
-    "failedLoad": "加载配置文件失败。",
+    "failedLoad": "加载个人资料失败。",
     "title": "编辑个人资料",
-    "accountDetailsTitle": "帐户详细信息",
-    "accountDetailsDesc": "更新您的登录和联系信息。",
+    "accountDetailsTitle": "账户信息",
+    "accountDetailsDesc": "更新您的登录与联系方式。",
     "userInfoTitle": "用户信息",
-    "userInfoDesc": "更新您的个人资料详细信息。",
+    "userInfoDesc": "更新您的个人资料详情。",
     "organisation": "组织",
     "company": "公司",
     "businessName": "企业名称",
     "selectBusiness": "请选择企业",
     "organisationName": "组织名称",
     "companyName": "公司名称",
-    "companyNameRequired": "公司名称是必填项",
+    "companyNameRequired": "公司名称为必填项",
     "rosNumber": "ROS 编号",
     "ssmNumber": "SSM 编号",
-    "rosRequired": "ROS 编号是必填项",
-    "ssmRequired": "SSM 编号是必填项",
+    "rosRequired": "ROS 编号为必填项",
+    "ssmRequired": "SSM 编号为必填项",
     "termsPrefix": "继续即表示您同意",
     "terms": "服务条款",
-    "and": "和",
+    "and": "及",
     "privacy": "隐私政策",
-    "saveChanges": "保存更改"
-  ,"businessInfoTitle": "商业信息",
-  "businessInfoDesc": "更新您的企业或组织详细信息。"
-  }
-  ,
+    "saveChanges": "保存更改",
+    "businessInfoTitle": "企业信息",
+    "businessInfoDesc": "更新您的企业或组织信息。"
+  },
   "login": {
-    "title": "登录到您的帐户",
+    "title": "登录到您的账户",
     "forgot": "忘记密码？",
     "signIn": "登录",
-    "continueGuest": "以访客身份继续"
-  ,"notMember": "还不是会员？",
-  "signUpNow": "立即注册"
+    "continueGuest": "以访客身份继续",
+    "notMember": "还不是会员？",
+    "signUpNow": "立即注册"
   },
   "loginExtras": {
     "notMember": "还不是会员？",
@@ -123,25 +121,24 @@
     "loginToAccept": "登录以接受"
   },
   "profileTest": {
-    "title": "配置文件测试分页",
+    "title": "个人资料测试分页",
     "updating": "正在更新...",
     "update": "更新名字"
   },
   "forgotPassword": {
     "title": "忘记密码",
-    "emailLabel": "电子邮件地址",
-    "emailRequired": "需要电子邮件",
-    "emailPlaceholder": "输入您的电子邮件地址",
+    "emailLabel": "电子邮箱地址",
+    "emailRequired": "电子邮箱为必填项",
+    "emailPlaceholder": "请输入您的电子邮箱",
     "send": "发送重置链接",
     "sent": "链接已发送",
-    "checkEmail": "请检查您的电子邮件以获取密码重置链接。",
-    "toastSent": "重置链接已发送！请检查您的电子邮件。",
+    "checkEmail": "请查看邮箱中的密码重置链接。",
+    "toastSent": "重置链接已发送！请查收邮箱。",
     "toastFailed": "发送重置链接失败"
-  }
-  ,
+  },
   "form": {
     "headings": "标题",
-    "headingsDesc": "使用不同的标题级别来创建信息层次结构。",
+    "headingsDesc": "使用不同的标题级别来组织信息层级。",
     "h1Heading": "H1 标题",
     "h2Heading": "H2 标题",
     "h3Heading": "H3 标题",
@@ -153,56 +150,56 @@
     "buttonSizesDesc": "使用不同的按钮尺寸",
     "signIn": "登录",
     "personalInfo": "个人信息",
-    "personalInfoDesc": "使用可以接收邮件的永久地址。",
+    "personalInfoDesc": "请使用可正常接收邮件的常用地址。",
     "usernameWithPrefix": "用户名（带前缀）",
     "usernamePlaceholder": "janesmith",
-    "usernameRequired": "需要用户名",
+    "usernameRequired": "用户名为必填项",
     "password": "密码",
-    "passwordRequired": "需要密码",
+    "passwordRequired": "密码为必填项",
     "age": "年龄",
-    "ageRequired": "需要年龄",
+    "ageRequired": "年龄为必填项",
     "firstName": "名字",
-    "firstNameRequired": "需要名字",
+    "firstNameRequired": "名字为必填项",
     "lastName": "姓氏",
-    "lastNameRequired": "需要姓氏",
+    "lastNameRequired": "姓氏为必填项",
     "streetAddress": "街道地址",
-    "streetAddressRequired": "需要街道地址",
+    "streetAddressRequired": "街道地址为必填项",
     "city": "城市",
-    "cityRequired": "需要城市",
+    "cityRequired": "城市为必填项",
     "state": "州/省",
     "postalCode": "邮政编码",
-    "postalCodeRequired": "需要邮政编码",
+    "postalCodeRequired": "邮政编码为必填项",
     "about": "关于",
-    "aboutPlaceholder": "告诉我们一些关于您的信息",
-    "aboutRequired": "请告诉我们一些关于您的信息",
-    "profilePicture": "个人资料照片",
+    "aboutPlaceholder": "请简单介绍一下自己",
+    "aboutRequired": "请填写个人简介",
+    "profilePicture": "个人头像",
     "uploadPhoto": "上传照片",
     "uploadFile": "上传文件",
-    "uploadFileDesc": "PNG、JPG、GIF，最多 10MB",
+    "uploadFileDesc": "PNG、JPG、GIF，最大 10MB",
     "uploadFileRequired": "请上传封面照片",
     "country": "国家",
     "countryPlaceholder": "请选择...",
-    "countryRequired": "需要国家"
+    "countryRequired": "国家为必填项"
   },
   "dashboard": {
-    "welcome": "欢迎使用 MBMB Go (Ixora)",
-    "description": "MBMB Go 是马六甲历史市议会的官方数字门户，简化市民和企业的在线事务。",
+    "welcome": "欢迎使用 IXORA MBMB",
+    "description": "IXORA MBMB 是马六甲历史市政厅（MBMB）的官方数字门户，简化市民与企业的线上办理流程。",
     "featuresTitle": "主要功能",
     "features": {
-      "assessmentTax": "评估税支付",
-      "compoundPayments": "罚款支付",
-      "boothRental": "展位租赁",
+      "assessmentTax": "评估税缴纳",
+      "compoundPayments": "罚款缴纳",
+      "boothRental": "摊位租赁",
       "miscBills": "杂项账单",
       "businessRegistration": "企业注册与许可",
       "accountStaffMgmt": "账户与员工管理",
-      "myskb": "MySKB 临时建筑许可",
+      "myskb": "MBMB 临时建筑许可",
       "announcements": "公告与新闻"
     },
     "roles": {
-      "guest": { "label": "访客", "desc": "可查看公告和公共访问" },
-      "personal": { "label": "个人", "desc": "可注册企业、缴税并访问展位" },
-      "business": { "label": "企业", "desc": "可注册为顾问并访问 MySKB 模块" },
-      "consultant": { "label": "顾问", "desc": "可提交临时建筑许可项目并续签执照" }
+      "guest": { "label": "访客", "desc": "可查看公告与公共信息" },
+      "personal": { "label": "个人", "desc": "可注册企业、缴纳税费并办理摊位" },
+      "business": { "label": "企业", "desc": "可注册为顾问并访问 MBMB 模块" },
+      "consultant": { "label": "顾问", "desc": "可提交临时建筑许可项目并续期" }
     }
   },
   "report": {
@@ -218,17 +215,17 @@
       "contact": "联系我们"
     },
     "hero": {
-      "title": "IXORA",
+      "title": "IXORA MBMB",
       "subtitle": "更智慧的治理，更顺畅的社区",
-      "tagline": "以信任构建 · 由 MBMB 驱动 · 为您而生",
-      "ctaPrimary": "开始数字服务",
+      "tagline": "以信任构建 · 由 MBMB 驱动 · 因你而在",
+      "ctaPrimary": "开始使用数字服务",
       "ctaSecondary": "下载 IXORA+ 应用"
     },
     "intro": {
-      "heading": "了解 IXORA",
+      "heading": "了解 IXORA MBMB",
       "subheading": "通往智慧城市的 MBMB 数字网关",
-      "p1": "IXORA 生态系统是由马六甲历史市政厅 (MBMB) 开发的新一代数字平台，用于革新地方政府服务的交付方式。",
-      "p2": "以社区为核心设计，IXORA 让与政府的互动更加简单、高效和透明。它将多个市政服务流程整合为一个统一的平台，减少多处往返或分散入口。",
+      "p1": "IXORA MBMB 生态是由马六甲历史市政厅（MBMB）打造的新一代数字平台，重塑地方政府服务的交付方式。",
+      "p2": "以社区为核心设计，IXORA MBMB 让与政府的互动更简单、更高效、更透明。它将多项市政服务流程整合为一个统一系统，减少多入口与线下往返。",
       "ctaExplore": "探索服务",
       "ctaRegister": "立即注册"
     },
@@ -236,79 +233,79 @@
       "title": "关键优势",
       "items": {
         "oneStop": { "title": "一站式中心", "desc": "在一个门户访问全部服务" },
-        "access": { "title": "24/7 访问", "desc": "随时可用" },
+        "access": { "title": "24/7 访问", "desc": "随时随地可用" },
         "counterless": { "title": "无柜台办理", "desc": "无需前往实体柜台" },
         "transparent": { "title": "透明", "desc": "实时状态与通知" },
         "dataDriven": { "title": "数据驱动", "desc": "智能分析与仪表盘" },
-        "secure": { "title": "安全", "desc": "MBMB 私有云" }
+        "secure": { "title": "安全", "desc": "MBMB 私有云与访问控制" }
       }
     },
     "components": {
-      "title": "IXORA 组件",
-      "items": ["门户","移动应用","AI 助手","工作空间","访问","NotifyMe","私有云","分析","身份"]
+      "title": "IXORA MBMB 组件",
+      "items": ["门户", "移动应用", "AI 助手", "工作空间", "访问控制", "NotifyMe 通知", "私有云", "分析", "数字身份"]
     },
     "achievements": {
-      "title": "MBMB 数字化表现 (2021–2025)",
+      "title": "MBMB 数字化表现（2021–2025）",
       "chartTitle": "现金 vs 无现金交易趋势"
     },
     "faq": {
-      "title": "常见问题 – MBMB IXORA 数字生态系统",
+      "title": "常见问题 —— IXORA MBMB 数字生态",
       "groups": {
         "1": {
           "heading": "1. 总览与简介",
-          "q1": "什么是 IXORA?",
-          "a1": "IXORA 是 MBMB 的一体化数字生态系统，不只是支付门户。",
-          "q2": "什么是 IXORA GATEWAY?",
-          "a2": "这是 MBMB 面向居民与企业的统一数字入口。",
+          "q1": "什么是 IXORA MBMB？",
+          "a1": "IXORA MBMB 是 MBMB 的一体化数字生态，不只是支付门户。",
+          "q2": "什么是 IXORA GATEWAY？",
+          "a2": "面向居民与企业的 MBMB 统一数字入口。",
           "q3": "谁可以使用？",
-          "a3": "个人、企业、游客以及本地社区。"
+          "a3": "个人、企业、游客及本地社区。"
         },
         "2": {
           "heading": "2. 对市民与企业的优势",
           "list": [
-            "一站式——所有 MBMB 服务集于一个应用。",
-            "24/7 访问——通过 IXORA GATEWAY。",
-            "便捷透明——实时状态查询。",
-            "包容性——为长者 / 数字能力较弱者提供自助机与流动终端。"
+            "一站式：所有 MBMB 服务集于一个应用。",
+            "全天候：通过 IXORA GATEWAY 提供 24/7 访问。",
+            "便捷透明：实时状态查询与通知。",
+            "包容性：为长者/数字薄弱者提供自助机与流动终端。"
           ]
         },
         "3": {
           "heading": "3. 服务与模块",
-          "body": "核心模块包括：评估税、营业执照、建筑许可、摊位租赁、停车、罚款、动物许可、分期计划。内部流程使用 IXORA Workspace 进行处理与审批。"
+          "body": "核心模块：评估税、营业许可、建筑许可、摊位租赁、停车、罚款、动物许可、分期计划。内部办理使用 IXORA Workspace 进行处理与审批。"
         },
         "4": {
           "heading": "4. 成本与维护",
-          "body": "开发涵盖支付集成、MyData SSM 与 AI 聊天机器人。维护由 MBMB 年度 ICT 预算支持。MBMB 不额外收取费用（仅银行 / 电子钱包收费）。"
+          "body": "开发包含支付集成、MyData SSM 与 AI 聊天机器人。维护由 MBMB 年度 ICT 预算支持。MBMB 不额外收费（仅银行/电子钱包费用）。"
         },
         "5": {
           "heading": "5. 安全与合规",
-          "body": "IXORA 采用 MBMB 私有云、单点登录、加密、审计追踪，并遵循 PDPA 2010 与 MBMB ICT 安全政策。"
+          "body": "采用 MBMB 私有云、单点登录、加密与审计追踪，遵循 PDPA 2010 与 MBMB ICT 安全政策。"
         },
         "6": {
           "heading": "6. 运营与持续性",
-          "body": "IXORA 拥有灾难恢复计划、每日备份、自动伸缩服务器与模块化架构。"
+          "body": "具备灾难恢复计划、每日备份、自动伸缩服务器与模块化架构。"
         },
         "7": {
-          "heading": "7. 关键指标与绩效",
-          "body": "KPI：≥95% 数字化收款，≥80% 在线申请，≤7 天新执照处理周期，≥85% 用户满意度。绩效通过实时分析仪表盘监控。"
+          "heading": "7. 指标与绩效",
+          "body": "KPI：≥95% 数字化收款、≥80% 在线申请、≤7 天新执照处理、≥85% 用户满意度。通过实时分析仪表盘进行监测。"
         }
       }
     },
     "contact": {
       "title": "联系我们",
       "panelTitle": "加入 MBMB 数字社区",
-      "panelDesc": "创建您的 IXORA 账户，体验市政服务的数字化转型。",
+      "panelDesc": "创建 IXORA MBMB 账户，体验市政服务数字化转型。",
       "ctaRegister": "注册",
       "ctaLogin": "登录",
       "addressLabel": "地址",
       "phoneLabel": "电话",
-      "emailLabel": "电子邮件",
+      "emailLabel": "电子邮箱",
       "addressLines": [
         "Majlis Bandaraya Melaka Bersejarah (MBMB)",
         "Jalan Graha Makmur, 75450 Melaka"
       ]
     },
-    "footer": { "text": "IXORA – 马六甲智慧城市数字生态系统" },
+    "footer": { "text": "IXORA MBMB —— 马六甲智慧城市数字生态系统" },
     "table": {
       "channel": "渠道",
       "year": "年份",

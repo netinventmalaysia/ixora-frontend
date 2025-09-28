@@ -1,6 +1,7 @@
 import en from '@/locales/en.json';
 import ms from '@/locales/ms.json';
 import zh from '@/locales/zh.json';
+import ta from '@/locales/ta.json';
 import { useEffect, useState } from 'react';
 
 type Locales = { [k: string]: any };
@@ -9,6 +10,7 @@ const LOCALES: { [lang: string]: Locales } = {
   en,
   ms,
   zh,
+  ta,
 };
 
 // default language used for SSR
@@ -83,7 +85,7 @@ export function useTranslation() {
     return () => window.removeEventListener('ixora:languagechange', handler as EventListener);
   }, []);
 
-  return { t: (k: string, f?: string) => t(k, f), lang };
+  return { t: (k: string, f?: string, p0?: string[]) => t(k, f), lang };
 }
 
 export default t;

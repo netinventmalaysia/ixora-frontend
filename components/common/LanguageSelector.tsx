@@ -6,7 +6,7 @@ type Props = {
   className?: string;
 };
 
-export default function LanguageSelector({ codes = ['en', 'ms', 'zh'], className = '' }: Props) {
+export default function LanguageSelector({ codes = ['en', 'ms', 'zh', 'ta'], className = '' }: Props) {
   const { lang } = useTranslation();
 
   return (
@@ -19,7 +19,7 @@ export default function LanguageSelector({ codes = ['en', 'ms', 'zh'], className
             onClick={() => setLanguage(code)}
             className={`px-3 py-1 text-xs font-medium ${lang === code ? 'bg-[#B01C2F] text-white rounded' : 'text-gray-700'}`}
           >
-            {code === 'en' ? 'EN' : code === 'ms' ? 'MY' : 'CN'}
+            {code === 'en' ? 'EN' : code === 'ms' ? 'MY' : code === 'zh' ? 'CN' : 'TA'}
           </button>
         ))}
       </div>

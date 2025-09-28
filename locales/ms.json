@@ -1,79 +1,78 @@
 {
   "sidebar": {
-    "assessmentTax": "Cukai Penilaian",
-    "compound": "Denda",
-    "boothRental": "Sewa Gerai",
+    "assessmentTax": "Cukai Taksiran",
+    "compound": "Kompaun",
+    "boothRental": "Sewaan Gerai",
     "miscBills": "Bil Pelbagai",
     "dashboard": "Papan Pemuka",
     "profile": "Profil",
     "settings": "Tetapan",
-    "signOut": "Keluar"
+    "signOut": "Log Keluar"
   },
   "settings": {
     "title": "Tetapan",
     "language": "Bahasa",
     "location": "Lokasi",
     "locationDesc": "Benarkan akses ke lokasi anda untuk ciri yang memerlukannya.",
-    "notifications": "Pemberitahuan Tolakan",
-    "notificationsDesc": "Benarkan pemberitahuan tolakan dari aplikasi ini.",
+    "notifications": "Pemberitahuan Tolak",
+    "notificationsDesc": "Benarkan pemberitahuan tolak daripada aplikasi ini.",
     "request": "Minta Kebenaran",
     "requestLocation": "Minta Lokasi",
     "savedLocal": "Bahasa disimpan secara tempatan",
     "savedSynced": "Bahasa disegerakkan ke akaun anda"
-  }
-  ,
+  },
   "common": {
     "cancel": "Batal",
-    "loading": "Memuat..."
+    "loading": "Memuatkan..."
   },
   "signup": {
     "title": "Daftar",
-    "createAccountTitle": "Buat akaun anda",
-    "createAccountDesc": "Sila isi butiran di bawah untuk membuat akaun anda.",
+    "createAccountTitle": "Cipta akaun anda",
+    "createAccountDesc": "Sila isi butiran di bawah untuk mencipta akaun anda.",
     "uploadPhoto": "Muat Naik Foto",
-    "submit": "Daftar"
-  ,"username": "Nama Pengguna",
-  "usernameRequired": "Nama pengguna diperlukan",
-  "emailLabel": "Alamat Emel",
-  "emailRequired": "Alamat Emel diperlukan",
-  "identificationType": "Jenis Pengenalan",
-  "identificationTypeRequired": "Sila pilih jenis pengenalan",
-  "identificationNumber": "Nombor Pengenalan",
-  "identificationNumberRequired": "Nombor pengenalan diperlukan",
-  "userInfoTitle": "Maklumat Pengguna",
-  "userInfoDesc": "Sila berikan butiran profil anda.",
-  "profilePicture": "Gambar Profil",
-  "profilePictureRequired": "Gambar profil diperlukan",
-  "dateOfBirth": "Tarikh Lahir",
-  "dateOfBirthPlaceholder": "DD/MM/YYYY",
-  "dateOfBirthRequired": "Sila pilih tarikh lahir anda",
-  "phoneNumber": "Nombor Telefon",
-  "phoneNumberRequired": "Nombor telefon diperlukan",
-  "address": "Alamat Premis / Lot / Jalan",
-  "addressRequired": "Alamat diperlukan",
-  "discardTitle": "Buang perubahan?",
-  "discardDesc": "Perubahan yang belum disimpan akan hilang. Adakah anda pasti mahu meninggalkan borang ini?",
-  "discardConfirm": "Ya, buang"
+    "submit": "Daftar",
+    "username": "Nama Pengguna",
+    "usernameRequired": "Nama pengguna diperlukan",
+    "emailLabel": "Alamat Emel",
+    "emailRequired": "Alamat emel diperlukan",
+    "identificationType": "Jenis Pengenalan",
+    "identificationTypeRequired": "Sila pilih jenis pengenalan",
+    "identificationNumber": "Nombor Pengenalan",
+    "identificationNumberRequired": "Nombor pengenalan diperlukan",
+    "userInfoTitle": "Maklumat Pengguna",
+    "userInfoDesc": "Sila berikan butiran profil anda.",
+    "profilePicture": "Gambar Profil",
+    "profilePictureRequired": "Gambar profil diperlukan",
+    "dateOfBirth": "Tarikh Lahir",
+    "dateOfBirthPlaceholder": "HH/BB/TTTT",
+    "dateOfBirthRequired": "Sila pilih tarikh lahir anda",
+    "phoneNumber": "Nombor Telefon",
+    "phoneNumberRequired": "Nombor telefon diperlukan",
+    "address": "Alamat Premis / Lot / Jalan",
+    "addressRequired": "Alamat diperlukan",
+    "discardTitle": "Buang perubahan?",
+    "discardDesc": "Perubahan yang belum disimpan akan hilang. Adakah anda pasti mahu meninggalkan borang ini?",
+    "discardConfirm": "Ya, buang"
   },
   "resetPassword": {
     "title": "Tetapkan Semula Kata Laluan",
     "submit": "Tetapkan Semula Kata Laluan",
     "resetting": "Sedang menetapkan semula...",
-    "success": "Kata laluan telah ditetapkan semula. Anda boleh log masuk sekarang.",
+    "success": "Kata laluan telah ditetapkan semula. Anda kini boleh log masuk.",
     "failed": "Tetapan semula gagal"
   },
   "verifyEmail": {
     "title": "Sahkan Emel",
     "validating": "Mengesahkan token…",
-    "missingToken": "Token hilang.",
-    "invalidToken": "Token tidak sah atau telah luput.",
+    "missingToken": "Token tiada.",
+    "invalidToken": "Token tidak sah atau telah tamat tempoh.",
     "verifyYourEmail": "Sahkan emel anda",
-    "verifyDesc": "Sahkan emel anda untuk melengkapkan tetapan akaun.",
+    "verifyDesc": "Sahkan emel anda untuk melengkapkan penyediaan akaun.",
     "verifying": "Sedang mengesahkan…",
     "submit": "Sahkan Emel"
   },
   "profile": {
-    "failedLoad": "Gagal memuat profil.",
+    "failedLoad": "Gagal memuatkan profil.",
     "title": "Sunting Profil",
     "accountDetailsTitle": "Butiran Akaun",
     "accountDetailsDesc": "Kemas kini log masuk dan maklumat hubungan anda.",
@@ -85,7 +84,7 @@
     "selectBusiness": "Sila pilih perniagaan",
     "organisationName": "Nama Organisasi",
     "companyName": "Nama Syarikat",
-    "companyNameRequired": "Nama Syarikat diperlukan",
+    "companyNameRequired": "Nama syarikat diperlukan",
     "rosNumber": "Nombor ROS",
     "ssmNumber": "Nombor SSM",
     "rosRequired": "Nombor ROS diperlukan",
@@ -94,18 +93,17 @@
     "terms": "Terma Perkhidmatan",
     "and": "dan",
     "privacy": "Dasar Privasi",
-    "saveChanges": "Simpan Perubahan"
-  ,"businessInfoTitle": "Maklumat Perniagaan",
-  "businessInfoDesc": "Kemas kini butiran perniagaan atau organisasi anda."
-  }
-  ,
+    "saveChanges": "Simpan Perubahan",
+    "businessInfoTitle": "Maklumat Perniagaan",
+    "businessInfoDesc": "Kemas kini butiran perniagaan atau organisasi anda."
+  },
   "login": {
     "title": "Log masuk ke akaun anda",
     "forgot": "Lupa Kata Laluan?",
-    "signIn": "Log masuk",
-    "continueGuest": "Teruskan sebagai Tetamu"
-  ,"notMember": "Belum menjadi ahli?",
-  "signUpNow": "Daftar sekarang"
+    "signIn": "Log Masuk",
+    "continueGuest": "Teruskan sebagai Tetamu",
+    "notMember": "Belum menjadi ahli?",
+    "signUpNow": "Daftar sekarang"
   },
   "loginExtras": {
     "notMember": "Bukan ahli?",
@@ -114,8 +112,8 @@
   "businessInvite": {
     "title": "Jemputan Perniagaan",
     "validating": "Mengesahkan jemputan…",
-    "missingToken": "Pautan jemputan ini tidak mempunyai token.",
-    "invalid": "Pautan jemputan ini tidak sah atau telah luput.",
+    "missingToken": "Pautan jemputan ini tiada token.",
+    "invalid": "Pautan jemputan ini tidak sah atau telah tamat tempoh.",
     "welcome": "Selamat datang!",
     "description": "Anda telah dijemput untuk menyertai perniagaan ini.",
     "accept": "Terima Jemputan",
@@ -123,7 +121,7 @@
     "loginToAccept": "Log masuk untuk menerima"
   },
   "profileTest": {
-    "title": "Ujian Profil Paging",
+    "title": "Ujian Profil (Paging)",
     "updating": "Sedang mengemas kini...",
     "update": "Kemas kini Nama Pertama"
   },
@@ -137,11 +135,10 @@
     "checkEmail": "Sila semak emel anda untuk pautan tetapan semula kata laluan.",
     "toastSent": "Pautan tetapan semula dihantar! Sila semak emel anda.",
     "toastFailed": "Gagal menghantar pautan tetapan semula"
-  }
-  ,
+  },
   "form": {
     "headings": "Tajuk",
-    "headingsDesc": "Gunakan peringkat tajuk berbeza untuk membuat hierarki maklumat.",
+    "headingsDesc": "Gunakan aras tajuk berbeza untuk mewujudkan hierarki maklumat.",
     "h1Heading": "Tajuk H1",
     "h2Heading": "Tajuk H2",
     "h3Heading": "Tajuk H3",
@@ -151,7 +148,7 @@
     "buttonStylesDesc": "Gunakan gaya butang yang berbeza",
     "buttonSizes": "Saiz Butang",
     "buttonSizesDesc": "Gunakan saiz butang yang berbeza",
-    "signIn": "Log masuk",
+    "signIn": "Log Masuk",
     "personalInfo": "Maklumat Peribadi",
     "personalInfoDesc": "Gunakan alamat tetap di mana anda boleh menerima surat.",
     "usernameWithPrefix": "Nama Pengguna (Dengan Awalan)",
@@ -163,43 +160,43 @@
     "ageRequired": "Umur diperlukan",
     "firstName": "Nama Pertama",
     "firstNameRequired": "Nama pertama diperlukan",
-    "lastName": "Nama akhir",
+    "lastName": "Nama Akhir",
     "lastNameRequired": "Nama akhir diperlukan",
     "streetAddress": "Alamat Jalan",
-    "streetAddressRequired": "Alamat Jalan diperlukan",
+    "streetAddressRequired": "Alamat jalan diperlukan",
     "city": "Bandar",
     "cityRequired": "Bandar diperlukan",
     "state": "Negeri / Wilayah",
-    "postalCode": "ZIP / Kod Pos",
-    "postalCodeRequired": "ZIP / Kod Pos diperlukan",
-    "about": "Mengenai",
-    "aboutPlaceholder": "Beritahu kami sesuatu tentang diri anda",
-    "aboutRequired": "Sila beritahu kami sesuatu tentang diri anda",
+    "postalCode": "Poskod",
+    "postalCodeRequired": "Poskod diperlukan",
+    "about": "Perihal",
+    "aboutPlaceholder": "Ceritakan sesuatu tentang diri anda",
+    "aboutRequired": "Sila ceritakan sesuatu tentang diri anda",
     "profilePicture": "Gambar Profil",
     "uploadPhoto": "Muat Naik Foto",
-    "uploadFile": "Muat naik fail",
+    "uploadFile": "Muat Naik Fail",
     "uploadFileDesc": "PNG, JPG, GIF sehingga 10MB",
-    "uploadFileRequired": "Sila muat naik gambar penutup",
+    "uploadFileRequired": "Sila muat naik gambar muka depan",
     "country": "Negara",
     "countryPlaceholder": "Sila pilih...",
     "countryRequired": "Negara diperlukan"
   },
   "dashboard": {
-    "welcome": "Selamat Datang ke MBMB Go (Ixora)",
-    "description": "MBMB Go ialah portal digital rasmi Majlis Bandaraya Melaka Bersejarah yang memudahkan urusan rakyat dan perniagaan secara dalam talian.",
-    "featuresTitle": "Ciri-Ciri Utama",
+    "welcome": "Selamat Datang ke IXORA MBMB",
+    "description": "IXORA MBMB ialah portal digital rasmi Majlis Bandaraya Melaka Bersejarah yang memudahkan urusan rakyat dan perniagaan secara dalam talian.",
+    "featuresTitle": "Ciri Utama",
     "features": {
-      "assessmentTax": "Pembayaran Cukai Taksiran",
+      "assessmentTax": "Bayaran Cukai Taksiran",
       "compoundPayments": "Bayaran Kompaun",
       "boothRental": "Sewaan Gerai",
-      "miscBills": "Bayaran Bil Pelbagai",
-      "businessRegistration": "Pendaftaran Perniagaan & Perlesenan",
+      "miscBills": "Bil Pelbagai",
+      "businessRegistration": "Pendaftaran & Perlesenan Perniagaan",
       "accountStaffMgmt": "Pengurusan Akaun & Staf Perniagaan",
       "myskb": "Permit Bangunan Sementara MBMB",
       "announcements": "Pengumuman & Berita"
     },
     "roles": {
-      "guest": { "label": "Tetamu", "desc": "Boleh lihat pengumuman dan capaian awam" },
+      "guest": { "label": "Tetamu", "desc": "Boleh melihat pengumuman dan capaian awam" },
       "personal": { "label": "Peribadi", "desc": "Boleh daftar perniagaan, bayar cukai dan akses gerai" },
       "business": { "label": "Perniagaan", "desc": "Boleh daftar sebagai perunding dan akses modul MBMB" },
       "consultant": { "label": "Perunding", "desc": "Boleh hantar projek permit sementara dan pembaharuan permit" }
@@ -207,8 +204,7 @@
   },
   "report": {
     "title": "Laporan"
-  }
-  ,
+  },
   "landing": {
     "nav": {
       "intro": "Pengenalan",
@@ -219,75 +215,75 @@
       "contact": "Hubungi Kami"
     },
     "hero": {
-      "title": "IXORA",
+      "title": "IXORA MBMB",
       "subtitle": "Tadbir Urus Lebih Pintar, Komuniti Lebih Lancar",
       "tagline": "Dibina dengan Kepercayaan · Dikuasakan oleh MBMB · Diilhamkan untuk Anda",
-      "ctaPrimary": "Mula Urusan Digital",
+      "ctaPrimary": "Mulakan Perkhidmatan Digital",
       "ctaSecondary": "Muat Turun Aplikasi IXORA+"
     },
     "intro": {
-      "heading": "Mengenali IXORA",
-      "subheading": "Gerbang Digital MBMB Menuju Bandaraya Pintar",
-      "p1": "Ekosistem IXORA merupakan sebuah platform digital generasi baharu yang dibangunkan oleh Majlis Bandaraya Melaka Bersejarah (MBMB) untuk merevolusikan cara perkhidmatan kerajaan tempatan disampaikan kepada orang ramai.",
-      "p2": "Dibina dengan pendekatan berteraskan komuniti, IXORA menjadikan interaksi dengan pihak kerajaan jauh lebih mudah, cekap dan pantas. Platform menyeluruh ini menggabungkan pelbagai urusan perkhidmatan bandaraya dalam satu sistem bersepadu.",
+      "heading": "Mengenali IXORA MBMB",
+      "subheading": "Gerbang Digital MBMB ke Bandaraya Pintar",
+      "p1": "Ekosistem IXORA MBMB ialah platform digital generasi baharu yang dibangunkan oleh Majlis Bandaraya Melaka Bersejarah (MBMB) untuk merevolusikan penyampaian perkhidmatan kerajaan tempatan kepada rakyat.",
+      "p2": "Berteraskan komuniti, IXORA MBMB menjadikan interaksi dengan pihak berkuasa lebih mudah, pantas dan telus. Ia menyatukan pelbagai proses perkhidmatan perbandaran dalam satu sistem bersepadu, mengurangkan keperluan portal berasingan atau kehadiran fizikal.",
       "ctaExplore": "Terokai Perkhidmatan",
       "ctaRegister": "Daftar Sekarang"
     },
     "benefits": {
       "title": "Manfaat Utama",
       "items": {
-        "oneStop": { "title": "One-Stop Center", "desc": "Akses semua perkhidmatan dalam satu portal" },
-        "access": { "title": "Akses 24/7", "desc": "Boleh digunakan bila-bila masa" },
-        "counterless": { "title": "Tanpa Kaunter", "desc": "Bebas hadir ke kaunter fizikal" },
+        "oneStop": { "title": "Pusat Sehenti", "desc": "Akses semua perkhidmatan dalam satu portal" },
+        "access": { "title": "Akses 24/7", "desc": "Tersedia pada bila-bila masa" },
+        "counterless": { "title": "Tanpa Kaunter", "desc": "Tiada keperluan hadir ke kaunter fizikal" },
         "transparent": { "title": "Telus", "desc": "Status & notifikasi masa nyata" },
-        "dataDriven": { "title": "Data-Driven", "desc": "Analitik & dashboard pintar" },
-        "secure": { "title": "Selamat", "desc": "Private Cloud MBMB" }
+        "dataDriven": { "title": "Didorong Data", "desc": "Analitik & papan pemuka pintar" },
+        "secure": { "title": "Selamat", "desc": "Private Cloud MBMB & kawalan akses" }
       }
     },
     "components": {
-      "title": "Komponen IXORA",
-      "items": ["Portal","Aplikasi Mudah Alih","Pembantu AI","Workspace","Akses","NotifyMe","Private Cloud","Analitik","Identiti"]
+      "title": "Komponen IXORA MBMB",
+      "items": ["Portal", "Aplikasi Mudah Alih", "Pembantu AI", "Workspace", "Akses", "NotifyMe", "Private Cloud", "Analitik", "Identiti"]
     },
     "achievements": {
-      "title": "Pencapaian Digital MBMB (2021–2025)",
+      "title": "Prestasi Digital MBMB (2021–2025)",
       "chartTitle": "Trend Transaksi Tunai vs Tanpa Tunai"
     },
     "faq": {
-      "title": "Soalan Lazim (FAQ) – Ekosistem Digital MBMB IXORA",
+      "title": "Soalan Lazim – Ekosistem Digital IXORA MBMB",
       "groups": {
         "1": {
           "heading": "1. UMUM & PENGENALAN",
-          "q1": "Apa itu IXORA?",
-          "a1": "IXORA ialah ekosistem digital sehenti MBMB, bukan sekadar portal bayaran.",
+          "q1": "Apa itu IXORA MBMB?",
+          "a1": "IXORA MBMB ialah ekosistem digital sehenti MBMB, bukan sekadar portal bayaran.",
           "q2": "Apa itu IXORA GATEWAY?",
-          "a2": "Gerbang Digital MBMB untuk semua urusan rakyat/perniagaan.",
+          "a2": "Gerbang Digital MBMB untuk semua urusan rakyat dan perniagaan.",
           "q3": "Siapa boleh guna?",
           "a3": "Individu, perniagaan, pelancong dan komuniti setempat."
         },
         "2": {
           "heading": "2. MANFAAT KEPADA RAKYAT & PERNIAGAAN",
           "list": [
-            "Pusat sehenti – semua perkhidmatan MBMB dalam 1 aplikasi.",
+            "Pusat sehenti – semua perkhidmatan MBMB dalam satu aplikasi.",
             "Akses 24/7 – melalui IXORA GATEWAY.",
             "Mudah & telus – semakan status masa nyata.",
-            "Inklusif – kiosk & terminal bergerak untuk warga emas/kurang celik digital."
+            "Inklusif – kios dan terminal mudah alih untuk warga emas/kurang celik digital."
           ]
         },
         "3": {
           "heading": "3. PERKHIDMATAN & MODUL",
-          "body": "Modul utama termasuk: Cukai Taksiran, Lesen Perniagaan, Permit Bangunan, Sewaan Gerai, Parkir, Kompaun, Lesen Haiwan, Pelan Ansuran. Operasi dalaman menggunakan IXORA Workspace untuk pemprosesan & kelulusan."
+          "body": "Modul teras termasuk: Cukai Taksiran, Perlesenan Perniagaan, Permit Bangunan, Sewaan Gerai, Parkir, Kompaun, Lesen Haiwan, Pelan Ansuran. Operasi dalaman menggunakan IXORA Workspace untuk pemprosesan & kelulusan."
         },
         "4": {
           "heading": "4. KOS & PENYELENGGARAAN",
-          "body": "Kos pembangunan meliputi integrasi pembayaran, MyData SSM & AI Chatbot. Penyelenggaraan ditanggung dalam bajet ICT tahunan MBMB. Tiada caj tambahan daripada MBMB untuk transaksi (caj bank/eWallet sahaja)."
+          "body": "Pembangunan merangkumi integrasi pembayaran, MyData SSM & Chatbot AI. Penyelenggaraan dibiayai melalui bajet ICT tahunan MBMB. Tiada caj tambahan MBMB (hanya caj bank/eDompet)."
         },
         "5": {
           "heading": "5. KESELAMATAN & PEMATUHAN",
-          "body": "IXORA guna Private Cloud MBMB, SSO, penyulitan, jejak audit dan mematuhi PDPA 2010 & Dasar Keselamatan ICT MBMB."
+          "body": "IXORA MBMB menggunakan Private Cloud MBMB, SSO, penyulitan, jejak audit dan mematuhi PDPA 2010 serta Dasar Keselamatan ICT MBMB."
         },
         "6": {
           "heading": "6. OPERASI & KESINAMBUNGAN",
-          "body": "IXORA ada Pelan Pemulihan Bencana, sandaran harian, pelayan auto-skala & seni bina modular."
+          "body": "IXORA MBMB mempunyai Pelan Pemulihan Bencana, sandaran harian, pelayan auto-skala & seni bina modular."
         },
         "7": {
           "heading": "7. KPI & PRESTASI",
@@ -298,7 +294,7 @@
     "contact": {
       "title": "Hubungi Kami",
       "panelTitle": "Sertai Komuniti Digital MBMB",
-      "panelDesc": "Daftar akaun IXORA anda dan alami transformasi perkhidmatan bandaraya.",
+      "panelDesc": "Cipta akaun IXORA MBMB anda dan alami transformasi perkhidmatan bandaraya.",
       "ctaRegister": "Daftar",
       "ctaLogin": "Log Masuk",
       "addressLabel": "Alamat",
@@ -309,7 +305,7 @@
         "Jalan Graha Makmur, 75450 Melaka"
       ]
     },
-    "footer": { "text": "IXORA – Ekosistem Digital Bandaraya Pintar Melaka" },
+    "footer": { "text": "IXORA MBMB – Ekosistem Digital Bandaraya Pintar Melaka" },
     "table": {
       "channel": "Saluran",
       "year": "Tahun",

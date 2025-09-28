@@ -53,13 +53,13 @@ export function Navbar() {
             </li>
           ))}
           <li className="flex items-center">
-            <a href="#hubungi">
+            <a href="login">
               <Button
                 variant="danger"
                 size="sm"
                 className="bg-[#B01C2F] px-4 py-2 text-white hover:bg-[#951325]"
               >
-                {t('landing.nav.contact')}
+                {t('landing.nav.login')}
               </Button>
             </a>
             {/* Language selector AFTER contact */}
@@ -84,13 +84,13 @@ export function Navbar() {
               </li>
             ))}
             <li>
-              <a href="#hubungi" onClick={() => setOpen(false)} className="block">
+              <a href="login" onClick={() => setOpen(false)} className="block">
                 <Button
                   variant="danger"
                   size="sm"
                   className="mt-2 w-full bg-[#B01C2F] text-white hover:bg-[#951325]"
                 >
-                  {t('landing.nav.contact')}
+                  {t('landing.nav.login')}
                 </Button>
               </a>
             </li>
