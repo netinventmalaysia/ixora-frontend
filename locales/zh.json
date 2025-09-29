@@ -208,6 +208,8 @@
   "landing": {
     "nav": {
       "intro": "简介",
+      "services": "服务模块",
+      "city": "城市指南",
       "benefits": "优势",
       "components": "组件",
       "achievements": "成就",

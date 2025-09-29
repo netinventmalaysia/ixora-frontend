@@ -13,9 +13,9 @@ export default function HomePage() {
       <Hero />
       <Services />
       <SmartCityGuide />
-      <ComponentsGrid />
+      {/* <ComponentsGrid />
       <Benefits />
-      <FAQ />
+      <FAQ /> */}
       <Contact />
     </Layout>
   );
