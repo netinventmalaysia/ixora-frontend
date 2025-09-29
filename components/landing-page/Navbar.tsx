@@ -29,6 +29,7 @@ export default function Navbar() {
           </span>
         </a>
 
+        {/* Desktop nav */}
         <nav className="hidden items-center gap-6 md:flex">
           {nav.map((n) => (
             <a key={n.href} href={n.href} className="text-sm text-gray-600 hover:text-gray-900">
@@ -38,11 +39,19 @@ export default function Navbar() {
           <LanguageSelector className="!static ml-1" />
         </nav>
 
-        <button onClick={() => setOpen((s) => !s)} className="md:hidden p-2">
-          <svg className="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
-          </svg>
-        </button>
+        {/* Mobile: language + burger */}
+        <div className="flex items-center gap-2 md:hidden">
+          <LanguageSelector className="!static" />
+          <button
+            onClick={() => setOpen((s) => !s)}
+            aria-label="Toggle menu"
+            className="p-2"
+          >
+            <svg className="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
+            </svg>
+          </button>
+        </div>
       </div>
 
       {open && (
