@@ -332,7 +332,7 @@
     "typhoid": { "title": "伤寒注射", "desc": "记录注射与健康状态。" },
     "parkingRental": { "title": "停车位租赁", "desc": "申请停车位租赁。" },
     "miscBills": { "title": "杂项账单", "desc": "查询并缴纳 MBMB 杂项账单。" },
-    "doLimited": { "title": "有限规划许可（Limited DO）", "desc": "以数字方式申请有限规划许可。" },
+    "doLimited": { "title": "有限规划许可", "desc": "以数字方式申请有限规划许可。" },
     "taxRemission": { "title": "税收减免", "desc": "房产税减免。" },
     "monthlyParking": { "title": "月度停车证", "desc": "订阅月度停车。" },
     "hawker": { "title": "小贩许可证", "desc": "注册并管理小贩许可证。" },

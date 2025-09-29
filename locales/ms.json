@@ -341,7 +341,7 @@
       "desc": "Semak & bayar kompaun/saman trafik."
     },
     "myskb": {
-      "title": "Permit Bangunan Sementara (Kelulusan Pelan)",
+      "title": "Permit Bangunan Sementara",
       "desc": "Permohonan & pembaharuan permit sementara."
     },
     "transfer": {
@@ -361,8 +361,8 @@
       "desc": "Semak & bayar bil pelbagai MBMB."
     },
     "doLimited": {
-      "title": "Kebenaran Merancang Terhad (DO terhad)",
-      "desc": "Permohonan DO terhad secara digital."
+      "title": "Kebenaran Merancang Terhad",
+      "desc": "Permohonan KMTT terhad secara digital."
     },
     "taxRemission": {
       "title": "Remisi Cukai",
