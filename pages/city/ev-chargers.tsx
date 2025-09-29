@@ -35,7 +35,7 @@ type EVStation = {
   distanceKm: number;
 };
 
-// 🔹 contoh data mock (5 shj, boleh tambah ikut keperluan)
+// contoh mock data
 const mockStations: EVStation[] = [
   {
     id: 1,
@@ -332,7 +332,7 @@ export default function EVChargersPage() {
                     </p>
                     <button
                       onClick={() => openDirections(s.latitude, s.longitude)}
-                      className="mt-2 rounded bg-[#B01C2F] px-3 py-1 text-xs font-medium text-white hover:bg-[#951325]"
+                      className="mt-2 w-full rounded bg-[#B01C2F] px-3 py-2 text-sm font-medium text-white hover:bg-[#951325]"
                     >
                       Get Directions →
                     </button>
@@ -363,9 +363,9 @@ export default function EVChargersPage() {
               </p>
               <button
                 onClick={() => openDirections(s.latitude, s.longitude)}
-                className="mt-3 inline-block rounded bg-[#B01C2F] px-3 py-1 text-xs font-medium text-white hover:bg-[#951325]"
+                className="mt-3 w-full rounded bg-[#B01C2F] px-3 py-2 text-sm font-medium text-white hover:bg-[#951325]"
               >
-                Get Directions →
+                Get Directions
               </button>
             </div>
           ))}
