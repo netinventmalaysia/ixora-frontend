@@ -32,9 +32,10 @@ type EVStation = {
   ports: number;
   connectorTypes: string[];
   power: string;
+  distanceKm: number;
 };
 
-// Mock data
+// 🔹 contoh data mock (5 shj, boleh tambah ikut keperluan)
 const mockStations: EVStation[] = [
   {
     id: 1,
@@ -46,6 +47,7 @@ const mockStations: EVStation[] = [
     ports: 4,
     connectorTypes: ["CCS", "Type2"],
     power: "50kW",
+    distanceKm: 1.2,
   },
   {
     id: 2,
@@ -57,6 +59,7 @@ const mockStations: EVStation[] = [
     ports: 2,
     connectorTypes: ["CHAdeMO"],
     power: "22kW",
+    distanceKm: 3.5,
   },
   {
     id: 3,
@@ -68,6 +71,187 @@ const mockStations: EVStation[] = [
     ports: 3,
     connectorTypes: ["CCS", "Type2"],
     power: "11kW",
+    distanceKm: 5.1,
+  },
+  {
+    id: 4,
+    name: "EV Station D",
+    address: "MITC, Ayer Keroh",
+    latitude: 2.2702,
+    longitude: 102.2831,
+    status: "Available",
+    ports: 6,
+    connectorTypes: ["CCS", "Type2"],
+    power: "60kW",
+    distanceKm: 2.4,
+  },
+  {
+    id: 5,
+    name: "EV Station E",
+    address: "Zoo Melaka",
+    latitude: 2.2771,
+    longitude: 102.3008,
+    status: "Occupied",
+    ports: 2,
+    connectorTypes: ["Type2"],
+    power: "22kW",
+    distanceKm: 4.2,
+  },
+  {
+    id: 6,
+    name: "EV Station F",
+    address: "Aeon Bandaraya Melaka",
+    latitude: 2.2256,
+    longitude: 102.2785,
+    status: "Available",
+    ports: 4,
+    connectorTypes: ["CCS"],
+    power: "45kW",
+    distanceKm: 2.8,
+  },
+  {
+    id: 7,
+    name: "EV Station G",
+    address: "Pantai Klebang",
+    latitude: 2.2162,
+    longitude: 102.2036,
+    status: "Offline",
+    ports: 1,
+    connectorTypes: ["CHAdeMO"],
+    power: "11kW",
+    distanceKm: 7.4,
+  },
+  {
+    id: 8,
+    name: "EV Station H",
+    address: "Masjid Selat Melaka",
+    latitude: 2.1805,
+    longitude: 102.2495,
+    status: "Available",
+    ports: 3,
+    connectorTypes: ["CCS", "Type2"],
+    power: "30kW",
+    distanceKm: 6.2,
+  },
+  {
+    id: 9,
+    name: "EV Station I",
+    address: "Melaka River Cruise, Taman Rempah",
+    latitude: 2.2011,
+    longitude: 102.2488,
+    status: "Occupied",
+    ports: 2,
+    connectorTypes: ["Type2"],
+    power: "22kW",
+    distanceKm: 3.3,
+  },
+  {
+    id: 10,
+    name: "EV Station J",
+    address: "Universiti Teknikal Malaysia Melaka (UTeM)",
+    latitude: 2.3131,
+    longitude: 102.3204,
+    status: "Available",
+    ports: 5,
+    connectorTypes: ["CCS"],
+    power: "50kW",
+    distanceKm: 9.1,
+  },
+  {
+    id: 11,
+    name: "EV Station K",
+    address: "Melaka International College of Science & Technology",
+    latitude: 2.2366,
+    longitude: 102.2702,
+    status: "Occupied",
+    ports: 2,
+    connectorTypes: ["CHAdeMO"],
+    power: "20kW",
+    distanceKm: 2.9,
+  },
+  {
+    id: 12,
+    name: "EV Station L",
+    address: "Masjid Al-Azim, Melaka",
+    latitude: 2.2213,
+    longitude: 102.2721,
+    status: "Available",
+    ports: 3,
+    connectorTypes: ["Type2"],
+    power: "25kW",
+    distanceKm: 1.9,
+  },
+  {
+    id: 13,
+    name: "EV Station M",
+    address: "Freeport A’Famosa Outlet",
+    latitude: 2.4535,
+    longitude: 102.1868,
+    status: "Offline",
+    ports: 2,
+    connectorTypes: ["CCS"],
+    power: "40kW",
+    distanceKm: 28.0,
+  },
+  {
+    id: 14,
+    name: "EV Station N",
+    address: "Taman Mini Malaysia",
+    latitude: 2.2729,
+    longitude: 102.2851,
+    status: "Available",
+    ports: 4,
+    connectorTypes: ["CCS", "Type2"],
+    power: "55kW",
+    distanceKm: 4.6,
+  },
+  {
+    id: 15,
+    name: "EV Station O",
+    address: "Hospital Melaka",
+    latitude: 2.2141,
+    longitude: 102.2768,
+    status: "Occupied",
+    ports: 3,
+    connectorTypes: ["CHAdeMO", "Type2"],
+    power: "35kW",
+    distanceKm: 2.7,
+  },
+  {
+    id: 16,
+    name: "EV Station P",
+    address: "Jasin Town Center",
+    latitude: 2.3098,
+    longitude: 102.4306,
+    status: "Available",
+    ports: 2,
+    connectorTypes: ["CCS"],
+    power: "22kW",
+    distanceKm: 32.0,
+  },
+  {
+    id: 17,
+    name: "EV Station Q",
+    address: "Alor Gajah Sentral",
+    latitude: 2.3782,
+    longitude: 102.2085,
+    status: "Offline",
+    ports: 1,
+    connectorTypes: ["Type2"],
+    power: "15kW",
+    distanceKm: 20.5,
+  },
+  {
+    id: 18,
+    name: "EV Station R",
+    address: "Masjid Tanah Town",
+    latitude: 2.3476,
+    longitude: 102.1169,
+    status: "Available",
+    ports: 2,
+    connectorTypes: ["CCS"],
+    power: "25kW",
+    distanceKm: 35.0,
   },
 ];
 
@@ -97,12 +281,11 @@ export default function EVChargersPage() {
     return stations.map((s) => [s.latitude, s.longitude]);
   }, [stations]);
 
-  const statusClass = (s: EVStation["status"]) =>
-    s === "Available"
-      ? "text-green-600"
-      : s === "Occupied"
-      ? "text-yellow-600"
-      : "text-red-600";
+  // ✅ Fungsi untuk buka Google Maps
+  const openDirections = (lat: number, lng: number) => {
+    const url = `https://www.google.com/maps/dir/?api=1&destination=${lat},${lng}`;
+    window.open(url, "_blank");
+  };
 
   return (
     <Layout navbar={<NavbarInner />}>
@@ -111,21 +294,24 @@ export default function EVChargersPage() {
       </Head>
 
       {/* Hero */}
-      <section className="bg-white border-b border-gray-200 py-10 text-center">
+      <section className="bg-white py-10 text-center">
         <h1 className="text-3xl font-bold" style={{ color: PRIMARY }}>
           Pengecas EV Bandaraya Melaka
         </h1>
         <p className="mt-2 text-gray-600">
-          Senarai lokasi & status pengecas kenderaan elektrik
+          Senarai lokasi pengecas kenderaan elektrik berhampiran anda
+        </p>
+        <p className="mt-1 text-sm text-gray-500">
+          Jumlah Stesen: <strong>{stations.length}</strong>
         </p>
       </section>
 
       {/* Map */}
       <div className="mx-auto max-w-screen-xl px-4 py-10">
-        <div className="relative w-full rounded-2xl border border-gray-200 bg-white p-2 shadow-sm">
+        <div className="relative w-full rounded-2xl border border-gray-200 bg-white p-2 shadow-sm z-0">
           <div className="h-[600px] w-full rounded-xl overflow-hidden">
             <MapContainer
-              className="h-full w-full"
+              className="h-full w-full z-0"
               bounds={bounds}
               scrollWheelZoom={true}
             >
@@ -139,38 +325,21 @@ export default function EVChargersPage() {
                     <h3 className="font-semibold">{s.name}</h3>
                     <p className="text-sm">{s.address}</p>
                     <p className="text-sm">
-                      <strong>Status:</strong>{" "}
-                      <span className={statusClass(s.status)}>{s.status}</span>
-                    </p>
-                    <p className="text-sm">
-                      <strong>Port:</strong> {s.ports}
+                      <strong>Kuasa:</strong> {s.power}
                     </p>
                     <p className="text-sm">
                       <strong>Jenis:</strong> {s.connectorTypes.join(", ")}
                     </p>
-                    <p className="text-sm">
-                      <strong>Kuasa:</strong> {s.power}
-                    </p>
+                    <button
+                      onClick={() => openDirections(s.latitude, s.longitude)}
+                      className="mt-2 rounded bg-[#B01C2F] px-3 py-1 text-xs font-medium text-white hover:bg-[#951325]"
+                    >
+                      Get Directions →
+                    </button>
                   </Popup>
                 </Marker>
               ))}
             </MapContainer>
-          </div>
-
-          {/* Legend */}
-          <div className="pointer-events-none absolute bottom-3 right-3 rounded-md bg-white/90 px-3 py-2 text-xs shadow">
-            <div className="flex items-center gap-2">
-              <span className="h-2.5 w-2.5 rounded-full bg-green-600" />
-              <span>Available</span>
-            </div>
-            <div className="mt-1 flex items-center gap-2">
-              <span className="h-2.5 w-2.5 rounded-full bg-yellow-600" />
-              <span>Occupied</span>
-            </div>
-            <div className="mt-1 flex items-center gap-2">
-              <span className="h-2.5 w-2.5 rounded-full bg-red-600" />
-              <span>Offline</span>
-            </div>
           </div>
         </div>
 
@@ -184,24 +353,30 @@ export default function EVChargersPage() {
               <h3 className="text-lg font-semibold text-gray-900">{s.name}</h3>
               <p className="mt-1 text-sm text-gray-600">{s.address}</p>
               <p className="mt-2 text-sm">
-                <strong>Status:</strong>{" "}
-                <span className={`font-medium ${statusClass(s.status)}`}>
-                  {s.status}
-                </span>
-              </p>
-              <p className="text-sm">
-                <strong>Port:</strong> {s.ports}
+                <strong>Kuasa:</strong> {s.power}
               </p>
               <p className="text-sm">
                 <strong>Jenis:</strong> {s.connectorTypes.join(", ")}
               </p>
               <p className="text-sm">
-                <strong>Kuasa:</strong> {s.power}
+                <strong>Jarak:</strong> {s.distanceKm} km
               </p>
+              <button
+                onClick={() => openDirections(s.latitude, s.longitude)}
+                className="mt-3 inline-block rounded bg-[#B01C2F] px-3 py-1 text-xs font-medium text-white hover:bg-[#951325]"
+              >
+                Get Directions →
+              </button>
             </div>
           ))}
         </div>
       </div>
+
+      <style jsx global>{`
+        .leaflet-container {
+          z-index: 0 !important;
+        }
+      `}</style>
     </Layout>
   );
 }
