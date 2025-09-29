@@ -36,13 +36,13 @@ export default function SmartCityGuide() {
   ];
 
   return (
-    <section id="city" className="bg-gray-50 py-16">
+    <section id="city" className="bg-white">
       <div className="mx-auto max-w-screen-2xl px-4 sm:px-6 lg:px-8 2xl:px-10">
-        <div className="text-center">
-          <h2 className="text-3xl font-bold text-gray-900 sm:text-4xl">
+        <div className="mx-auto max-w-screen-2xl px-6 py-20">
+          <h2 className="text-center text-3xl font-bold text-gray-900">
             Panduan Bandaraya Pintar
           </h2>
-          <p className="mt-2 text-gray-600">
+          <p className="mt-2 text-center text-gray-600">
             Maklumat rasmi MBMB untuk warga & pelawat
           </p>
         </div>

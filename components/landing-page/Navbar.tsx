@@ -35,15 +35,6 @@ export default function Navbar() {
               {n.label}
             </a>
           ))}
-          <a
-            href="#contact"
-            className="inline-flex items-center rounded-lg px-3.5 py-2 text-sm font-medium text-white"
-            style={{ backgroundColor: PRIMARY }}
-            onMouseOver={(e) => (e.currentTarget.style.backgroundColor = PRIMARY_HOVER)}
-            onMouseOut={(e) => (e.currentTarget.style.backgroundColor = PRIMARY)}
-          >
-            {t("landing.nav.contact")}
-          </a>
           <LanguageSelector className="!static ml-1" />
         </nav>
 

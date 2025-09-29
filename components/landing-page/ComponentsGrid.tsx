@@ -31,7 +31,7 @@ export default function ComponentsGrid() {
   };
 
   return (
-    <section id="components" className="bg-white">
+    <section id="components" className="bg-gray-50 py-16">
       <div className="mx-auto max-w-screen-2xl px-6 py-20">
         <h2 className="text-center text-3xl font-bold text-gray-900">{t("landing.components.title")}</h2>
         <div className="mt-10 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
