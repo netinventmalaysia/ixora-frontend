@@ -39,7 +39,7 @@ type EVStation = {
 const mockStations: EVStation[] = [
   {
     id: 1,
-    name: "EV Station A",
+    name: "MBMB HQ EV Charger",
     address: "Menara MBMB, Ayer Keroh",
     latitude: 2.2716,
     longitude: 102.2816,
@@ -51,7 +51,7 @@ const mockStations: EVStation[] = [
   },
   {
     id: 2,
-    name: "EV Station B",
+    name: "Dataran Pahlawan EV Point",
     address: "Dataran Pahlawan, Banda Hilir",
     latitude: 2.1915,
     longitude: 102.2499,
@@ -63,7 +63,7 @@ const mockStations: EVStation[] = [
   },
   {
     id: 3,
-    name: "EV Station C",
+    name: "Melaka Sentral EV Station",
     address: "Melaka Sentral",
     latitude: 2.215,
     longitude: 102.285,
@@ -75,7 +75,7 @@ const mockStations: EVStation[] = [
   },
   {
     id: 4,
-    name: "EV Station D",
+    name: "MITC EV Hub",
     address: "MITC, Ayer Keroh",
     latitude: 2.2702,
     longitude: 102.2831,
@@ -87,7 +87,7 @@ const mockStations: EVStation[] = [
   },
   {
     id: 5,
-    name: "EV Station E",
+    name: "Zoo Melaka EV Charger",
     address: "Zoo Melaka",
     latitude: 2.2771,
     longitude: 102.3008,
@@ -99,7 +99,7 @@ const mockStations: EVStation[] = [
   },
   {
     id: 6,
-    name: "EV Station F",
+    name: "Aeon Bandaraya EV Point",
     address: "Aeon Bandaraya Melaka",
     latitude: 2.2256,
     longitude: 102.2785,
@@ -111,7 +111,7 @@ const mockStations: EVStation[] = [
   },
   {
     id: 7,
-    name: "EV Station G",
+    name: "Pantai Klebang EV Stop",
     address: "Pantai Klebang",
     latitude: 2.2162,
     longitude: 102.2036,
@@ -123,7 +123,7 @@ const mockStations: EVStation[] = [
   },
   {
     id: 8,
-    name: "EV Station H",
+    name: "Masjid Selat Melaka EV Hub",
     address: "Masjid Selat Melaka",
     latitude: 2.1805,
     longitude: 102.2495,
@@ -135,7 +135,7 @@ const mockStations: EVStation[] = [
   },
   {
     id: 9,
-    name: "EV Station I",
+    name: "Taman Rempah River Cruise EV",
     address: "Melaka River Cruise, Taman Rempah",
     latitude: 2.2011,
     longitude: 102.2488,
@@ -147,7 +147,7 @@ const mockStations: EVStation[] = [
   },
   {
     id: 10,
-    name: "EV Station J",
+    name: "UTeM EV Campus Charger",
     address: "Universiti Teknikal Malaysia Melaka (UTeM)",
     latitude: 2.3131,
     longitude: 102.3204,
@@ -159,7 +159,7 @@ const mockStations: EVStation[] = [
   },
   {
     id: 11,
-    name: "EV Station K",
+    name: "Micost EV Point",
     address: "Melaka International College of Science & Technology",
     latitude: 2.2366,
     longitude: 102.2702,
@@ -171,7 +171,7 @@ const mockStations: EVStation[] = [
   },
   {
     id: 12,
-    name: "EV Station L",
+    name: "Masjid Al-Azim EV Stop",
     address: "Masjid Al-Azim, Melaka",
     latitude: 2.2213,
     longitude: 102.2721,
@@ -183,7 +183,7 @@ const mockStations: EVStation[] = [
   },
   {
     id: 13,
-    name: "EV Station M",
+    name: "Freeport A’Famosa EV Hub",
     address: "Freeport A’Famosa Outlet",
     latitude: 2.4535,
     longitude: 102.1868,
@@ -195,7 +195,7 @@ const mockStations: EVStation[] = [
   },
   {
     id: 14,
-    name: "EV Station N",
+    name: "Taman Mini Malaysia EV Charger",
     address: "Taman Mini Malaysia",
     latitude: 2.2729,
     longitude: 102.2851,
@@ -207,7 +207,7 @@ const mockStations: EVStation[] = [
   },
   {
     id: 15,
-    name: "EV Station O",
+    name: "Hospital Melaka EV Point",
     address: "Hospital Melaka",
     latitude: 2.2141,
     longitude: 102.2768,
@@ -219,7 +219,7 @@ const mockStations: EVStation[] = [
   },
   {
     id: 16,
-    name: "EV Station P",
+    name: "Jasin Town EV Hub",
     address: "Jasin Town Center",
     latitude: 2.3098,
     longitude: 102.4306,
@@ -231,7 +231,7 @@ const mockStations: EVStation[] = [
   },
   {
     id: 17,
-    name: "EV Station Q",
+    name: "Alor Gajah Sentral EV Charger",
     address: "Alor Gajah Sentral",
     latitude: 2.3782,
     longitude: 102.2085,
@@ -243,7 +243,7 @@ const mockStations: EVStation[] = [
   },
   {
     id: 18,
-    name: "EV Station R",
+    name: "Masjid Tanah EV Stop",
     address: "Masjid Tanah Town",
     latitude: 2.3476,
     longitude: 102.1169,
