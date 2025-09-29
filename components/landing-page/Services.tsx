@@ -13,36 +13,41 @@ import {
   CalendarDaysIcon,
   TruckIcon,
 } from "@heroicons/react/24/outline";
+import { useTranslation } from "@/utils/i18n";
 
 const PRIMARY = "#B01C2F";
 
-const serviceCards = [
-  { title: "Cukai Taksiran Harta", desc: "Semak & bayar dengan mudah.", icon: HomeModernIcon, href: "/services/assessment" },
-  { title: "Lesen Perniagaan", desc: "Daftar atau renew lesen perniagaan.", icon: DocumentTextIcon, href: "/services/licence" },
-  { title: "Sewaan Gerai", desc: "Urus sewaan & invois dengan digital.", icon: BuildingOffice2Icon, href: "/services/booth" },
-  { title: "Kompaun & Saman", desc: "Semakan & bayaran kompaun/saman trafik.", icon: TicketIcon, href: "/services/compound" },
-  { title: "Permit Bangunan Sementara (Kelulusan Pelan)", desc: "Permohonan & pembaharuan permit sementara.", icon: DocumentCheckIcon, href: "/services/myskb" },
-  { title: "Pindah Milik Harta", desc: "Proses pindah milik cukai harta.", icon: Square3Stack3DIcon, href: "#", status: "coming-soon" },
-  { title: "Suntikan Typhoid", desc: "Rekod suntikan & status kesihatan.", icon: ShieldCheckIcon, href: "#", status: "coming-soon" },
-  { title: "Sewaan Petak Letak Kereta", desc: "Permohonan sewaan petak letak kereta.", icon: MapPinIcon, href: "#", status: "coming-soon" },
-  { title: "Bil Pelbagai", desc: "Semakan & bayaran pelbagai bil MBMB.", icon: DocumentTextIcon, href: "#", status: "coming-soon" },
-  { title: "Kebenaran Merancang Terhad (DO terhad)", desc: "Permohonan DO terhad secara digital.", icon: DocumentCheckIcon, href: "#", status: "coming-soon" },
-  { title: "Remisi Cukai", desc: "Pengurangan cukai taksiran.", icon: HomeModernIcon, href: "#", status: "coming-soon" },
-  { title: "Pas Bulanan Letak Kereta", desc: "Langganan parkir bulanan.", icon: TicketIcon, href: "#", status: "coming-soon" },
-  { title: "Permit Penjaja", desc: "Daftar & urus lesen penjaja.", icon: BuildingStorefrontIcon, href: "#", status: "coming-soon" },
-  { title: "Lesen Haiwan Peliharaan", desc: "Daftar & renew lesen haiwan.", icon: HeartIcon, href: "#", status: "coming-soon" },
-  { title: "Permit Sementara", desc: "Kelulusan sementara untuk aktiviti.", icon: DocumentCheckIcon, href: "#", status: "coming-soon" },
-  { title: "Pelan Ansuran Cukai", desc: "Bayar cukai ikut pelan ansuran.", icon: CalendarDaysIcon, href: "#", status: "coming-soon" },
-  { title: "Lesen Beca", desc: "Permohonan & pembaharuan lesen beca.", icon: TruckIcon, href: "#", status: "coming-soon" },
-];
-
 export default function Services() {
+  const { t } = useTranslation();
+
+  const serviceCards = [
+    { title: t("services.assessment.title", "Assessment Tax"), desc: t("services.assessment.desc", "Check & pay easily."), icon: HomeModernIcon, href: "/services/assessment" },
+    { title: t("services.licence.title", "Business Licence"), desc: t("services.licence.desc", "Register or renew your licence."), icon: DocumentTextIcon, href: "/services/licence" },
+    { title: t("services.booth.title", "Booth Rental"), desc: t("services.booth.desc", "Manage rentals & invoices digitally."), icon: BuildingOffice2Icon, href: "/services/booth" },
+    { title: t("services.compound.title", "Compounds & Fines"), desc: t("services.compound.desc", "Check and pay traffic compounds/fines."), icon: TicketIcon, href: "/services/compound" },
+    { title: t("services.myskb.title", "Temporary Building Permit (Plan Approval)"), desc: t("services.myskb.desc", "Apply & renew temporary permits."), icon: DocumentCheckIcon, href: "/services/myskb" },
+    { title: t("services.transfer.title", "Property Ownership Transfer"), desc: t("services.transfer.desc", "Process assessment tax ownership transfer."), icon: Square3Stack3DIcon, href: "#", status: "coming-soon" },
+    { title: t("services.typhoid.title", "Typhoid Injection"), desc: t("services.typhoid.desc", "Record injections & health status."), icon: ShieldCheckIcon, href: "#", status: "coming-soon" },
+    { title: t("services.parkingRental.title", "Parking Bay Rental"), desc: t("services.parkingRental.desc", "Apply for parking bay rental."), icon: MapPinIcon, href: "#", status: "coming-soon" },
+    { title: t("services.miscBills.title", "Miscellaneous Bills"), desc: t("services.miscBills.desc", "Check & pay MBMB miscellaneous bills."), icon: DocumentTextIcon, href: "#", status: "coming-soon" },
+    { title: t("services.doLimited.title", "Limited Planning Permission (Limited DO)"), desc: t("services.doLimited.desc", "Apply digitally for limited DO."), icon: DocumentCheckIcon, href: "#", status: "coming-soon" },
+    { title: t("services.taxRemission.title", "Tax Remission"), desc: t("services.taxRemission.desc", "Reduction of assessment tax."), icon: HomeModernIcon, href: "#", status: "coming-soon" },
+    { title: t("services.monthlyParking.title", "Monthly Parking Pass"), desc: t("services.monthlyParking.desc", "Subscribe to monthly parking."), icon: TicketIcon, href: "#", status: "coming-soon" },
+    { title: t("services.hawker.title", "Hawker Permit"), desc: t("services.hawker.desc", "Register & manage hawker permits."), icon: BuildingStorefrontIcon, href: "#", status: "coming-soon" },
+    { title: t("services.petLicence.title", "Pet Licence"), desc: t("services.petLicence.desc", "Register & renew pet licences."), icon: HeartIcon, href: "#", status: "coming-soon" },
+    { title: t("services.tempPermit.title", "Temporary Permit"), desc: t("services.tempPermit.desc", "Temporary approvals for activities."), icon: DocumentCheckIcon, href: "#", status: "coming-soon" },
+    { title: t("services.installmentPlan.title", "Assessment Installment Plan"), desc: t("services.installmentPlan.desc", "Pay your tax via installments."), icon: CalendarDaysIcon, href: "#", status: "coming-soon" },
+    { title: t("services.trishaw.title", "Trishaw Licence"), desc: t("services.trishaw.desc", "Apply & renew trishaw licences."), icon: TruckIcon, href: "#", status: "coming-soon" },
+  ];
+
   return (
     <section id="services" className="bg-gray-50">
       <div className="mx-auto max-w-screen-2xl px-6 py-20">
-        <h2 className="text-center text-3xl font-bold text-gray-900">Modul Perkhidmatan</h2>
+        <h2 className="text-center text-3xl font-bold text-gray-900">
+          {t("services.heading", "Service Modules")}
+        </h2>
         <p className="mt-2 text-center text-gray-600">
-          Urus perkhidmatan MBMB secara digital, mudah & telus
+          {t("services.subtitle", "Manage MBMB services digitally — easy & transparent")}
         </p>
 
         <div className="mt-10 grid gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
@@ -52,10 +57,9 @@ export default function Services() {
               href={s.href}
               className="relative rounded-2xl bg-white border p-5 shadow-sm hover:shadow-md transition group"
             >
-              {/* Badge "Coming Soon" */}
               {s.status === "coming-soon" && (
                 <span className="absolute top-3 right-3 rounded bg-gray-200 px-2 py-0.5 text-[10px] font-medium text-gray-600">
-                  Coming Soon
+                  {t("services.comingSoon", "Coming Soon")}
                 </span>
               )}
 
@@ -69,7 +73,7 @@ export default function Services() {
               <p className="mt-1 text-sm text-gray-600">{s.desc}</p>
               {s.status !== "coming-soon" && (
                 <button className="mt-3 text-xs font-medium text-[#B01C2F] hover:underline">
-                  Buka →
+                  {t("services.open", "Open →")}
                 </button>
               )}
             </a>

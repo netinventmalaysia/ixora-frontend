@@ -33,7 +33,7 @@ return (
         {/* Get Started Button */}
         {/* CTA Buttons */}
         <div className="mt-6 flex flex-wrap gap-3">
-          <a href="#"
+          <a href="login"
             className="inline-flex items-center rounded-lg bg-[#B01C2F] px-5 py-3 text-sm font-semibold text-white shadow-sm hover:bg-[#951325] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#B01C2F] transition">
             {t("landing.hero.ctaPrimary", "Start Digital Services")}
           </a>

@@ -318,6 +318,29 @@
         "cash": "Cash",
         "cashless": "Cashless"
       }
-    }
+    },
+    "services": {
+  "heading": "Service Modules",
+  "subtitle": "Manage MBMB services digitally — easy & transparent",
+  "comingSoon": "Coming Soon",
+  "open": "Open →",
+  "assessment": { "title": "Assessment Tax", "desc": "Check & pay easily." },
+  "licence": { "title": "Business Licence", "desc": "Register or renew your licence." },
+  "booth": { "title": "Booth Rental", "desc": "Manage rentals & invoices digitally." },
+  "compound": { "title": "Compounds & Fines", "desc": "Check and pay traffic compounds/fines." },
+  "myskb": { "title": "Temporary Building Permit (Plan Approval)", "desc": "Apply & renew temporary permits." },
+  "transfer": { "title": "Property Ownership Transfer", "desc": "Process assessment tax ownership transfer." },
+  "typhoid": { "title": "Typhoid Injection", "desc": "Record injections & health status." },
+  "parkingRental": { "title": "Parking Bay Rental", "desc": "Apply for parking bay rental." },
+  "miscBills": { "title": "Miscellaneous Bills", "desc": "Check & pay MBMB miscellaneous bills." },
+  "doLimited": { "title": "Limited Planning Permission (Limited DO)", "desc": "Apply digitally for limited DO." },
+  "taxRemission": { "title": "Tax Remission", "desc": "Reduction of assessment tax." },
+  "monthlyParking": { "title": "Monthly Parking Pass", "desc": "Subscribe to monthly parking." },
+  "hawker": { "title": "Hawker Permit", "desc": "Register & manage hawker permits." },
+  "petLicence": { "title": "Pet Licence", "desc": "Register & renew pet licences." },
+  "tempPermit": { "title": "Temporary Permit", "desc": "Temporary approvals for activities." },
+  "installmentPlan": { "title": "Assessment Installment Plan", "desc": "Pay your tax via installments." },
+  "trishaw": { "title": "Trishaw Licence", "desc": "Apply & renew trishaw licences." }
+}
   }
 }

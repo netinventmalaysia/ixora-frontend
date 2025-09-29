@@ -315,5 +315,80 @@
         "cashless": "Tanpa Tunai"
       }
     }
+  },
+  "services": {
+    "heading": "Modul Perkhidmatan",
+    "subtitle": "Urus perkhidmatan MBMB secara digital, mudah & telus",
+    "comingSoon": "Akan Datang",
+    "open": "Buka →",
+
+    "assessment": {
+      "title": "Cukai Taksiran Harta",
+      "desc": "Semak & bayar dengan mudah."
+    },
+    "licence": {
+      "title": "Lesen Perniagaan",
+      "desc": "Daftar atau perbaharui lesen perniagaan."
+    },
+    "booth": {
+      "title": "Sewaan Gerai",
+      "desc": "Urus sewaan & invois secara digital."
+    },
+    "compound": {
+      "title": "Kompaun & Saman",
+      "desc": "Semak & bayar kompaun/saman trafik."
+    },
+    "myskb": {
+      "title": "Permit Bangunan Sementara (Kelulusan Pelan)",
+      "desc": "Permohonan & pembaharuan permit sementara."
+    },
+    "transfer": {
+      "title": "Pindah Milik Harta",
+      "desc": "Proses pindah milik cukai harta."
+    },
+    "typhoid": {
+      "title": "Suntikan Typhoid",
+      "desc": "Rekod suntikan & status kesihatan."
+    },
+    "parkingRental": {
+      "title": "Sewaan Petak Letak Kereta",
+      "desc": "Permohonan sewaan petak letak kereta."
+    },
+    "miscBills": {
+      "title": "Bil Pelbagai",
+      "desc": "Semak & bayar bil pelbagai MBMB."
+    },
+    "doLimited": {
+      "title": "Kebenaran Merancang Terhad (DO terhad)",
+      "desc": "Permohonan DO terhad secara digital."
+    },
+    "taxRemission": {
+      "title": "Remisi Cukai",
+      "desc": "Pengurangan cukai taksiran."
+    },
+    "monthlyParking": {
+      "title": "Pas Bulanan Letak Kereta",
+      "desc": "Langganan parkir bulanan."
+    },
+    "hawker": {
+      "title": "Permit Penjaja",
+      "desc": "Daftar & urus lesen penjaja."
+    },
+    "petLicence": {
+      "title": "Lesen Haiwan Peliharaan",
+      "desc": "Daftar & perbaharui lesen haiwan peliharaan."
+    },
+    "tempPermit": {
+      "title": "Permit Sementara",
+      "desc": "Kelulusan sementara untuk aktiviti."
+    },
+    "installmentPlan": {
+      "title": "Pelan Ansuran Cukai",
+      "desc": "Bayar cukai mengikut pelan ansuran."
+    },
+    "trishaw": {
+      "title": "Lesen Beca",
+      "desc": "Permohonan & pembaharuan lesen beca."
   }
 }
+  }
