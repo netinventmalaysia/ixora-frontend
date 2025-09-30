@@ -161,28 +161,6 @@ export default function Contact() {
                 </ul>
               </div>
             </div>
-
-            <div className="mt-6 rounded-md border p-4">
-              <h4 className="font-semibold text-gray-900">Panel IXORA</h4>
-              <p className="mt-1 text-sm text-gray-600">
-                Daftar untuk akses penuh modul perkhidmatan.
-              </p>
-              <div className="mt-3 flex gap-2">
-                <a
-                  href="#"
-                  className="rounded-md px-3 py-1.5 text-sm text-white"
-                  style={{ backgroundColor: PRIMARY }}
-                >
-                  Register
-                </a>
-                <Link
-                  href="/login"
-                  className="rounded-md border px-3 py-1.5 text-sm text-gray-800 hover:border-gray-400"
-                >
-                  Login
-                </Link>
-              </div>
-            </div>
           </div>
         </div>
 

@@ -59,7 +59,7 @@ export default function Services() {
           {t("services.heading", "Service Modules")}
         </h2>
         <p className="mt-2 text-center text-gray-600">
-          {t("services.subtitle", "Manage MBMB services digitally — easy & transparent")}
+          {t("services.subtitle", "Manage MBMB services digitally easy & transparent")}
         </p>
 
         <div className="mt-10 grid gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 xl:gap-6">
