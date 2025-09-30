@@ -14,7 +14,7 @@ const PRIMARY = "#B01C2F";
 const PRIMARY_HOVER = "#951325";
 
 export default function Contact() {
-  const addressLine1 = "Menara MBMB";
+  const addressLine1 = "Majlis Bandaraya Melaka Bersejarah (MBMB)";
   const addressLine2 = "Jalan Graha Makmur, Ayer Keroh, 75450 Melaka";
   const tel = "+606-xxxx xxxx"; // edit to real number
   const email = "ixora@mbmb.gov.my";
@@ -117,7 +117,7 @@ export default function Contact() {
               </div>
             </div>
 
-            <div className="mt-4 flex items-start gap-3">
+            {/* <div className="mt-4 flex items-start gap-3">
               <div
                 className="inline-flex h-10 w-10 items-center justify-center rounded-xl border"
                 style={{
@@ -133,7 +133,7 @@ export default function Contact() {
                   Untuk maklum balas pantas, sila gunakan emel rasmi di atas.
                 </p>
               </div>
-            </div>
+            </div> */}
           </div>
 
           {/* Hours & Panel */}

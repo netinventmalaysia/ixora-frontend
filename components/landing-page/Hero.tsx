@@ -1,6 +1,7 @@
 "use client";
 import Image from "next/image";
 import { useTranslation } from "@/utils/i18n";
+import { ArrowRightIcon, CreditCardIcon, DevicePhoneMobileIcon } from "@heroicons/react/24/solid";
 
 const PRIMARY = "#B01C2F";
 
@@ -27,23 +28,34 @@ return (
           {t("landing.hero.subtitle", "Smarter Governance, Smoother Community")}
         </p>
         <p className="mt-2 max-w-xl text-sm text-gray-500 sm:text-base">
-          {t("landing.hero.tagline", "Built with Trust · Powered by MBMB · Inspired for You")}
+          <strong>{t("landing.hero.tagline", "Built with Trust · Powered by MBMB · Inspired for You")}</strong>
         </p>
 
         {/* Get Started Button */}
         {/* CTA Buttons */}
         <div className="mt-6 flex flex-wrap gap-3">
-          <a href="login"
-            className="inline-flex items-center rounded-lg bg-[#B01C2F] px-5 py-3 text-sm font-semibold text-white shadow-sm hover:bg-[#951325] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#B01C2F] transition">
+          <a
+            href="/login"
+            className="inline-flex items-center gap-2 rounded-lg bg-[#B01C2F] px-5 py-3 text-sm font-semibold text-white shadow-sm hover:bg-[#951325] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#B01C2F] transition"
+          >
+            <ArrowRightIcon className="h-5 w-5 text-white" />
             {t("landing.hero.ctaPrimary", "Start Digital Services")}
           </a>
-          <a href="#"
-            className="inline-flex items-center rounded-lg border border-[#B01C2F] bg-white px-5 py-3 text-sm font-semibold text-gray-700 shadow-sm hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#B01C2F] transition">
+
+          <a
+            href="#"
+            className="inline-flex items-center gap-2 rounded-lg border border-[#B01C2F] bg-white px-5 py-3 text-sm font-semibold text-gray-700 shadow-sm hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#B01C2F] transition"
+          >
+            <CreditCardIcon className="h-5 w-5 text-[#B01C2F]" />
             {t("landing.hero.ctaEasyPay", "EasyPay")}
           </a>
-          <a href="#"
-            className="inline-flex items-center rounded-lg border border-[#B01C2F] bg-white px-5 py-3 text-sm font-semibold text-gray-700 shadow-sm hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#B01C2F] transition">
-            {t("landing.hero.ctaSecondary", "Download IXORA+ App")}
+
+          <a
+            href="#"
+            className="inline-flex items-center gap-2 rounded-lg border border-[#B01C2F] bg-white px-5 py-3 text-sm font-semibold text-gray-700 shadow-sm hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#B01C2F] transition"
+          >
+            <DevicePhoneMobileIcon className="h-5 w-5 text-[#B01C2F]" />
+            {t("landing.hero.ctaSecondary", "IXORA MBMB App")}
           </a>
         </div>
 
