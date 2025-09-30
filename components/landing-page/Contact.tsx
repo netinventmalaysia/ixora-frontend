@@ -23,7 +23,7 @@ export default function Contact() {
     "https://www.google.com/maps/search/?api=1&query=Menara+MBMB,+Jalan+Graha+Makmur,+Ayer+Keroh,+Melaka";
 
   return (
-    <section id="contact" className="bg-white">
+    <section id="contact" className="bg-gray-50 py-16">
       <div className="mx-auto max-w-screen-2xl px-6 py-20">
         <h2 className="text-center text-3xl font-bold text-gray-900">
           Hubungi Kami

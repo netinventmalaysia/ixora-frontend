@@ -39,7 +39,7 @@ return (
           </a>
           <a href="#"
             className="inline-flex items-center rounded-lg border border-[#B01C2F] bg-white px-5 py-3 text-sm font-semibold text-gray-700 shadow-sm hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#B01C2F] transition">
-            {t("landing.hero.ctaEasyPay", "IXORA MBMB EasyPay")}
+            {t("landing.hero.ctaEasyPay", "EasyPay")}
           </a>
           <a href="#"
             className="inline-flex items-center rounded-lg border border-[#B01C2F] bg-white px-5 py-3 text-sm font-semibold text-gray-700 shadow-sm hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#B01C2F] transition">
