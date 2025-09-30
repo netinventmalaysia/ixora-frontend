@@ -38,7 +38,11 @@ return (
             {t("landing.hero.ctaPrimary", "Start Digital Services")}
           </a>
           <a href="#"
-            className="inline-flex items-center rounded-lg border border-gray-300 bg-white px-5 py-3 text-sm font-semibold text-gray-700 shadow-sm hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#B01C2F] transition">
+            className="inline-flex items-center rounded-lg border border-[#B01C2F] bg-white px-5 py-3 text-sm font-semibold text-gray-700 shadow-sm hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#B01C2F] transition">
+            {t("landing.hero.ctaEasyPay", "IXORA MBMB EasyPay")}
+          </a>
+          <a href="#"
+            className="inline-flex items-center rounded-lg border border-[#B01C2F] bg-white px-5 py-3 text-sm font-semibold text-gray-700 shadow-sm hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#B01C2F] transition">
             {t("landing.hero.ctaSecondary", "Download IXORA+ App")}
           </a>
         </div>
@@ -46,7 +50,7 @@ return (
         <dl className="mt-8 grid grid-cols-3 gap-3 sm:gap-4 lg:gap-6 lg:max-w-none">
           {stats.map((s) => (
           <div key={s.label} className="rounded-xl border bg-white p-4 text-center shadow-sm">
-            <dt className="text-[11px] uppercase tracking-wide text-gray-500">
+            <dt className="text-[11px] tracking-wide text-gray-500">
               {s.label}
             </dt>
             <dd className="mt-0.5 text-lg font-semibold text-gray-900 sm:text-xl">
