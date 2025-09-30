@@ -18,6 +18,7 @@ import { radioButtonList } from "todo/components/data/RadioList";
 import toast from 'react-hot-toast';
 import DatePickerField from "todo/components/forms/DatePickerField";
 import LayoutWithoutSidebar from "../main/LayoutWithoutSidebar";
+import FileUploadField from "../forms/FileUpload";
 export default function LoginPage() {
 
     const [showCancelDialog, setShowCancelDialog] = useState(false);
@@ -38,11 +39,21 @@ export default function LoginPage() {
                 <FormSectionHeader title="Consultant Onboard" description="This registration enables businesses to be officially recognized as consultants authorized to manage temporary building permits through the MYSKB system. It enhances their capability to oversee and coordinate building-related submissions on behalf of project owners." />
                 <Spacing size="lg" />
              
-                    <InputWithPrefix
-                    name="aim"
-                    label="AIM registration number"
-                    placeholder="Enter your AIM registration number" id={""}                       
-                    />
+                                        <InputWithPrefix
+                                            id="aim"
+                                            name="aim"
+                                            label="AIM registration number"
+                                            placeholder="Enter your AIM registration number"
+                                        />
+                                        <Spacing size="sm" />
+                                        <FileUploadField
+                                            name="aimDocument"
+                                            label="AIM Document (PDF)"
+                                            description="PDF up to 10MB"
+                                            accept="application/pdf"
+                                            folder="myskb/aim"
+                                            requiredMessage="Please upload your AIM document (PDF)"
+                                        />
                    
          
                 <FormActions>

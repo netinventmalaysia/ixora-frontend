@@ -5,7 +5,6 @@ import 'react-datepicker/dist/react-datepicker.css';
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/router';
 import PullToRefresh from '@/components/common/PullToRefresh';
-import 'leaflet/dist/leaflet.css';
 
 export default function App({ Component, pageProps }: AppProps) {
   const [hydrated, setHydrated] = useState(false);

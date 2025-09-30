@@ -12,7 +12,7 @@ import CheckboxGroupField from "todo/components/forms/CheckboxGroupField";
 import { emailNotificationOptions2 } from "todo/components/data/CheckList";
 import ConfirmDialog from "todo/components/forms/ConfirmDialog";
 import { useRouter } from "next/router";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { useFormContext, useWatch, useFieldArray } from "react-hook-form";
 import RadioGroupField from "todo/components/forms/RadioGroupField";
 import { landOrBuildingOwnerList } from "todo/components/data/RadioList";
@@ -97,6 +97,18 @@ export default function ProjectPage() {
             defaults.buildings = idxs.map((i) => map[i]);
           }
         }
+        // Transform legacy single-owner fields into owners[] array
+        if (!Array.isArray(defaults.owners)) {
+          const singleOwnerId = (defaults as any).owner_id ?? (defaults as any).ownerId;
+          const singleOwnerCategory = (defaults as any).ownerCategory ?? (defaults as any).ownershipCategory;
+          if (singleOwnerId || singleOwnerCategory) {
+            defaults.owners = [{ owner_id: singleOwnerId ?? '', category: singleOwnerCategory ?? '' }];
+          }
+          delete (defaults as any).owner_id;
+          delete (defaults as any).ownerId;
+          delete (defaults as any).ownerCategory;
+          delete (defaults as any).ownershipCategory;
+        }
         if (draft?.business_id) defaults.business_id = draft.business_id;
         if (!mounted) return;
         setFormDefaults(defaults);
@@ -162,6 +174,79 @@ export default function ProjectPage() {
       >
         Save draft
       </Button>
+    );
+  }
+
+  // Repeatable owners array (each with owner_id + category)
+  function OwnersFieldArray({ ownerOptions, selectedBusinessId }: { ownerOptions: { value: number; label: string }[]; selectedBusinessId: number | null }) {
+    // eslint-disable-next-line react-hooks/rules-of-hooks
+    const { control, getValues, setValue } = useFormContext();
+    // eslint-disable-next-line react-hooks/rules-of-hooks
+    const { fields, append, remove, replace } = useFieldArray({ name: 'owners', control });
+    // eslint-disable-next-line react-hooks/rules-of-hooks
+    const prevBizRef = useRef<number | null>(selectedBusinessId);
+
+    // Initialize at least one row on first mount if none
+    // eslint-disable-next-line react-hooks/rules-of-hooks
+    useEffect(() => {
+      const current = getValues('owners') as any[] | undefined;
+      if (!Array.isArray(current) || current.length === 0) {
+        append({ owner_id: '', category: '' });
+      }
+      // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, []);
+
+    // When business changes, clear owners (since available owners list depends on business)
+    // eslint-disable-next-line react-hooks/rules-of-hooks
+    useEffect(() => {
+      if (prevBizRef.current !== selectedBusinessId) {
+        prevBizRef.current = selectedBusinessId;
+        replace([]);
+        append({ owner_id: '', category: '' });
+      }
+    }, [append, replace, selectedBusinessId]);
+
+    return (
+      <div className="space-y-3">
+        {fields.map((field, index) => (
+          <div key={field.id} className="grid grid-cols-1 sm:grid-cols-6 gap-3 items-end">
+            <div className="sm:col-span-3">
+              <SelectField
+                id={`owners.${index}.owner_id`}
+                name={`owners.${index}.owner_id`}
+                label="Project Owner"
+                options={ownerOptions}
+                requiredMessage="Owner is required"
+                placeholder={selectedBusinessId ? 'Select approved owner' : 'Select business first'}
+              />
+            </div>
+            <div className="sm:col-span-2">
+              <SelectField
+                id={`owners.${index}.category`}
+                name={`owners.${index}.category`}
+                label="Ownership Category"
+                options={OwnershipCategory as any}
+                requiredMessage="Category is required"
+              />
+            </div>
+            <div className="sm:col-span-1 flex">
+              <Button
+                type="button"
+                variant="ghost"
+                onClick={() => remove(index)}
+                disabled={fields.length <= 1}
+              >
+                Remove
+              </Button>
+            </div>
+          </div>
+        ))}
+        <div>
+          <Button type="button" variant="secondary" onClick={() => append({ owner_id: '', category: '' })}>
+            Add owner
+          </Button>
+        </div>
+      </div>
     );
   }
 
@@ -231,9 +316,8 @@ export default function ProjectPage() {
   <Spacing size="lg" />
   <SelectField id="business_id" name="business_id" label="Business" options={businessOptions} requiredMessage="Business is required" onChange={(e) => setSelectedBusinessId(Number(e.target.value))} />
   <Spacing size="lg" />
-  <SelectField id="owner_id" name="owner_id" label="Project Owner" options={ownerOptions} requiredMessage="Project Owner is required" placeholder={selectedBusinessId ? 'Select approved owner' : 'Select business first'} />
-        <Spacing size="sm" />
-        <SelectField id="ownerCategory" name="ownerCategory" label="Ownership Category" options={OwnershipCategory} requiredMessage="Country is required" />
+  <OwnersFieldArray ownerOptions={ownerOptions} selectedBusinessId={selectedBusinessId} />
+    <Spacing size="sm" />
         <Spacing size="lg" />
 
         <RadioGroupField name="landOrBuildingOwnerList" label="*Is the owner is not land or building owner?" options={landOrBuildingOwnerList} inline={true} requiredMessage="Please select a land or building owner" />
