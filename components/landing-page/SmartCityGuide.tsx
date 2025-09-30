@@ -41,7 +41,7 @@ export default function SmartCityGuide() {
     <section id="city" className="bg-white">
       <div className="mx-auto max-w-screen-2xl px-6 py-20">
         <h2 className="text-center text-3xl font-bold text-gray-900">
-          {t("city.heading", "Panduan Bandaraya Pintar")}
+          {t("city.heading", "Panduan Bandaraya")}
         </h2>
         <p className="mt-2 text-center text-gray-600">
           {t("city.subtitle", "Maklumat rasmi MBMB untuk warga & pelawat")}
