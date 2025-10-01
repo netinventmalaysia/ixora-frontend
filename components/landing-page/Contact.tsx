@@ -57,19 +57,6 @@ export default function Contact() {
                   <br />
                   {addressLine2}
                 </p>
-
-                <div className="mt-4 flex flex-wrap gap-2">
-                  <a
-                    href={googleMapsUrl}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="inline-flex items-center justify-center rounded-md px-3 py-1.5 text-sm font-medium text-white"
-                    style={{ backgroundColor: PRIMARY }}
-                  >
-                    Buka Peta
-                    <ArrowTopRightOnSquareIcon className="ml-1 h-4 w-4" />
-                  </a>
-                </div>
               </div>
             </div>
           </div>
@@ -116,24 +103,6 @@ export default function Contact() {
                 </div>
               </div>
             </div>
-
-            {/* <div className="mt-4 flex items-start gap-3">
-              <div
-                className="inline-flex h-10 w-10 items-center justify-center rounded-xl border"
-                style={{
-                  background: "#FFF1F2",
-                  color: PRIMARY,
-                  borderColor: PRIMARY,
-                }}
-              >
-                <EnvelopeIcon className="h-6 w-6" />
-              </div>
-              <div>
-                <p className="text-sm text-gray-600">
-                  Untuk maklum balas pantas, sila gunakan emel rasmi di atas.
-                </p>
-              </div>
-            </div> */}
           </div>
 
           {/* Hours & Panel */}
