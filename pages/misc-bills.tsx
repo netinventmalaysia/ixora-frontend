@@ -37,7 +37,9 @@ export default function MiscBillsPage() {
     setLoading(true);
     setError(null);
     try {
-      const mapped = params.searchType === 'ic' ? { ic: params.query } : { misc_no: params.query };
+  console.log('[Misc] form params:', params);
+  const mapped = params.searchType === 'ic' ? { ic: params.query } : { account_no: params.query };
+  console.log('[Misc] mapped query:', mapped);
       const res = await fetchMiscOutstanding(mapped as any);
       const list: MiscBill[] = Array.isArray(res) ? (res as any) : (res?.data || []);
       setBills(list);
@@ -100,11 +102,14 @@ export default function MiscBillsPage() {
 
           <SearchControls
             loading={loading}
-            onRefresh={() => fetchData(getValues())}
+            onRefresh={() => handleSubmit(onSearch)()}
             t={t}
-            secondOption={{ label: t('misc.byBill', 'Bill Reference No.'), value: 'misc' }}
-            numberFieldLabel={t('misc.billRef', 'Bill Reference No.')}
-            numberFieldPlaceholder={t('misc.billPlaceholder', 'Enter Bill Reference No.')}
+            extras={[{
+              label: t('misc.byAccount', 'Account No.'),
+              value: 'misc',
+              numberFieldLabel: t('misc.accountNo', 'Account No.'),
+              numberFieldPlaceholder: t('misc.accountPlaceholder', 'Enter Account No.'),
+            }]}
             icFieldLabel={t('misc.ic', 'IC Number')}
             icFieldPlaceholder={t('misc.icPlaceholder', 'Enter IC Number')}
           />

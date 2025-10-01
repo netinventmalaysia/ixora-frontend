@@ -42,7 +42,9 @@ export default function BoothRentalPage() {
     setLoading(true);
     setError(null);
     try {
-      const mapped = params.searchType === 'ic' ? { ic: params.query } : { booth_no: params.query };
+  console.log('[Booth] form params:', params);
+  const mapped = params.searchType === 'ic' ? { ic: params.query } : { account_no: params.query };
+  console.log('[Booth] mapped query:', mapped);
       const res = await fetchBoothOutstanding(mapped as any);
       const list: BoothBill[] = Array.isArray(res) ? (res as any) : (res?.data || []);
       setBills(list);
@@ -105,11 +107,14 @@ export default function BoothRentalPage() {
 
           <SearchControls
             loading={loading}
-            onRefresh={() => fetchData(getValues())}
+            onRefresh={() => handleSubmit(onSearch)()}
             t={t}
-            secondOption={{ label: t('booth.byBooth', 'Booth Reference No.'), value: 'booth' }}
-            numberFieldLabel={t('booth.boothNo', 'Booth Reference No.')}
-            numberFieldPlaceholder={t('booth.boothPlaceholder', 'Enter Booth Reference No.')}
+            extras={[{
+              label: t('booth.byAccount', 'Account No.'),
+              value: 'booth',
+              numberFieldLabel: t('booth.accountNo', 'Account No.'),
+              numberFieldPlaceholder: t('booth.accountPlaceholder', 'Enter Account No.'),
+            }]}
             icFieldLabel={t('booth.ic', 'IC Number')}
             icFieldPlaceholder={t('booth.icPlaceholder', 'Enter IC Number')}
           />

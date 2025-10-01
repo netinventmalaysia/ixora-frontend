@@ -6,6 +6,7 @@ import Spacing from 'todo/components/forms/Spacing';
 import Heading from 'todo/components/forms/Heading';
 import LineSeparator from 'todo/components/forms/LineSeparator';
 import FormActions from 'todo/components/forms/FormActions';
+import InputText from 'todo/components/forms/InputText';
 import { CompoundBill, fetchCompoundOutstanding } from '@/services/api';
 import { useForm, FormProvider } from 'react-hook-form';
 import { useTranslation } from '@/utils/i18n';
@@ -17,6 +18,7 @@ type SearchType = 'ic' | 'compound';
 type FormValues = {
   searchType: SearchType;
   query: string;
+  vehicle_registration_no?: string;
 };
 
 export default function CompoundPage() {
@@ -26,6 +28,7 @@ export default function CompoundPage() {
     defaultValues: {
       searchType: 'ic',
       query: icDefault,
+      vehicle_registration_no: '',
     },
   });
   const { handleSubmit, getValues } = methods;
@@ -45,7 +48,18 @@ export default function CompoundPage() {
     setLoading(true);
     setError(null);
     try {
-      const mapped = params.searchType === 'ic' ? { ic: params.query } : { compound_no: params.query };
+      console.log('[Compound] form params:', params);
+      // Guard: require a primary identifier
+      if (!params.query || params.query.trim().length === 0) {
+        setError(t('compound.requireQuery', 'Please enter IC or Compound No.'));
+        console.warn('[Compound] Empty primary query provided; skipping request');
+        return;
+      }
+      const mapped: any = params.searchType === 'ic' ? { ic: params.query } : { compound_no: params.query };
+      if (params.vehicle_registration_no) {
+        mapped.vehicle_registration_no = params.vehicle_registration_no;
+      }
+      console.log('[Compound] mapped query:', mapped);
       const res = await fetchCompoundOutstanding(mapped as any);
       const list: CompoundBill[] = Array.isArray(res) ? (res as any) : (res?.data || []);
       setBills(list);
@@ -109,13 +123,22 @@ export default function CompoundPage() {
 
           <SearchControls
             loading={loading}
-            onRefresh={() => fetchData(getValues())}
+            onRefresh={() => handleSubmit(onSearch)()}
             t={t}
             secondOption={{ label: t('compound.byCompound', 'Compound No.'), value: 'compound' }}
             numberFieldLabel={t('compound.compoundNo', 'Compound No.')}
             numberFieldPlaceholder={t('compound.compoundPlaceholder', 'Enter Compound No.')}
             icFieldLabel={t('compound.ic', 'IC Number')}
             icFieldPlaceholder={t('compound.icPlaceholder', 'Enter IC Number')}
+          />
+
+          {/* Optional: Vehicle Registration No. to narrow results */}
+          <Spacing size="sm" />
+          <InputText
+            id="vehicle_registration_no"
+            name="vehicle_registration_no"
+            label={t('compound.vrnOpt', 'Vehicle Registration No. (optional)')}
+            placeholder={t('compound.vrnPlaceholder', 'Enter Vehicle Registration No. to narrow results')}
           />
 
           <Spacing size="md" />

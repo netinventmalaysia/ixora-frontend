@@ -397,14 +397,20 @@ export interface AssessmentBill {
 
 export interface AssessmentSearchParams {
     ic?: string;
-    assessment_no?: string; // account or assessment tax number
+    account_no?: string; // preferred param name
+    bill_no?: string; // optional filter
+    // legacy alias support from older UI
+    assessment_no?: string;
 }
 
 // Fetch outstanding assessment bills by IC or assessment number
 export const fetchAssessmentOutstanding = async (params: AssessmentSearchParams) => {
     const query: any = {};
     if (params.ic) query.ic = params.ic;
-    if (params.assessment_no) query.assessment_no = params.assessment_no;
+    const acct = params.account_no ?? params.assessment_no; // map legacy to preferred
+    if (acct) { query.account_no = acct; query.accountNo = acct; }
+    if (params.bill_no) { query.bill_no = params.bill_no; query.billNo = params.bill_no; }
+    console.log('[API] GET /assessment/outstanding params:', query);
     const { data } = await api.get('/mbmb/public/api/assessment/outstanding', { params: query });
     return data as { data?: AssessmentBill[] } | AssessmentBill[];
 };
@@ -421,13 +427,19 @@ export interface CompoundBill {
 export interface CompoundSearchParams {
     ic?: string;
     compound_no?: string;
+    vehicle_registration_no?: string; // optional filter
+    // compatibility typo accepted from callers
+    vehicel_registration_no?: string;
 }
 
 // Fetch outstanding compound by IC or compound number
 export const fetchCompoundOutstanding = async (params: CompoundSearchParams) => {
     const query: any = {};
     if (params.ic) query.ic = params.ic;
-    if (params.compound_no) query.compound_no = params.compound_no;
+    if (params.compound_no) { query.compound_no = params.compound_no; query.compoundNo = params.compound_no; }
+    const vrn = params.vehicle_registration_no ?? params.vehicel_registration_no;
+    if (vrn) { query.vehicle_registration_no = vrn; query.vehicleRegistrationNo = vrn; }
+    console.log('[API] GET /compound/outstanding params:', query);
     const { data } = await api.get('/mbmb/public/api/compound/outstanding', { params: query });
     return data as { data?: CompoundBill[] } | CompoundBill[];
 };
@@ -443,13 +455,17 @@ export interface BoothBill {
 
 export interface BoothSearchParams {
     ic?: string;
+    account_no?: string; // preferred
+    // deprecated alias accepted from callers
     booth_no?: string;
 }
 
 export const fetchBoothOutstanding = async (params: BoothSearchParams) => {
     const query: any = {};
     if (params.ic) query.ic = params.ic;
-    if (params.booth_no) query.booth_no = params.booth_no;
+    const acct = params.account_no ?? params.booth_no;
+    if (acct) { query.account_no = acct; query.accountNo = acct; } // backend prefers account_no; booth_no is deprecated alias
+    console.log('[API] GET /booth/outstanding params:', query);
     const { data } = await api.get('/mbmb/public/api/booth/outstanding', { params: query });
     return data as { data?: BoothBill[] } | BoothBill[];
 };
@@ -465,15 +481,18 @@ export interface MiscBill {
 
 export interface MiscSearchParams {
     ic?: string;
-    misc_no?: string; // reference or bill number
-    bill_no?: string; // alias for misc_no
+    account_no?: string; // preferred
+    // legacy aliases accepted from callers; map to account_no
+    misc_no?: string;
+    bill_no?: string;
 }
 
 export const fetchMiscOutstanding = async (params: MiscSearchParams) => {
     const query: any = {};
     if (params.ic) query.ic = params.ic;
-    if (params.misc_no) query.misc_no = params.misc_no;
-    else if (params.bill_no) query.misc_no = params.bill_no;
+    const acct = params.account_no ?? params.misc_no ?? params.bill_no;
+    if (acct) { query.account_no = acct; query.accountNo = acct; }
+    console.log('[API] GET /misc/outstanding params:', query);
     const { data } = await api.get('/mbmb/public/api/misc/outstanding', { params: query });
     return data as { data?: MiscBill[] } | MiscBill[];
 };

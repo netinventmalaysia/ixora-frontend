@@ -15,10 +15,11 @@ import AssessmentBillsTable from '@/components/assessment/AssessmentBillsTable';
 import SearchControls from '@/components/assessment/SearchControls';
 import LogoSpinner from '@/components/common/LogoSpinner';
 
-type SearchType = 'ic' | 'assessment';
+type SearchType = 'ic' | 'account' | 'bill';
 type FormValues = {
   searchType: SearchType;
   query: string;
+  bill_no?: string; // optional narrowing
 };
 
 export default function AssessmentTaxPage() {
@@ -28,6 +29,7 @@ export default function AssessmentTaxPage() {
     defaultValues: {
       searchType: 'ic',
       query: icDefault,
+      bill_no: '',
     },
   });
   const { handleSubmit, getValues } = methods;
@@ -51,9 +53,12 @@ export default function AssessmentTaxPage() {
     setLoading(true);
     setError(null);
     try {
-      const mapped = params.searchType === 'ic'
-        ? { ic: params.query }
-        : { assessment_no: params.query };
+      console.log('[Assessment] form params:', params);
+      const mapped: any =
+        params.searchType === 'ic' ? { ic: params.query }
+        : params.searchType === 'account' ? { account_no: params.query }
+        : { bill_no: params.query };
+      console.log('[Assessment] mapped query:', mapped);
       const res = await fetchAssessmentOutstanding(mapped as any);
       const list: AssessmentBill[] = Array.isArray(res) ? res as any : (res?.data || []);
       setBills(list);
@@ -82,6 +87,7 @@ export default function AssessmentTaxPage() {
   }, [getValues]);
 
   const onSearch = (data: FormValues) => {
+    console.log('[Assessment] onSearch submit:', data);
     fetchData(data);
   };
 
@@ -118,7 +124,26 @@ export default function AssessmentTaxPage() {
           </Heading>
           <Spacing size="md" />
 
-          <SearchControls loading={loading} onRefresh={() => fetchData(getValues())} t={t} />
+          <SearchControls
+            loading={loading}
+            onRefresh={() => handleSubmit(onSearch)()}
+            t={t}
+            // multiple radio options: Account No., Bill No.
+            extras={[
+              {
+                label: t('assessment.byAccount', 'Account No.'),
+                value: 'account',
+                numberFieldLabel: t('assessment.accountNo', 'Account No.'),
+                numberFieldPlaceholder: t('assessment.accountPlaceholder', 'Enter Account No.'),
+              },
+              {
+                label: t('assessment.byBill', 'Bill No.'),
+                value: 'bill',
+                numberFieldLabel: t('assessment.billNo', 'Bill No.'),
+                numberFieldPlaceholder: t('assessment.billNoPlaceholder', 'Enter Bill No.'),
+              },
+            ]}
+          />
 
           <Spacing size="md" />
           <LineSeparator />
