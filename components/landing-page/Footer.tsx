@@ -19,12 +19,12 @@ export default function Footer() {
           <nav className="flex items-center gap-4">
             <a href="#privacy" className="opacity-90 hover:opacity-100">{t("privacy", "Privacy")}</a>
             <a href="#terms" className="opacity-90 hover:opacity-100">{t("terms", "Terms")}</a>
-            <a href="#status" className="opacity-90 hover:opacity-100">{t("status", "Status")}</a>
-            <a href="#help" className="opacity-90 hover:opacity-100">{t("help", "Help")}</a>
+            {/* <a href="#status" className="opacity-90 hover:opacity-100">{t("status", "Status")}</a>
+            <a href="#help" className="opacity-90 hover:opacity-100">{t("help", "Help")}</a> */}
           </nav>
 
           <span className="ml-auto opacity-90">
-            © {year} {t("landing.footer.text", "IXORA MBMB – Melaka Smart City Digital Ecosystem")}
+            © {year} {t("landing.footer.text", "IXORA MBMB – MBMB Smart City Digital Ecosystem")}
           </span>
         </div>
       </div>

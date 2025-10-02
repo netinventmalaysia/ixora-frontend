@@ -163,7 +163,7 @@ export default function Contact() {
         </div>
 
         {/* Quick actions */}
-        <div className="mt-6 flex flex-wrap items-center justify-center gap-3">
+        {/* <div className="mt-6 flex flex-wrap items-center justify-center gap-3">
           <a
             href={`tel:${tel.replace(/[^+\d]/g, "")}`}
             className="inline-flex items-center gap-2 rounded-md px-3 py-1.5 text-sm font-medium text-white"
@@ -188,7 +188,7 @@ export default function Contact() {
             <MapPinIcon className="h-4 w-4" />
             Directions
           </a>
-        </div>
+        </div> */}
       </div>
 
       <style jsx global>{`
