@@ -31,31 +31,42 @@ return (
           <strong>{t("landing.hero.tagline", "Built with Trust · Powered by MBMB · Inspired for You")}</strong>
         </p>
 
-        {/* Get Started Button */}
         {/* CTA Buttons */}
         <div className="mt-6 flex flex-wrap gap-3">
+          {/* Login */}
           <a
             href="/login"
             className="inline-flex items-center gap-2 rounded-lg bg-[#B01C2F] px-5 py-3 text-sm font-semibold text-white shadow-sm hover:bg-[#951325] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#B01C2F] transition"
           >
             <ArrowRightIcon className="h-5 w-5 text-white" />
-            {t("landing.hero.ctaPrimary", "Start Digital Services")}
+            {t("landing.hero.ctaLogin", "Login Here !")}
           </a>
 
+          {/* Install PWA */}
+          <a
+            href="#"
+            className="inline-flex items-center gap-2 rounded-lg border border-[#B01C2F] bg-white px-5 py-3 text-sm font-semibold text-gray-700 shadow-sm hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#B01C2F] transition"
+          >
+            <DevicePhoneMobileIcon className="h-5 w-5 text-[#B01C2F]" />
+            {t("landing.hero.ctaPwa", "Install PWA")}
+          </a>
+
+          {/* Download Apps */}
+          <a
+            href="#"
+            className="inline-flex items-center gap-2 rounded-lg border border-[#B01C2F] bg-white px-5 py-3 text-sm font-semibold text-gray-700 shadow-sm hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#B01C2F] transition"
+          >
+            <DevicePhoneMobileIcon className="h-5 w-5 text-[#B01C2F]" />
+            {t("landing.hero.ctaDownload", "Download Apps")}
+          </a>
+
+          {/* EasyPay */}
           <a
             href="#"
             className="inline-flex items-center gap-2 rounded-lg border border-[#B01C2F] bg-white px-5 py-3 text-sm font-semibold text-gray-700 shadow-sm hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#B01C2F] transition"
           >
             <CreditCardIcon className="h-5 w-5 text-[#B01C2F]" />
             {t("landing.hero.ctaEasyPay", "EasyPay")}
-          </a>
-
-          <a
-            href="#"
-            className="inline-flex items-center gap-2 rounded-lg border border-[#B01C2F] bg-white px-5 py-3 text-sm font-semibold text-gray-700 shadow-sm hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#B01C2F] transition"
-          >
-            <DevicePhoneMobileIcon className="h-5 w-5 text-[#B01C2F]" />
-            {t("landing.hero.ctaSecondary", "IXORA MBMB App")}
           </a>
         </div>
 
