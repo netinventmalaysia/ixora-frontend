@@ -24,7 +24,7 @@ export default function Footer() {
           </nav>
 
           <span className="ml-auto opacity-90">
-            © {year} {t("landing.footer.text", "IXORA MBMB – MBMB Smart City Digital Ecosystem")}
+            © {year} {t("landing.footer.text", "IXORA MBMB – Digital Ecosystem")}
           </span>
         </div>
       </div>

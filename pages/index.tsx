@@ -1,6 +1,6 @@
 import Layout from "@/components/landing-page/Layout";
 import Hero from "@/components/landing-page/Hero";
-import Benefits from "@/components/landing-page/Benefits";
+import PWAInstallPrompt from "@/components/common/PWAInstallPrompt";
 import Services from "@/components/landing-page/Services";
 import ComponentsGrid from "@/components/landing-page/ComponentsGrid";
 import SmartCityGuide from "@/components/landing-page/SmartCityGuide";
@@ -13,6 +13,11 @@ export default function HomePage() {
       <Hero />
       <Services />
       <SmartCityGuide />
+      <PWAInstallPrompt
+        cooldownDays={3}
+        showManualButton={true}
+        // texts={{ title: "Pasang IXORA?", manualButton: "Pasang IXORA" }}
+      />
       {/* <ComponentsGrid />
       <Benefits />
       <FAQ /> */}
