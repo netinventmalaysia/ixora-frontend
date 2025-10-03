@@ -6,11 +6,13 @@ import ComponentsGrid from "@/components/landing-page/ComponentsGrid";
 import SmartCityGuide from "@/components/landing-page/SmartCityGuide";
 import FAQ from "@/components/landing-page/Faq";
 import Contact from "@/components/landing-page/Contact";
+import Transactions from "todo/components/landing-page/Transactions";
 
 export default function HomePage() {
   return (
     <Layout>
       <Hero />
+      <Transactions />   {/* ✅ Section transaksi */}
       <Services />
       <SmartCityGuide />
       <PWAInstallPrompt
