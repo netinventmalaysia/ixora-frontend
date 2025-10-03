@@ -12,11 +12,8 @@ type BeforeInstallPromptEvent = Event & {
 };
 
 type Props = {
-  /** Days to wait before showing popup again after user taps "Nanti" */
   cooldownDays?: number;
-  /** Show a small floating manual button so users can install anytime */
   showManualButton?: boolean;
-  /** Text overrides (optional) */
   texts?: Partial<{
     title: string;
     desc: string;
@@ -43,7 +40,6 @@ function isStandalone() {
   if (!hasWindow()) return false;
   return (
     window.matchMedia?.("(display-mode: standalone)").matches ||
-    // iOS Safari specific
     (window.navigator as any).standalone === true
   );
 }
@@ -59,6 +55,13 @@ function tooSoon(key: string, days: number) {
   if (!Number.isFinite(ts)) return false;
   const diffDays = (Date.now() - ts) / (1000 * 60 * 60 * 24);
   return diffDays < days;
+}
+
+/** ---------- 🔔 Helper untuk trigger dari luar (Hero, dsb.) ---------- */
+// NEW: helper untuk dispatch event “buka PWA install”
+export function triggerPWAInstall() {
+  if (!hasWindow()) return;
+  window.dispatchEvent(new CustomEvent("pwa:open"));
 }
 
 export default function PWAInstallPrompt({
@@ -79,25 +82,16 @@ export default function PWAInstallPrompt({
     ...texts,
   };
 
-  const [bipEvent, setBipEvent] = useState<BeforeInstallPromptEvent | null>(
-    null
-  );
+  const [bipEvent, setBipEvent] = useState<BeforeInstallPromptEvent | null>(null);
   const [showModal, setShowModal] = useState(false);
   const [showIOS, setShowIOS] = useState(false);
-  const [manualEnabled, setManualEnabled] = useState(false); // only when bipEvent exists and not standalone
-  const [mounted, setMounted] = useState(false); // elak kiraan semasa SSR
+  const [manualEnabled, setManualEnabled] = useState(false);
+  const [mounted, setMounted] = useState(false);
 
-  // Mark mounted (client only)
-  useEffect(() => {
-    setMounted(true);
-  }, []);
+  useEffect(() => setMounted(true), []);
 
-  // Setup listeners (client only)
   useEffect(() => {
-    if (!mounted || isStandalone()) {
-      // Already installed atau belum mount → nothing to do
-      return;
-    }
+    if (!mounted || isStandalone()) return;
 
     const onBIP = (e: Event) => {
       e.preventDefault();
@@ -105,7 +99,6 @@ export default function PWAInstallPrompt({
       setBipEvent(ev);
       setManualEnabled(true);
 
-      // Auto show modal unless user dismissed recently
       if (!tooSoon(DISMISS_TS_KEY, cooldownDays)) {
         setTimeout(() => setShowModal(true), 1200);
       }
@@ -122,10 +115,25 @@ export default function PWAInstallPrompt({
       setBipEvent(null);
     };
 
+    // NEW: bila terima “pwa:open” → buka modal/banner ikut platform
+    const onOpen = () => {
+      if (isStandalone()) return;
+      if (isIOS()) {
+        setShowIOS(true);
+      } else if (bipEvent) {
+        setShowModal(true);
+      } else {
+        // Tiada beforeinstallprompt lagi — boleh tunjuk info ringkas
+        // atau biar sahaja (senyap). Di sini kita pilih alert ringan.
+        // (Padam jika tak mahu alert)
+        alert("Install PWA belum tersedia pada pelayar ini sekarang.");
+      }
+    };
+
     window.addEventListener("beforeinstallprompt", onBIP);
     window.addEventListener("appinstalled", onInstalled);
+    window.addEventListener("pwa:open", onOpen); // NEW
 
-    // iOS banner logic (no beforeinstallprompt)
     if (isIOS() && !tooSoon(IOS_DISMISS_TS_KEY, cooldownDays) && !isStandalone()) {
       setTimeout(() => setShowIOS(true), 1000);
     }
@@ -133,24 +141,18 @@ export default function PWAInstallPrompt({
     return () => {
       window.removeEventListener("beforeinstallprompt", onBIP);
       window.removeEventListener("appinstalled", onInstalled);
+      window.removeEventListener("pwa:open", onOpen); // NEW
     };
-  }, [mounted, cooldownDays]);
+  }, [mounted, cooldownDays, bipEvent]);
 
-  // Handlers
   const handleInstall = async () => {
     if (!bipEvent) return;
     setShowModal(false);
     try {
       await bipEvent.prompt();
       const { outcome } = await bipEvent.userChoice;
-      // After prompt, event becomes single-use
       setBipEvent(null);
-      if (outcome === "dismissed") {
-        // optional: set short cooldown here if wanted
-      }
-    } catch {
-      // ignore
-    }
+    } catch {}
   };
 
   const handleLater = () => {
@@ -170,12 +172,9 @@ export default function PWAInstallPrompt({
   const canShowManual = useMemo(() => {
     if (!mounted) return false;
     if (isStandalone()) return false;
-    // iOS: sentiasa benarkan butang manual untuk tunjukkan banner arahan
-    // Android/Chrome: benarkan jika sudah terima beforeinstallprompt
     return showManualButton && (isIOS() || manualEnabled);
   }, [mounted, manualEnabled, showManualButton]);
 
-  // Elak rendering awal semasa SSR / sebelum mounted
   if (!mounted) return null;
 
   return (
@@ -191,10 +190,7 @@ export default function PWAInstallPrompt({
             <h3 className="text-lg font-semibold text-gray-900">{t.title}</h3>
             <p className="mt-1 text-sm text-gray-600">{t.desc}</p>
             <div className="mt-4 flex items-center justify-end gap-2">
-              <button
-                onClick={handleLater}
-                className="rounded-lg border px-3 py-2 text-sm"
-              >
+              <button onClick={handleLater} className="rounded-lg border px-3 py-2 text-sm">
                 {t.later}
               </button>
               <button
@@ -209,31 +205,25 @@ export default function PWAInstallPrompt({
         </div>
       )}
 
-      {/* iOS BANNER (BOTTOM SHEET) */}
+      {/* iOS BANNER */}
       {showIOS && (
         <div className="fixed inset-x-0 bottom-0 z-40 mx-auto w-full max-w-screen-sm rounded-t-2xl border border-gray-200 bg-white p-4 shadow-2xl">
-          <div className="flex items-start gap-3">
-            <div className="mt-0.5 h-2.5 w-8 shrink-0 rounded-full bg-gray-200" />
+          <div className="flex items-start justify-between gap-3">
             <div className="min-w-0">
-              <div className="flex items-start justify-between gap-3">
-                <h4 className="text-base font-semibold text-gray-900">
-                  {t.iosTitle}
-                </h4>
-                <button
-                  aria-label="Dismiss"
-                  onClick={handleIOSDismiss}
-                  className="rounded-md border px-2 py-1 text-xs text-gray-700"
-                >
-                  {t.iosDismiss}
-                </button>
-              </div>
+              <h4 className="text-base font-semibold text-gray-900">{t.iosTitle}</h4>
               <p className="mt-1 text-sm text-gray-600">{t.iosDesc}</p>
               <div className="mt-3 rounded-lg bg-gray-50 px-3 py-2 text-xs text-gray-700">
-                Petunjuk: Buka ikon <span className="font-medium">Share</span>{" "}
-                (kotak dengan anak panah) → pilih{" "}
+                Petunjuk: Buka ikon <span className="font-medium">Share</span> →{" "}
                 <span className="font-medium">Add to Home Screen</span>.
               </div>
             </div>
+            <button
+              aria-label="Dismiss"
+              onClick={handleIOSDismiss}
+              className="rounded-md border px-2 py-1 text-xs text-gray-700"
+            >
+              {t.iosDismiss}
+            </button>
           </div>
         </div>
       )}
@@ -241,13 +231,7 @@ export default function PWAInstallPrompt({
       {/* MANUAL BUTTON (FLOATING) */}
       {canShowManual && (
         <button
-          onClick={() => {
-            if (isIOS()) {
-              setShowIOS(true);
-            } else if (bipEvent) {
-              setShowModal(true);
-            }
-          }}
+          onClick={() => triggerPWAInstall() /* NEW: gunakan helper */}
           className="fixed bottom-5 right-5 z-30 rounded-full px-4 py-3 text-sm font-medium text-white shadow-lg hover:opacity-95"
           style={{ background: PRIMARY }}
         >

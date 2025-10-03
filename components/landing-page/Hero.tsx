@@ -2,6 +2,7 @@
 import Image from "next/image";
 import { useTranslation } from "@/utils/i18n";
 import { ArrowRightIcon, CreditCardIcon, DevicePhoneMobileIcon } from "@heroicons/react/24/solid";
+import { triggerPWAInstall } from "@/components/common/PWAInstallPrompt"; // ✅ import helper
 
 const PRIMARY = "#B01C2F";
 
@@ -27,7 +28,7 @@ return (
         <p className="mt-3 max-w-xl text-base leading-relaxed text-gray-600 sm:text-lg">
           {t("landing.hero.subtitle", "Smarter Governance, Smoother Community")}
         </p>
-        <p className="mt-2 max-w-xl text-sm text-gray-500 sm:text-base">
+        <p className="mt-2 max-w-xl text-xs text-gray-500 xs:text-base">
           <strong>{t("landing.hero.tagline", "Built with Trust · Powered by MBMB · Inspired for You")}</strong>
         </p>
 
@@ -43,13 +44,14 @@ return (
           </a>
 
           {/* Install PWA */}
-          <a
-            href="#"
+          <button
+            type="button"
+            onClick={() => triggerPWAInstall()} // ✅ buka modal/banner dari Hero
             className="inline-flex items-center gap-2 rounded-lg border border-[#B01C2F] bg-white px-5 py-3 text-sm font-semibold text-gray-700 shadow-sm hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#B01C2F] transition"
           >
             <DevicePhoneMobileIcon className="h-5 w-5 text-[#B01C2F]" />
             {t("landing.hero.ctaPwa", "Install PWA")}
-          </a>
+          </button>
 
           {/* Download Apps */}
           <a
