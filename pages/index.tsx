@@ -12,13 +12,13 @@ export default function HomePage() {
   return (
     <Layout>
       <Hero />
-      <Transactions />   {/* ✅ Section transaksi */}
+      {/* <Transactions /> */}
       <Services />
       <SmartCityGuide />
       <PWAInstallPrompt
         cooldownDays={3}
         showManualButton={true}
-        // texts={{ title: "Pasang IXORA?", manualButton: "Pasang IXORA" }}
+        texts={{ title: "Pasang IXORA?", manualButton: "Pasang IXORA" }}
       />
       {/* <ComponentsGrid />
       <Benefits />

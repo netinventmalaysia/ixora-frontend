@@ -32,7 +32,7 @@ export default function SmartCityGuide() {
     { title: t("city.parking.title", "Parkir"), desc: t("city.parking.desc", "Maklumat zon parkir, kadar & teguran."), icon: MapPinIcon, href: "/city/parking" },
     { title: t("city.environment.title", "Sensor Alam Sekitar"), desc: t("city.environment.desc", "Kualiti udara, cuaca & indeks UV."), icon: CloudIcon, href: "/city/environment-sensors" },
     { title: t("city.firstAid.title", "Balai Pertolongan Cemas"), desc: t("city.firstAid.desc", "Lokasi klinik, farmasi & AED berdekatan."), icon: HeartIcon, href: "/city/first-aid" },
-    { title: t("city.touristInfo.title", "Info Pelancong & Warisan"), desc: t("city.touristInfo.desc", "Pusat maklumat, mercu tanda & jejak warisan."), icon: MapIcon, href: "/city/tourist-info" },
+    { title: t("city.touristInfo.title", "Info Pelancong & Warisan"), desc: t("city.touristInfo.desc", "Pusat maklumat, mercu tanda & jejak warisan."), icon: MapIcon, href: "/city/CeriteraMelaka" },
     { title: t("city.markets.title", "Pasar & Penjaja"), desc: t("city.markets.desc", "Pasar malam, medan selera & waktu operasi."), icon: BuildingStorefrontIcon, href: "/city/markets" },
     { title: t("city.wifi.title", "Wi-Fi Awam"), desc: t("city.wifi.desc", "Capaian internet awam & lokasi hotspot."), icon: WifiIcon, href: "/city/public-wifi" },
   ];
