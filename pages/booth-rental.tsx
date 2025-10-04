@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from 'react';
 import SidebarLayout from '@/components/main/SidebarLayout';
-import FormWrapper from 'todo/components/forms/FormWrapper';
+// removed FormWrapper to avoid nested form contexts
 import Button from 'todo/components/forms/Button';
 import Spacing from 'todo/components/forms/Spacing';
 import Heading from 'todo/components/forms/Heading';
@@ -42,7 +42,7 @@ export default function BoothRentalPage() {
     setLoading(true);
     setError(null);
     try {
-      const mapped = params.searchType === 'ic' ? { ic: params.query } : { booth_no: params.query };
+      const mapped = params.searchType === 'ic' ? { ic: params.query } : { account_no: params.query };
       const res = await fetchBoothOutstanding(mapped as any);
       const list: BoothBill[] = Array.isArray(res) ? (res as any) : (res?.data || []);
       setBills(list);
@@ -97,7 +97,7 @@ export default function BoothRentalPage() {
         </div>
       )}
       <FormProvider {...methods}>
-        <FormWrapper onSubmit={handleSubmit(onSearch)}>
+        <form onSubmit={handleSubmit(onSearch)} className="w-full max-w-3xl mx-auto">
           <Heading level={2} align="left" bold>
             {t('booth.title', 'Booth Rental')}
           </Heading>
@@ -105,7 +105,7 @@ export default function BoothRentalPage() {
 
           <SearchControls
             loading={loading}
-            onRefresh={() => fetchData(getValues())}
+            onRefresh={() => handleSubmit(onSearch)()}
             t={t}
             secondOption={{ label: t('booth.byBooth', 'Booth Reference No.'), value: 'booth' }}
             numberFieldLabel={t('booth.boothNo', 'Booth Reference No.')}
@@ -148,7 +148,7 @@ export default function BoothRentalPage() {
               {t('booth.paySelected', 'Pay selected')}
             </Button>
           </FormActions>
-        </FormWrapper>
+        </form>
       </FormProvider>
     </SidebarLayout>
   );

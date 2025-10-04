@@ -397,14 +397,17 @@ export interface AssessmentBill {
 
 export interface AssessmentSearchParams {
     ic?: string;
-    assessment_no?: string; // account or assessment tax number
+    account_no?: string;
+    bill_no?: string; // optional narrowing
 }
 
 // Fetch outstanding assessment bills by IC or assessment number
 export const fetchAssessmentOutstanding = async (params: AssessmentSearchParams) => {
     const query: any = {};
     if (params.ic) query.ic = params.ic;
-    if (params.assessment_no) query.assessment_no = params.assessment_no;
+    if (!params.ic && params.account_no) query.account_no = params.account_no;
+    if (params.bill_no) query.bill_no = params.bill_no;
+    if (typeof window !== 'undefined') console.log('[API] GET /assessment/outstanding params:', query);
     const { data } = await api.get('/mbmb/public/api/assessment/outstanding', { params: query });
     return data as { data?: AssessmentBill[] } | AssessmentBill[];
 };
@@ -421,13 +424,22 @@ export interface CompoundBill {
 export interface CompoundSearchParams {
     ic?: string;
     compound_no?: string;
+    // also accept camelCase from callers and normalize
+    compoundNo?: string;
+    vehicle_registration_no?: string;
+    vehicel_registration_no?: string; // compatibility
+    vehicleRegistrationNo?: string; // camelCase acceptance
 }
 
 // Fetch outstanding compound by IC or compound number
 export const fetchCompoundOutstanding = async (params: CompoundSearchParams) => {
     const query: any = {};
     if (params.ic) query.ic = params.ic;
-    if (params.compound_no) query.compound_no = params.compound_no;
+    const compound = params.compound_no ?? params.compoundNo;
+    if (!params.ic && compound) { query.compound_no = compound; query.compoundNo = compound; }
+    const vrn = params.vehicle_registration_no ?? params.vehicel_registration_no ?? params.vehicleRegistrationNo;
+    if (vrn) { query.vehicle_registration_no = vrn; query.vehicleRegistrationNo = vrn; }
+    if (typeof window !== 'undefined') { console.log('[API] GET /compound/outstanding params:', query); }
     const { data } = await api.get('/mbmb/public/api/compound/outstanding', { params: query });
     return data as { data?: CompoundBill[] } | CompoundBill[];
 };
@@ -443,13 +455,16 @@ export interface BoothBill {
 
 export interface BoothSearchParams {
     ic?: string;
-    booth_no?: string;
+    account_no?: string; // preferred
+    booth_no?: string; // deprecated alias
 }
 
 export const fetchBoothOutstanding = async (params: BoothSearchParams) => {
     const query: any = {};
     if (params.ic) query.ic = params.ic;
-    if (params.booth_no) query.booth_no = params.booth_no;
+    const acct = params.account_no ?? params.booth_no;
+    if (!params.ic && acct) query.account_no = acct;
+    if (typeof window !== 'undefined') console.log('[API] GET /booth/outstanding params:', query);
     const { data } = await api.get('/mbmb/public/api/booth/outstanding', { params: query });
     return data as { data?: BoothBill[] } | BoothBill[];
 };
@@ -465,17 +480,28 @@ export interface MiscBill {
 
 export interface MiscSearchParams {
     ic?: string;
-    misc_no?: string; // reference or bill number
-    bill_no?: string; // alias for misc_no
+    account_no?: string; // preferred
+    misc_no?: string; // legacy alias
+    bill_no?: string; // legacy alias
 }
 
 export const fetchMiscOutstanding = async (params: MiscSearchParams) => {
     const query: any = {};
     if (params.ic) query.ic = params.ic;
-    if (params.misc_no) query.misc_no = params.misc_no;
-    else if (params.bill_no) query.misc_no = params.bill_no;
+    const acct = params.account_no ?? params.misc_no ?? params.bill_no;
+    if (!params.ic && acct) query.account_no = acct;
+    if (typeof window !== 'undefined') console.log('[API] GET /misc/outstanding params:', query);
     const { data } = await api.get('/mbmb/public/api/misc/outstanding', { params: query });
-    return data as { data?: MiscBill[] } | MiscBill[];
+    // Expected shape: { data: [...] } where each item may use backend field names (no_akaun, trk_bil, jumlah, amaun_bil, catitan1,...)
+    const raw = (data && Array.isArray(data.data)) ? data.data : Array.isArray(data) ? data : [];
+    const mapped: MiscBill[] = raw.map((item: any, idx: number) => ({
+        id: item.no_akaun || item.bill_no || item.no_rujukan || idx,
+        bill_no: item.no_akaun || item.bill_no || item.no_rujukan || '',
+        amount: Number(item.jumlah ?? item.amaun_bil ?? 0) || 0,
+        due_date: item.trk_bil || item.due_date || '',
+        description: item.catitan1 || item.nama || undefined,
+    }));
+    return { data: mapped };
 };
 
 // ================= MySKB Project (Draft & Submit) =================

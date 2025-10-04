@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useState } from 'react';
 import SidebarLayout from '@/components/main/SidebarLayout';
-import FormWrapper from 'todo/components/forms/FormWrapper';
 import Button from 'todo/components/forms/Button';
+import InputText from 'todo/components/forms/InputText';
 import Spacing from 'todo/components/forms/Spacing';
 import Heading from 'todo/components/forms/Heading';
 import LineSeparator from 'todo/components/forms/LineSeparator';
@@ -17,6 +17,7 @@ type SearchType = 'ic' | 'compound';
 type FormValues = {
   searchType: SearchType;
   query: string;
+  vehicle_registration_no?: string;
 };
 
 export default function CompoundPage() {
@@ -26,6 +27,7 @@ export default function CompoundPage() {
     defaultValues: {
       searchType: 'ic',
       query: icDefault,
+      vehicle_registration_no: '',
     },
   });
   const { handleSubmit, getValues } = methods;
@@ -34,7 +36,6 @@ export default function CompoundPage() {
   const [bills, setBills] = useState<CompoundBill[]>([]);
   const [selectedIds, setSelectedIds] = useState<Set<string | number>>(new Set());
   const [error, setError] = useState<string | null>(null);
-
   const sortedBills = useMemo(() => {
     const copy = [...bills];
     copy.sort((a, b) => new Date(b.due_date).getTime() - new Date(a.due_date).getTime());
@@ -45,7 +46,22 @@ export default function CompoundPage() {
     setLoading(true);
     setError(null);
     try {
-      const mapped = params.searchType === 'ic' ? { ic: params.query } : { compound_no: params.query };
+      const trimmedQuery = (params.query || '').trim();
+      const trimmedVrn = (params.vehicle_registration_no || '').trim();
+      if (!trimmedQuery && !trimmedVrn) {
+        setError(t('compound.requireQuery', 'Please enter IC, Compound No., or Vehicle Registration No.'));
+        console.warn('[Compound] No IC/Compound/VRN provided; skipping request');
+        return;
+      }
+      let mapped: any = {};
+      if (trimmedQuery) {
+        mapped = params.searchType === 'ic' ? { ic: trimmedQuery } : { compound_no: trimmedQuery };
+        if (trimmedVrn) mapped.vehicle_registration_no = trimmedVrn; // optional narrowing
+      } else {
+        mapped = { vehicle_registration_no: trimmedVrn };
+      }
+      console.log('[Compound] form params:', params);
+      console.log('[Compound] mapped query:', mapped);
       const res = await fetchCompoundOutstanding(mapped as any);
       const list: CompoundBill[] = Array.isArray(res) ? (res as any) : (res?.data || []);
       setBills(list);
@@ -101,7 +117,7 @@ export default function CompoundPage() {
         </div>
       )}
       <FormProvider {...methods}>
-        <FormWrapper onSubmit={handleSubmit(onSearch)}>
+        <form onSubmit={handleSubmit(onSearch)} className="w-full max-w-3xl mx-auto">
           <Heading level={2} align="left" bold>
             {t('compound.title', 'Compound')}
           </Heading>
@@ -109,13 +125,21 @@ export default function CompoundPage() {
 
           <SearchControls
             loading={loading}
-            onRefresh={() => fetchData(getValues())}
+            onRefresh={() => handleSubmit(onSearch)()}
             t={t}
             secondOption={{ label: t('compound.byCompound', 'Compound No.'), value: 'compound' }}
             numberFieldLabel={t('compound.compoundNo', 'Compound No.')}
             numberFieldPlaceholder={t('compound.compoundPlaceholder', 'Enter Compound No.')}
             icFieldLabel={t('compound.ic', 'IC Number')}
             icFieldPlaceholder={t('compound.icPlaceholder', 'Enter IC Number')}
+          />
+
+          <Spacing size="sm" />
+          <InputText
+            id="vehicle_registration_no"
+            name="vehicle_registration_no"
+            label={t('compound.vrnOpt', 'Vehicle Registration No. (optional)')}
+            placeholder={t('compound.vrnPlaceholder', 'Enter Vehicle Registration No.')}
           />
 
           <Spacing size="md" />
@@ -152,7 +176,7 @@ export default function CompoundPage() {
               {t('compound.paySelected', 'Pay selected')}
             </Button>
           </FormActions>
-        </FormWrapper>
+        </form>
       </FormProvider>
     </SidebarLayout>
   );

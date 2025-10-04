@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from 'react';
 import SidebarLayout from '@/components/main/SidebarLayout';
-import FormWrapper from 'todo/components/forms/FormWrapper';
+// removed FormWrapper to avoid nested form contexts
 import Button from 'todo/components/forms/Button';
 import Spacing from 'todo/components/forms/Spacing';
 import Heading from 'todo/components/forms/Heading';
@@ -37,7 +37,15 @@ export default function MiscBillsPage() {
     setLoading(true);
     setError(null);
     try {
-      const mapped = params.searchType === 'ic' ? { ic: params.query } : { misc_no: params.query };
+      const q = (params.query || '').trim();
+      if (!q) {
+        setError(t('misc.requireQuery', 'Please enter IC or Bill Reference No.'));
+        console.warn('[Misc] Empty query provided; skipping request');
+        return;
+      }
+      const mapped = params.searchType === 'ic' ? { ic: q } : { account_no: q };
+      console.log('[Misc] form params:', params);
+      console.log('[Misc] mapped query:', mapped);
       const res = await fetchMiscOutstanding(mapped as any);
       const list: MiscBill[] = Array.isArray(res) ? (res as any) : (res?.data || []);
       setBills(list);
@@ -92,7 +100,7 @@ export default function MiscBillsPage() {
         </div>
       )}
       <FormProvider {...methods}>
-        <FormWrapper onSubmit={handleSubmit(onSearch)}>
+        <form onSubmit={handleSubmit(onSearch)} className="w-full max-w-3xl mx-auto">
           <Heading level={2} align="left" bold>
             {t('misc.title', 'Miscellaneous Bills')}
           </Heading>
@@ -100,7 +108,7 @@ export default function MiscBillsPage() {
 
           <SearchControls
             loading={loading}
-            onRefresh={() => fetchData(getValues())}
+            onRefresh={() => handleSubmit(onSearch)()}
             t={t}
             secondOption={{ label: t('misc.byBill', 'Bill Reference No.'), value: 'misc' }}
             numberFieldLabel={t('misc.billRef', 'Bill Reference No.')}
@@ -143,7 +151,7 @@ export default function MiscBillsPage() {
               {t('misc.paySelected', 'Pay selected')}
             </Button>
           </FormActions>
-        </FormWrapper>
+        </form>
       </FormProvider>
     </SidebarLayout>
   );

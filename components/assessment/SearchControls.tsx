@@ -12,6 +12,13 @@ type SecondOption = {
   value: string; // e.g., 'assessment' | 'compound'
 };
 
+type ExtraOption = {
+  label: string;
+  value: string;
+  numberFieldLabel?: string;
+  numberFieldPlaceholder?: string;
+};
+
 export default function SearchControls({
   loading,
   onRefresh,
@@ -21,6 +28,7 @@ export default function SearchControls({
   numberFieldPlaceholder = t('assessment.assessmentPlaceholder', 'Enter Assessment No.'),
   icFieldLabel = t('assessment.ic', 'IC Number'),
   icFieldPlaceholder = t('assessment.icPlaceholder', 'Enter IC Number'),
+  extras,
 }: {
   loading: boolean;
   onRefresh: () => void;
@@ -30,9 +38,31 @@ export default function SearchControls({
   numberFieldPlaceholder?: string;
   icFieldLabel?: string;
   icFieldPlaceholder?: string;
+  extras?: ExtraOption[];
 }) {
   const { control } = useFormContext();
-  const currentType = useWatch({ control, name: 'searchType' }) as SearchType | undefined;
+  const currentType = (useWatch({ control, name: 'searchType' }) as SearchType | undefined) || 'ic';
+
+  // Build radio options: always IC, then either provided extras or fallback to single secondOption
+  const radioOptions = [
+    { label: t('assessment.byIc', 'IC Number'), value: 'ic' },
+    ...(
+      Array.isArray(extras) && extras.length > 0
+        ? extras.map((e) => ({ label: e.label, value: e.value }))
+        : [secondOption]
+    ),
+  ];
+
+  // Determine active labels based on selected type
+  let activeNumberLabel = numberFieldLabel;
+  let activeNumberPlaceholder = numberFieldPlaceholder;
+  if (currentType !== 'ic' && Array.isArray(extras) && extras.length > 0) {
+    const found = extras.find((e) => e.value === currentType);
+    if (found) {
+      if (found.numberFieldLabel) activeNumberLabel = found.numberFieldLabel;
+      if (found.numberFieldPlaceholder) activeNumberPlaceholder = found.numberFieldPlaceholder;
+    }
+  }
 
   return (
     <div className="grid grid-cols-1 gap-4">
@@ -41,10 +71,7 @@ export default function SearchControls({
           name="searchType"
           label={t('assessment.searchBy', 'Search by')}
           inline
-          options={[
-            { label: t('assessment.byIc', 'IC Number'), value: 'ic' },
-            { label: secondOption.label, value: secondOption.value },
-          ]}
+          options={radioOptions}
         />
       </div>
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4 items-end">
@@ -53,8 +80,8 @@ export default function SearchControls({
             key={currentType || 'ic'}
             id="query"
             name="query"
-            label={currentType === 'ic' ? icFieldLabel : numberFieldLabel}
-            placeholder={currentType === 'ic' ? icFieldPlaceholder : numberFieldPlaceholder}
+            label={currentType === 'ic' ? icFieldLabel : activeNumberLabel}
+            placeholder={currentType === 'ic' ? icFieldPlaceholder : activeNumberPlaceholder}
           />
         </div>
         <div className="flex gap-2">

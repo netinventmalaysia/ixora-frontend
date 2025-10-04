@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
 import SidebarLayout from '@/components/main/SidebarLayout';
-import FormWrapper from 'todo/components/forms/FormWrapper';
+// removed FormWrapper to avoid nested form contexts
 import InputText from 'todo/components/forms/InputText';
 import Button from 'todo/components/forms/Button';
 import Spacing from 'todo/components/forms/Spacing';
@@ -15,7 +15,7 @@ import AssessmentBillsTable from '@/components/assessment/AssessmentBillsTable';
 import SearchControls from '@/components/assessment/SearchControls';
 import LogoSpinner from '@/components/common/LogoSpinner';
 
-type SearchType = 'ic' | 'assessment';
+type SearchType = 'ic' | 'account' | 'bill';
 type FormValues = {
   searchType: SearchType;
   query: string;
@@ -53,7 +53,9 @@ export default function AssessmentTaxPage() {
     try {
       const mapped = params.searchType === 'ic'
         ? { ic: params.query }
-        : { assessment_no: params.query };
+        : params.searchType === 'account'
+          ? { account_no: params.query }
+          : { bill_no: params.query };
       const res = await fetchAssessmentOutstanding(mapped as any);
       const list: AssessmentBill[] = Array.isArray(res) ? res as any : (res?.data || []);
       setBills(list);
@@ -112,13 +114,21 @@ export default function AssessmentTaxPage() {
         </div>
       )}
       <FormProvider {...methods}>
-        <FormWrapper onSubmit={handleSubmit(onSearch)}>
+        <form onSubmit={handleSubmit(onSearch)} className="w-full max-w-3xl mx-auto">
           <Heading level={2} align="left" bold>
             {t('assessment.title', 'Assessment Tax')}
           </Heading>
           <Spacing size="md" />
 
-          <SearchControls loading={loading} onRefresh={() => fetchData(getValues())} t={t} />
+          <SearchControls
+            loading={loading}
+            onRefresh={() => handleSubmit(onSearch)()}
+            t={t}
+            extras={[
+              { label: t('assessment.byAccount', 'Account No.'), value: 'account', numberFieldLabel: t('assessment.accountNo', 'Account No.'), numberFieldPlaceholder: t('assessment.accountPlaceholder', 'Enter Account No.') },
+              { label: t('assessment.byBill', 'Bill No.'), value: 'bill', numberFieldLabel: t('assessment.billNo', 'Bill No.'), numberFieldPlaceholder: t('assessment.billNoPlaceholder', 'Enter Bill No.') },
+            ]}
+          />
 
           <Spacing size="md" />
           <LineSeparator />
@@ -142,7 +152,7 @@ export default function AssessmentTaxPage() {
               {t('assessment.paySelected', 'Pay selected')}
             </Button>
           </FormActions>
-        </FormWrapper>
+        </form>
       </FormProvider>
     </SidebarLayout>
   );
