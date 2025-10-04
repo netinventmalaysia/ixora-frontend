@@ -207,15 +207,16 @@
   },
   "landing": {
     "nav": {
-      "intro": "Pengenalan",
-      "services": "Modul Perkhidmatan",
-      "city": "Panduan Bandar",
-      "benefits": "Manfaat",
-      "components": "Komponen",
-      "achievements": "Pencapaian",
-      "faq": "FAQ",
-      "contact": "Hubungi Kami"
-    },
+    "intro": "Pengenalan",
+    "energy": "Denyut Digital",
+    "services": "Modul Perkhidmatan",
+    "city": "Panduan Bandar",
+    "benefits": "Manfaat",
+    "components": "Komponen",
+    "achievements": "Pencapaian",
+    "faq": "Soalan Lazim",
+    "contact": "Hubungi Kami"
+  },
     "hero": {
       "title": "IXORA MBMB",
       "subtitle": "Tadbir Urus Lebih Pintar, Komuniti Lebih Lancar",

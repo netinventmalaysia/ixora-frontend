@@ -13,6 +13,7 @@ export default function Navbar() {
 
   const nav = [
     { label: t("landing.nav.intro"), href: "#intro" },
+    { label: t("landing.nav.energy"), href: "#energy-map" },
     { label: t("landing.nav.services"), href: "#services" },
     { label: t("landing.nav.city"), href: "#city" },
     // { label: t("landing.nav.faq"), href: "#faq" },

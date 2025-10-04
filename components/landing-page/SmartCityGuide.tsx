@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { 
+import {
   BuildingLibraryIcon,
   BoltIcon,
   MapPinIcon,
@@ -27,14 +27,55 @@ export default function SmartCityGuide() {
   const { t } = useTranslation();
 
   const cityCards: CityCard[] = [
-    { title: t("city.publicToilets.title", "Toilet Awam"), desc: t("city.publicToilets.desc", "Lokasi, waktu operasi & penarafan kebersihan."), icon: BuildingLibraryIcon, href: "/city/public-toilets" },
-    { title: t("city.evChargers.title", "Pengecas EV"), desc: t("city.evChargers.desc", "Senarai & status pengecas terdekat."), icon: BoltIcon, href: "/city/ev-chargers" }, // pastikan page ini wujud
-    { title: t("city.parking.title", "Parkir"), desc: t("city.parking.desc", "Maklumat zon parkir, kadar & teguran."), icon: MapPinIcon, href: "/city/parking-locations" },
-    { title: t("city.environment.title", "Sensor Alam Sekitar"), desc: t("city.environment.desc", "Kualiti udara, cuaca & indeks UV."), icon: CloudIcon, href: "/city/environment-sensors" },
-    { title: t("city.firstAid.title", "Balai Pertolongan Cemas"), desc: t("city.firstAid.desc", "Lokasi klinik, farmasi & AED berdekatan."), icon: HeartIcon, href: "/city/first-aid" },
-    { title: t("city.touristInfo.title", "Info Pelancong & Warisan"), desc: t("city.touristInfo.desc", "Pusat maklumat, mercu tanda & jejak warisan."), icon: MapIcon, href: "/city/CeriteraMelaka" },
-    { title: t("city.markets.title", "Pasar & Penjaja"), desc: t("city.markets.desc", "Pasar malam, medan selera & waktu operasi."), icon: BuildingStorefrontIcon, href: "/city/markets" },
-    { title: t("city.wifi.title", "Wi-Fi Awam"), desc: t("city.wifi.desc", "Capaian internet awam & lokasi hotspot."), icon: WifiIcon, href: "/city/public-wifi" },
+    {
+      title: t("city.publicToilets.title", "Toilet Awam"),
+      desc: t("city.publicToilets.desc", "Lokasi, waktu operasi & penarafan kebersihan."),
+      icon: BuildingLibraryIcon,
+      href: "/city/public-toilets",
+    },
+    {
+      title: t("city.evChargers.title", "Pengecas EV"),
+      desc: t("city.evChargers.desc", "Senarai & status pengecas terdekat."),
+      icon: BoltIcon,
+      href: "/city/ev-chargers",
+    },
+    {
+      title: t("city.parking.title", "Parkir"),
+      desc: t("city.parking.desc", "Maklumat zon parkir, kadar & teguran."),
+      icon: MapPinIcon,
+      href: "/city/parking-locations",
+    },
+    {
+      title: t("city.environment.title", "Sensor Alam Sekitar"),
+      desc: t("city.environment.desc", "Kualiti udara, cuaca & indeks UV."),
+      icon: CloudIcon,
+      href: "/city/environment-sensors",
+    },
+    {
+      title: t("city.firstAid.title", "Balai Pertolongan Cemas"),
+      desc: t("city.firstAid.desc", "Lokasi klinik, farmasi & AED berdekatan."),
+      icon: HeartIcon,
+      href: "/city/first-aid",
+    },
+    {
+      title: t("city.touristInfo.title", "Info Pelancong & Warisan"),
+      desc: t("city.touristInfo.desc", "Pusat maklumat, mercu tanda & jejak warisan."),
+      icon: MapIcon,
+      href: "/city/CeriteraMelaka",
+    },
+    {
+      title: t("city.markets.title", "Pasar & Penjaja"),
+      desc: t("city.markets.desc", "Pasar malam, medan selera & waktu operasi."),
+      icon: BuildingStorefrontIcon,
+      href: "/city/markets",
+      status: "coming-soon", // ❗ hanya ini ditandakan Coming Soon
+    },
+    {
+      title: t("city.wifi.title", "Wi-Fi Awam"),
+      desc: t("city.wifi.desc", "Capaian internet awam & lokasi hotspot."),
+      icon: WifiIcon,
+      href: "/city/public-wifi",
+    },
   ];
 
   return (
@@ -60,13 +101,9 @@ export default function SmartCityGuide() {
                 }`}
                 style={{ borderColor: isDisabled ? "#D1D5DB" : PRIMARY }}
               >
-                {/* Stretched link: buat seluruh kad boleh diklik bila tidak disabled */}
+                {/* Klik seluruh kad bila aktif */}
                 {!isDisabled && (
-                  <Link
-                    href={c.href}
-                    className="absolute inset-0"
-                    aria-label={c.title}
-                  />
+                  <Link href={c.href} className="absolute inset-0" aria-label={c.title} />
                 )}
 
                 <div className="flex items-start gap-3">
@@ -88,11 +125,6 @@ export default function SmartCityGuide() {
                     <p className={`mt-1 text-xs ${isDisabled ? "text-gray-400" : "text-gray-600"}`}>
                       {c.desc}
                     </p>
-                    {/* {!isDisabled && (
-                      <span className="relative z-[1] mt-2 inline-block text-xs font-medium text-[#B01C2F] group-hover:underline">
-                        {t("city.cta", "Lihat peta & lokasi →")}
-                      </span>
-                    )} */}
                   </div>
                 </div>
               </div>

@@ -7,12 +7,13 @@ import SmartCityGuide from "@/components/landing-page/SmartCityGuide";
 import FAQ from "@/components/landing-page/Faq";
 import Contact from "@/components/landing-page/Contact";
 import Transactions from "todo/components/landing-page/Transactions";
+import DigitalEnergyMap from "todo/components/landing-page/DigitalEnergyMap";
 
 export default function HomePage() {
   return (
     <Layout>
       <Hero />
-      {/* <Transactions /> */}
+      <DigitalEnergyMap />
       <Services />
       <SmartCityGuide />
       <PWAInstallPrompt
