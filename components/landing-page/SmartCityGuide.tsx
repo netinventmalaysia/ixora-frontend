@@ -29,7 +29,7 @@ export default function SmartCityGuide() {
   const cityCards: CityCard[] = [
     { title: t("city.publicToilets.title", "Toilet Awam"), desc: t("city.publicToilets.desc", "Lokasi, waktu operasi & penarafan kebersihan."), icon: BuildingLibraryIcon, href: "/city/public-toilets" },
     { title: t("city.evChargers.title", "Pengecas EV"), desc: t("city.evChargers.desc", "Senarai & status pengecas terdekat."), icon: BoltIcon, href: "/city/ev-chargers" }, // pastikan page ini wujud
-    { title: t("city.parking.title", "Parkir"), desc: t("city.parking.desc", "Maklumat zon parkir, kadar & teguran."), icon: MapPinIcon, href: "/city/parking" },
+    { title: t("city.parking.title", "Parkir"), desc: t("city.parking.desc", "Maklumat zon parkir, kadar & teguran."), icon: MapPinIcon, href: "/city/parking-locations" },
     { title: t("city.environment.title", "Sensor Alam Sekitar"), desc: t("city.environment.desc", "Kualiti udara, cuaca & indeks UV."), icon: CloudIcon, href: "/city/environment-sensors" },
     { title: t("city.firstAid.title", "Balai Pertolongan Cemas"), desc: t("city.firstAid.desc", "Lokasi klinik, farmasi & AED berdekatan."), icon: HeartIcon, href: "/city/first-aid" },
     { title: t("city.touristInfo.title", "Info Pelancong & Warisan"), desc: t("city.touristInfo.desc", "Pusat maklumat, mercu tanda & jejak warisan."), icon: MapIcon, href: "/city/CeriteraMelaka" },
