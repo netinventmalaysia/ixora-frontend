@@ -44,6 +44,7 @@ export default function Services() {
     { title: t("services.miscBills.title", "Miscellaneous Bills"), desc: t("services.miscBills.desc", "Check & pay MBMB miscellaneous bills."), icon: DocumentTextIcon, href: "#"},
     { title: t("services.doLimited.title", "Limited Planning Order"), desc: t("services.doLimited.desc", "Apply digitally for limited."), icon: DocumentCheckIcon, href: "#", status: "coming-soon" },
     { title: t("services.taxRemission.title", "Tax Remission"), desc: t("services.taxRemission.desc", "Reduction of assessment tax."), icon: HomeModernIcon, href: "#", status: "coming-soon" },
+    { title: t("services.facilityBooking.title", "Facility Booking"), desc: t("services.facilityBooking.desc", "Book halls, fields & courts."), icon: CalendarDaysIcon, href: "/services/facility-booking", status: "coming-soon" }, // ✅ Baru ditambah
     { title: t("services.monthlyParking.title", "Monthly Parking Pass"), desc: t("services.monthlyParking.desc", "Subscribe to monthly parking."), icon: TicketIcon, href: "#", status: "coming-soon" },
     { title: t("services.hawker.title", "Hawker Permit"), desc: t("services.hawker.desc", "Register & manage hawker permits."), icon: BuildingStorefrontIcon, href: "#", status: "coming-soon" },
     { title: t("services.petLicence.title", "Pet Licence"), desc: t("services.petLicence.desc", "Register & renew pet licences."), icon: HeartIcon, href: "#", status: "coming-soon" },

@@ -7,16 +7,16 @@ import {
   EnvelopeIcon,
   ClockIcon,
   BuildingOffice2Icon,
-  ArrowTopRightOnSquareIcon,
 } from "@heroicons/react/24/outline";
 
 const PRIMARY = "#B01C2F";
 const PRIMARY_HOVER = "#951325";
 
 export default function Contact() {
-  const addressLine1 = "Majlis Bandaraya Melaka Bersejarah (MBMB)";
-  const addressLine2 = "Jalan Graha Makmur, Ayer Keroh, 75450 Melaka";
-  const tel = "+606-xxxx xxxx"; // edit to real number
+  const addressLine1 = "Majlis Bandaraya Melaka Bersejarah";
+  const addressLine2 = "Jalan Graha Makmur, Ayer Keroh,";
+  const addressLine3 = "75450 Melaka";
+  const tel = "+606-333 3333"; // edit to real number
   const email = "ixora@mbmb.gov.my";
 
   const googleMapsUrl =
@@ -56,6 +56,8 @@ export default function Contact() {
                   {addressLine1}
                   <br />
                   {addressLine2}
+                  <br />
+                  {addressLine3}
                 </p>
               </div>
             </div>
@@ -161,7 +163,7 @@ export default function Contact() {
         </div>
 
         {/* Quick actions */}
-        <div className="mt-6 flex flex-wrap items-center justify-center gap-3">
+        {/* <div className="mt-6 flex flex-wrap items-center justify-center gap-3">
           <a
             href={`tel:${tel.replace(/[^+\d]/g, "")}`}
             className="inline-flex items-center gap-2 rounded-md px-3 py-1.5 text-sm font-medium text-white"
@@ -186,7 +188,7 @@ export default function Contact() {
             <MapPinIcon className="h-4 w-4" />
             Directions
           </a>
-        </div>
+        </div> */}
       </div>
 
       <style jsx global>{`
