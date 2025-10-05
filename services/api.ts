@@ -409,12 +409,49 @@ export const fetchAssessmentOutstanding = async (params: AssessmentSearchParams)
     else if (params.account_no) { query.columnName = 'no_akaun'; query.columnValue = params.account_no; }
     else if (params.bill_no) { query.columnName = 'no_bil'; query.columnValue = params.bill_no; }
     if (typeof window !== 'undefined') console.log('[API] GET /assessment-tax params:', query);
-    const { data } = await api.get('/mbmb/public/api/assessment-tax', { params: query });
-    if (typeof window !== 'undefined') {
-        try { console.log('[API][Assessment] full response:', JSON.parse(JSON.stringify(data))); } catch { console.log('[API][Assessment] full response (raw):', data); }
+    let primaryErr: any = null;
+    let data: any;
+    try {
+        ({ data } = await api.get('/mbmb/public/api/assessment-tax', { params: query }));
+    } catch (e) {
+        primaryErr = e;
+        if (typeof window !== 'undefined') console.warn('[API][Assessment] /assessment-tax failed, trying /assessment/outstanding fallback');
     }
-    const raw = (data && Array.isArray(data.data)) ? data.data : Array.isArray(data) ? data : [];
+    // If primary failed OR returned empty, fallback to original endpoint using simpler param style
+    let raw: any[] = [];
+    if (data) {
+        raw = (data && Array.isArray(data.data)) ? data.data : Array.isArray(data) ? data : [];
+    }
+    if ((!raw || raw.length === 0) && primaryErr) {
+        // Build fallback params: old endpoint appears to accept no_kp, account_no, bill_no directly
+        const fallbackParams: any = {};
+        if (params.ic) fallbackParams.no_kp = params.ic;
+        else if (params.account_no) fallbackParams.account_no = params.account_no;
+        else if (params.bill_no) fallbackParams.bill_no = params.bill_no;
+        if (typeof window !== 'undefined') console.log('[API][Assessment] Fallback /assessment/outstanding params:', fallbackParams);
+        try {
+            const fallbackRes = await api.get('/mbmb/public/api/assessment/outstanding', { params: fallbackParams });
+            const fd = fallbackRes.data;
+            raw = (fd && Array.isArray(fd.data)) ? fd.data : Array.isArray(fd) ? fd : [];
+        } catch (fallbackErr) {
+            if (typeof window !== 'undefined') console.error('[API][Assessment] Fallback also failed:', fallbackErr);
+            throw primaryErr; // rethrow original
+        }
+    }
+    if (typeof window !== 'undefined') {
+        try { console.log('[API][Assessment] full response (chosen):', JSON.parse(JSON.stringify(data || raw))); } catch { console.log('[API][Assessment] full response (chosen raw):', data || raw); }
+    }
     const mapped: AssessmentBill[] = raw.map((item: any, idx: number) => {
+        // Support already-normalized shape
+        if (item && item.id && item.bill_no && item.amount !== undefined && item.due_date) {
+            return {
+                id: item.id,
+                bill_no: item.bill_no,
+                amount: Number(item.amount) || 0,
+                due_date: item.due_date,
+                description: item.description || item.nama || item.seksyen || item.alamat1 || undefined,
+            };
+        }
         const amountRaw = item.jumlah ?? item.cukai ?? item.cukai_sepenggal ?? item.amount;
         const amountNum = Number(amountRaw);
         return {
