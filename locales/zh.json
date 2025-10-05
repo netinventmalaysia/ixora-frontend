@@ -207,15 +207,16 @@
   },
   "landing": {
     "nav": {
-      "intro": "简介",
-      "services": "服务模块",
-      "city": "城市指南",
-      "benefits": "优势",
-      "components": "组件",
-      "achievements": "成就",
-      "faq": "常见问题",
-      "contact": "联系我们"
-    },
+    "intro": "简介",
+    "energy": "数字能量",
+    "services": "服务模块",
+    "city": "城市指南",
+    "benefits": "好处",
+    "components": "组件",
+    "achievements": "成就",
+    "faq": "常见问题",
+    "contact": "联系我们"
+  },
     "hero": {
       "title": "IXORA MBMB",
       "subtitle": "更智慧的治理，更顺畅的社区",

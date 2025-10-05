@@ -2,6 +2,7 @@
 
 import Image from "next/image";
 import Link from "next/link";
+import { useEffect, useState } from "react";
 import { useTranslation } from "@/utils/i18n";
 import {
   ArrowRightOnRectangleIcon,
@@ -15,10 +16,46 @@ const PRIMARY = "#B01C2F";
 export default function Hero() {
   const { t } = useTranslation();
 
+  const [pulse, setPulse] = useState(false);
+
+  // Simulasi denyutan robot (setiap 2.5s)
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setPulse(true);
+      setTimeout(() => setPulse(false), 500);
+    }, 2500);
+    return () => clearInterval(interval);
+  }, []);
+
   const stats = [
     { label: t("landing.hero.stats.uptime", "Uptime"), value: "99.9%" },
     { label: t("landing.hero.stats.transactions", "Transactions"), value: "150k+" },
-    { label: t("landing.hero.stats.security", "Security"), value: "PDPA-Act" },
+    {
+      label: t("landing.hero.stats.energy", "Digital Pulse"),
+      value: (
+        <div className="flex flex-col items-center justify-center">
+          <div
+            className={`h-8 w-8 rounded-xl border flex items-center justify-center transition-transform ${
+              pulse ? "scale-110" : "scale-100"
+            }`}
+            style={{ borderColor: PRIMARY }}
+          >
+            <span className="text-lg" role="img" aria-label="IXORA Bot">
+              🤖
+            </span>
+          </div>
+          <div className="mt-1 flex items-center gap-1">
+            <span
+              className={`inline-block h-2 w-2 rounded-full ${
+                pulse ? "animate-[ping_0.6s_ease-out_1]" : "animate-pulse"
+              }`}
+              style={{ background: PRIMARY }}
+            />
+            <span className="text-[11px] text-gray-600">Active</span>
+          </div>
+        </div>
+      ),
+    },
   ];
 
   return (
@@ -86,12 +123,16 @@ export default function Hero() {
               </a>
             </div>
 
-            {/* KPI Stats (boleh tukar ke sparkline nanti) */}
+            {/* KPI Stats */}
             <dl className="mt-8 grid grid-cols-3 gap-3 sm:gap-4 lg:gap-6 lg:max-w-none">
               {stats.map((s) => (
-                <div key={s.label} className="rounded-xl border bg-white p-4 text-center shadow-sm">
+                <div
+                  key={s.label}
+                  className="rounded-xl border bg-white p-4 text-center shadow-sm hover:shadow-md transition"
+                  style={{ borderColor: PRIMARY }}
+                >
                   <dt className="text-[11px] tracking-wide text-gray-500">{s.label}</dt>
-                  <dd className="mt-0.5 text-lg font-semibold text-gray-900 sm:text-xl">
+                  <dd className="mt-0.5 text-lg font-semibold text-gray-900 sm:text-xl flex justify-center">
                     {s.value}
                   </dd>
                 </div>
@@ -115,7 +156,7 @@ export default function Hero() {
         </div>
       </div>
 
-      {/* Optional: decorative gradient background */}
+      {/* Decorative gradient */}
       <div
         aria-hidden="true"
         className="pointer-events-none absolute -top-24 right-0 -z-10 h-56 w-56 rounded-full opacity-10 blur-3xl"

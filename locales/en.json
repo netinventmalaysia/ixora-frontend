@@ -211,15 +211,16 @@
   ,
   "landing": {
     "nav": {
-      "intro": "Introduction",
-      "services": "Service Modules",
-      "city": "City Guide",
-      "benefits": "Benefits",
-      "components": "Components",
-      "achievements": "Achievements",
-      "faq": "FAQ",
-      "contact": "Contact Us"
-    },
+    "intro": "Introduction",
+    "energy": "Digital Energy",
+    "services": "Service Modules",
+    "city": "City Guide",
+    "benefits": "Benefits",
+    "components": "Components",
+    "achievements": "Achievements",
+    "faq": "FAQ",
+    "contact": "Contact Us"
+  },
     "hero": {
       "title": "IXORA MBMB",
       "subtitle": "Smarter Governance, Seamless Community",
