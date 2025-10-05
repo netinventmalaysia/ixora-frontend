@@ -46,9 +46,9 @@ export default function MiscBillsPage() {
       const mapped = params.searchType === 'ic' ? { ic: q } : { account_no: q };
       console.log('[Misc] form params:', params);
       console.log('[Misc] mapped query:', mapped);
-      const res = await fetchMiscOutstanding(mapped as any);
-      const list: MiscBill[] = Array.isArray(res) ? (res as any) : (res?.data || []);
-      setBills(list);
+      const list = await fetchMiscOutstanding(mapped as any);
+      console.log('[Misc] received bills length:', list.length, 'first:', list[0]);
+      setBills(list as MiscBill[]);
       setSelectedIds(new Set());
     } catch (e: any) {
       setError(e?.message || 'Failed to fetch data');

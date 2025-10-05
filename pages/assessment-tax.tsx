@@ -56,9 +56,9 @@ export default function AssessmentTaxPage() {
         : params.searchType === 'account'
           ? { account_no: params.query }
           : { bill_no: params.query };
-      const res = await fetchAssessmentOutstanding(mapped as any);
-      const list: AssessmentBill[] = Array.isArray(res) ? res as any : (res?.data || []);
-      setBills(list);
+  const list = await fetchAssessmentOutstanding(mapped as any);
+  if (typeof window !== 'undefined') console.log('[Assessment] received bills length:', list.length, 'sample:', list[0]);
+  setBills(list as AssessmentBill[]);
       setSelectedIds(new Set());
     } catch (e: any) {
       setError(e?.message || 'Failed to fetch data');

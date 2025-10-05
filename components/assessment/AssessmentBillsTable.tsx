@@ -48,14 +48,14 @@ export default function AssessmentBillsTable({ bills, selectedIds, onToggle, onT
 
       {/* Bills table */}
       <div className="overflow-x-auto rounded border border-gray-200">
-        <table className="min-w-full text-sm">
+        <table className="min-w-full text-xs sm:text-sm table-auto">
           <thead className="bg-gray-50">
             <tr>
               <th className="p-2 w-10"></th>
-              <th className="p-2 text-left">{t('assessment.billNo', 'Bill No')}</th>
-              <th className="p-2 text-left">{t('assessment.desc', 'Description')}</th>
-              <th className="p-2 text-left">{t('assessment.dueDate', 'Due Date')}</th>
-              <th className="p-2 text-right">{t('assessment.amount', 'Amount')}</th>
+              <th className="p-2 text-left whitespace-nowrap w-[140px]">{t('assessment.billNo', 'Bill No')}</th>
+              <th className="p-2 text-left min-w-[220px] max-w-[420px]">{t('assessment.desc', 'Description')}</th>
+              <th className="p-2 text-left whitespace-nowrap w-[120px]">{t('assessment.dueDate', 'Due Date')}</th>
+              <th className="p-2 text-right whitespace-nowrap w-[120px]">{t('assessment.amount', 'Amount')}</th>
             </tr>
           </thead>
           <tbody>
@@ -69,9 +69,23 @@ export default function AssessmentBillsTable({ bills, selectedIds, onToggle, onT
                     onChange={() => onToggle(b.id)}
                   />
                 </td>
-                <td className="p-2">{b.bill_no}</td>
-                <td className="p-2">{b.description || '-'}</td>
-                <td className="p-2">{new Date(b.due_date).toLocaleDateString()}</td>
+                <td className="p-2 font-medium truncate max-w-[140px]" title={b.bill_no}>{b.bill_no}</td>
+                <td className="p-2 align-top">
+                  <div
+                    className="text-[11px] sm:text-xs leading-snug line-clamp-2 whitespace-normal break-words"
+                    title={b.description || '-'}
+                    style={{ display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical' }}
+                  >
+                    {b.description || '-'}
+                  </div>
+                </td>
+                <td className="p-2">
+                  {(() => {
+                    if (!b.due_date) return '-';
+                    const d = new Date(b.due_date);
+                    return isNaN(d.getTime()) ? '-' : d.toLocaleDateString();
+                  })()}
+                </td>
                 <td className="p-2 text-right">RM {Number(b.amount || 0).toFixed(2)}</td>
               </tr>
             ))}

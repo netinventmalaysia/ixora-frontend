@@ -404,12 +404,29 @@ export interface AssessmentSearchParams {
 // Fetch outstanding assessment bills by IC or assessment number
 export const fetchAssessmentOutstanding = async (params: AssessmentSearchParams) => {
     const query: any = {};
-    if (params.ic) query.ic = params.ic;
-    if (!params.ic && params.account_no) query.account_no = params.account_no;
-    if (params.bill_no) query.bill_no = params.bill_no;
-    if (typeof window !== 'undefined') console.log('[API] GET /assessment/outstanding params:', query);
-    const { data } = await api.get('/mbmb/public/api/assessment/outstanding', { params: query });
-    return data as { data?: AssessmentBill[] } | AssessmentBill[];
+    // Backend expects columnName + columnValue style (assuming based on provided URL) OR simple ic/account search. We'll support both.
+    if (params.ic) { query.columnName = 'no_kp'; query.columnValue = params.ic; }
+    else if (params.account_no) { query.columnName = 'no_akaun'; query.columnValue = params.account_no; }
+    else if (params.bill_no) { query.columnName = 'no_bil'; query.columnValue = params.bill_no; }
+    if (typeof window !== 'undefined') console.log('[API] GET /assessment-tax params:', query);
+    const { data } = await api.get('/mbmb/public/api/assessment-tax', { params: query });
+    if (typeof window !== 'undefined') {
+        try { console.log('[API][Assessment] full response:', JSON.parse(JSON.stringify(data))); } catch { console.log('[API][Assessment] full response (raw):', data); }
+    }
+    const raw = (data && Array.isArray(data.data)) ? data.data : Array.isArray(data) ? data : [];
+    const mapped: AssessmentBill[] = raw.map((item: any, idx: number) => {
+        const amountRaw = item.jumlah ?? item.cukai ?? item.cukai_sepenggal ?? item.amount;
+        const amountNum = Number(amountRaw);
+        return {
+            id: item.no_akaun || item.id || idx,
+            bill_no: item.no_bil || item.bill_no || '',
+            amount: Number.isNaN(amountNum) ? 0 : amountNum,
+            due_date: item.trk_end_bayar || item.trk_bil || item.due_date || '',
+            description: item.nama || item.seksyen || item.alamat1 || undefined,
+        };
+    });
+    if (typeof window !== 'undefined') console.log('[API][Assessment] mapped sample:', mapped[0]);
+    return mapped;
 };
 
 // ================= Compound =================
@@ -492,16 +509,46 @@ export const fetchMiscOutstanding = async (params: MiscSearchParams) => {
     if (!params.ic && acct) query.account_no = acct;
     if (typeof window !== 'undefined') console.log('[API] GET /misc/outstanding params:', query);
     const { data } = await api.get('/mbmb/public/api/misc/outstanding', { params: query });
+    if (typeof window !== 'undefined') {
+        // Log the ENTIRE backend response shape once so we can verify wrapper keys
+        try {
+            console.log('[API][Misc] full response object:', JSON.parse(JSON.stringify(data)));
+        } catch {
+            console.log('[API][Misc] full response object (raw):', data);
+        }
+    }
     // Expected shape: { data: [...] } where each item may use backend field names (no_akaun, trk_bil, jumlah, amaun_bil, catitan1,...)
     const raw = (data && Array.isArray(data.data)) ? data.data : Array.isArray(data) ? data : [];
-    const mapped: MiscBill[] = raw.map((item: any, idx: number) => ({
-        id: item.no_akaun || item.bill_no || item.no_rujukan || idx,
-        bill_no: item.no_akaun || item.bill_no || item.no_rujukan || '',
-        amount: Number(item.jumlah ?? item.amaun_bil ?? 0) || 0,
-        due_date: item.trk_bil || item.due_date || '',
-        description: item.catitan1 || item.nama || undefined,
-    }));
-    return { data: mapped };
+    if (typeof window !== 'undefined') {
+        console.log('[API][Misc] raw sample:', raw[0]);
+    }
+    const mapped: MiscBill[] = raw.map((item: any, idx: number) => {
+        // If backend already normalized (id, bill_no, amount, due_date, description) just reuse directly.
+        const already = item && (item.bill_no || item.billNo) && (('description' in item) || item.trk_bil || item.due_date || item.dueDate);
+        const amountRaw = item.amount ?? item.jumlah ?? item.amaun_bil;
+        const amountNum = Number(amountRaw);
+        const id = item.id ?? item.no_akaun ?? item.bill_no ?? item.billNo ?? item.no_rujukan ?? idx;
+        const bill_no = item.bill_no ?? item.billNo ?? item.no_akaun ?? item.no_rujukan ?? '';
+        const due_date = item.due_date ?? item.dueDate ?? item.trk_bil ?? '';
+        const description = item.description ?? item.catitan1 ?? item.catitan2 ?? item.nama ?? undefined;
+        if (already && item.description === undefined && (item.catitan1 || item.catitan2 || item.nama)) {
+            // edge: was normalized except description key; this branch unlikely but kept for visibility
+            if (typeof window !== 'undefined') console.warn('[API][Misc] description missing on normalized item; using fallback fields');
+        }
+        return {
+            id,
+            bill_no,
+            amount: Number.isNaN(amountNum) ? 0 : amountNum,
+            due_date,
+            description,
+        };
+    });
+    if (typeof window !== 'undefined') {
+        console.log('[API][Misc] mapped sample:', mapped[0]);
+        console.log('[API][Misc] total mapped:', mapped.length);
+    }
+    // Return array directly for simpler consumption
+    return mapped;
 };
 
 // ================= MySKB Project (Draft & Submit) =================
