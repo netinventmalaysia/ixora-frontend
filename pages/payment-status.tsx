@@ -1,44 +1,117 @@
 import SidebarLayout from '@/components/main/SidebarLayout';
-import Heading from 'todo/components/forms/Heading';
-import Spacing from 'todo/components/forms/Spacing';
-import Hyperlink from 'todo/components/forms/Hyperlink';
-import { useEffect, useState } from 'react';
+import PaymentResult from '@/components/billing/PaymentResult';
+import { fetchBillingStatus, fetchBillingReceipt } from '@/services/api';
+import { useEffect, useState, useCallback } from 'react';
+
+interface BillingStatusData {
+  reference: string;
+  status: 'pending' | 'success' | 'failed' | string;
+  paid_at?: string;
+  amount?: number;
+  receipt_no?: string;
+  bills?: Array<{ bill_no?: string; account_no?: string; item_type?: string; amount?: number }>;
+  gateway?: any;
+}
 
 export default function PaymentStatusPage() {
-  const [reference, setReference] = useState<string | null>(null);
-  const [status, setStatus] = useState<string>('pending');
+  const [reference, setReference] = useState<string>('');
+  const [data, setData] = useState<BillingStatusData | null>(null);
+  const [receipt, setReceipt] = useState<any>(null);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
+  // Extract reference from URL once
   useEffect(() => {
-    // If gateway redirects with ?ref=... we capture it
     if (typeof window !== 'undefined') {
       const params = new URLSearchParams(window.location.search);
-      const ref = params.get('ref') || params.get('reference');
-      if (ref) setReference(ref);
-      // Placeholder: real implementation would poll a /billings/status?reference=REF endpoint
-      // For now we just leave it as 'pending' and instruct user.
+      const ref = params.get('ref') || params.get('reference') || '';
+      setReference(ref);
     }
   }, []);
 
+  const pollStatus = useCallback(async (ref: string) => {
+    if (!ref) return;
+    setLoading(true);
+    try {
+      const statusData = await fetchBillingStatus(ref);
+      setData(statusData);
+      if (statusData?.status === 'success') {
+        const receiptData = await fetchBillingReceipt(ref);
+        if (receiptData) setReceipt(receiptData);
+      }
+      setError(null);
+    } catch (e: any) {
+      setError(e?.message || 'Failed to fetch status');
+    } finally {
+      setLoading(false);
+    }
+  }, []);
+
+  // Poll every 4s while pending (stop after success or failed or 2 minutes)
+  useEffect(() => {
+    if (!reference) return;
+    let attempts = 0;
+    let active = true;
+    const run = async () => {
+      if (!active) return;
+      attempts += 1;
+      await pollStatus(reference);
+      const currentStatus = (data?.status || 'pending');
+      if (currentStatus === 'pending' && attempts < 30) {
+        setTimeout(run, 4000);
+      }
+    };
+    run();
+    return () => { active = false; };
+  }, [reference]);
+
+  const onRetry = () => {
+    if (reference) pollStatus(reference);
+  };
+
+  const onDownload = () => {
+    // Simple client-side PDF (placeholder). Could be replaced with server receipt PDF.
+    try {
+      const blob = new Blob([JSON.stringify({ data, receipt }, null, 2)], { type: 'application/json' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `receipt-${reference}.json`;
+      a.click();
+      setTimeout(() => URL.revokeObjectURL(url), 3000);
+    } catch { /* ignore */ }
+  };
+
+  const status: 'pending' | 'success' | 'failed' = (data?.status === 'success' || data?.status === 'failed') ? data.status : 'pending';
+  const bills = data?.bills || receipt?.bills || [];
+  const amount = data?.amount || receipt?.amount;
+  const receiptNo = data?.receipt_no || receipt?.receipt_no || receipt?.number;
+  const paidAt = data?.paid_at || receipt?.paid_at || receipt?.paidAt;
+
   return (
     <SidebarLayout>
-      <div className="w-full max-w-xl mx-auto py-10">
-        <Heading level={2} align="left" bold>Payment Status</Heading>
-        <Spacing size="md" />
-        <p className="text-sm text-gray-700 dark:text-gray-300">This is a temporary page while real payment status retrieval is being integrated.</p>
-        <Spacing size="sm" />
-        <ul className="list-disc pl-5 text-sm space-y-1 text-gray-700 dark:text-gray-300">
-          <li>If you completed payment, you should receive an email receipt shortly.</li>
-          <li>You may safely close this page or return to the dashboard.</li>
-          <li>Once the status API is available, this page will auto-refresh and display success / failed states.</li>
-        </ul>
-        <Spacing size="md" />
-        {reference && <p className="text-xs text-gray-500">Reference: <span className="font-mono">{reference}</span></p>}
-        <p className="text-xs text-gray-500">Current status: {status}</p>
-        <Spacing size="lg" />
-        <div className="flex gap-4">
-          <Hyperlink href="/dashboard" bold inline>Return to Dashboard</Hyperlink>
-          <Hyperlink href="/" inline>Home</Hyperlink>
-        </div>
+      <div className="w-full max-w-4xl mx-auto py-10 px-4 space-y-6">
+        {!reference && (
+          <div className="rounded bg-red-50 border border-red-200 p-4 text-sm text-red-700">Missing reference. Please return to the dashboard.</div>
+        )}
+        {reference && (
+          <PaymentResult
+            status={status}
+            reference={reference}
+            amount={amount}
+            receiptNo={receiptNo}
+            paidAt={paidAt}
+            bills={bills}
+            gateway={data?.gateway}
+            loading={loading}
+            onRetry={onRetry}
+            onDownload={onDownload}
+          />
+        )}
+        {error && <div className="text-xs text-red-600">{error}</div>}
+        {status === 'pending' && !error && (
+          <div className="text-[11px] text-gray-500">This page will refresh automatically. Keep it open until you see Success or Failed.</div>
+        )}
       </div>
     </SidebarLayout>
   );

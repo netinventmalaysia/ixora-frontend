@@ -184,6 +184,37 @@ export const fetchBillings = async (businessId: number) => {
     return data;
 };
 
+// Billing status & receipt helpers (frontend assumptions until backend finalized)
+// Fetch a single billing/checkout status by reference. Expected backend endpoint (adjust if different): /billings/status?reference=REF
+// Return shape expectation (example): { reference, status: 'pending' | 'success' | 'failed', paid_at?, amount?, receipt_no?, bills?: [...], gateway?: { orderid, amount, ... } }
+export const fetchBillingStatus = async (reference: string) => {
+    if (!reference) throw new Error('Missing reference');
+    try {
+        const { data } = await api.get('/billings/status', { params: { reference } });
+        return data;
+    } catch (e) {
+        // Fallback: attempt generic /billings/:reference
+        try {
+            const { data } = await api.get(`/billings/${reference}`);
+            return data;
+        } catch {
+            throw e;
+        }
+    }
+};
+
+// Fetch receipt details (could be same as status if backend merges them). Endpoint guess: /billings/receipt?reference=REF
+export const fetchBillingReceipt = async (reference: string) => {
+    if (!reference) throw new Error('Missing reference');
+    try {
+        const { data } = await api.get('/billings/receipt', { params: { reference } });
+        return data;
+    } catch (e) {
+        // Allow caller to ignore missing receipt
+        return null;
+    }
+};
+
 // Team Members
 export const fetchTeamMembers = async (businessId: number) => {
     const { data } = await api.get(`/business/${businessId}/team`);
