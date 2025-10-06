@@ -1,12 +1,13 @@
 import { useEffect, useMemo, useState } from 'react';
 import SidebarLayout from '@/components/main/SidebarLayout';
 // removed FormWrapper to avoid nested form contexts
-import Button from 'todo/components/forms/Button';
+// Button + FormActions removed (global checkout tray handles payment)
 import Spacing from 'todo/components/forms/Spacing';
 import Heading from 'todo/components/forms/Heading';
 import LineSeparator from 'todo/components/forms/LineSeparator';
-import FormActions from 'todo/components/forms/FormActions';
+// import FormActions from 'todo/components/forms/FormActions';
 import { BoothBill, fetchBoothOutstanding } from '@/services/api';
+import { useBillSelection } from '@/context/BillSelectionContext';
 import { useForm, FormProvider } from 'react-hook-form';
 import { useTranslation } from '@/utils/i18n';
 import AssessmentBillsTable from '@/components/assessment/AssessmentBillsTable';
@@ -29,7 +30,8 @@ export default function BoothRentalPage() {
 
   const [loading, setLoading] = useState(false);
   const [bills, setBills] = useState<BoothBill[]>([]);
-  const [selectedIds, setSelectedIds] = useState<Set<string | number>>(new Set());
+  // Global selection (remove local selectedIds/pay button)
+  const { add, remove, has } = useBillSelection();
   const [error, setError] = useState<string | null>(null);
 
   const sortedBills = useMemo(() => {
@@ -46,7 +48,7 @@ export default function BoothRentalPage() {
       const res = await fetchBoothOutstanding(mapped as any);
       const list: BoothBill[] = Array.isArray(res) ? (res as any) : (res?.data || []);
       setBills(list);
-      setSelectedIds(new Set());
+  // Do not clear global selection; allow cross-page aggregation
     } catch (e: any) {
       setError(e?.message || 'Failed to fetch data');
     } finally {
@@ -71,23 +73,29 @@ export default function BoothRentalPage() {
   const onSearch = (data: FormValues) => fetchData(data);
 
   const toggleSelect = (id: string | number) => {
-    setSelectedIds((prev) => {
-      const next = new Set(prev);
-      if (next.has(id)) next.delete(id);
-      else next.add(id);
-      return next;
-    });
+    const bill = sortedBills.find(b => b.id === id);
+    if (!bill) return;
+    const selectable = {
+      id: bill.id,
+      bill_no: bill.bill_no,
+      amount: bill.amount,
+      due_date: bill.due_date,
+      description: bill.description,
+      source: 'booth' as const,
+      meta: { item_type: '02', account_no: String(bill.id), raw: bill }
+    };
+    if (has(selectable)) remove(selectable); else if (bill.amount > 0) add(selectable);
   };
 
   const toggleAll = () => {
-    setSelectedIds((prev) => {
-      if (prev.size === sortedBills.length) return new Set();
-      return new Set(sortedBills.map((b) => b.id));
+    const allSelected = sortedBills.every(b => has({ id: b.id, bill_no: b.bill_no, amount: b.amount, due_date: b.due_date, description: b.description, source: 'booth', meta: { item_type: '02', account_no: String(b.id) } } as any));
+    sortedBills.forEach(b => {
+      const selectable = { id: b.id, bill_no: b.bill_no, amount: b.amount, due_date: b.due_date, description: b.description, source: 'booth' as const, meta: { item_type: '02', account_no: String(b.id), raw: b } };
+      if (allSelected) remove(selectable); else if (!has(selectable) && b.amount > 0) add(selectable);
     });
   };
 
-  const selectedBills = sortedBills.filter((b) => selectedIds.has(b.id));
-  const totalSelected = selectedBills.reduce((sum, b) => sum + (Number(b.amount) || 0), 0);
+  const selectedIds = useMemo(() => new Set(sortedBills.filter(b => has({ id: b.id, bill_no: b.bill_no, amount: b.amount, due_date: b.due_date, description: b.description, source: 'booth', meta: { item_type: '02', account_no: String(b.id) } } as any)).map(b => b.id)), [sortedBills, has]);
 
   return (
     <SidebarLayout>
@@ -131,23 +139,7 @@ export default function BoothRentalPage() {
           />
 
           <Spacing size="md" />
-          <FormActions>
-            <Button
-              type="button"
-              variant="primary"
-              disabled={selectedIds.size === 0}
-              onClick={() =>
-                alert(
-                  'Proceed to payment with ' +
-                    selectedIds.size +
-                    ' bill(s) totaling RM ' +
-                    totalSelected.toFixed(2)
-                )
-              }
-            >
-              {t('booth.paySelected', 'Pay selected')}
-            </Button>
-          </FormActions>
+          {/* Local pay button removed in favor of global CheckoutTray */}
         </form>
       </FormProvider>
     </SidebarLayout>

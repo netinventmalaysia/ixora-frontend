@@ -7,6 +7,7 @@ import Heading from 'todo/components/forms/Heading';
 import LineSeparator from 'todo/components/forms/LineSeparator';
 import FormActions from 'todo/components/forms/FormActions';
 import { MiscBill, fetchMiscOutstanding } from '@/services/api';
+import { useBillSelection } from '@/context/BillSelectionContext';
 import { useForm, FormProvider } from 'react-hook-form';
 import { useTranslation } from '@/utils/i18n';
 import AssessmentBillsTable from '@/components/assessment/AssessmentBillsTable';
@@ -24,7 +25,7 @@ export default function MiscBillsPage() {
 
   const [loading, setLoading] = useState(false);
   const [bills, setBills] = useState<MiscBill[]>([]);
-  const [selectedIds, setSelectedIds] = useState<Set<string | number>>(new Set());
+  const { add, remove, has } = useBillSelection();
   const [error, setError] = useState<string | null>(null);
 
   const sortedBills = useMemo(() => {
@@ -49,7 +50,7 @@ export default function MiscBillsPage() {
       const list = await fetchMiscOutstanding(mapped as any);
       console.log('[Misc] received bills length:', list.length, 'first:', list[0]);
       setBills(list as MiscBill[]);
-      setSelectedIds(new Set());
+  // Do not clear global selection; cross-page accumulation is allowed.
     } catch (e: any) {
       setError(e?.message || 'Failed to fetch data');
     } finally {
@@ -74,23 +75,29 @@ export default function MiscBillsPage() {
   const onSearch = (data: FormValues) => fetchData(data);
 
   const toggleSelect = (id: string | number) => {
-    setSelectedIds((prev) => {
-      const next = new Set(prev);
-      if (next.has(id)) next.delete(id);
-      else next.add(id);
-      return next;
-    });
+    const bill = sortedBills.find(b => b.id === id);
+    if (!bill) return;
+    const selectable = {
+      id: bill.id,
+      bill_no: bill.bill_no,
+      amount: bill.amount,
+      due_date: bill.due_date,
+      description: bill.description,
+      source: 'misc' as const,
+      meta: { item_type: '05', account_no: String(bill.id), raw: bill }
+    };
+    if (has(selectable)) remove(selectable); else if (bill.amount > 0) add(selectable);
   };
 
   const toggleAll = () => {
-    setSelectedIds((prev) => {
-      if (prev.size === sortedBills.length) return new Set();
-      return new Set(sortedBills.map((b) => b.id));
+    const allSelected = sortedBills.every(b => has({ id: b.id, bill_no: b.bill_no, amount: b.amount, due_date: b.due_date, description: b.description, source: 'misc', meta: { item_type: '05', account_no: String(b.id) } } as any));
+    sortedBills.forEach(b => {
+      const selectable = { id: b.id, bill_no: b.bill_no, amount: b.amount, due_date: b.due_date, description: b.description, source: 'misc' as const, meta: { item_type: '05', account_no: String(b.id), raw: b } };
+      if (allSelected) remove(selectable); else if (!has(selectable) && b.amount > 0) add(selectable);
     });
   };
 
-  const selectedBills = sortedBills.filter((b) => selectedIds.has(b.id));
-  const totalSelected = selectedBills.reduce((sum, b) => sum + (Number(b.amount) || 0), 0);
+  const selectedIds = useMemo(() => new Set(sortedBills.filter(b => has({ id: b.id, bill_no: b.bill_no, amount: b.amount, due_date: b.due_date, description: b.description, source: 'misc', meta: { item_type: '05', account_no: String(b.id) } } as any)).map(b => b.id)), [sortedBills, has]);
 
   return (
     <SidebarLayout>
@@ -134,23 +141,7 @@ export default function MiscBillsPage() {
           />
 
           <Spacing size="md" />
-          <FormActions>
-            <Button
-              type="button"
-              variant="primary"
-              disabled={selectedIds.size === 0}
-              onClick={() =>
-                alert(
-                  'Proceed to payment with ' +
-                    selectedIds.size +
-                    ' bill(s) totaling RM ' +
-                    totalSelected.toFixed(2)
-                )
-              }
-            >
-              {t('misc.paySelected', 'Pay selected')}
-            </Button>
-          </FormActions>
+          {/* Per-page pay button removed; use global checkout tray */}
         </form>
       </FormProvider>
     </SidebarLayout>

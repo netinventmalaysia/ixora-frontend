@@ -1,5 +1,6 @@
 import { ReactNode, useEffect, useState, useCallback } from 'react';
 import SidebarContent from '@/components/main/Sidebar';
+import CheckoutTray from '@/components/billing/CheckoutTray';
 import { logoUrl } from '@/components/main/SidebarConfig';
 
 export default function SidebarLayout({ children }: { children: ReactNode }) {
@@ -44,6 +45,7 @@ export default function SidebarLayout({ children }: { children: ReactNode }) {
   return (
     <SidebarContent teams={[]} logoUrl={logoUrl} userRole={userRole} username={username} email={email}>
       {children}
+      <CheckoutTray />
     </SidebarContent>
   );
 }

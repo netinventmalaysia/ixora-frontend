@@ -5,6 +5,7 @@ import 'react-datepicker/dist/react-datepicker.css';
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/router';
 import PullToRefresh from '@/components/common/PullToRefresh';
+import { BillSelectionProvider } from '@/context/BillSelectionContext';
 
 export default function App({ Component, pageProps }: AppProps) {
   const [hydrated, setHydrated] = useState(false);
@@ -53,7 +54,9 @@ export default function App({ Component, pageProps }: AppProps) {
     }}
   >
     {/* pass hydration flag to pages so they can avoid reading localStorage on SSR */}
-    <Component {...pageProps} hydrated={hydrated} />
+    <BillSelectionProvider>
+      <Component {...pageProps} hydrated={hydrated} />
+    </BillSelectionProvider>
   </PullToRefresh>
     </>
   );

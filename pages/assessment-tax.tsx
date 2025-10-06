@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useRef, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import SidebarLayout from '@/components/main/SidebarLayout';
 // removed FormWrapper to avoid nested form contexts
 import InputText from 'todo/components/forms/InputText';
@@ -9,6 +9,7 @@ import LineSeparator from 'todo/components/forms/LineSeparator';
 import FormActions from 'todo/components/forms/FormActions';
 import RadioGroupField from 'todo/components/forms/RadioGroupField';
 import { AssessmentBill, fetchAssessmentOutstanding } from '@/services/api';
+import { useBillSelection } from '@/context/BillSelectionContext';
 import { useForm, FormProvider } from 'react-hook-form';
 import { useTranslation } from '@/utils/i18n';
 import AssessmentBillsTable from '@/components/assessment/AssessmentBillsTable';
@@ -34,7 +35,8 @@ export default function AssessmentTaxPage() {
 
   const [loading, setLoading] = useState(false);
   const [bills, setBills] = useState<AssessmentBill[]>([]);
-  const [selectedIds, setSelectedIds] = useState<Set<string | number>>(new Set());
+  // Global selection store
+  const { add, remove, has } = useBillSelection();
   const [error, setError] = useState<string | null>(null);
 
   const sortedBills = useMemo(() => {
@@ -59,7 +61,7 @@ export default function AssessmentTaxPage() {
   const list = await fetchAssessmentOutstanding(mapped as any);
   if (typeof window !== 'undefined') console.log('[Assessment] received bills length:', list.length, 'sample:', list[0]);
   setBills(list as AssessmentBill[]);
-      setSelectedIds(new Set());
+  // No need to manually clear global selection; we allow cross-page multi-category.
     } catch (e: any) {
       setError(e?.message || 'Failed to fetch data');
     } finally {
@@ -88,23 +90,29 @@ export default function AssessmentTaxPage() {
   };
 
   const toggleSelect = (id: string | number) => {
-    setSelectedIds((prev) => {
-      const next = new Set(prev);
-      if (next.has(id)) next.delete(id);
-      else next.add(id);
-      return next;
-    });
+    const bill = sortedBills.find(b => b.id === id);
+    if (!bill) return;
+    const selectable = {
+      id: bill.id,
+      bill_no: bill.bill_no,
+      amount: bill.amount,
+      due_date: bill.due_date,
+      description: bill.description,
+      source: 'assessment' as const,
+      meta: { item_type: '01', account_no: String(bill.id), raw: bill }
+    };
+    if (has(selectable)) remove(selectable); else add(selectable);
   };
 
   const toggleAll = () => {
-    setSelectedIds((prev) => {
-      if (prev.size === sortedBills.length) return new Set();
-      return new Set(sortedBills.map((b) => b.id));
+    const allSelected = sortedBills.every(b => has({ id: b.id, bill_no: b.bill_no, amount: b.amount, due_date: b.due_date, description: b.description, source: 'assessment', meta: { item_type: '01', account_no: String(b.id) } } as any));
+    sortedBills.forEach(b => {
+      const selectable = { id: b.id, bill_no: b.bill_no, amount: b.amount, due_date: b.due_date, description: b.description, source: 'assessment' as const, meta: { item_type: '01', account_no: String(b.id), raw: b } };
+      if (allSelected) remove(selectable); else if (!has(selectable) && b.amount > 0) add(selectable);
     });
   };
 
-  const selectedBills = sortedBills.filter((b) => selectedIds.has(b.id));
-  const totalSelected = selectedBills.reduce((sum, b) => sum + (b.amount || 0), 0);
+  const selectedIds = useMemo(() => new Set(sortedBills.filter(b => has({ id: b.id, bill_no: b.bill_no, amount: b.amount, due_date: b.due_date, description: b.description, source: 'assessment', meta: { item_type: '01', account_no: String(b.id) } } as any)).map(b => b.id)), [sortedBills, has]);
 
   return (
     <SidebarLayout>
@@ -147,11 +155,7 @@ export default function AssessmentTaxPage() {
           />
 
           <Spacing size="md" />
-          <FormActions>
-            <Button type="button" variant="primary" disabled={selectedIds.size === 0} onClick={() => alert('Proceed to payment with ' + selectedIds.size + ' bill(s) totaling RM ' + totalSelected.toFixed(2))}>
-              {t('assessment.paySelected', 'Pay selected')}
-            </Button>
-          </FormActions>
+          {/* Per-page pay button removed in favor of global checkout tray */}
         </form>
       </FormProvider>
     </SidebarLayout>

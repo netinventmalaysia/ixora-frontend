@@ -116,6 +116,8 @@ export const getUserProfile = (userId: number) => api.get(`/users/profile/${user
 export const updateUser = (userData: any) => api.put(`/users/profile/${userData.id}`, userData);
 export const createBusiness = (businessData: any) => api.post('/business', businessData);
 
+// Fetch the currently authenticated user (alternative to email search)
+
 // Fetch user(s) by email. Backend may return an object or an array — callers should handle both shapes.
 export const fetchUserByEmail = async (email: string) => {
     const { data } = await api.get('/users', { params: { email } });
@@ -845,4 +847,45 @@ export const sendAdminTestPush = async (payload: { title?: string; body?: string
 export const generatePushVapidKeys = async () => {
     const { data } = await api.post('/push/generate-keys');
     return data; // { publicKey, privateKey } or backend-specific shape
+};
+
+// ================= Outstanding Bills Checkout =================
+export interface CheckoutBillPayload {
+    account_no: string; // derived from bill.id or meta
+    item_type: string;  // MBMB jenis code
+    amount: number;     // > 0
+    bill_no?: string;   // optional
+}
+
+export interface CheckoutOutstandingDto {
+    reference: string;
+    businessId?: number;
+    userId?: number;
+    billName: string;
+    billEmail: string;
+    billMobile: string;
+    billDesc: string;
+    bills: CheckoutBillPayload[];
+}
+
+export interface CheckoutResponse {
+    data: { reference: string; url?: string | null };
+}
+
+export const checkoutOutstandingBills = async (payload: CheckoutOutstandingDto): Promise<CheckoutResponse> => {
+    // basic client-side validation
+    if (!payload?.reference) throw new Error('Missing reference');
+    if (!Array.isArray(payload.bills) || payload.bills.length === 0) throw new Error('No bills selected');
+    payload.bills.forEach((b, idx) => {
+        if (!b.account_no) throw new Error('Bill missing account_no at index ' + idx);
+        if (!b.item_type) throw new Error('Bill missing item_type at index ' + idx);
+        if (typeof b.amount !== 'number' || b.amount <= 0) throw new Error('Invalid amount for bill at index ' + idx);
+    });
+    if (typeof window !== 'undefined') {
+        console.log('[API][Checkout] payload length:', payload.bills.length, 'reference:', payload.reference);
+        console.log('[API][Checkout] first bill sample:', payload.bills[0]);
+    }
+    const { data } = await api.post('/billings/checkout', payload);
+    if (typeof window !== 'undefined') console.log('[API][Checkout] response:', data);
+    return data as CheckoutResponse;
 };

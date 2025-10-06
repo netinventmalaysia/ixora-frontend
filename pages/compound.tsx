@@ -1,12 +1,13 @@
 import { useEffect, useMemo, useState } from 'react';
 import SidebarLayout from '@/components/main/SidebarLayout';
-import Button from 'todo/components/forms/Button';
+// Button & per-page FormActions removed (global checkout tray)
 import InputText from 'todo/components/forms/InputText';
 import Spacing from 'todo/components/forms/Spacing';
 import Heading from 'todo/components/forms/Heading';
 import LineSeparator from 'todo/components/forms/LineSeparator';
-import FormActions from 'todo/components/forms/FormActions';
+// import FormActions from 'todo/components/forms/FormActions';
 import { CompoundBill, fetchCompoundOutstanding } from '@/services/api';
+import { useBillSelection } from '@/context/BillSelectionContext';
 import { useForm, FormProvider } from 'react-hook-form';
 import { useTranslation } from '@/utils/i18n';
 import AssessmentBillsTable from '@/components/assessment/AssessmentBillsTable';
@@ -34,7 +35,8 @@ export default function CompoundPage() {
 
   const [loading, setLoading] = useState(false);
   const [bills, setBills] = useState<CompoundBill[]>([]);
-  const [selectedIds, setSelectedIds] = useState<Set<string | number>>(new Set());
+  // Global selection
+  const { add, remove, has } = useBillSelection();
   const [error, setError] = useState<string | null>(null);
   const sortedBills = useMemo(() => {
     const copy = [...bills];
@@ -64,8 +66,8 @@ export default function CompoundPage() {
       console.log('[Compound] mapped query:', mapped);
       const res = await fetchCompoundOutstanding(mapped as any);
       const list: CompoundBill[] = Array.isArray(res) ? (res as any) : (res?.data || []);
-      setBills(list);
-      setSelectedIds(new Set());
+  setBills(list);
+  // Do not clear global selection to allow multi-category checkout
     } catch (e: any) {
       setError(e?.message || 'Failed to fetch data');
     } finally {
@@ -91,23 +93,29 @@ export default function CompoundPage() {
   const onSearch = (data: FormValues) => fetchData(data);
 
   const toggleSelect = (id: string | number) => {
-    setSelectedIds((prev) => {
-      const next = new Set(prev);
-      if (next.has(id)) next.delete(id);
-      else next.add(id);
-      return next;
-    });
+    const bill = sortedBills.find(b => b.id === id);
+    if (!bill) return;
+    const selectable = {
+      id: bill.id,
+      bill_no: bill.bill_no,
+      amount: bill.amount,
+      due_date: bill.due_date,
+      description: bill.description,
+      source: 'compound' as const,
+      meta: { item_type: '99', compound_no: String(bill.id), raw: bill }
+    };
+    if (has(selectable)) remove(selectable); else if (bill.amount > 0) add(selectable);
   };
 
   const toggleAll = () => {
-    setSelectedIds((prev) => {
-      if (prev.size === sortedBills.length) return new Set();
-      return new Set(sortedBills.map((b) => b.id));
+    const allSelected = sortedBills.every(b => has({ id: b.id, bill_no: b.bill_no, amount: b.amount, due_date: b.due_date, description: b.description, source: 'compound', meta: { item_type: '99', compound_no: String(b.id) } } as any));
+    sortedBills.forEach(b => {
+      const selectable = { id: b.id, bill_no: b.bill_no, amount: b.amount, due_date: b.due_date, description: b.description, source: 'compound' as const, meta: { item_type: '99', compound_no: String(b.id), raw: b } };
+      if (allSelected) remove(selectable); else if (!has(selectable) && b.amount > 0) add(selectable);
     });
   };
 
-  const selectedBills = sortedBills.filter((b) => selectedIds.has(b.id));
-  const totalSelected = selectedBills.reduce((sum, b) => sum + (Number(b.amount) || 0), 0);
+  const selectedIds = useMemo(() => new Set(sortedBills.filter(b => has({ id: b.id, bill_no: b.bill_no, amount: b.amount, due_date: b.due_date, description: b.description, source: 'compound', meta: { item_type: '99', compound_no: String(b.id) } } as any)).map(b => b.id)), [sortedBills, has]);
 
   return (
     <SidebarLayout>
@@ -159,23 +167,7 @@ export default function CompoundPage() {
           />
 
           <Spacing size="md" />
-          <FormActions>
-            <Button
-              type="button"
-              variant="primary"
-              disabled={selectedIds.size === 0}
-              onClick={() =>
-                alert(
-                  'Proceed to payment with ' +
-                    selectedIds.size +
-                    ' bill(s) totaling RM ' +
-                    totalSelected.toFixed(2)
-                )
-              }
-            >
-              {t('compound.paySelected', 'Pay selected')}
-            </Button>
-          </FormActions>
+          {/* Local pay button removed in favor of global CheckoutTray */}
         </form>
       </FormProvider>
     </SidebarLayout>
