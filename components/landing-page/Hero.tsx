@@ -11,6 +11,7 @@ DevicePhoneMobileIcon,
 } from "@heroicons/react/24/solid";
 import HeroCarousel from "@/components/common/HeroCarousel";
 import { triggerPWAInstall } from "@/components/common/PWAInstallPrompt";
+import DigitalHeroGallery from "./DigitalHeroGallery";
 
 const PRIMARY = "#B01C2F";
 
@@ -135,16 +136,10 @@ return (
         </div>
       </div>
 
-      {/* Right Illustration → Carousel */}
-      <div className="lg:col-span-6">
-        <HeroCarousel slides={[ { src: "/images/ixora-bill.png" , alt: t("landing.hero.title", "IXORA MBMB" ) }, {
-          src: "/images/ixora-digital.png" , alt: "Digital Governance" }, { src: "/images/ixora-hai.png" ,
-          alt: "IXORA Greetings" }, { src: "/images/ixora-flag.png" , alt: "IXORA Melaka Flag" }, {
-          src: "/images/ixora-mobile.png" , alt: "IXORA Mobile App" }, { src: "/images/ixora-run.png" , alt: "IXORA Run"
-          }, { src: "/images/ixora-hero.png" ,
-          alt: "IXORA Hero" }, ]} aspect="aspect-[5/4]"
-        />
-      </div>
+{/* Right Illustration → Digital Pixel Blur Transition */}
+<div className="lg:col-span-6">
+  <DigitalHeroGallery />
+</div>
     </div>
   </div>
 
