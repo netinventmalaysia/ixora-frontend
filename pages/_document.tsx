@@ -37,7 +37,7 @@ export default function Document() {
           crossOrigin=""
         />
       </Head>
-      <body className="antialiased">
+  <body className="antialiased bg-gray-50 text-gray-800">
         <Main />
         {/* Prevent pinch and double-tap zoom (iOS & some Android) */}
         <script

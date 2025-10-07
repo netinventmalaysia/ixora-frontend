@@ -1,4 +1,5 @@
 import { useState, useEffect, ReactNode } from 'react';
+import LayoutCard from '@/components/common/LayoutCard';
 import { Dialog, DialogBackdrop, DialogPanel, TransitionChild } from '@headlessui/react';
 import { Bars3Icon, BriefcaseIcon, UserIcon, XMarkIcon } from '@heroicons/react/24/outline';
 import {
@@ -206,7 +207,7 @@ export default function SidebarContent({
       </Dialog>
 
       {/* Static Sidebar Desktop */}
-      <div className={`hidden lg:fixed lg:inset-y-0 lg:z-50 lg:flex lg:w-72 lg:flex-col ${sidebarBg} text-white`}>
+  <div className={`hidden lg:fixed lg:inset-y-0 lg:z-50 lg:flex lg:w-72 lg:flex-col ${sidebarBg} text-white`}>
         <div className="flex grow flex-col gap-y-5 overflow-y-auto px-6">
           <div className="flex h-16 shrink-0 items-center">
             <img alt="Your Company" src={logoUrl} className="h-8 w-auto" />
@@ -257,9 +258,19 @@ export default function SidebarContent({
 
   {/* Mobile spacing is lean; desktop spacing handled below */}
 
-  <main className="pt-12 sm:pt-12 lg:pt-24 pb-10 lg:pl-72 bg-white">
-          <div className="px-10 sm:px-4 lg:px-6 xl:px-8 2xl:px-10 max-w-screen-2xl mx-auto w-full">
-            {children}
+  <main className="relative pt-10 sm:pt-10 lg:pt-20 pb-12 lg:pl-72">
+          {/* subtle background bubble (matched to login page) */}
+          <div
+            aria-hidden="true"
+            className="pointer-events-none absolute -top-24 right-[-80px] -z-10 h-50 w-50 rounded-full opacity-20 blur-3xl"
+            style={{ background: '#B01C2F' }}
+          />
+          <div className="px-6 sm:px-4 lg:px-6 xl:px-8 2xl:px-10 max-w-screen-2xl mx-auto w-full">
+            <div className="mx-auto max-w-7xl">
+              <LayoutCard padding="sm" className="">
+                {children}
+              </LayoutCard>
+            </div>
           </div>
       </main>
     </div>
