@@ -185,11 +185,16 @@ return (
   <HeroCarousel
     slides={[
       { src: "/images/ixora-bill.png", alt: t("landing.hero.title", "IXORA MBMB") },
-      { src: "/images/ixora-hero.png", alt: "IXORA Services" },
-      { src: "/images/logo-mbmb.png", alt: "IXORA Mobile Apps" },
+      { src: "/images/ixora-digital.png", alt: "Digital Governance" },
+      { src: "/images/ixora-hai.png", alt: "IXORA Greetings" },
+      { src: "/images/ixora-flag.png", alt: "IXORA Melaka Flag" },
+      { src: "/images/ixora-mobile.png", alt: "IXORA Mobile App" },
+      { src: "/images/ixora-run.png", alt: "IXORA Run" },
+      { src: "/images/logo-mbmb.png", alt: "MBMB Official" },
+      { src: "/images/ixora-hero.png", alt: "IXORA Hero" },
     ]}
-    aspect="aspect-[5/4]"   // boleh tukar ke "aspect-video" kalau nak 16:9
-    autoplayMs={5000}       // auto-tukar setiap 5s; set 0 untuk matikan
+    aspect="aspect-[5/4]"   // maintain consistent ratio
+    autoplayMs={4000}       // auto slide every 4s
   />
 </div>
     </div>

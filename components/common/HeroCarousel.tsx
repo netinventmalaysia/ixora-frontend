@@ -11,9 +11,7 @@ type Slide = {
 
 type Props = {
   slides: Slide[];
-  /** aspect ratio wrapper (Tailwind) */
   aspect?: string; // default: "aspect-[5/4]"
-  /** autoplay in ms; set 0 to disable */
   autoplayMs?: number; // default: 5000
 };
 
@@ -29,13 +27,16 @@ export default function HeroCarousel({
     setIdx((prev) => (next + slides.length) % slides.length);
   };
 
-  // autoplay (pause on hover/focus via clearing timer on pointer enter)
   useEffect(() => {
-    if (!autoplayMs) return;
+    if (!autoplayMs) {
+      return;
+    }
     timer.current && clearInterval(timer.current);
     timer.current = setInterval(() => go(idx + 1), autoplayMs);
     return () => {
-      if (timer.current) clearInterval(timer.current);
+      if (timer.current) {
+        clearInterval(timer.current);
+      }
     };
   }, [idx, autoplayMs, slides.length]);
 
@@ -55,7 +56,7 @@ export default function HeroCarousel({
         {slides.map((s, i) => (
           <div
             key={s.src}
-            className={`absolute inset-0 transition-opacity duration-500 ${
+            className={`absolute inset-0 transition-opacity duration-700 ease-in-out ${
               i === idx ? "opacity-100" : "opacity-0"
             }`}
             aria-hidden={i !== idx}
@@ -72,31 +73,31 @@ export default function HeroCarousel({
         ))}
       </div>
 
-      {/* Prev/Next buttons */}
+      {/* Controls */}
       <button
         type="button"
         aria-label="Previous slide"
         onClick={() => go(idx - 1)}
-        className="absolute left-2 top-1/2 -translate-y-1/2 rounded-full bg-white/80 p-2 shadow hover:bg-white focus:outline-none focus:ring-2 focus:ring-black/20"
+        className="absolute left-3 top-1/2 -translate-y-1/2 rounded-full bg-white/80 p-2 shadow hover:bg-white focus:outline-none focus:ring-2 focus:ring-[#B01C2F]/30"
       >
-        <ChevronLeft className="h-5 w-5" />
+        <ChevronLeft className="h-5 w-5 text-[#B01C2F]" />
       </button>
       <button
         type="button"
         aria-label="Next slide"
         onClick={() => go(idx + 1)}
-        className="absolute right-2 top-1/2 -translate-y-1/2 rounded-full bg-white/80 p-2 shadow hover:bg-white focus:outline-none focus:ring-2 focus:ring-black/20"
+        className="absolute right-3 top-1/2 -translate-y-1/2 rounded-full bg-white/80 p-2 shadow hover:bg-white focus:outline-none focus:ring-2 focus:ring-[#B01C2F]/30"
       >
-        <ChevronRight className="h-5 w-5" />
+        <ChevronRight className="h-5 w-5 text-[#B01C2F]" />
       </button>
 
       {/* Dots */}
-      <div className="pointer-events-none absolute inset-x-0 bottom-2 flex justify-center gap-1.5">
+      <div className="absolute inset-x-0 bottom-3 flex justify-center gap-1.5">
         {slides.map((_, i) => (
           <span
             key={i}
-            className={`h-1.5 w-4 rounded-full transition ${
-              i === idx ? "bg-black/80" : "bg-black/30"
+            className={`h-1.5 w-4 rounded-full transition-all ${
+              i === idx ? "bg-[#B01C2F] w-5" : "bg-gray-300"
             }`}
           />
         ))}
