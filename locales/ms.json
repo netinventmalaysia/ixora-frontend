@@ -218,12 +218,16 @@
     "contact": "Hubungi Kami"
   },
     "hero": {
-      "title": "IXORA MBMB",
-      "subtitle": "Tadbir Urus Lebih Pintar, Komuniti Lebih Lancar",
-      "tagline": "Dibina dengan Kepercayaan · Dikuasakan oleh Majlis Bandaraya Melaka Bersejarah · Diilhamkan untuk Anda",
-      "ctaPrimary": "Mulakan Perkhidmatan Digital",
-      "ctaSecondary": "Muat Turun Aplikasi IXORA MBMB"
-    },
+    "title": "IXORA MBMB",
+    "subtitle": "Tadbir Urus Lebih Pintar, Komuniti Lebih Lancar",
+    "tagline": "Dibina Berasaskan Kepercayaan · Dikuasakan oleh Majlis Bandaraya Melaka Bersejarah · Diilham untuk Anda",
+    "ctaPrimary": "Log Masuk !",
+    "ctaSecondary": "Pasang PWA",
+    "ctaEasyPay": "Bayaran Pantas",
+    "livePulseToday": "Pulse today active.",
+    "livePulse": "Terima kasih!",
+    "livePulseSuffix": "transaksi hari ini menyalakan tenaga saya."
+  },
     "intro": {
       "heading": "Mengenali IXORA MBMB",
       "subheading": "Gerbang Digital MBMB ke Bandaraya Pintar",

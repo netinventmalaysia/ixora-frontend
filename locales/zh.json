@@ -218,12 +218,16 @@
     "contact": "联系我们"
   },
     "hero": {
-      "title": "IXORA MBMB",
-      "subtitle": "更智慧的治理，更顺畅的社区",
-      "tagline": "以信任为基 · 由马六甲历史市政厅驱动 · 为您而生",
-      "ctaPrimary": "开启数字服务",
-      "ctaSecondary": "下载 IXORA MBMB 应用"
-    },
+    "title": "IXORA MBMB",
+    "subtitle": "更智能的治理，更顺畅的社区",
+    "tagline": "以信任为本 · 由马六甲历史市政厅驱动 · 为您而启发",
+    "ctaPrimary": "立即登录！",
+    "ctaSecondary": "安装 PWA",
+    "ctaEasyPay": "便捷支付",
+    "livePulseToday": "Pulse today active.",
+    "livePulse": "谢谢您！",
+    "livePulseSuffix": "今天的交易为我注入能量。"
+  },
     "intro": {
       "heading": "探索 IXORA MBMB",
       "subheading": "通往智慧城市的 MBMB 数字门户",
