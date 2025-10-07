@@ -12,6 +12,11 @@ export default function Document() {
         <meta name="format-detection" content="telephone=no" />
         <meta name="mobile-web-app-capable" content="yes" />
         <meta name="theme-color" content="#111827" />
+        {/* Viewport (lock zoom for app-like UX) */}
+        <meta
+          name="viewport"
+          content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover"
+        />
 
         {/* Manifest & Icons */}
   <link rel="manifest" href="/manifest.json" />
@@ -34,6 +39,19 @@ export default function Document() {
       </Head>
       <body className="antialiased">
         <Main />
+        {/* Prevent pinch and double-tap zoom (iOS & some Android) */}
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `
+              (function(){
+                let lastTouchEnd=0;document.addEventListener('touchend',function(e){var now=Date.now();if(now-lastTouchEnd<=350){e.preventDefault();}lastTouchEnd=now;}, {passive:false});
+                document.addEventListener('gesturestart',function(e){e.preventDefault();}, {passive:false});
+                document.addEventListener('gesturechange',function(e){e.preventDefault();}, {passive:false});
+                document.addEventListener('gestureend',function(e){e.preventDefault();}, {passive:false});
+              })();
+            `,
+          }}
+        />
         <NextScript />
       </body>
     </Html>
