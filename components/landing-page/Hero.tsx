@@ -9,7 +9,7 @@ ArrowRightOnRectangleIcon,
 CreditCardIcon,
 DevicePhoneMobileIcon,
 } from "@heroicons/react/24/solid";
-import { triggerPWAInstall } from "@/components/common/PWAInstallPrompt";
+import HeroCarousel from "@/components/common/HeroCarousel";
 
 const PRIMARY = "#B01C2F";
 
@@ -180,13 +180,18 @@ return (
   </div>
 </div>
 
-      {/* Right Illustration */}
-      <div className="lg:col-span-6">
-        <div className="relative mx-auto aspect-[5/4] w-full max-w-xl sm:max-w-2xl 2xl:max-w-3xl">
-          <Image src="/images/ixora-bill.png" alt={t("landing.hero.title", "IXORA MBMB" )} fill priority
-            className="object-contain drop-shadow" sizes="(min-width: 1280px) 768px, (min-width: 640px) 600px, 90vw" />
-        </div>
-      </div>
+{/* Right Illustration → Carousel */}
+<div className="lg:col-span-6">
+  <HeroCarousel
+    slides={[
+      { src: "/images/ixora-bill.png", alt: t("landing.hero.title", "IXORA MBMB") },
+      { src: "/images/ixora-hero.png", alt: "IXORA Services" },
+      { src: "/images/logo-mbmb.png", alt: "IXORA Mobile Apps" },
+    ]}
+    aspect="aspect-[5/4]"   // boleh tukar ke "aspect-video" kalau nak 16:9
+    autoplayMs={5000}       // auto-tukar setiap 5s; set 0 untuk matikan
+  />
+</div>
     </div>
   </div>
 
