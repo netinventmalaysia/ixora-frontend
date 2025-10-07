@@ -21,7 +21,7 @@ const MODULES = [
   "Lesenan Haiwan Peliharaan",
 ];
 
-const DAYS = ["Isn", "Sel", "Rab", "Kha", "Jum", "Sab", "Aha"];
+const DAYS = ["Isnin", "Selasa", "Rabu", "Khamis", "Jumaat", "Sabtu", "Ahad"];
 const MONTHS = ["Jan", "Feb", "Mac", "Apr", "Mei", "Jun", "Jul", "Ogo", "Sep", "Okt", "Nov", "Dis"];
 
 export default function DigitalEnergyMapSection() {

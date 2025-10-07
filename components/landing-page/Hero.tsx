@@ -141,8 +141,8 @@ return (
           src: "/images/ixora-digital.png" , alt: "Digital Governance" }, { src: "/images/ixora-hai.png" ,
           alt: "IXORA Greetings" }, { src: "/images/ixora-flag.png" , alt: "IXORA Melaka Flag" }, {
           src: "/images/ixora-mobile.png" , alt: "IXORA Mobile App" }, { src: "/images/ixora-run.png" , alt: "IXORA Run"
-          }, { src: "/images/logo-mbmb.png" , alt: "MBMB Official" }, { src: "/images/ixora-hero.png" ,
-          alt: "IXORA Hero" }, ]} aspect="aspect-[5/4]" // maintain consistent ratio autoplayMs={4000} // auto slide every 4s 
+          }, { src: "/images/ixora-hero.png" ,
+          alt: "IXORA Hero" }, ]} aspect="aspect-[5/4]"
         />
       </div>
     </div>
