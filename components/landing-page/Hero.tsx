@@ -95,17 +95,22 @@ export default function Hero({ todayTransactions = 1532 }: HeroProps) {
                 style={{ borderColor: PRIMARY }}
               >
                 <div className="flex items-start gap-3">
-                  <div
-                    className={`mt-1 flex h-10 w-10 shrink-0 items-center justify-center rounded-xl border transition-transform duration-300 ${
-                      pulse ? "scale-110" : "scale-100"
-                    }`}
-                    style={{ borderColor: PRIMARY }}
-                    aria-hidden="true"
-                  >
-                    <span className="text-lg sm:text-xl" role="img" aria-label="IXORA Bot">
-                      🤖
-                    </span>
-                  </div>
+<div
+  className={`mt-1 flex h-10 w-10 shrink-0 items-center justify-center rounded-xl border transition-transform duration-300 ${
+    pulse ? "scale-110" : "scale-100"
+  }`}
+  style={{ borderColor: PRIMARY }}
+  aria-hidden="true"
+>
+  <Image
+    src="/images/logo-mbmb.png"
+    alt="MBMB Logo"
+    width={28}
+    height={28}
+    className="object-contain"
+    priority
+  />
+</div>
 
                   <div className="space-y-0 mt-2">
                     <div className="flex items-center gap-2">
