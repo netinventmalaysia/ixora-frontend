@@ -31,7 +31,7 @@ return () => clearInterval(interval);
 
 return (
 <section id="intro" className="relative isolate overflow-hidden bg-white">
-  <div className="mx-auto max-w-screen-2xl px-4 sm:px-6 lg:px-8 2xl:px-10">
+  <div className="mx-auto max-w-screen-2xl px-4 sm:px-6 lg:px-8 2xl:px-10 mb-25">
     <div
       className="grid min-h-[68vh] grid-cols-1 items-center gap-8 py-12 sm:py-16 lg:grid-cols-12 lg:gap-10 lg:py-24 2xl:py-28">
       {/* Left */}
