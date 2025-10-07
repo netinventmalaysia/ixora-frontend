@@ -22,7 +22,7 @@ export default function SidebarNav({
       <ul role="list" className="flex flex-col gap-y-7">
         {general.length > 0 && (
           <li>
-            <div className="text-xs font-semibold leading-6 text-gray-400">General</div>
+            <div className="text-xs font-semibold leading-6 text-gray-100">General</div>
             <ul role="list" className="-mx-2 mt-2 space-y-1">
               {general.map((item) => (
                 <li key={item.name}>
@@ -30,8 +30,8 @@ export default function SidebarNav({
                     href={item.href}
                     className={cn(
                       item.current
-                        ? 'bg-gray-800 text-white'
-                        : 'text-gray-400 hover:bg-gray-800 hover:text-white',
+                        ? 'bg-[#B01C2F] text-white shadow'
+                        : 'text-white/70 hover:bg-white/10 hover:text-white',
                       'group flex gap-x-3 rounded-md p-2 text-sm font-semibold'
                     )}
                   >
@@ -46,7 +46,7 @@ export default function SidebarNav({
 
     {personal.length > 0 && (
           <li>
-      <div className="text-xs font-semibold leading-6 text-gray-400">{personalLabel}</div>
+  <div className="text-xs font-semibold leading-6 text-gray-100">{personalLabel}</div>
             <ul role="list" className="-mx-2 mt-2 space-y-1">
               {personal.map((item) => (
                 <li key={item.name}>
@@ -54,8 +54,8 @@ export default function SidebarNav({
                     href={item.href}
                     className={cn(
                       item.current
-                        ? 'bg-gray-800 text-white'
-                        : 'text-gray-400 hover:bg-gray-800 hover:text-white',
+                        ? 'bg-[#B01C2F] text-white shadow'
+                        : 'text-white/70 hover:bg-white/10 hover:text-white',
                       'group flex gap-x-3 rounded-md p-2 text-sm font-semibold'
                     )}
                   >
@@ -77,12 +77,12 @@ export default function SidebarNav({
                     href={team.href}
                     className={cn(
                       team.current
-                        ? 'bg-gray-800 text-white'
-                        : 'text-gray-400 hover:bg-gray-800 hover:text-white',
+                        ? 'bg-[#B01C2F] text-white shadow'
+                        : 'text-white/70 hover:bg-white/10 hover:text-white',
                       'group flex gap-x-3 rounded-md p-2 text-sm font-semibold'
                     )}
                   >
-                    <span className="flex h-6 w-6 items-center justify-center rounded-lg border border-gray-700 bg-gray-800 text-[0.625rem] font-medium text-gray-400 group-hover:text-white">
+                    <span className="flex h-6 w-6 items-center justify-center rounded-lg border border-white/20 bg-white/10 text-[0.625rem] font-medium text-white/80 group-hover:text-white">
                       {team.initial}
                     </span>
                     <span className="truncate">{team.name}</span>
@@ -95,15 +95,15 @@ export default function SidebarNav({
       </ul>
 
       {bottom.length > 0 && (
-        <ul role="list" className="mt-4 border-t border-gray-800 pt-4 -mx-2 space-y-1">
+  <ul role="list" className="mt-4 border-t border-white/20 pt-4 -mx-2 space-y-1">
           {bottom.map((item) => (
             <li key={item.name}>
               <a
                 href={item.href}
                 className={cn(
                   item.current
-                    ? 'bg-gray-800 text-white'
-                    : 'text-gray-400 hover:bg-gray-800 hover:text-white',
+                    ? 'bg-[#B01C2F] text-white shadow'
+                    : 'text-white/70 hover:bg-white/10 hover:text-white',
                   'group flex gap-x-3 rounded-md p-2 text-sm font-semibold'
                 )}
               >

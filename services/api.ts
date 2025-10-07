@@ -913,7 +913,10 @@ export const checkoutOutstandingBills = async (payload: CheckoutOutstandingDto):
         if (typeof b.amount !== 'number' || b.amount <= 0) throw new Error('Invalid amount for bill at index ' + idx);
     });
     if (typeof window !== 'undefined') {
-        console.log('[API][Checkout] payload length:', payload.bills.length, 'reference:', payload.reference);
+        let cloned: any = null;
+        try { cloned = JSON.parse(JSON.stringify(payload)); } catch { cloned = { shallow: { ...payload, bills: `[len:${payload.bills.length}]` } }; }
+        console.log('[API][Checkout] full payload debug:', cloned);
+        console.log('[API][Checkout] bills length:', payload.bills.length, 'reference:', payload.reference);
         console.log('[API][Checkout] first bill sample:', payload.bills[0]);
     }
     const { data } = await api.post('/billings/checkout', payload);

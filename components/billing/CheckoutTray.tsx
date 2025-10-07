@@ -13,7 +13,7 @@ interface PayerFormState {
 const defaultForm: PayerFormState = { name: '', email: '', mobile: '' };
 
 const CheckoutTray: React.FC = () => {
-  const { bills, total, count, clear } = useBillSelection();
+  const { bills, total, count, clear, remove } = useBillSelection();
   const [open, setOpen] = useState(false);
   const [form, setForm] = useState<PayerFormState>(defaultForm);
   const [submitting, setSubmitting] = useState(false);
@@ -99,6 +99,17 @@ const CheckoutTray: React.FC = () => {
       }
       const userIdStr = typeof window !== 'undefined' ? localStorage.getItem('userId') : undefined;
       const businessIdStr = typeof window !== 'undefined' ? localStorage.getItem('activeBusinessId') : undefined;
+      const resolveItemType = (b: typeof bills[number]) => {
+        if (b.meta?.item_type) return b.meta.item_type; // explicit override
+        switch (b.source) {
+          case 'assessment': return '01';
+          case 'booth': return '02';
+          case 'misc': return '05';
+          case 'compound': return '04'; // updated as per requirement
+          default: return '99'; // fallback (should not occur)
+        }
+      };
+
       const base = {
         billName: form.name,
         billEmail: form.email,
@@ -106,12 +117,18 @@ const CheckoutTray: React.FC = () => {
         billDesc,
         userId: userIdStr ? Number(userIdStr) : undefined,
         businessId: businessIdStr ? Number(businessIdStr) : undefined,
-        bills: bills.map(b => ({
-          account_no: b.meta?.account_no || String(b.id),
-            item_type: b.meta?.item_type || (b.source === 'assessment' ? '01' : b.source === 'booth' ? '02' : b.source === 'misc' ? (b.meta?.item_type || '05') : '99'),
-          amount: b.amount,
-          bill_no: b.bill_no || undefined,
-        })),
+        bills: bills.map(b => {
+          const resolved = resolveItemType(b);
+          if (typeof window !== 'undefined') {
+            console.log('[CheckoutTray][ResolveItemType]', { source: b.source, meta_item_type: b.meta?.item_type, resolved, id: b.id, bill_no: b.bill_no });
+          }
+          return {
+            account_no: b.meta?.account_no || String(b.id),
+            item_type: resolved,
+            amount: b.amount,
+            bill_no: b.bill_no || undefined,
+          };
+        }),
       } as const;
 
       let attempt = 0;
@@ -119,7 +136,9 @@ const CheckoutTray: React.FC = () => {
       while (attempt < 2) {
         const payload = { reference: generateReference(), ...base } as any;
         if (attempt === 0 && typeof window !== 'undefined') {
-          console.log('[CheckoutTray] Attempt 1 payload bills length:', payload.bills.length, 'ref:', payload.reference);
+          let cloned: any = null;
+          try { cloned = JSON.parse(JSON.stringify(payload)); } catch { cloned = { shallow: { ...payload, bills: `[len:${payload.bills.length}]` } }; }
+          console.log('[CheckoutTray] Attempt 1 full payload:', cloned);
         }
         const { data } = await checkoutOutstandingBills(payload);
         lastData = data;
@@ -150,15 +169,35 @@ const CheckoutTray: React.FC = () => {
     <>
       <h4 className="font-semibold">Selected Bills</h4>
       <ul className="divide-y border rounded">
-        {bills.map(b => (
-          <li key={`${b.source}-${b.id}-${b.bill_no}`} className="p-2 flex flex-col gap-0.5">
-            <div className="flex justify-between">
-              <span className="font-medium text-xs truncate max-w-[140px]" title={b.bill_no || String(b.id)}>{b.bill_no || b.id}</span>
-              <span className="text-xs whitespace-nowrap">RM {b.amount.toFixed(2)}</span>
-            </div>
-            <div className="text-[10px] text-gray-500 flex justify-between"><span>{b.source}</span><span>{b.due_date ? new Date(b.due_date).toLocaleDateString() : '-'}</span></div>
-          </li>
-        ))}
+        {bills.map(b => {
+          const removeBill = () => {
+            // reconstruct minimal bill object for removal (same key logic)
+            const minimal = { id: b.id, bill_no: b.bill_no, amount: b.amount, due_date: b.due_date, description: b.description, source: b.source, meta: b.meta } as any;
+            remove(minimal);
+            toast.success('Removed ' + (b.bill_no || b.id));
+          };
+          return (
+            <li key={`${b.source}-${b.id}-${b.bill_no}`} className="p-2 flex flex-col gap-0.5 group">
+              <div className="flex justify-between items-start gap-2">
+                <div className="flex flex-col min-w-0">
+                  <span className="font-medium text-xs truncate max-w-[140px]" title={b.bill_no || String(b.id)}>{b.bill_no || b.id}</span>
+                  <div className="text-[10px] text-gray-500 flex gap-2">
+                    <span className="capitalize">{b.source}</span>
+                    <span>{b.due_date ? new Date(b.due_date).toLocaleDateString() : '-'}</span>
+                  </div>
+                </div>
+                <div className="flex items-center gap-2">
+                  <span className="text-xs whitespace-nowrap font-medium">RM {b.amount.toFixed(2)}</span>
+                  <button
+                    onClick={removeBill}
+                    aria-label={`Remove ${b.bill_no || b.id}`}
+                    className="opacity-60 group-hover:opacity-100 text-[10px] px-1 py-0.5 rounded border border-gray-300 hover:bg-red-50 hover:text-red-600 hover:border-red-300 transition-colors"
+                  >✕</button>
+                </div>
+              </div>
+            </li>
+          );
+        })}
       </ul>
       <div className="pt-2 border-t flex justify-between font-semibold">
         <span>Total</span>

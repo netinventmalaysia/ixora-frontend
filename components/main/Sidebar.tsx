@@ -176,14 +176,15 @@ export default function SidebarContent({
   }, [mode]);
 
   const showModeToggle = userRole !== 'guest';
-  const sidebarBg = mode === 'Business' ? 'bg-zinc-900' : 'bg-gray-900';
+  // Unified sidebar background color (custom blue) regardless of mode per new branding
+  const sidebarBg = 'bg-[#B01C2F]';
   const displayMode = localUserRole === 'admin' && mode === 'Business' ? 'Admin' : mode;
   const personalLabel = localUserRole === 'admin' ? 'Admin' : 'Business';
 
   return (
     <div>
       {/* Mobile Sidebar */}
-      <Dialog open={sidebarOpen} onClose={setSidebarOpen} className="relative z-50 lg:hidden">
+  <Dialog open={sidebarOpen} onClose={setSidebarOpen} className="relative z-50 lg:hidden">
         <DialogBackdrop className="fixed inset-0 bg-black/80 transition-opacity" />
         <div className="fixed inset-0 flex">
           <DialogPanel className="relative mr-16 flex w-full max-w-xs flex-1 transform transition duration-300 ease-in-out">
@@ -194,7 +195,7 @@ export default function SidebarContent({
                 </button>
               </div>
             </TransitionChild>
-            <div className={`flex grow flex-col gap-y-5 overflow-y-auto px-6 pb-2 ring-1 ring-white/10 ${sidebarBg}`}>
+            <div className={`flex grow flex-col gap-y-5 overflow-y-auto px-6 pb-2 ring-1 ring-white/10 ${sidebarBg} text-white`}> 
               <div className="flex h-16 shrink-0 items-center">
                 <img alt="Your Company" src={logoUrl} className="h-8 w-auto" />
               </div>
@@ -205,7 +206,7 @@ export default function SidebarContent({
       </Dialog>
 
       {/* Static Sidebar Desktop */}
-      <div className={`hidden lg:fixed lg:inset-y-0 lg:z-50 lg:flex lg:w-72 lg:flex-col ${sidebarBg}`}>
+      <div className={`hidden lg:fixed lg:inset-y-0 lg:z-50 lg:flex lg:w-72 lg:flex-col ${sidebarBg} text-white`}>
         <div className="flex grow flex-col gap-y-5 overflow-y-auto px-6">
           <div className="flex h-16 shrink-0 items-center">
             <img alt="Your Company" src={logoUrl} className="h-8 w-auto" />
@@ -236,7 +237,7 @@ export default function SidebarContent({
       </div>
 
       {/* Top Bar Mobile */}
-  <div className={`sticky top-0 z-40 mb-3 flex items-center gap-x-6 px-4 py-3 shadow-xs sm:px-6 lg:hidden ${sidebarBg}`}>
+  <div className={`sticky top-0 z-40 mb-3 flex items-center gap-x-6 px-4 py-3 shadow-xs sm:px-6 lg:hidden ${sidebarBg} text-white`}>
         <button onClick={() => setSidebarOpen(true)} className="-m-2.5 p-2.5 text-gray-400">
           <Bars3Icon className="size-6" />
         </button>

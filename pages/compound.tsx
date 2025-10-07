@@ -102,20 +102,20 @@ export default function CompoundPage() {
       due_date: bill.due_date,
       description: bill.description,
       source: 'compound' as const,
-      meta: { item_type: '99', compound_no: String(bill.id), raw: bill }
+      meta: { item_type: '04', compound_no: String(bill.id), raw: bill }
     };
     if (has(selectable)) remove(selectable); else if (bill.amount > 0) add(selectable);
   };
 
   const toggleAll = () => {
-    const allSelected = sortedBills.every(b => has({ id: b.id, bill_no: b.bill_no, amount: b.amount, due_date: b.due_date, description: b.description, source: 'compound', meta: { item_type: '99', compound_no: String(b.id) } } as any));
+  const allSelected = sortedBills.every(b => has({ id: b.id, bill_no: b.bill_no, amount: b.amount, due_date: b.due_date, description: b.description, source: 'compound', meta: { item_type: '04', compound_no: String(b.id) } } as any));
     sortedBills.forEach(b => {
-      const selectable = { id: b.id, bill_no: b.bill_no, amount: b.amount, due_date: b.due_date, description: b.description, source: 'compound' as const, meta: { item_type: '99', compound_no: String(b.id), raw: b } };
+  const selectable = { id: b.id, bill_no: b.bill_no, amount: b.amount, due_date: b.due_date, description: b.description, source: 'compound' as const, meta: { item_type: '04', compound_no: String(b.id), raw: b } };
       if (allSelected) remove(selectable); else if (!has(selectable) && b.amount > 0) add(selectable);
     });
   };
 
-  const selectedIds = useMemo(() => new Set(sortedBills.filter(b => has({ id: b.id, bill_no: b.bill_no, amount: b.amount, due_date: b.due_date, description: b.description, source: 'compound', meta: { item_type: '99', compound_no: String(b.id) } } as any)).map(b => b.id)), [sortedBills, has]);
+  const selectedIds = useMemo(() => new Set(sortedBills.filter(b => has({ id: b.id, bill_no: b.bill_no, amount: b.amount, due_date: b.due_date, description: b.description, source: 'compound', meta: { item_type: '04', compound_no: String(b.id) } } as any)).map(b => b.id)), [sortedBills, has]);
 
   return (
     <SidebarLayout>
