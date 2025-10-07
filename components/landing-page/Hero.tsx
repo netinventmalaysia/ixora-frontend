@@ -13,9 +13,13 @@ import { triggerPWAInstall } from "@/components/common/PWAInstallPrompt";
 
 const PRIMARY = "#B01C2F";
 
-export default function Hero() {
-  const { t } = useTranslation();
+type HeroProps = {
+  /** Jumlah transaksi hari ini (boleh datang dari API) */
+  todayTransactions?: number;
+};
 
+export default function Hero({ todayTransactions = 1532 }: HeroProps) {
+  const { t } = useTranslation();
   const [pulse, setPulse] = useState(false);
 
   // Simulasi denyutan robot (setiap 2.5s)
@@ -26,37 +30,6 @@ export default function Hero() {
     }, 2500);
     return () => clearInterval(interval);
   }, []);
-
-  const stats = [
-    { label: t("landing.hero.stats.uptime", "Uptime"), value: "99.9%" },
-    { label: t("landing.hero.stats.transactions", "Transactions"), value: "150k+" },
-    {
-      label: t("landing.hero.stats.energy", "Digital Pulse"),
-      value: (
-        <div className="flex flex-col items-center justify-center">
-          <div
-            className={`h-8 w-8 rounded-xl border flex items-center justify-center transition-transform ${
-              pulse ? "scale-110" : "scale-100"
-            }`}
-            style={{ borderColor: PRIMARY }}
-          >
-            <span className="text-lg" role="img" aria-label="IXORA Bot">
-              🤖
-            </span>
-          </div>
-          <div className="mt-1 flex items-center gap-1">
-            <span
-              className={`inline-block h-2 w-2 rounded-full ${
-                pulse ? "animate-[ping_0.6s_ease-out_1]" : "animate-pulse"
-              }`}
-              style={{ background: PRIMARY }}
-            />
-            <span className="text-[11px] text-gray-600">Active</span>
-          </div>
-        </div>
-      ),
-    },
-  ];
 
   return (
     <section id="intro" className="relative isolate overflow-hidden bg-white">
@@ -78,71 +51,91 @@ export default function Hero() {
               </strong>
             </p>
 
-            {/* CTA Buttons */}
-            <div className="mt-6 flex flex-wrap gap-3">
-              {/* Login */}
-              <Link
-                href="/login"
-                prefetch={false}
-                aria-label="Login"
-                className="inline-flex items-center gap-2 rounded-lg bg-[#B01C2F] px-5 py-3 text-sm font-semibold text-white shadow-sm transition hover:bg-[#951325] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#B01C2F] focus-visible:ring-offset-2"
-              >
-                <ArrowRightOnRectangleIcon className="h-5 w-5 text-white" aria-hidden="true" />
-                {t("landing.hero.ctaLogin", "Login Here !")}
-              </Link>
+{/* CTA Buttons + Live Pulse wrapper */}
+<div className="mt-6 w-full max-w-md sm:max-w-lg">
+  {/* CTA Buttons */}
+  <div className="flex flex-wrap gap-3">
+    {/* Login */}
+    <Link
+      href="/login"
+      prefetch={false}
+      aria-label="Login"
+      className="inline-flex flex-1 min-w-[150px] items-center justify-center gap-2 rounded-lg bg-[#B01C2F] px-5 py-3 text-sm font-semibold text-white shadow-sm transition hover:bg-[#951325] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#B01C2F] focus-visible:ring-offset-2"
+    >
+      <ArrowRightOnRectangleIcon className="h-5 w-5 text-white" aria-hidden="true" />
+      {t("landing.hero.ctaLogin", "Login Here !")}
+    </Link>
 
-              {/* Install PWA */}
-              <button
-                type="button"
-                onClick={() => triggerPWAInstall()}
-                aria-label="Install PWA"
-                className="inline-flex items-center gap-2 rounded-lg border border-[#B01C2F] bg-white px-5 py-3 text-sm font-semibold text-gray-700 shadow-sm transition hover:bg-gray-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#B01C2F] focus-visible:ring-offset-2"
-              >
-                <DevicePhoneMobileIcon className="h-5 w-5 text-[#B01C2F]" aria-hidden="true" />
-                {t("landing.hero.ctaPwa", "Install PWA")}
-              </button>
+    {/* Install PWA */}
+    <button
+      type="button"
+      onClick={() => triggerPWAInstall()}
+      aria-label="Install PWA"
+      className="inline-flex flex-1 min-w-[150px] items-center justify-center gap-2 rounded-lg border border-[#B01C2F] bg-white px-5 py-3 text-sm font-semibold text-gray-700 shadow-sm transition hover:bg-gray-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#B01C2F] focus-visible:ring-offset-2"
+    >
+      <DevicePhoneMobileIcon className="h-5 w-5 text-[#B01C2F]" aria-hidden="true" />
+      {t("landing.hero.ctaPwa", "Install PWA")}
+    </button>
 
-              {/* Download Apps */}
-              <a
-                href="#"
-                aria-label="Mobile Apps"
-                className="inline-flex items-center gap-2 rounded-lg border border-[#B01C2F] bg-white px-5 py-3 text-sm font-semibold text-gray-700 shadow-sm transition hover:bg-gray-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#B01C2F] focus-visible:ring-offset-2"
-              >
-                <DevicePhoneMobileIcon className="h-5 w-5 text-[#B01C2F]" aria-hidden="true" />
-                {t("landing.hero.ctaDownload", "Mobile Apps")}
-              </a>
+    {/* EasyPay */}
+    <a
+      href="#"
+      aria-label="Easy Pay"
+      className="inline-flex flex-1 min-w-[150px] items-center justify-center gap-2 rounded-lg border border-[#B01C2F] bg-white px-5 py-3 text-sm font-semibold text-gray-700 shadow-sm transition hover:bg-gray-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#B01C2F] focus-visible:ring-offset-2"
+    >
+      <CreditCardIcon className="h-5 w-5 text-[#B01C2F]" aria-hidden="true" />
+      {t("landing.hero.ctaEasyPay", "Easy Pay")}
+    </a>
+  </div>
 
-              {/* EasyPay */}
-              <a
-                href="#"
-                aria-label="Easy Pay"
-                className="inline-flex items-center gap-2 rounded-lg border border-[#B01C2F] bg-white px-5 py-3 text-sm font-semibold text-gray-700 shadow-sm transition hover:bg-gray-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#B01C2F] focus-visible:ring-offset-2"
-              >
-                <CreditCardIcon className="h-5 w-5 text-[#B01C2F]" aria-hidden="true" />
-                {t("landing.hero.ctaEasyPay", "Easy Pay")}
-              </a>
-            </div>
+  {/* ===== Live Pulse (lebar sama) ===== */}
+  <div
+    className="mt-6 rounded-2xl border bg-white p-4 shadow-sm transition hover:shadow-md w-full"
+    style={{ borderColor: PRIMARY }}
+  >
+    <div className="flex items-start gap-3">
+<div
+  className={`mt-1 flex h-10 w-10 shrink-0 items-center justify-center rounded-xl border transition-transform duration-300 ${
+    pulse ? "scale-110" : "scale-100"
+  }`}
+  style={{ borderColor: PRIMARY }}
+  aria-hidden="true"
+>
+  <span className="text-lg sm:text-xl" role="img" aria-label="IXORA Bot">
+    🤖
+  </span>
+</div>
 
-            {/* KPI Stats */}
-            <dl className="mt-8 grid grid-cols-3 gap-3 sm:gap-4 lg:gap-6 lg:max-w-none">
-              {stats.map((s) => (
-                <div
-                  key={s.label}
-                  className="rounded-xl border bg-white p-4 text-center shadow-sm hover:shadow-md transition"
-                  style={{ borderColor: PRIMARY }}
-                >
-                  <dt className="text-[11px] tracking-wide text-gray-500">{s.label}</dt>
-                  <dd className="mt-0.5 text-lg font-semibold text-gray-900 sm:text-xl flex justify-center">
-                    {s.value}
-                  </dd>
-                </div>
-              ))}
-            </dl>
+<div className="space-y-2">
+  <div className="flex items-center gap-2">
+    <h4 className="font-semibold text-gray-900 flex items-center gap-2">
+      IXORA Bot
+      <span
+        className={`h-3 w-3 rounded-full ${
+          pulse ? "animate-[ping_0.6s_ease-out_1]" : "animate-pulse"
+        }`}
+        style={{ background: PRIMARY }}
+        aria-hidden="true"
+      />
+    </h4>
+    <span className="text-xs text-gray-500">Pulse masa nyata aktif</span>
+  </div>
+
+  <p className="text-sm text-gray-600 leading-relaxed">
+    “Terima kasih!{" "}
+    <strong>{todayTransactions.toLocaleString()}</strong>{" "}
+    transaksi hari ini menyalakan tenaga saya.”
+  </p>
+</div>
+    </div>
+  </div>
+  {/* ===== End Live Pulse ===== */}
+</div>
           </div>
 
           {/* Right Illustration */}
           <div className="lg:col-span-6">
-            <div className="relative mx-auto aspect-[5/4] w-full max-w-xl sm:max-w-2xl 2xl:max-w-3xl">
+            <div className="relative mx-auto aspect-[5/4] w/full max-w-xl sm:max-w-2xl 2xl:max-w-3xl">
               <Image
                 src="/images/ixora-bill.png"
                 alt={t("landing.hero.title", "IXORA MBMB")}

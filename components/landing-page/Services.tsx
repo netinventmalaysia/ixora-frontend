@@ -54,7 +54,7 @@ export default function Services() {
   ];
 
   return (
-    <section id="services" className="bg-gray-50 py-16">
+    <section id="services" className="bg-white-50 py-16">
       <div className="mx-auto max-w-screen-2xl px-6 py-20">
         <h2 className="text-center text-3xl font-bold text-gray-900">
           {t("services.heading", "Service Modules")}
