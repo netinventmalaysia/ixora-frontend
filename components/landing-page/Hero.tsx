@@ -10,6 +10,7 @@ CreditCardIcon,
 DevicePhoneMobileIcon,
 } from "@heroicons/react/24/solid";
 import HeroCarousel from "@/components/common/HeroCarousel";
+import { triggerPWAInstall } from "@/components/common/PWAInstallPrompt";
 
 const PRIMARY = "#B01C2F";
 
@@ -97,18 +98,15 @@ return (
       </Link>
 
       {/* Secondary: download IXORA app */}
-      <Link
-        href="/download"
-        prefetch={false}
-        aria-label={t("landing.hero.ctaSecondary", "Download IXORA MBMB")}
-        className="inline-flex flex-1 min-w-[150px] items-center justify-center gap-2 rounded-lg border border-[#B01C2F] bg-white px-5 py-3 text-sm font-semibold text-gray-700 shadow-sm transition hover:bg-gray-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#B01C2F] focus-visible:ring-offset-2"
-      >
-        <DevicePhoneMobileIcon
-          className="h-5 w-5 text-[#B01C2F]"
-          aria-hidden="true"
-        />
-        {t("landing.hero.ctaSecondary", "Download IXORA MBMB")}
-      </Link>
+<button
+  type="button"
+  onClick={() => triggerPWAInstall()}
+  aria-label={t("landing.hero.ctaSecondary", "Download IXORA MBMB")}
+  className="inline-flex flex-1 min-w-[150px] items-center justify-center gap-2 rounded-lg border border-[#B01C2F] bg-white px-5 py-3 text-sm font-semibold text-gray-700 shadow-sm transition hover:bg-gray-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#B01C2F] focus-visible:ring-offset-2"
+>
+  <DevicePhoneMobileIcon className="h-5 w-5 text-[#B01C2F]" aria-hidden="true" />
+  {t("landing.hero.ctaSecondary", "Download IXORA MBMB")}
+</button>
 
       {/* Optional: EasyPay */}
       <a
