@@ -185,18 +185,68 @@ export const fetchBillings = async (businessId: number) => {
 };
 
 // Billing status & receipt helpers (frontend assumptions until backend finalized)
-// Fetch a single billing/checkout status by reference. Expected backend endpoint (adjust if different): /billings/status?reference=REF
-// Return shape expectation (example): { reference, status: 'pending' | 'success' | 'failed', paid_at?, amount?, receipt_no?, bills?: [...], gateway?: { orderid, amount, ... } }
+// Normalize various backend shapes to a single FE-friendly structure used by the UI
+// Final shape: { reference, status: 'pending' | 'success' | 'failed', amount?, paid_at?, receipt_no?, bills?: [...], gateway? }
+const normalizeBillingStatus = (raw: any, fallbackRef?: string) => {
+    // Some endpoints return { data: {...} }, others return the object directly
+    const src = raw?.data?.data ?? raw?.data ?? raw;
+    const ref = src?.reference || fallbackRef;
+
+    // Map backend status to FE status
+    const srcStatus: string = (src?.status || '').toString().toUpperCase();
+    const gwStatus: string = (src?.gatewayStatus || src?.gateway_status || '').toString().toUpperCase();
+    let status: 'pending' | 'success' | 'failed' = 'pending';
+    if (srcStatus === 'PAID' || srcStatus === 'SUCCESS' || gwStatus === '00') status = 'success';
+    else if (srcStatus === 'FAILED' || srcStatus === 'REJECTED' || gwStatus === '99') status = 'failed';
+
+    // Amounts and timestamps (backend might use strings)
+    const amount = src?.paidAmount || src?.totalAmount || src?.amount;
+    const paid_at = src?.paidAt || src?.paid_at || null;
+    const receipt_no = src?.receiptNo || src?.receipt_no || null;
+
+    // Bills/items normalization
+    let bills: Array<{ bill_no?: string; account_no?: string; item_type?: string; amount?: number }> = [];
+    if (Array.isArray(src?.bills)) {
+        bills = src.bills.map((b: any) => ({
+            bill_no: b.bill_no || b.order_no || b.orderNo || undefined,
+            account_no: b.account_no || b.accountNo || undefined,
+            item_type: b.item_type || b.itemType || undefined,
+            amount: typeof b.amount === 'string' ? Number(b.amount) : b.amount,
+        }));
+    } else if (Array.isArray(src?.items)) {
+        bills = src.items.map((it: any) => ({
+            bill_no: it.order_no || it.bill_no || undefined,
+            account_no: it.account_no || undefined,
+            item_type: it.item_type || undefined,
+            amount: typeof it.amount === 'string' ? Number(it.amount) : it.amount,
+        }));
+    }
+
+    return {
+        reference: ref,
+        status,
+        amount: typeof amount === 'string' ? Number(amount) : amount,
+        paid_at,
+        receipt_no,
+        bills,
+        gateway: src?.gateway || null,
+        // keep raw available for debugging if needed
+        _raw: src,
+    };
+};
+
+// Fetch a single billing/checkout status by reference.
 export const fetchBillingStatus = async (reference: string) => {
     if (!reference) throw new Error('Missing reference');
     try {
+        // Preferred endpoint if available
         const { data } = await api.get('/billings/status', { params: { reference } });
-        return data;
+        return normalizeBillingStatus(data, reference);
     } catch (e) {
-        // Fallback: attempt generic /billings/:reference
+        // Fallback: attempt generic /billings/:reference (observed in production)
         try {
             const { data } = await api.get(`/billings/${reference}`);
-            return data;
+            return normalizeBillingStatus(data, reference);
         } catch {
             throw e;
         }
@@ -208,10 +258,17 @@ export const fetchBillingReceipt = async (reference: string) => {
     if (!reference) throw new Error('Missing reference');
     try {
         const { data } = await api.get('/billings/receipt', { params: { reference } });
-        return data;
+        // If the receipt endpoint mirrors the status payload, normalize so UI can reuse fields
+        return normalizeBillingStatus(data, reference);
     } catch (e) {
-        // Allow caller to ignore missing receipt
-        return null;
+        // Fallback to fetching the same resource; some backends expose only one endpoint
+        try {
+            const { data } = await api.get(`/billings/${reference}`);
+            return normalizeBillingStatus(data, reference);
+        } catch {
+            // Allow caller to ignore missing receipt
+            return null;
+        }
     }
 };
 
