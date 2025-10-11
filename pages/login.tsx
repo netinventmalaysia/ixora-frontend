@@ -122,9 +122,9 @@ export default function LoginPage() {
       )}
 
       {/* Language switcher */}
-      <div className="fixed right-3 top-20 sm:top-24 z-50">
-        <LanguageSelector className="!static" />
-      </div>
+<div className="absolute top-4 right-4">
+  <LanguageSelector />
+</div>
 
       {/* Brand header */}
       <div
@@ -148,16 +148,14 @@ export default function LoginPage() {
             <span className="text-[#B01C2F]">IXORA</span>{" "}
             <span className="text-[#005C76]">MBMB</span>
           </h1>
-          <p className="mt-1 text-xs text-gray-500">{t("landing.hero.subtitle")}</p>
+          <p className="mt-1 text-xs text-gray-500">MAJLIS BANDARAYA MELAKA BERSEJARAHd</p>
         </a>
       </div>
 
       {/* Card wrapper (theme: border + ring color) */}
       <div className="mx-auto w-full max-w-md px-4">
         <div
-          className="rounded-2xl border bg-white p-6 shadow-sm sm:p-7"
-          style={{ borderColor: PRIMARY }}
-        >
+          className="bg-white p-6">
           <FormWrapper onSubmit={handleSubmit}>
             <Heading level={2} align="center" bold>
               {t("login.title")}
