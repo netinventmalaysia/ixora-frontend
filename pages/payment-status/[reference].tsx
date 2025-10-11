@@ -14,7 +14,7 @@ interface BillingStatusData {
   gateway?: any;
 }
 
-export default function PaymentStatusPage() {
+export default function PaymentStatusByRefPage() {
   const router = useRouter();
   const [reference, setReference] = useState<string>('');
   const [data, setData] = useState<BillingStatusData | null>(null);
@@ -22,18 +22,13 @@ export default function PaymentStatusPage() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  // Extract reference from URL once (legacy query support). If present, redirect to path variant.
+  // Get reference from dynamic route
   useEffect(() => {
-    if (typeof window !== 'undefined') {
-      const params = new URLSearchParams(window.location.search);
-      const ref = params.get('ref') || params.get('reference') || '';
-      if (ref) {
-        // Redirect to /payment-status/<ref> for canonical path
-        router.replace(`/payment-status/${encodeURIComponent(ref)}`);
-      }
-      setReference(ref);
-    }
-  }, [router]);
+    if (!router.isReady) return;
+    const q = router.query?.reference;
+    const ref = Array.isArray(q) ? q[0] : (q || '');
+    setReference(ref);
+  }, [router.isReady, router.query]);
 
   const pollStatus = useCallback(async (ref: string) => {
     if (!ref) return;
@@ -76,7 +71,6 @@ export default function PaymentStatusPage() {
   };
 
   const onDownload = () => {
-    // Simple client-side PDF (placeholder). Could be replaced with server receipt PDF.
     try {
       const blob = new Blob([JSON.stringify({ data, receipt }, null, 2)], { type: 'application/json' });
       const url = URL.createObjectURL(blob);
@@ -98,12 +92,21 @@ export default function PaymentStatusPage() {
     <SidebarLayout>
       <div className="w-full max-w-4xl mx-auto py-10 px-4 space-y-6">
         {!reference && (
-          <div className="space-y-3">
-            <div className="rounded bg-yellow-50 border border-yellow-200 p-4 text-sm text-yellow-800">
-              Provide a reference in the URL: <code className="font-mono">/payment-status/&lt;reference&gt;</code>
-            </div>
-            <div className="text-xs text-gray-500">Legacy URLs with <code className="font-mono">?ref=</code> will auto-redirect.</div>
-          </div>
+          <div className="rounded bg-red-50 border border-red-200 p-4 text-sm text-red-700">Missing reference. Please return to the dashboard.</div>
+        )}
+        {reference && (
+          <PaymentResult
+            status={status}
+            reference={reference}
+            amount={amount}
+            receiptNo={receiptNo}
+            paidAt={paidAt}
+            bills={bills}
+            gateway={data?.gateway}
+            loading={loading}
+            onRetry={onRetry}
+            onDownload={onDownload}
+          />
         )}
         {error && <div className="text-xs text-red-600">{error}</div>}
         {status === 'pending' && !error && (
