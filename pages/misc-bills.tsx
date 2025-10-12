@@ -6,7 +6,7 @@ import Spacing from 'todo/components/forms/Spacing';
 import Heading from 'todo/components/forms/Heading';
 import LineSeparator from 'todo/components/forms/LineSeparator';
 import FormActions from 'todo/components/forms/FormActions';
-import { MiscBill, fetchMiscOutstanding } from '@/services/api';
+import { MiscBill, fetchMiscOutstanding, fetchBillingItemsByBillNo } from '@/services/api';
 import { useBillSelection } from '@/context/BillSelectionContext';
 import { useForm, FormProvider } from 'react-hook-form';
 import { useTranslation } from '@/utils/i18n';
@@ -25,6 +25,7 @@ export default function MiscBillsPage() {
 
   const [loading, setLoading] = useState(false);
   const [bills, setBills] = useState<MiscBill[]>([]);
+  const [paidLookup, setPaidLookup] = useState<Record<string, { paid: boolean; reference?: string }>>({});
   const { add, remove, has } = useBillSelection();
   const [error, setError] = useState<string | null>(null);
 
@@ -77,6 +78,7 @@ export default function MiscBillsPage() {
   const toggleSelect = (id: string | number) => {
     const bill = sortedBills.find(b => b.id === id);
     if (!bill) return;
+    if (bill.bill_no && paidLookup[bill.bill_no]?.paid) return;
     const selectable = {
       id: bill.id,
       bill_no: bill.bill_no,
@@ -90,14 +92,44 @@ export default function MiscBillsPage() {
   };
 
   const toggleAll = () => {
-    const allSelected = sortedBills.every(b => has({ id: b.id, bill_no: b.bill_no, amount: b.amount, due_date: b.due_date, description: b.description, source: 'misc', meta: { item_type: '05', account_no: String(b.id) } } as any));
-    sortedBills.forEach(b => {
+    const selectableBills = sortedBills.filter(b => !(b.bill_no && paidLookup[b.bill_no]?.paid));
+    const allSelected = selectableBills.every(b => has({ id: b.id, bill_no: b.bill_no, amount: b.amount, due_date: b.due_date, description: b.description, source: 'misc', meta: { item_type: '05', account_no: String(b.id) } } as any));
+    selectableBills.forEach(b => {
       const selectable = { id: b.id, bill_no: b.bill_no, amount: b.amount, due_date: b.due_date, description: b.description, source: 'misc' as const, meta: { item_type: '05', account_no: String(b.id), raw: b } };
       if (allSelected) remove(selectable); else if (!has(selectable) && b.amount > 0) add(selectable);
     });
   };
 
-  const selectedIds = useMemo(() => new Set(sortedBills.filter(b => has({ id: b.id, bill_no: b.bill_no, amount: b.amount, due_date: b.due_date, description: b.description, source: 'misc', meta: { item_type: '05', account_no: String(b.id) } } as any)).map(b => b.id)), [sortedBills, has]);
+  const selectedIds = useMemo(() => new Set(sortedBills.filter(b => !paidLookup[b.bill_no]?.paid && has({ id: b.id, bill_no: b.bill_no, amount: b.amount, due_date: b.due_date, description: b.description, source: 'misc', meta: { item_type: '05', account_no: String(b.id) } } as any)).map(b => b.id)), [sortedBills, has, paidLookup]);
+
+  // Lookup and purge paid bills
+  useEffect(() => {
+    let cancelled = false;
+    const run = async () => {
+      const unique = Array.from(new Set((bills || []).map(b => b.bill_no).filter(Boolean)));
+      const results: Record<string, { paid: boolean; reference?: string }> = {};
+      await Promise.all(unique.map(async (bn) => {
+        const list = await fetchBillingItemsByBillNo(bn!);
+        const paidItem = (list || []).find(it => String(it?.status || it?.billing_status || '').toUpperCase() === 'PAID');
+        results[bn!] = paidItem ? { paid: true, reference: paidItem.reference } : { paid: false };
+      }));
+      if (!cancelled) {
+        setPaidLookup(results);
+        (bills || []).forEach(b => {
+          if (b.bill_no && results[b.bill_no]?.paid) {
+            const selectable = { id: b.id, bill_no: b.bill_no, amount: b.amount, due_date: b.due_date, description: b.description, source: 'misc' as const, meta: { item_type: '05', account_no: String(b.id), raw: b } };
+            if (has(selectable)) remove(selectable);
+          }
+        });
+      }
+    };
+    if ((bills || []).length > 0) run(); else setPaidLookup({});
+    return () => { cancelled = true; };
+  }, [bills]);
+
+  const onReceipt = (bill_no: string, reference?: string) => {
+    if (reference) window.location.href = `/payment-status/${encodeURIComponent(reference)}`;
+  };
 
   return (
     <SidebarLayout>
@@ -138,6 +170,8 @@ export default function MiscBillsPage() {
             onToggleAll={toggleAll}
             loading={loading}
             t={t}
+            paidLookup={paidLookup}
+            onReceipt={onReceipt}
           />
 
           <Spacing size="md" />
