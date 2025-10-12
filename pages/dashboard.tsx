@@ -100,9 +100,16 @@ export default function DashboardPage() {
   }, [unifiedBills]);
 
   const totals = useMemo(() => {
-    const billTotal = unifiedBills.reduce((s, b) => s + (Number(b.amount) || 0), 0);
-    return { billTotal };
-  }, [unifiedBills]);
+    const isPaid = (b: BillRow) => {
+      const p = paidLookup[b.billNo];
+      const s = (p?.status || '').toUpperCase();
+      return s === 'PAID' || s === 'SUCCESS';
+    };
+    const unpaid = unifiedBills.filter(b => !isPaid(b));
+    const billTotal = unpaid.reduce((s, b) => s + (Number(b.amount) || 0), 0);
+    const billCount = unpaid.length;
+    return { billTotal, billCount };
+  }, [unifiedBills, paidLookup]);
 
   // Features list removed per request
 
@@ -125,7 +132,7 @@ export default function DashboardPage() {
           {/* ===================== SUMMARY CARDS (REUSABLE) ===================== */}
           <SummaryCards
             billTotal={totals.billTotal}
-            billCount={unifiedBills.length}
+            billCount={totals.billCount}
             invoiceCount={0}
             formatAmount={fRM}
           />
