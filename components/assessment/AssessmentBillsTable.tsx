@@ -25,6 +25,27 @@ export default function AssessmentBillsTable({ bills, selectedIds, onToggle, onT
     .filter((b) => selectedIds.has(b.id))
     .reduce((sum, b) => sum + (Number(b.amount) || 0), 0);
 
+  const formatDMY = (val?: string) => {
+    if (!val) return '-';
+    // Try Date parser first
+    const d = new Date(val);
+    if (!isNaN(d.getTime())) {
+      const dd = String(d.getDate()).padStart(2, '0');
+      const mm = String(d.getMonth() + 1).padStart(2, '0');
+      const yyyy = d.getFullYear();
+      return `${dd}/${mm}/${yyyy}`;
+    }
+    // Manual ISO yyyy-mm-dd
+    const m1 = val.match(/^(\d{4})-(\d{1,2})-(\d{1,2})$/);
+    if (m1) {
+      const yyyy = m1[1];
+      const mm = m1[2].padStart(2, '0');
+      const dd = m1[3].padStart(2, '0');
+      return `${dd}/${mm}/${yyyy}`;
+    }
+    return '-';
+  };
+
   return (
     <>
       {/* Actions */}
@@ -95,13 +116,7 @@ export default function AssessmentBillsTable({ bills, selectedIds, onToggle, onT
                     {b.description || '-'}
                   </div>
                 </td>
-                <td className="p-2">
-                  {(() => {
-                    if (!b.due_date) return '-';
-                    const d = new Date(b.due_date);
-                    return isNaN(d.getTime()) ? '-' : d.toLocaleDateString();
-                  })()}
-                </td>
+                <td className="p-2">{formatDMY(b.due_date)}</td>
                 <td className="p-2 text-right">RM {Number(b.amount || 0).toFixed(2)}</td>
                 {paidLookup && (
                   <td className="p-2 text-right">
