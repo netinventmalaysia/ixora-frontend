@@ -51,8 +51,13 @@ export default function LoginPage() {
       try {
         const first = res.user.firstName || res.user.first_name || '';
         const last = res.user.lastName || res.user.last_name || '';
-        const cached = JSON.stringify({ firstName: first, lastName: last, fullName: `${first} ${last}`.trim() });
+        const computedFull = `${first} ${last}`.trim();
+        const bestFullName = computedFull || res.user.fullName || res.user.full_name || res.user.name || '';
+        const cached = JSON.stringify({ firstName: first, lastName: last, fullName: bestFullName || computedFull });
         localStorage.setItem('userProfile', cached);
+        if (bestFullName) {
+          localStorage.setItem('payerName', bestFullName);
+        }
       } catch {}
       triggerUserRefresh();
 
@@ -95,6 +100,14 @@ export default function LoginPage() {
       if (!res?.user) throw new Error("Guest login failed");
       localStorage.setItem("userRole", res.user.role);
       localStorage.setItem("userId", res.user.id);
+      try {
+        const first = res.user.firstName || res.user.first_name || '';
+        const last = res.user.lastName || res.user.last_name || '';
+        const computedFull = `${first} ${last}`.trim();
+        const bestFullName = computedFull || res.user.fullName || res.user.full_name || res.user.name || 'Guest';
+        localStorage.setItem('payerName', bestFullName);
+        localStorage.setItem('userProfile', JSON.stringify({ firstName: first, lastName: last, fullName: bestFullName }));
+      } catch {}
       toast.success(t("login.guestOk", "Logged in as Guest"));
       router.push("/dashboard");
     } catch {

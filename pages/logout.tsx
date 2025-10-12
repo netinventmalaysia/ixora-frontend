@@ -14,24 +14,15 @@ export default function LogoutPage() {
       console.error('Logout failed:', error);
       // Optionally ignore the error if logout is not critical
     } finally {
-      // Clear tokens AFTER attempting logout
-      localStorage.removeItem('user-role');
-      localStorage.removeItem('userRole');
-      localStorage.removeItem('user-mode');
-      localStorage.removeItem('access_token');
-      localStorage.removeItem('csrfToken');
-      localStorage.removeItem('userId');
-  localStorage.removeItem('username'); // legacy - safe to remove in future
-  localStorage.removeItem('userProfile');
-      localStorage.removeItem('email');
-      localStorage.removeItem('userProfile');
-      localStorage.removeItem('userOrganisation');
-      localStorage.removeItem('userCompanyName');
-      localStorage.removeItem('userRegistrationNumber');
-      localStorage.removeItem('csrfToken');
-      localStorage.removeItem('auth_token');
+      // Clear all storage AFTER attempting logout
+      try {
+        localStorage.clear();
+      } catch {}
+      try {
+        sessionStorage.clear();
+      } catch {}
 
-  router.replace('/login');
+      router.replace('/login');
     }
   };
 
