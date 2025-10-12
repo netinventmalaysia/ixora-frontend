@@ -1,5 +1,6 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import SummaryCards from '@/components/dashboard/SummaryCards';
+import PaidUnpaidPie from '@/components/dashboard/PaidUnpaidPie';
 import SidebarLayout from '@/components/main/SidebarLayout';
 import Heading from '@/components/forms/Heading';
 import Spacing from '@/components/forms/Spacing';
@@ -108,7 +109,9 @@ export default function DashboardPage() {
     const unpaid = unifiedBills.filter(b => !isPaid(b));
     const billTotal = unpaid.reduce((s, b) => s + (Number(b.amount) || 0), 0);
     const billCount = unpaid.length;
-    return { billTotal, billCount };
+    const paidAmount = unifiedBills.filter(isPaid).reduce((s, b) => s + (Number(b.amount) || 0), 0);
+    const unpaidAmount = billTotal;
+    return { billTotal, billCount, paidAmount, unpaidAmount };
   }, [unifiedBills, paidLookup]);
 
   // Features list removed per request
@@ -129,6 +132,10 @@ export default function DashboardPage() {
 
       <Spacing size="lg" />
 
+      {/* Paid vs Unpaid pie */}
+          <PaidUnpaidPie paidAmount={totals.paidAmount} unpaidAmount={totals.unpaidAmount} title={t('dashboard.pieTitle', 'Paid vs Unpaid (Bills)')} />
+
+          <Spacing size="md" />
           {/* ===================== SUMMARY CARDS (REUSABLE) ===================== */}
           <SummaryCards
             billTotal={totals.billTotal}
