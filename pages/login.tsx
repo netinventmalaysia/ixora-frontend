@@ -66,13 +66,21 @@ export default function LoginPage() {
         }
       }, 1500);
     } catch (err) {
-      const error = err as AxiosError<{ message: string; error: string }>;
-      const isAuth = error.response?.status === 401;
-      toast.error(
-        isAuth
-          ? (error.response?.data as any)?.message?.message ?? t("login.invalid", "Invalid credentials")
-          : t("common.somethingWrong", "Something went wrong")
-      );
+      const error = err as AxiosError<{ message?: string | { message?: string }; error?: string } & Record<string, any>>;
+      const status = error.response?.status;
+      const data: any = error.response?.data || {};
+      // Prefer server-provided message if available (handles string or nested object)
+      const serverMsg =
+        typeof data?.message === 'string'
+          ? data.message
+          : typeof data?.message?.message === 'string'
+          ? data.message.message
+          : typeof data?.error === 'string'
+          ? data.error
+          : undefined;
+
+      const fallbackByStatus = status === 401 ? t("login.invalid", "Invalid credentials") : t("common.somethingWrong", "Something went wrong");
+      toast.error(serverMsg || fallbackByStatus);
       setShake(true);
       setTimeout(() => setShake(false), 500);
     } finally {
