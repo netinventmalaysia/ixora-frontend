@@ -67,6 +67,7 @@ export default function SidebarLayout({ children }: { children: ReactNode }) {
       '/misc-bills',
       '/compound',
       '/booth-rental',
+      '/dashboard',
     ]);
     return allowedPaths.has(router.pathname);
   })();

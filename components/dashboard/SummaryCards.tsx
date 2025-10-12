@@ -3,7 +3,7 @@ import { useTranslation } from '@/utils/i18n';
 
 type Props = {
   billTotal: number;
-  invoiceTotal: number;
+  invoiceTotal?: number;
   billCount: number;
   invoiceCount: number;
   formatAmount?: (n: number) => string;
@@ -18,7 +18,7 @@ export default function SummaryCards({
 }: Props) {
   const { t } = useTranslation();
   const fmt = formatAmount ?? ((n: number) => n.toString());
-  const combinedTotal = (billTotal || 0) + (invoiceTotal || 0);
+  const combinedTotal = (billTotal || 0) + ((invoiceTotal ?? 0) || 0);
   const overallCount = (billCount || 0) + (invoiceCount || 0);
 
   return (
@@ -37,7 +37,7 @@ export default function SummaryCards({
         <div className="text-xs uppercase text-gray-500">
           {t('dashboard.cards.invoiceTotal', 'Jumlah Invois')}
         </div>
-        <div className="mt-1 text-2xl font-bold">{fmt(invoiceTotal)}</div>
+  <div className="mt-1 text-2xl font-bold">{fmt(invoiceTotal ?? 0)}</div>
         <div className="mt-2 text-sm text-gray-500">
           {t('dashboard.cards.activeInvoices', 'Invois aktif')}: {invoiceCount}
         </div>

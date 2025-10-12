@@ -57,6 +57,9 @@ export default function LoginPage() {
         const cached = JSON.stringify({ firstName: first, lastName: last, fullName: finalName });
         localStorage.setItem('userProfile', cached);
         localStorage.setItem('payerName', finalName);
+        // Try to capture IC/NRIC for default searches
+        const ic = (res.user as any)?.ic || (res.user as any)?.nric || (res.user as any)?.identificationNumber || (res.user as any)?.identification_number || (res.user as any)?.idNumber || (res.user as any)?.id_number;
+        if (ic) localStorage.setItem('ic', String(ic));
         // If we don't have a real name yet (fallback used), try to enrich by email
         const usedFallback = !bestFullName;
         if (usedFallback && res.user.email) {
@@ -68,10 +71,14 @@ export default function LoginPage() {
               const pl = p.lastName || p.last_name || '';
               const pComputed = `${pf} ${pl}`.trim();
               const pFull = pComputed || p.fullName || p.full_name || p.name || '';
+              const pic = p.ic || p.nric || p.identificationNumber || p.identification_number || p.idNumber || p.id_number;
               if (pFull) {
                 localStorage.setItem('payerName', pFull);
                 localStorage.setItem('userProfile', JSON.stringify({ firstName: pf, lastName: pl, fullName: pFull }));
                 triggerUserRefresh();
+              }
+              if (pic && !localStorage.getItem('ic')) {
+                localStorage.setItem('ic', String(pic));
               }
             }
           } catch {}

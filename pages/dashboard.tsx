@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import SummaryCards from '@/components/dashboard/SummaryCards';
 import SidebarLayout from '@/components/main/SidebarLayout';
 import Heading from '@/components/forms/Heading';
@@ -8,6 +8,8 @@ import TextLine from '@/components/forms/HyperText';
 import { CheckCircleIcon } from '@heroicons/react/24/solid';
 import { useTranslation } from '@/utils/i18n';
 import LogoSpinner from '@/components/common/LogoSpinner';
+import { fetchAssessmentOutstanding, fetchBoothOutstanding, fetchCompoundOutstanding, fetchMiscOutstanding, AssessmentBill, BoothBill, CompoundBill, MiscBill } from '@/services/api';
+import { useBillSelection } from '@/context/BillSelectionContext';
 import {
   Table,
   TableBody,
@@ -19,50 +21,61 @@ import {
   TableRow,
 } from '@/components/ui/table';
 
-type Bill = {
-  type: string;
-  account: string;
-  amount: number;   // simpan nombor (senang kira)
-  due: string;      // paparan tarikh
-  color?: string;   // tailwind text color utk amaun (optional)
-};
-
-type Invoice = {
-  type: string;
-  amount: number;
-  due: string;
-  color?: string;
-};
+type BillRow = { type: string; id: string | number; billNo: string; amount: number; due: string; color?: string };
 
 export default function DashboardPage() {
   const { t } = useTranslation();
-  const [loading] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const { add } = useBillSelection();
+  const [assess, setAssess] = useState<AssessmentBill[]>([]);
+  const [compound, setCompound] = useState<CompoundBill[]>([]);
+  const [booth, setBooth] = useState<BoothBill[]>([]);
+  const [misc, setMisc] = useState<MiscBill[]>([]);
 
-  // ====== Mock data dari mesej anda (tukar RM-->number) ======
-  const bills: Bill[] = [
-    { type: 'Assessment Tax', account: '124090000257', amount: 120.00, due: '30 Sep 2025', color: 'text-emerald-600' },
-    { type: 'Compound', account: 'KN-44328990',  amount:  50.00, due: '15 Sep 2025', color: 'text-red-600' },
-    { type: 'Booth Rental', account: '111290-01',     amount: 300.00, due: '10 Oct 2025', color: 'text-emerald-600' },
-  ];
-
-  const invoices: Invoice[] = [
-    { type: 'Invoice Permit #P11223',  amount:  80.00, due: '05 Sep 2025', color: 'text-emerald-600' },
-    { type: 'Invoice Licence #L33445', amount: 150.00, due: '20 Sep 2025', color: 'text-sky-600' },
-    { type: 'Invoice Thypoid #T55667', amount:  40.00, due: '25 Sep 2025', color: 'text-amber-600' },
-  ];
+  // Fetch all categories by IC after login
+  useEffect(() => {
+    const ic = typeof window !== 'undefined' ? localStorage.getItem('ic') || '' : '';
+    if (!ic) return;
+    let cancel = false;
+    const run = async () => {
+      try {
+        setLoading(true);
+        const [a, c, b, m] = await Promise.all([
+          fetchAssessmentOutstanding({ ic }).catch(() => []),
+          fetchCompoundOutstanding({ ic }).then((d: any) => (Array.isArray(d?.data) ? d.data : Array.isArray(d) ? d : [])).catch(() => []),
+          fetchBoothOutstanding({ ic }).then((d: any) => (Array.isArray(d?.data) ? d.data : Array.isArray(d) ? d : [])).catch(() => []),
+          fetchMiscOutstanding({ ic }).catch(() => []),
+        ]);
+        if (!cancel) {
+          setAssess(a as AssessmentBill[]);
+          setCompound(c as CompoundBill[]);
+          setBooth(b as BoothBill[]);
+          setMisc(m as MiscBill[]);
+        }
+      } finally {
+        if (!cancel) setLoading(false);
+      }
+    };
+    run();
+    return () => { cancel = true; };
+  }, []);
 
   // ====== Helpers ======
   const fRM = (n: number) => `RM ${n.toFixed(2)}`;
 
+  const unifiedBills: BillRow[] = useMemo(() => {
+    const norm = (type: string, id: string | number, billNo: string, amount: number, due: string): BillRow => ({ type, id, billNo, amount: Number(amount) || 0, due: due || '-', color: amount > 0 ? 'text-emerald-600' : 'text-gray-500' });
+    const a = (assess || []).map(b => norm('Assessment Tax', b.id, (b as any).bill_no || (b as any).no_bil || String(b.id), b.amount, b.due_date));
+    const c = (compound || []).map(b => norm('Compound', (b as any).id ?? (b as any).compound_no ?? (b as any).nokmp ?? (b as any).no_kompaun ?? (b as any).bill_no ?? (b as any).no_rujukan ?? String((b as any).id ?? ''), (b as any).bill_no ?? (b as any).nokmp ?? (b as any).no_kompaun ?? (b as any).no_rujukan ?? String((b as any).id ?? ''), (b as any).amount ?? (b as any).jumlah ?? 0, (b as any).due_date ?? (b as any).trk_bil ?? ''));
+    const br = (booth || []).map(b => norm('Booth Rental', b.id, (b as any).bill_no ?? (b as any).no_bil ?? String(b.id), b.amount, b.due_date));
+    const ms = (misc || []).map(b => norm('Misc Bill', b.id, (b as any).bill_no ?? (b as any).billNo ?? (b as any).no_rujukan ?? String(b.id), b.amount, b.due_date));
+    return [...a, ...c, ...br, ...ms];
+  }, [assess, compound, booth, misc]);
+
   const totals = useMemo(() => {
-    const billTotal = bills.reduce((s, b) => s + b.amount, 0);
-    const invoiceTotal = invoices.reduce((s, i) => s + i.amount, 0);
-    // cari due paling hampir
-    const asDate = (d: string) => new Date(d.replace(/(\d{2}) (\w{3}) (\d{4})/, '$3-$2-$1'));
-    const nextBill = [...bills].sort((a,b)=>+asDate(a.due)-+asDate(b.due))[0];
-    const nextInvoice = [...invoices].sort((a,b)=>+asDate(a.due)-+asDate(b.due))[0];
-    return { billTotal, invoiceTotal, nextBill, nextInvoice };
-  }, [bills, invoices]);
+    const billTotal = unifiedBills.reduce((s, b) => s + (Number(b.amount) || 0), 0);
+    return { billTotal };
+  }, [unifiedBills]);
 
   const features = [
     t('dashboard.features.assessmentTax'),
@@ -94,9 +107,8 @@ export default function DashboardPage() {
           {/* ===================== SUMMARY CARDS (REUSABLE) ===================== */}
           <SummaryCards
             billTotal={totals.billTotal}
-            invoiceTotal={totals.invoiceTotal}
-            billCount={bills.length}
-            invoiceCount={invoices.length}
+            billCount={unifiedBills.length}
+            invoiceCount={0}
             formatAmount={fRM}
           />
 
@@ -123,13 +135,23 @@ export default function DashboardPage() {
             </TableRow>
           </TableHeader>
           <TableBody>
-            {bills.map((b, i) => (
+            {unifiedBills.map((b, i) => (
               <TableRow key={i}>
-                <TableCell>{b.type} - {b.account}</TableCell>
+                <TableCell>{b.type} - {b.billNo}</TableCell>
                 <TableCell className={`font-bold ${b.color || 'text-gray-800'}`}>{fRM(b.amount)}</TableCell>
                 <TableCell className="text-xs text-gray-500">{b.due}</TableCell>
                 <TableCell className="text-right">
-                  <button className="inline-flex items-center px-3 py-1.5 rounded-md bg-[#00A7A6] text-white hover:opacity-90">
+                  <button
+                    className="inline-flex items-center px-3 py-1.5 rounded-md bg-[#00A7A6] text-white hover:opacity-90"
+                    onClick={() => {
+                      const mapSource = (t: string) => t.toLowerCase().includes('assessment') ? 'assessment' : t.toLowerCase().includes('booth') ? 'booth' : t.toLowerCase().includes('misc') ? 'misc' : 'compound';
+                      const source = mapSource(b.type) as 'assessment' | 'booth' | 'misc' | 'compound';
+                      const selectable = { id: b.id ?? b.billNo, bill_no: b.billNo, amount: b.amount, due_date: b.due, description: b.type, source, meta: {} } as any;
+                      add(selectable);
+                      // Open checkout tray
+                      try { window.dispatchEvent(new Event('ixora:openCheckout')); } catch {}
+                    }}
+                  >
                     Bayar
                   </button>
                 </TableCell>
@@ -148,46 +170,7 @@ export default function DashboardPage() {
 
       <Spacing size="lg" />
 
-      {/* ===================== INVOICES TABLE ===================== */}
-      <Heading level={2} align="left" bold>
-        {t('dashboard.favoriteAccountsTitle', 'Invoices')}
-      </Heading>
-      <TextLine>{t('dashboard.invoicesDesc', 'Below is a summary of your invoices.Click on each invoice type for more details and payment options.')}</TextLine>
-      <Spacing size="sm" />
-      <div className="bg-white shadow rounded-lg p-6 overflow-x-auto">
-        <Table>
-          <TableCaption className="sr-only">{t('dashboard.favoriteAccountsTitle', 'Invoices')}</TableCaption>
-          <TableHeader>
-            <TableRow>
-              <TableHead className="w-[45%]">Invoice Type</TableHead>
-              <TableHead>Amount</TableHead>
-              <TableHead>Due Date</TableHead>
-              <TableHead className="text-right">Action</TableHead>
-            </TableRow>
-          </TableHeader>
-          <TableBody>
-            {invoices.map((inv, i) => (
-              <TableRow key={i}>
-                <TableCell>{inv.type}</TableCell>
-                <TableCell className={`font-bold ${inv.color || 'text-gray-800'}`}>{fRM(inv.amount)}</TableCell>
-                <TableCell className="text-xs text-gray-500">{inv.due}</TableCell>
-                <TableCell className="text-right">
-                  <button className="inline-flex items-center px-3 py-1.5 rounded-md bg-[#B01C2F] text-white hover:opacity-90">
-                    Bayar / Lihat
-                  </button>
-                </TableCell>
-              </TableRow>
-            ))}
-          </TableBody>
-          <TableFooter>
-            <TableRow>
-              <TableCell className="font-semibold">Total</TableCell>
-              <TableCell className="font-extrabold">{fRM(totals.invoiceTotal)}</TableCell>
-              <TableCell colSpan={2} />
-            </TableRow>
-          </TableFooter>
-        </Table>
-      </div>
+      {/* Invoices section hidden until backend provides invoice endpoint */}
 
       <Spacing size="lg" />
       <LineSeparator />

@@ -15,6 +15,7 @@ import {
 import { useTranslation } from '@/utils/i18n';
 import SidebarNav from '@/components/main/SidebarNav';
 import { useRouter } from 'next/router';
+import Link from 'next/link';
 // (fixed) remove duplicate import
 // Global pull-to-refresh is now applied in _app; no local wrapper here
 
@@ -198,7 +199,9 @@ export default function SidebarContent({
             </TransitionChild>
             <div className={`flex grow flex-col gap-y-5 overflow-y-auto px-6 pb-2 ring-1 ring-white/10 ${sidebarBg} text-white`}> 
               <div className="flex h-16 shrink-0 items-center">
-                <img alt="Your Company" src={logoUrl} className="h-8 w-auto" />
+                <Link href="/dashboard" prefetch={false} onClick={() => setSidebarOpen(false)}>
+                  <img alt="Your Company" src={logoUrl} className="h-8 w-auto cursor-pointer" />
+                </Link>
               </div>
               <SidebarNav general={generalNav} personal={personalNav} bottom={bottomNav} teams={mode === 'Business' ? teams : []} personalLabel={personalLabel} />
             </div>
@@ -210,7 +213,9 @@ export default function SidebarContent({
   <div className={`hidden lg:fixed lg:inset-y-0 lg:z-50 lg:flex lg:w-72 lg:flex-col ${sidebarBg} text-white`}>
         <div className="flex grow flex-col gap-y-5 overflow-y-auto px-6">
           <div className="flex h-16 shrink-0 items-center">
-            <img alt="Your Company" src={logoUrl} className="h-8 w-auto" />
+            <Link href="/dashboard" prefetch={false}>
+              <img alt="Your Company" src={logoUrl} className="h-8 w-auto cursor-pointer" />
+            </Link>
           </div>
           {showModeToggle && (
             <div className="flex flex-col text-white">
