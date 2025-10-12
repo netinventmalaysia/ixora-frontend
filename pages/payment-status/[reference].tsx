@@ -70,17 +70,8 @@ export default function PaymentStatusByRefPage() {
     if (reference) pollStatus(reference);
   };
 
-  const onDownload = () => {
-    try {
-      const blob = new Blob([JSON.stringify({ data, receipt }, null, 2)], { type: 'application/json' });
-      const url = URL.createObjectURL(blob);
-      const a = document.createElement('a');
-      a.href = url;
-      a.download = `receipt-${reference}.json`;
-      a.click();
-      setTimeout(() => URL.revokeObjectURL(url), 3000);
-    } catch { /* ignore */ }
-  };
+  // PDF download is provided in PaymentResult; onDownload is optional now.
+  const onDownload = undefined;
 
   const status: 'pending' | 'success' | 'failed' = (data?.status === 'success' || data?.status === 'failed') ? data.status : 'pending';
   const bills = data?.bills || receipt?.bills || [];
