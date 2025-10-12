@@ -2,6 +2,7 @@ import { ReactNode, useEffect, useState, useCallback } from 'react';
 import SidebarContent from '@/components/main/Sidebar';
 import CheckoutTray from '@/components/billing/CheckoutTray';
 import { logoUrl } from '@/components/main/SidebarConfig';
+import { useRouter } from 'next/router';
 
 export default function SidebarLayout({ children }: { children: ReactNode }) {
   // start with server-safe defaults and populate from localStorage on mount
@@ -9,6 +10,7 @@ export default function SidebarLayout({ children }: { children: ReactNode }) {
   const [fullName, setFullName] = useState<string>('Guest');
   const [email, setEmail] = useState<string>('');
   const [mounted, setMounted] = useState(false);
+  const router = useRouter();
 
   const refreshUser = useCallback(() => {
     try {
@@ -58,10 +60,21 @@ export default function SidebarLayout({ children }: { children: ReactNode }) {
 
   if (!mounted) return null;
 
+  // Show checkout only on specific pages
+  const showCheckout = (() => {
+    const allowedPaths = new Set([
+      '/assessment-tax',
+      '/misc-bills',
+      '/compound',
+      '/booth-rental',
+    ]);
+    return allowedPaths.has(router.pathname);
+  })();
+
   return (
     <SidebarContent teams={[]} logoUrl={logoUrl} userRole={userRole} fullName={fullName} email={email}>
       {children}
-      <CheckoutTray />
+      {showCheckout && <CheckoutTray />}
     </SidebarContent>
   );
 }
