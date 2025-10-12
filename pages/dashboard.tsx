@@ -5,10 +5,9 @@ import Heading from '@/components/forms/Heading';
 import Spacing from '@/components/forms/Spacing';
 import LineSeparator from '@/components/forms/LineSeparator';
 import TextLine from '@/components/forms/HyperText';
-import { CheckCircleIcon } from '@heroicons/react/24/solid';
 import { useTranslation } from '@/utils/i18n';
 import LogoSpinner from '@/components/common/LogoSpinner';
-import { fetchAssessmentOutstanding, fetchBoothOutstanding, fetchCompoundOutstanding, fetchMiscOutstanding, AssessmentBill, BoothBill, CompoundBill, MiscBill } from '@/services/api';
+import { fetchAssessmentOutstanding, fetchBoothOutstanding, fetchCompoundOutstanding, fetchMiscOutstanding, AssessmentBill, BoothBill, CompoundBill, MiscBill, fetchBillingItemsByBillNo } from '@/services/api';
 import { useBillSelection } from '@/context/BillSelectionContext';
 import {
   Table,
@@ -31,6 +30,7 @@ export default function DashboardPage() {
   const [compound, setCompound] = useState<CompoundBill[]>([]);
   const [booth, setBooth] = useState<BoothBill[]>([]);
   const [misc, setMisc] = useState<MiscBill[]>([]);
+  const [paidLookup, setPaidLookup] = useState<Record<string, { reference?: string; status?: string }>>({});
 
   // Fetch all categories by IC after login
   useEffect(() => {
@@ -72,21 +72,39 @@ export default function DashboardPage() {
     return [...a, ...c, ...br, ...ms];
   }, [assess, compound, booth, misc]);
 
+  // After bills are loaded, check if any have been paid and capture their reference for receipts
+  useEffect(() => {
+    const run = async () => {
+      const entries: Array<[string, { reference?: string; status?: string }]> = [];
+      const seen = new Set<string>();
+      const bills = unifiedBills.slice(0, 30); // guard excessive calls
+      await Promise.all(bills.map(async (b) => {
+        const key = b.billNo || String(b.id || '');
+        if (!key || seen.has(key)) return;
+        seen.add(key);
+        try {
+          const items = await fetchBillingItemsByBillNo(key);
+          const first = Array.isArray(items) ? items.find(it => (it.status || '').toUpperCase() === 'PAID' || (it.billing_status || '').toUpperCase() === 'PAID' || (it.billing_status || '').toUpperCase() === 'SUCCESS') : undefined;
+          if (first) entries.push([key, { reference: first.reference, status: first.status || first.billing_status }]);
+        } catch {}
+      }));
+      if (entries.length) {
+        setPaidLookup(prev => {
+          const next = { ...prev };
+          for (const [k, v] of entries) next[k] = v;
+          return next;
+        });
+      }
+    };
+    if (unifiedBills.length) run();
+  }, [unifiedBills]);
+
   const totals = useMemo(() => {
     const billTotal = unifiedBills.reduce((s, b) => s + (Number(b.amount) || 0), 0);
     return { billTotal };
   }, [unifiedBills]);
 
-  const features = [
-    t('dashboard.features.assessmentTax'),
-    t('dashboard.features.compoundPayments'),
-    t('dashboard.features.boothRental'),
-    t('dashboard.features.miscBills'),
-    t('dashboard.features.businessRegistration'),
-    t('dashboard.features.accountStaffMgmt'),
-    t('dashboard.features.myskb'),
-    t('dashboard.features.announcements')
-  ];
+  // Features list removed per request
 
   return (
     <SidebarLayout>
@@ -138,22 +156,42 @@ export default function DashboardPage() {
             {unifiedBills.map((b, i) => (
               <TableRow key={i}>
                 <TableCell>{b.type} - {b.billNo}</TableCell>
-                <TableCell className={`font-bold ${b.color || 'text-gray-800'}`}>{fRM(b.amount)}</TableCell>
+                <TableCell className={`font-bold ${(
+                  (() => {
+                    const p = paidLookup[b.billNo];
+                    const s = (p?.status || '').toUpperCase();
+                    return s === 'PAID' || s === 'SUCCESS';
+                  })()
+                ) ? 'text-emerald-600' : 'text-red-600'}`}>{fRM(b.amount)}</TableCell>
                 <TableCell className="text-xs text-gray-500">{b.due}</TableCell>
                 <TableCell className="text-right">
-                  <button
-                    className="inline-flex items-center px-3 py-1.5 rounded-md bg-[#00A7A6] text-white hover:opacity-90"
-                    onClick={() => {
-                      const mapSource = (t: string) => t.toLowerCase().includes('assessment') ? 'assessment' : t.toLowerCase().includes('booth') ? 'booth' : t.toLowerCase().includes('misc') ? 'misc' : 'compound';
-                      const source = mapSource(b.type) as 'assessment' | 'booth' | 'misc' | 'compound';
-                      const selectable = { id: b.id ?? b.billNo, bill_no: b.billNo, amount: b.amount, due_date: b.due, description: b.type, source, meta: {} } as any;
-                      add(selectable);
-                      // Open checkout tray
-                      try { window.dispatchEvent(new Event('ixora:openCheckout')); } catch {}
-                    }}
-                  >
-                    Bayar
-                  </button>
+                  {(() => {
+                    const paid = paidLookup[b.billNo];
+                    const isPaid = paid && ((paid.status || '').toUpperCase() === 'PAID' || (paid.status || '').toUpperCase() === 'SUCCESS');
+                    if (isPaid) {
+                      const href = paid?.reference ? `/payment-status/${encodeURIComponent(paid.reference!)}` : `/payment-status?bill_no=${encodeURIComponent(b.billNo)}`;
+                      return (
+                        <a href={href} className="inline-flex items-center px-3 py-1.5 rounded-md bg-indigo-600 text-white hover:opacity-90">
+                          Receipt
+                        </a>
+                      );
+                    }
+                    return (
+                      <button
+                        className="inline-flex items-center px-3 py-1.5 rounded-md bg-[#00A7A6] text-white hover:opacity-90"
+                        onClick={() => {
+                          const mapSource = (t: string) => t.toLowerCase().includes('assessment') ? 'assessment' : t.toLowerCase().includes('booth') ? 'booth' : t.toLowerCase().includes('misc') ? 'misc' : 'compound';
+                          const source = mapSource(b.type) as 'assessment' | 'booth' | 'misc' | 'compound';
+                          const selectable = { id: b.id ?? b.billNo, bill_no: b.billNo, amount: b.amount, due_date: b.due, description: b.type, source, meta: {} } as any;
+                          add(selectable);
+                          // Open checkout tray
+                          try { window.dispatchEvent(new Event('ixora:openCheckout')); } catch {}
+                        }}
+                      >
+                        Bayar
+                      </button>
+                    );
+                  })()}
                 </TableCell>
               </TableRow>
             ))}
@@ -175,22 +213,7 @@ export default function DashboardPage() {
       <Spacing size="lg" />
       <LineSeparator />
 
-      {/* ============== Features (kekal) ============== */}
-      <Heading level={2} align="left" bold>
-        {t('dashboard.featuresTitle', 'Features')}
-      </Heading>
-      <Spacing size="sm" />
-      <ul className="space-y-2">
-        {features.map((feature, index) => (
-          <li key={index} className="flex items-center gap-2 text-gray-700 text-base">
-            <CheckCircleIcon className="h-5 w-5 text-emerald-600"/>
-            <span>{feature}</span>
-          </li>
-        ))}
-      </ul>
-
-      <Spacing size="lg" />
-      <LineSeparator />
+      {/* Features section removed */}
     </SidebarLayout>
   );
 }
