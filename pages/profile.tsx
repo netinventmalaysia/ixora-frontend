@@ -1,14 +1,13 @@
 // pages/profile.tsx
 
 import { useState, useEffect } from "react";
-import { useFormContext } from "react-hook-form";               // ← for BusinessEffect
+import { useFormContext } from "react-hook-form";
 import FormWrapper from "todo/components/forms/FormWrapper";
 import Button from "todo/components/forms/Button";
 import FormSectionHeader from "@/components/forms/FormSectionHeader";
 import FormActions from "todo/components/forms/FormActions";
 import Spacing from "todo/components/forms/Spacing";
 import LineSeparator from "todo/components/forms/LineSeparator";
-import LayoutWithoutSidebar from "todo/components/main/LayoutWithoutSidebar";
 import Heading from "todo/components/forms/Heading";
 import FormRow from "todo/components/forms/FormRow";
 import Hyperlink from "todo/components/forms/Hyperlink";
@@ -20,30 +19,30 @@ import TextLine from "todo/components/forms/HyperText";
 import PhotoUploadField from "todo/components/forms/PhotoUploadField";
 import ConfirmDialog from "todo/components/forms/ConfirmDialog";
 import Toggle from "todo/components/forms/Toggle";
+import RadioGroupField from "todo/components/forms/RadioGroupField";
+import { identificationTypeList } from "todo/components/data/RadioList";
 import {
-  //fetchCsrfToken,
   getUserProfile,
   updateUser,
-  fetchMyBusinesses,     // ← NEW
-  fetchBusinessById,      // ← NEW
+  fetchMyBusinesses,
+  fetchBusinessById,
 } from "todo/services/api";
 import toast from "react-hot-toast";
 import router from "next/router";
 import { AxiosResponse } from "axios";
 import SidebarContent from "todo/components/main/Sidebar";
 import { logoUrl } from "todo/components/main/SidebarConfig";
-import { useTranslation } from '@/utils/i18n';
-import LogoSpinner from '@/components/common/LogoSpinner';
+import { useTranslation } from "@/utils/i18n";
+import LogoSpinner from "@/components/common/LogoSpinner";
 
 type UserProfile = {
   id: number;
-  username: string;
   email: string;
   firstName: string;
-  lastName: string;
-  dateOfBirth: string;
-  phoneNumber: string;
-  address: string;
+  identificationType?: string;
+  identificationNumber?: string;
+  dateOfBirth?: string;
+  address?: string;
   role: "personal" | "business";
   profilePicture?: string;
   bio?: string;
@@ -52,7 +51,6 @@ type UserProfile = {
   isEmailVerified?: boolean;
   isTwoFactorEnabled?: boolean;
   city?: string;
-  state?: string;
   postalcode?: string;
   country?: string;
   organisation?: "organisation" | "business";
@@ -60,7 +58,7 @@ type UserProfile = {
   registrationNumber?: string;
 };
 
-// Tiny component to react to businessId changes
+// Keep business form fields in sync if a business is selected
 function BusinessEffect({ businessId }: { businessId?: number }) {
   const { setValue } = useFormContext();
 
@@ -69,13 +67,11 @@ function BusinessEffect({ businessId }: { businessId?: number }) {
 
     fetchBusinessById(businessId)
       .then((biz) => {
-        console.log(biz);
         setValue("companyName", biz.companyName);
         setValue("registrationNumber", biz.registrationNumber);
-        // also populate address fields:
+        // also populate address fields (state removed per latest requirements)
         setValue("address", biz.address);
         setValue("city", biz.city);
-        setValue("state", biz.state);
         setValue("postalcode", biz.postalcode);
         setValue("country", biz.country);
       })
@@ -125,19 +121,13 @@ export default function ProfilePage() {
       setAccountType(data.role);
       setIsOrganisation(data.organisation === "organisation");
 
-      // --- NEW: if business, fetch all registered businesses ---
+      // If business user, load saved businesses to pick from
       if (data.role === "business") {
         const allBiz = await fetchMyBusinesses();
         setBusinessOptions(
-          allBiz.map((b: any) => ({
-            label: b.name,
-            value: b.id.toString(),
-          }))
+          allBiz.map((b: any) => ({ label: b.name, value: b.id.toString() }))
         );
-        // pre‑select the first one:
-        if (allBiz.length) {
-          setBusinessId(allBiz[0].id);
-        }
+        if (allBiz.length) setBusinessId(allBiz[0].id);
       }
     } catch (err) {
       toast.error("Failed to load profile");
@@ -153,19 +143,31 @@ export default function ProfilePage() {
   const handleSubmit = async (data: any) => {
     try {
       setLoading(true);
-      //await fetchCsrfToken();
 
       const payload: UserProfile = {
-        ...data,
-        dateOfBirth: data.dateOfBirth.toISOString(),
+        id: userProfile!.id,
+        email: data.email,
+        firstName: data.firstName,
+        identificationType: data.identificationType,
+        identificationNumber: data.identificationNumber,
         role: accountType,
+        profilePicture: data.profilePicture,
+        address: data.address,
+        city: data.city,
+        postalcode: data.postalcode,
+        country: data.country,
         organisation:
           accountType === "business"
             ? isOrganisation
               ? "organisation"
               : "business"
             : undefined,
-      };
+      } as any;
+      if (data.dateOfBirth) {
+        try {
+          (payload as any).dateOfBirth = data.dateOfBirth.toISOString();
+        } catch {}
+      }
 
       await updateUser(payload);
       toast.success("Profile updated successfully!");
@@ -177,13 +179,16 @@ export default function ProfilePage() {
     }
   };
 
-  if (loading) return (
-    <div className="fixed inset-0 z-[999] flex items-center justify-center bg-white/60 dark:bg-black/60" aria-hidden="true">
-      <LogoSpinner size={56} className="drop-shadow-md" title={t('common.loading')} />
-    </div>
-  );
-  if (!userProfile)
-    return <div className="p-6 text-red-500">{t('profile.failedLoad')}</div>;
+  if (loading)
+    return (
+      <div
+        className="fixed inset-0 z-[999] flex items-center justify-center bg-white/60 dark:bg-black/60"
+        aria-hidden="true"
+      >
+        <LogoSpinner size={56} className="drop-shadow-md" title={t("common.loading")} />
+      </div>
+    );
+  if (!userProfile) return <div className="p-6 text-red-500">{t("profile.failedLoad")}</div>;
 
   return (
     <SidebarContent
@@ -197,126 +202,98 @@ export default function ProfilePage() {
         onSubmit={handleSubmit}
         defaultValues={{
           ...userProfile,
-          dateOfBirth: new Date(userProfile.dateOfBirth),
+          dateOfBirth: userProfile.dateOfBirth ? new Date(userProfile.dateOfBirth) : undefined,
         }}
       >
         <Heading level={2} align="left" bold>
-          {t('profile.title')}
+          {t("profile.title")}
         </Heading>
         <Spacing size="lg" />
 
         {/* Account Details */}
         <FormSectionHeader
-          title={t('profile.accountDetailsTitle')}
-          description={t('profile.accountDetailsDesc')}
+          title={t("profile.accountDetailsTitle")}
+          description={t("profile.accountDetailsDesc")}
         />
         <Spacing size="lg" />
-        <InputText
-          id="username"
-          name="username"
-          label={t('signup.username')}
-          requiredMessage={t('signup.usernameRequired')}
-        />
-        <Spacing size="sm" />
         <InputText
           id="email"
           name="email"
           type="email"
-          label={t('signup.emailLabel')}
-          requiredMessage={t('signup.emailRequired')}
+          label={t("signup.emailLabel")}
+          requiredMessage={t("signup.emailRequired")}
+        />
+        <Spacing size="md" />
+        <RadioGroupField
+          name="identificationType"
+          label={t("signup.identificationType")}
+          options={identificationTypeList}
+          inline={true}
+          requiredMessage={t("signup.identificationTypeRequired")}
+        />
+        <Spacing size="sm" />
+        <InputText
+          id="identificationNumber"
+          name="identificationNumber"
+          label={t("signup.identificationNumber")}
+          requiredMessage={t("signup.identificationNumberRequired")}
         />
         <Spacing size="lg" />
 
         {/* User Information */}
         <LineSeparator />
         <FormSectionHeader
-          title={t('profile.userInfoTitle')}
-          description={t('profile.userInfoDesc')}
+          title={t("profile.userInfoTitle")}
+          description={t("profile.userInfoDesc")}
         />
         <Spacing size="sm" />
         <PhotoUploadField
           name="profilePicture"
-          label={t('signup.profilePicture')}
-          buttonText={t('signup.uploadPhoto')}
+          label={t("signup.profilePicture")}
+          buttonText={t("signup.uploadPhoto")}
           folder="profile_pictures"
-          requiredMessage={t('signup.profilePictureRequired')}
           onUpload={(path) => console.log("Uploaded profile picture:", path)}
         />
         <Spacing size="sm" />
-        <FormRow columns={2}>
-          <InputText
-            id="firstName"
-            name="firstName"
-            label={t('form.firstName')}
-            requiredMessage={t('form.firstNameRequired')}
-          />
-          <InputText
-            id="lastName"
-            name="lastName"
-            label={t('form.lastName')}
-            requiredMessage={t('form.lastNameRequired')}
-          />
-        </FormRow>
+        <InputText
+          id="firstName"
+          name="firstName"
+          label={t("form.firstName")}
+          requiredMessage={t("form.firstNameRequired")}
+        />
         <Spacing size="sm" />
         <DatePickerField
           name="dateOfBirth"
-          label={t('signup.dateOfBirth')}
+          label={t("signup.dateOfBirth")}
           dateFormat="dd/MM/yyyy"
-          placeholder={t('signup.dateOfBirthPlaceholder')}
-          requiredMessage={t('signup.dateOfBirthRequired')}
-        />
-        <Spacing size="sm" />
-        <InputText
-          id="phoneNumber"
-          name="phoneNumber"
-          label={t('signup.phoneNumber')}
-          prefix="+601"
-          requiredMessage={t('signup.phoneNumberRequired')}
+          placeholder={t("signup.dateOfBirthPlaceholder")}
         />
         <Spacing size="sm" />
         <InputText
           id="address"
           name="address"
-          label={t('signup.address')}
-          requiredMessage={t('signup.addressRequired')}
+          label={t("signup.address", "Premise / Lot / Street Address")}
         />
         <Spacing size="sm" />
-        <FormRow columns={3}>
-          <InputText id="city" name="city" label={t('form.city')} requiredMessage={t('form.cityRequired')} />
-          <InputText
-            id="state"
-            name="state"
-            label={t('form.state')}
-            requiredMessage={t('form.stateRequired')}
-          />
-          <InputText
-            id="postalcode"
-            name="postalcode"
-            label={t('form.postalCode')}
-            requiredMessage={t('form.postalCodeRequired')}
-          />
+        <FormRow columns={2}>
+          <InputText id="city" name="city" label={t("form.city")} />
+          <InputText id="postalcode" name="postalcode" label={t("form.postalCode")} />
         </FormRow>
         <Spacing size="sm" />
-        <SelectField
-          id="country"
-          name="country"
-          label={t('form.country')}
-          options={countryOptions}
-          requiredMessage={t('form.countryRequired')}
-        />
+        <SelectField id="country" name="country" label={t("form.country")} options={countryOptions} />
 
         {/* Business Information */}
         {accountType === "business" && (
           <>
             <LineSeparator />
             <FormSectionHeader
-              title={t('profile.businessInfoTitle')}
-              description={t('profile.businessInfoDesc')}
+              title={t("profile.businessInfoTitle")}
+              description={t("profile.businessInfoDesc")}
             />
             <Spacing size="lg" />
             <Toggle
               label=""
-              description={isOrganisation ? t('profile.organisation') : t('profile.company')}
+              description={isOrganisation ? t("profile.organisation") : t("profile.company")}
               checked={isOrganisation}
               onChange={setIsOrganisation}
             />
@@ -325,10 +302,10 @@ export default function ProfilePage() {
             <SelectField
               id="businessName"
               name="businessName"
-              label={t('profile.businessName')}
+              label={t("profile.businessName")}
               options={businessOptions}
               onChange={(e) => setBusinessId(Number(e.target.value))}
-              requiredMessage={t('profile.selectBusiness')}
+              requiredMessage={t("profile.selectBusiness")}
             />
             <BusinessEffect businessId={businessId} />
             <Spacing size="sm" />
@@ -336,15 +313,15 @@ export default function ProfilePage() {
             <InputText
               id="companyName"
               name="companyName"
-              label={isOrganisation ? t('profile.organisationName') : t('profile.companyName')}
-              requiredMessage={t('profile.companyNameRequired')}
+              label={isOrganisation ? t("profile.organisationName") : t("profile.companyName")}
+              requiredMessage={t("profile.companyNameRequired")}
             />
             <Spacing size="sm" />
             <InputText
               id="registrationNumber"
               name="registrationNumber"
-              label={isOrganisation ? t('profile.rosNumber') : t('profile.ssmNumber')}
-              requiredMessage={isOrganisation ? t('profile.rosRequired') : t('profile.ssmRequired')}
+              label={isOrganisation ? t("profile.rosNumber") : t("profile.ssmNumber")}
+              requiredMessage={isOrganisation ? t("profile.rosRequired") : t("profile.ssmRequired")}
             />
           </>
         )}
@@ -352,32 +329,32 @@ export default function ProfilePage() {
         {/* Terms & Actions */}
         <Spacing size="lg" />
         <TextLine size="sm" align="center" color="text-gray-600">
-          {t('profile.termsPrefix')} {" "}
+          {t("profile.termsPrefix")} {" "}
           <Hyperlink href="/terms" inline>
-            {t('profile.terms')}
+            {t("profile.terms")}
           </Hyperlink>{" "}
-          {t('profile.and')} {" "}
+          {t("profile.and")} {" "}
           <Hyperlink href="/privacy" inline>
-            {t('profile.privacy')}
+            {t("profile.privacy")}
           </Hyperlink>
         </TextLine>
 
         <FormActions>
           <Button type="button" variant="ghost" onClick={() => setShowCancelDialog(true)}>
-            {t('common.cancel')}
+            {t("common.cancel")}
           </Button>
           <Button type="submit" variant="primary" loading={loading}>
-            {t('profile.saveChanges')}
+            {t("profile.saveChanges")}
           </Button>
         </FormActions>
       </FormWrapper>
 
       <ConfirmDialog
         open={showCancelDialog}
-        title={t('signup.discardTitle')}
-        description={t('signup.discardDesc')}
-        confirmText={t('signup.discardConfirm')}
-        cancelText={t('common.cancel')}
+        title={t("signup.discardTitle")}
+        description={t("signup.discardDesc")}
+        confirmText={t("signup.discardConfirm")}
+        cancelText={t("common.cancel")}
         onCancel={() => setShowCancelDialog(false)}
         onConfirm={() => {
           setShowCancelDialog(false);

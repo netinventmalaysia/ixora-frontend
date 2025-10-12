@@ -29,24 +29,17 @@ import LogoSpinner from '@/components/common/LogoSpinner';
 
 
 type UserProfile = {
-  username: string;
   email: string;
+  password: string;
   firstName: string;
-  lastName: string;
   identificationType: string;
   identificationNumber: string;
-  dateOfBirth: string;
-  phoneNumber: string;
-  address: string;
   role: "personal";
+  // Optional fields
   profilePicture?: string;
-  bio?: string;
-  isActive?: boolean;
-  isAccountVerified?: boolean;
-  isEmailVerified?: boolean;
-  isTwoFactorEnabled?: boolean;
+  dateOfBirth?: string; // ISO string if provided
+  address?: string; // Premise / Lot / Street Address
   city?: string;
-  state?: string;
   postalcode?: string;
   country?: string;
 };
@@ -62,10 +55,22 @@ export default function SignUpPage() {
       setLoading(true);
 
       const payload: UserProfile = {
-        ...data,
-        dateOfBirth: data.dateOfBirth.toISOString(),
+        email: data.email,
+        password: data.password,
+        firstName: data.firstName,
+        identificationType: data.identificationType,
+        identificationNumber: data.identificationNumber,
         role: 'personal',
       };
+      // Optional fields if present
+      if (data.profilePicture) payload.profilePicture = data.profilePicture;
+      if (data.dateOfBirth) {
+        try { payload.dateOfBirth = data.dateOfBirth.toISOString(); } catch { /* ignore parse */ }
+      }
+      if (data.address) payload.address = data.address;
+      if (data.city) payload.city = data.city;
+      if (data.postalcode) payload.postalcode = data.postalcode;
+      if (data.country) payload.country = data.country;
 
       await createUser(payload);
       toast.success('Account created successfully!');
@@ -108,8 +113,6 @@ export default function SignUpPage() {
         />
         <Spacing size="lg" />
 
-  <InputText id="username" name="username" label={t('signup.username')} requiredMessage={t('signup.usernameRequired')} />
-        <Spacing size="sm" />
   <InputText id="email" name="email" type="email" label={t('signup.emailLabel')} requiredMessage={t('signup.emailRequired')} />
         <Spacing size="sm" />
   <InputText id="password" name="password" label={t('form.password')} type="password" requiredMessage={t('form.passwordRequired')} showHint={true} />
@@ -142,15 +145,11 @@ export default function SignUpPage() {
           label={t('signup.profilePicture')}
           buttonText={t('signup.uploadPhoto')}
           folder="profile_pictures"
-          requiredMessage={t('signup.profilePictureRequired')}
           onUpload={(path) => console.log("Uploaded profile picture:", path)}
         />
         <Spacing size="sm" />
 
-        <FormRow columns={2}>
-          <InputText id="firstName" name="firstName" label={t('form.firstName')} requiredMessage={t('form.firstNameRequired')} />
-          <InputText id="lastName" name="lastName" label={t('form.lastName')} requiredMessage={t('form.lastNameRequired')} />
-        </FormRow>
+        <InputText id="firstName" name="firstName" label={t('form.firstName')} requiredMessage={t('form.firstNameRequired')} />
         <Spacing size="sm" />
 
         <DatePickerField
@@ -158,24 +157,19 @@ export default function SignUpPage() {
           label={t('signup.dateOfBirth')}
           dateFormat="dd/MM/yyyy"
           placeholder={t('signup.dateOfBirthPlaceholder')}
-          requiredMessage={t('signup.dateOfBirthRequired')}
         />
         <Spacing size="sm" />
 
-  <InputText id="phoneNumber" name="phoneNumber" label={t('signup.phoneNumber')} prefix="+601" requiredMessage={t('signup.phoneNumberRequired')} />
+  <InputText id="address" name="address" label={t('signup.address', 'Premise / Lot / Street Address')} />
         <Spacing size="sm" />
 
-  <InputText id="address" name="address" label={t('signup.address')} requiredMessage={t('signup.addressRequired')} />
-        <Spacing size="sm" />
-
-        <FormRow columns={3}>
-          <InputText id="city" name="city" label={t('form.city')} requiredMessage={t('form.cityRequired')} />
-          <InputText id="state" name="state" label={t('form.state')} requiredMessage={t('form.stateRequired')} />
-          <InputText id="postalcode" name="postalcode" label={t('form.postalCode')} requiredMessage={t('form.postalCodeRequired')} />
+        <FormRow columns={2}>
+          <InputText id="city" name="city" label={t('form.city')} />
+          <InputText id="postalcode" name="postalcode" label={t('form.postalCode')} />
         </FormRow>
         <Spacing size="sm" />
 
-  <SelectField id="country" name="country" label={t('form.country')} options={countryOptions} requiredMessage={t('form.countryRequired')} />
+  <SelectField id="country" name="country" label={t('form.country')} options={countryOptions} />
         <Spacing size="sm" />
 
         <TextLine size="sm" align="center" color="text-gray-600">
