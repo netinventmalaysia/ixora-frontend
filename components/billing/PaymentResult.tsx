@@ -276,7 +276,7 @@ const PaymentResult: React.FC<PaymentResultProps> = ({ status, reference, amount
           <button onClick={onDownload || generatePdfReceipt} disabled={loading} className="px-3 py-1.5 rounded bg-indigo-600 text-white text-xs hover:bg-indigo-700 disabled:opacity-50">Download Receipt (PDF)</button>
         )}
         <a href="/dashboard" className="px-3 py-1.5 rounded border text-xs hover:bg-gray-50 dark:hover:bg-gray-800">Dashboard</a>
-        <a href="/" className="px-3 py-1.5 rounded border text-xs hover:bg-gray-50 dark:hover:bg-gray-800">Home</a>
+  <a href="/login" className="px-3 py-1.5 rounded border text-xs hover:bg-gray-50 dark:hover:bg-gray-800">Home</a>
       </div>
       {loading && <div className="text-xs text-gray-500 italic">Updating status...</div>}
     </div>

@@ -14,15 +14,9 @@ import Spinner from '@/components/forms/Spinner';
 import Stack from '@/components/forms/Stack';
 import Inline from '@/components/forms/Inline';
 import toast from 'react-hot-toast';
-import { validateEmailVerification, confirmEmailVerification } from '@/services/api';
+import { confirmEmailVerification } from '@/services/api';
 import getErrorMessage from '@/utils/getErrorMessage';
 import t from '@/utils/i18n';
-
-type VerifyInfo = {
-  email?: string;
-  sentAt?: string;
-  expiresAt?: string;
-};
 
 export default function VerifyEmailPage() {
   const router = useRouter();
@@ -33,40 +27,11 @@ export default function VerifyEmailPage() {
   }, []);
 
   const [loading, setLoading] = useState(true);
-  const [valid, setValid] = useState(false);
-  const [info, setInfo] = useState<VerifyInfo | null>(null);
   const [confirming, setConfirming] = useState(false);
 
   useEffect(() => {
-    let mounted = true;
-    async function run() {
-      if (!token) {
-        setLoading(false);
-        setValid(false);
-        return;
-      }
-      try {
-        const res = await validateEmailVerification(token);
-        if (!mounted) return;
-        const payload = res?.info ?? res;
-        setInfo({
-          email: payload?.email,
-          sentAt: payload?.sentAt ?? payload?.sent_at,
-          expiresAt: payload?.expiresAt ?? payload?.expires_at,
-        });
-        setValid(true);
-      } catch (e: any) {
-        if (!mounted) return;
-        setValid(false);
-        toast.error(getErrorMessage(e) || 'Invalid or expired verification link');
-      } finally {
-        if (mounted) setLoading(false);
-      }
-    }
-    run();
-    return () => {
-      mounted = false;
-    };
+    // No pre-validation call; just finish loading so user can submit confirmation
+    setLoading(false);
   }, [token]);
 
   const handleConfirm = async () => {
@@ -75,7 +40,7 @@ export default function VerifyEmailPage() {
       setConfirming(true);
       await confirmEmailVerification(token);
       toast.success('Email verified successfully');
-      router.push('/');
+  router.push('/login');
     } catch (e: any) {
       toast.error(getErrorMessage(e) || 'Failed to verify email');
     } finally {
@@ -94,21 +59,13 @@ export default function VerifyEmailPage() {
         <Spinner label={t('verifyEmail.validating')} />
       ) : !token ? (
         <Alert>{t('verifyEmail.missingToken')}</Alert>
-      ) : !valid ? (
-        <Alert>{t('verifyEmail.invalidToken')}</Alert>
       ) : (
         <Stack>
           <Card>
             <FormSectionHeader
               title={t('verifyEmail.verifyYourEmail')}
-              description={t('verifyEmail.verifyDesc', `Verify ${info?.email ?? 'your email'} to complete account setup.`)}
+              description={t('verifyEmail.verifyDesc', 'Verify your email to complete account setup.')}
             />
-            {info?.sentAt && (
-              <HyperText size="xs" color="text-gray-500">Sent: {info.sentAt}</HyperText>
-            )}
-            {info?.expiresAt && (
-              <HyperText size="xs" color="text-gray-500">Expires: {info.expiresAt}</HyperText>
-            )}
           </Card>
 
           <LineSeparator />
@@ -116,7 +73,7 @@ export default function VerifyEmailPage() {
           <FormWrapper onSubmit={() => handleConfirm()}>
             <Inline>
               <Button type="submit" disabled={confirming}>{confirming ? t('verifyEmail.verifying') : t('verifyEmail.submit')}</Button>
-              <Button type="button" variant="secondary" onClick={() => router.push('/')}>{t('common.cancel')}</Button>
+              <Button type="button" variant="secondary" onClick={() => router.push('/login')}>{t('common.cancel')}</Button>
             </Inline>
           </FormWrapper>
         </Stack>

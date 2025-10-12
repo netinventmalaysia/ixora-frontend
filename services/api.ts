@@ -84,7 +84,7 @@ api.interceptors.response.use(
 
             if (!isGuest && typeof window !== 'undefined') {
                 console.warn('🔐 Redirecting to home — non-guest 401');
-                router.push('/');
+                router.push('/login');
             } else {
                 console.warn('🟡 Skipped redirect for guest user');
             }

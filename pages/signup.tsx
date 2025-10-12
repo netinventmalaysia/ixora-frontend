@@ -78,7 +78,7 @@ export default function SignUpPage() {
 
       await createUser(payload);
       toast.success('Account created successfully!');
-      router.push('/');
+  router.push('/login');
     } catch (err) {
       toast.error('Something went wrong');
     } finally {
@@ -95,7 +95,7 @@ export default function SignUpPage() {
       )}
       {/* Top branding bar (logo + subtitle) */}
       <div className="relative mx-auto flex w-full max-w-4xl items-center justify-center px-6 pt-10 pb-4">
-        <a href="/" className="group flex flex-col items-center focus:outline-none" aria-label="Go to homepage">
+  <a href="/login" className="group flex flex-col items-center focus:outline-none" aria-label="Go to homepage">
           <div className="relative mb-3 h-20 w-20 transition-transform group-hover:scale-105">
             <Image src="/images/logo.png" alt="IXORA Logo" fill sizes="80px" className="object-contain" priority />
           </div>
@@ -202,7 +202,7 @@ export default function SignUpPage() {
         onCancel={() => setShowCancelDialog(false)}
         onConfirm={() => {
           setShowCancelDialog(false);
-          router.push('/');
+          router.push('/login');
         }}
       />
     </LayoutWithoutSidebar>

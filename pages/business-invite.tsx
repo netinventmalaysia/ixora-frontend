@@ -134,7 +134,7 @@ export default function BusinessInvitePage() {
               <Button type="submit" disabled={accepting}>
                 {isAuthenticated ? (accepting ? t('businessInvite.accepting') : t('businessInvite.accept')) : t('businessInvite.loginToAccept')}
               </Button>
-              <Button type="button" variant="secondary" onClick={() => router.push('/')}>{t('common.cancel')}</Button>
+              <Button type="button" variant="secondary" onClick={() => router.push('/login')}>{t('common.cancel')}</Button>
             </Inline>
           </FormWrapper>
         </Stack>

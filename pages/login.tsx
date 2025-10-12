@@ -137,7 +137,7 @@ export default function LoginPage() {
           shake ? "animate-logo-shake" : ""
         }`}
       >
-        <a href="/" className="group flex flex-col items-center focus:outline-none" aria-label="Go to homepage">
+  <a href="/login" className="group flex flex-col items-center focus:outline-none" aria-label="Go to homepage">
           {/* logos row with pipe (same as landing tone) */}
           <div className="mb-3 flex items-center gap-3">
             <div className="relative h-12 w-12">

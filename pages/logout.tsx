@@ -31,7 +31,7 @@ export default function LogoutPage() {
       localStorage.removeItem('csrfToken');
       localStorage.removeItem('auth_token');
 
-      router.replace('/');
+  router.replace('/login');
     }
   };
 

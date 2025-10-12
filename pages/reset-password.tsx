@@ -38,7 +38,7 @@ export default function ResetPasswordPage() {
 
             await resetPassword({ token, newPassword: data.newPassword });
             toast.success(t('resetPassword.success'));
-            router.push('/');
+            router.push('/login');
         } catch (error: any) {
             const apiMessage = error?.response?.data?.message;
             const message = Array.isArray(apiMessage)
@@ -61,7 +61,7 @@ export default function ResetPasswordPage() {
             </div>
             {/* Branding header (same style as login) */}
             <div className="relative mx-auto flex w-full max-w-md items-center justify-center px-6 pt-10 pb-4">
-                <a href="/" className="group flex flex-col items-center focus:outline-none" aria-label="Go to homepage">
+                <a href="/login" className="group flex flex-col items-center focus:outline-none" aria-label="Go to homepage">
                     <div className="relative mb-3 h-20 w-20 transition-transform group-hover:scale-105">
                         <Image src="/images/logo.png" alt="IXORA Logo" fill sizes="80px" className="object-contain" priority />
                     </div>
