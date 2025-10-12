@@ -208,31 +208,39 @@ const normalizeBillingStatus = (raw: any, fallbackRef?: string) => {
     let bills: Array<{ bill_no?: string; account_no?: string; item_type?: string; amount?: number }> = [];
     if (Array.isArray(src?.bills)) {
         bills = src.bills.map((b: any) => ({
-            bill_no: b.bill_no || b.order_no || b.orderNo || undefined,
+            // Priority: bill_no > no_bil (assessment/booth) > nokmp (compound) > no_rujukan (misc) > order_no
+            bill_no: b.bill_no || b.no_bil || b.nokmp || b.no_rujukan || b.order_no || b.orderNo || undefined,
             account_no: b.account_no || b.accountNo || undefined,
             item_type: b.item_type || b.itemType || undefined,
             amount: typeof b.amount === 'string' ? Number(b.amount) : b.amount,
         }));
     } else if (Array.isArray(src?.items)) {
         bills = src.items.map((it: any) => ({
-            bill_no: it.order_no || it.bill_no || undefined,
+            // Priority: bill_no > no_bil (assessment/booth) > nokmp (compound) > no_rujukan (misc) > order_no
+            bill_no: it.bill_no || it.no_bil || it.nokmp || it.no_rujukan || it.order_no || undefined,
             account_no: it.account_no || undefined,
             item_type: it.item_type || undefined,
             amount: typeof it.amount === 'string' ? Number(it.amount) : it.amount,
         }));
     }
 
-    return {
+    const gateway = src?.gateway || {};
+    const normalizedGateway = {
+        ...gateway,
+        transaction_id: src?.paymentGatewayTransactionId || src?.gatewayTransactionId || gateway?.transaction_id || undefined,
+    };
+    const result = {
         reference: ref,
         status,
         amount: typeof amount === 'string' ? Number(amount) : amount,
         paid_at,
         receipt_no,
         bills,
-        gateway: src?.gateway || null,
+        gateway: Object.keys(normalizedGateway).length ? normalizedGateway : null,
         // keep raw available for debugging if needed
         _raw: src,
     };
+    return result;
 };
 
 // Fetch a single billing/checkout status by reference.
