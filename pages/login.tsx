@@ -11,7 +11,7 @@ import Hyperlink from "todo/components/forms/Hyperlink";
 import HyperText from "todo/components/forms/HyperText";
 import InputText from "todo/components/forms/InputText";
 import router from "next/router";
-import { loginUser, guestLogin } from "todo/services/api";
+import { loginUser, guestLogin, fetchUserByEmail } from "todo/services/api";
 import { AxiosError } from "axios";
 import { triggerUserRefresh } from "todo/components/actions/actionHandler";
 import { useTranslation } from "@/utils/i18n";
@@ -53,10 +53,28 @@ export default function LoginPage() {
         const last = res.user.lastName || res.user.last_name || '';
         const computedFull = `${first} ${last}`.trim();
         const bestFullName = computedFull || res.user.fullName || res.user.full_name || res.user.name || '';
-        const cached = JSON.stringify({ firstName: first, lastName: last, fullName: bestFullName || computedFull });
+        const finalName = (bestFullName || res.user.email || 'Guest').toString();
+        const cached = JSON.stringify({ firstName: first, lastName: last, fullName: finalName });
         localStorage.setItem('userProfile', cached);
-        if (bestFullName) {
-          localStorage.setItem('payerName', bestFullName);
+        localStorage.setItem('payerName', finalName);
+        // If we don't have a real name yet (fallback used), try to enrich by email
+        const usedFallback = !bestFullName;
+        if (usedFallback && res.user.email) {
+          try {
+            const profileRes: any = await fetchUserByEmail(res.user.email);
+            const p = Array.isArray(profileRes) ? profileRes[0] : profileRes;
+            if (p) {
+              const pf = p.firstName || p.first_name || '';
+              const pl = p.lastName || p.last_name || '';
+              const pComputed = `${pf} ${pl}`.trim();
+              const pFull = pComputed || p.fullName || p.full_name || p.name || '';
+              if (pFull) {
+                localStorage.setItem('payerName', pFull);
+                localStorage.setItem('userProfile', JSON.stringify({ firstName: pf, lastName: pl, fullName: pFull }));
+                triggerUserRefresh();
+              }
+            }
+          } catch {}
         }
       } catch {}
       triggerUserRefresh();
@@ -104,9 +122,10 @@ export default function LoginPage() {
         const first = res.user.firstName || res.user.first_name || '';
         const last = res.user.lastName || res.user.last_name || '';
         const computedFull = `${first} ${last}`.trim();
-        const bestFullName = computedFull || res.user.fullName || res.user.full_name || res.user.name || 'Guest';
-        localStorage.setItem('payerName', bestFullName);
-        localStorage.setItem('userProfile', JSON.stringify({ firstName: first, lastName: last, fullName: bestFullName }));
+        const bestFullName = computedFull || res.user.fullName || res.user.full_name || res.user.name || '';
+        const finalName = (bestFullName || res.user.email || 'Guest').toString();
+        localStorage.setItem('payerName', finalName);
+        localStorage.setItem('userProfile', JSON.stringify({ firstName: first, lastName: last, fullName: finalName }));
       } catch {}
       toast.success(t("login.guestOk", "Logged in as Guest"));
       router.push("/dashboard");
