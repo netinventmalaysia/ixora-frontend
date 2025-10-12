@@ -21,7 +21,8 @@ export default function LogoutPage() {
       localStorage.removeItem('access_token');
       localStorage.removeItem('csrfToken');
       localStorage.removeItem('userId');
-      localStorage.removeItem('username');
+  localStorage.removeItem('username'); // legacy - safe to remove in future
+  localStorage.removeItem('userProfile');
       localStorage.removeItem('email');
       localStorage.removeItem('userProfile');
       localStorage.removeItem('userOrganisation');

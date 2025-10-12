@@ -32,12 +32,14 @@ type UserProfile = {
   email: string;
   password: string;
   firstName: string;
+  lastName?: string;
   identificationType: string;
   identificationNumber: string;
   role: "personal";
   // Optional fields
   profilePicture?: string;
   dateOfBirth?: string; // ISO string if provided
+  phoneNumber?: string;
   address?: string; // Premise / Lot / Street Address
   city?: string;
   postalcode?: string;
@@ -62,11 +64,13 @@ export default function SignUpPage() {
         identificationNumber: data.identificationNumber,
         role: 'personal',
       };
+      if (data.lastName) payload.lastName = data.lastName;
       // Optional fields if present
       if (data.profilePicture) payload.profilePicture = data.profilePicture;
       if (data.dateOfBirth) {
         try { payload.dateOfBirth = data.dateOfBirth.toISOString(); } catch { /* ignore parse */ }
       }
+      if (data.phoneNumber) payload.phoneNumber = data.phoneNumber;
       if (data.address) payload.address = data.address;
       if (data.city) payload.city = data.city;
       if (data.postalcode) payload.postalcode = data.postalcode;
@@ -149,7 +153,9 @@ export default function SignUpPage() {
         />
         <Spacing size="sm" />
 
-        <InputText id="firstName" name="firstName" label={t('form.firstName')} requiredMessage={t('form.firstNameRequired')} />
+  <InputText id="firstName" name="firstName" label={t('form.firstName')} requiredMessage={t('form.firstNameRequired')} />
+  <Spacing size="sm" />
+  <InputText id="lastName" name="lastName" label={t('form.lastName')} />
         <Spacing size="sm" />
 
         <DatePickerField
@@ -158,6 +164,9 @@ export default function SignUpPage() {
           dateFormat="dd/MM/yyyy"
           placeholder={t('signup.dateOfBirthPlaceholder')}
         />
+        <Spacing size="sm" />
+
+  <InputText id="phoneNumber" name="phoneNumber" label={t('signup.phoneNumber')} prefix="+601" requiredMessage={t('signup.phoneNumberRequired')} />
         <Spacing size="sm" />
 
   <InputText id="address" name="address" label={t('signup.address', 'Premise / Lot / Street Address')} />

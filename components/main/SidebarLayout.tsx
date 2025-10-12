@@ -6,17 +6,33 @@ import { logoUrl } from '@/components/main/SidebarConfig';
 export default function SidebarLayout({ children }: { children: ReactNode }) {
   // start with server-safe defaults and populate from localStorage on mount
   const [userRole, setUserRole] = useState<string>('guest');
-  const [username, setUsername] = useState<string>('Guest');
+  const [fullName, setFullName] = useState<string>('Guest');
   const [email, setEmail] = useState<string>('');
   const [mounted, setMounted] = useState(false);
 
   const refreshUser = useCallback(() => {
     try {
       const role = localStorage.getItem('userRole') || 'guest';
-      const name = localStorage.getItem('username') || 'Guest';
+      // Prefer payerName (set by checkout/profile); fallback to cached profile full name then legacy 'username' then 'Guest'
+      let name = 'Guest';
+      try {
+        name = localStorage.getItem('payerName') || '';
+        if (!name) {
+          const profRaw = localStorage.getItem('userProfile');
+          if (profRaw) {
+            const prof = JSON.parse(profRaw);
+            const first = prof?.firstName || prof?.first_name || '';
+            const last = prof?.lastName || prof?.last_name || '';
+            name = `${first} ${last}`.trim() || prof?.fullName || prof?.full_name || prof?.name || '';
+          }
+        }
+        if (!name) name = localStorage.getItem('username') || 'Guest';
+      } catch {
+        name = localStorage.getItem('username') || 'Guest';
+      }
       const mail = localStorage.getItem('email') || '';
       setUserRole(role);
-      setUsername(name);
+      setFullName(name);
       setEmail(mail);
     } catch (e) {
       // ignore (e.g., SSR or storage not available)
@@ -43,7 +59,7 @@ export default function SidebarLayout({ children }: { children: ReactNode }) {
   if (!mounted) return null;
 
   return (
-    <SidebarContent teams={[]} logoUrl={logoUrl} userRole={userRole} username={username} email={email}>
+    <SidebarContent teams={[]} logoUrl={logoUrl} userRole={userRole} fullName={fullName} email={email}>
       {children}
       <CheckoutTray />
     </SidebarContent>

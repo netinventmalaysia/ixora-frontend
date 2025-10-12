@@ -39,6 +39,8 @@ type UserProfile = {
   id: number;
   email: string;
   firstName: string;
+  lastName?: string;
+  phoneNumber?: string;
   identificationType?: string;
   identificationNumber?: string;
   dateOfBirth?: string;
@@ -91,7 +93,7 @@ export default function ProfilePage() {
   const [showCancelDialog, setShowCancelDialog] = useState(false);
   const [loading, setLoading] = useState(false);
   const [userRole, setUserRole] = useState<string>("");
-  const [username, setUsername] = useState<string>("");
+  const [fullName, setFullName] = useState<string>("Guest");
   const [email, setEmail] = useState<string>("");
 
   const [businessOptions, setBusinessOptions] = useState<{ label: string; value: string }[]>([]);
@@ -100,7 +102,24 @@ export default function ProfilePage() {
   useEffect(() => {
     const role = localStorage.getItem("userRole");
     setUserRole(role || "");
-    setUsername(localStorage.getItem("username") || "");
+    try {
+      const payer = localStorage.getItem('payerName');
+      if (payer) {
+        setFullName(payer);
+      } else {
+        const profRaw = localStorage.getItem('userProfile');
+        if (profRaw) {
+          const prof = JSON.parse(profRaw);
+          const first = prof?.firstName || prof?.first_name || '';
+          const last = prof?.lastName || prof?.last_name || '';
+          setFullName((`${first} ${last}`).trim() || prof?.fullName || 'Guest');
+        } else {
+          setFullName(localStorage.getItem('username') || 'Guest');
+        }
+      }
+    } catch {
+      setFullName(localStorage.getItem('username') || 'Guest');
+    }
     setEmail(localStorage.getItem("email") || "");
   }, []);
 
@@ -148,6 +167,8 @@ export default function ProfilePage() {
         id: userProfile!.id,
         email: data.email,
         firstName: data.firstName,
+        lastName: data.lastName,
+        phoneNumber: data.phoneNumber,
         identificationType: data.identificationType,
         identificationNumber: data.identificationNumber,
         role: accountType,
@@ -195,7 +216,7 @@ export default function ProfilePage() {
       teams={[]}
       logoUrl={logoUrl}
       userRole={userRole || "guest"}
-      username={username}
+  fullName={fullName}
       email={email}
     >
       <FormWrapper
@@ -262,11 +283,25 @@ export default function ProfilePage() {
           requiredMessage={t("form.firstNameRequired")}
         />
         <Spacing size="sm" />
+        <InputText
+          id="lastName"
+          name="lastName"
+          label={t("form.lastName")}
+        />
+        <Spacing size="sm" />
         <DatePickerField
           name="dateOfBirth"
           label={t("signup.dateOfBirth")}
           dateFormat="dd/MM/yyyy"
           placeholder={t("signup.dateOfBirthPlaceholder")}
+        />
+        <Spacing size="sm" />
+        <InputText
+          id="phoneNumber"
+          name="phoneNumber"
+          label={t("signup.phoneNumber")}
+          prefix="+601"
+          requiredMessage={t("signup.phoneNumberRequired")}
         />
         <Spacing size="sm" />
         <InputText

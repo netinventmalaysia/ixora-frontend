@@ -30,14 +30,12 @@ export default function BusinessRegistrationPage() {
     const [showCancelDialog, setShowCancelDialog] = useState(false);
     const [loading, setLoading] = useState(false);
     const [userRole, setUserRole] = useState<string>("");
-    const [username, setUsername] = useState<string>("");
     const [email, setEmail] = useState<string>("");
     const [certificateFilePath, setCertificateFilePath] = useState<string>("");
 
     useEffect(() => {
-        setUserRole(localStorage.getItem("userRole") || "");
-        setUsername(localStorage.getItem("username") || "");
-        setEmail(localStorage.getItem("email") || "");
+    setUserRole(localStorage.getItem("userRole") || "");
+    setEmail(localStorage.getItem("email") || "");
     }, []);
 
     const handleSubmit = async (data: any) => {

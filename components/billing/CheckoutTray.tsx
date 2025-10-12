@@ -34,10 +34,22 @@ const CheckoutTray: React.FC = () => {
     return () => window.removeEventListener('ixora:openCheckout', handler as EventListener);
   }, []);
 
-  // Autofill from stored user info (login sets username/email; mobile may be stored later under 'mobile' or 'phone')
+  // Autofill from stored user info (prefer cached profile full name; mobile may be stored later under 'mobile' or 'phone')
   useEffect(() => {
     try {
-      const storedName = typeof window !== 'undefined' ? (localStorage.getItem('username') || '') : '';
+      let storedName = '';
+      if (typeof window !== 'undefined') {
+        const profRaw = localStorage.getItem('userProfile');
+        if (profRaw) {
+          try {
+            const prof = JSON.parse(profRaw);
+            const first = prof?.firstName || prof?.first_name || '';
+            const last = prof?.lastName || prof?.last_name || '';
+            storedName = (`${first} ${last}`).trim() || prof?.fullName || '';
+          } catch {}
+        }
+        if (!storedName) storedName = localStorage.getItem('username') || '';
+      }
       const storedEmail = typeof window !== 'undefined' ? (localStorage.getItem('email') || '') : '';
       const storedMobile = typeof window !== 'undefined'
         ? (localStorage.getItem('mobile') || localStorage.getItem('phone') || localStorage.getItem('contact') || '')
@@ -53,7 +65,7 @@ const CheckoutTray: React.FC = () => {
         const first = user.first_name || user.firstname || user.firstName || '';
         const last = user.last_name || user.lastname || user.lastName || '';
         const combined = (first || last) ? `${first} ${last}`.trim() : '';
-        const apiName = combined || user.full_name || user.fullName || user.name || user.username;
+  const apiName = combined || user.full_name || user.fullName || user.name || user.username;
         const apiEmail = user.email || storedEmail;
         const apiMobile = user.mobile || user.phone || user.phone_number || user.phoneNumber || user.contact_no || user.contactNo || user.contact || user.msisdn || user.phoneNumber || '';
         setForm(prev2 => ({

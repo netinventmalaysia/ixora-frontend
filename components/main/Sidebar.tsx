@@ -40,14 +40,14 @@ export default function SidebarContent({
   logoUrl,
   userRole,
   email,
-  username,
+  fullName,
 }: {
   children: ReactNode;
   teams: TeamItem[];
   logoUrl?: string;
   userRole: string;
   email?: string;
-  username?: string;
+  fullName?: string;
 }) {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   // Initialize deterministically to avoid SSR/CSR mismatch. Read localStorage after mount.
@@ -227,7 +227,7 @@ export default function SidebarContent({
               </div>
               {mode === 'Personal' && (
                 <div className="mt-1 text-xs text-gray-300">
-                  <div>{username}</div>
+                  <div>{fullName}</div>
                   <div>{email}</div>
                 </div>
               )}
@@ -250,7 +250,7 @@ export default function SidebarContent({
         )}
         {mode === 'Personal' && (
           <div className="mt-1 text-xs text-gray-300">
-            <div>{username}</div>
+            <div>{fullName}</div>
             <div>{email}</div>
           </div>
         )}

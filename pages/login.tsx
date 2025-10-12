@@ -47,8 +47,13 @@ export default function LoginPage() {
 
       localStorage.setItem("userRole", res.user.role);
       localStorage.setItem("userId", res.user.id);
-      localStorage.setItem("username", res.user.username);
       localStorage.setItem("email", res.user.email);
+      try {
+        const first = res.user.firstName || res.user.first_name || '';
+        const last = res.user.lastName || res.user.last_name || '';
+        const cached = JSON.stringify({ firstName: first, lastName: last, fullName: `${first} ${last}`.trim() });
+        localStorage.setItem('userProfile', cached);
+      } catch {}
       triggerUserRefresh();
 
       toast.success(t("login.loggedIn", "Logged in!"));
