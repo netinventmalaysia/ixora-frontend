@@ -83,8 +83,7 @@ export default function BusinessInvitePage() {
     if (!token) return;
     if (!isAuthenticated) {
       const redirect = encodeURIComponent(`/business-invite?token=${encodeURIComponent(token)}`);
-      console.log(redirect);
-      router.push(`/?redirect=${redirect}`);
+      router.push(`/login?redirect=${redirect}`);
       return;
     }
     try {

@@ -9,7 +9,7 @@ import FormWrapper from '@/components/forms/FormWrapper';
 import Alert from '@/components/forms/Alert';
 import Spinner from '@/components/forms/Spinner';
 import toast from 'react-hot-toast';
-import { confirmEmailVerification } from '@/services/api';
+import { confirmEmailVerification, validateEmailVerification } from '@/services/api';
 import getErrorMessage from '@/utils/getErrorMessage';
 import t from '@/utils/i18n';
 import LanguageSelector from '@/components/common/LanguageSelector';
@@ -24,10 +24,41 @@ export default function VerifyEmailPage() {
 
   const [loading, setLoading] = useState(true);
   const [confirming, setConfirming] = useState(false);
+  const [validationState, setValidationState] = useState<'valid' | 'expired' | 'invalid' | 'error'>('valid');
+  const [infoMessage, setInfoMessage] = useState<string | null>(null);
 
   useEffect(() => {
-    // No pre-validation call; just finish loading so user can submit confirmation
-    setLoading(false);
+    let mounted = true;
+    async function run() {
+      if (!token) {
+        setValidationState('invalid');
+        setLoading(false);
+        return;
+      }
+      try {
+        await validateEmailVerification(token);
+        if (!mounted) return;
+        setValidationState('valid');
+      } catch (e: any) {
+        if (!mounted) return;
+        const msg = getErrorMessage(e) || '';
+        const status = e?.response?.status;
+        if (status === 410 || /expired/i.test(msg)) {
+          setValidationState('expired');
+          setInfoMessage(t('verifyEmail.expiredInfo', 'Your link expired. We sent you a new email.'));
+        } else if (status === 400 || status === 404) {
+          setValidationState('invalid');
+          setInfoMessage(t('verifyEmail.invalidLink', 'Invalid link.'));
+        } else {
+          setValidationState('error');
+          setInfoMessage(t('verifyEmail.somethingWrong', 'Something went wrong. Please try again.'));
+        }
+      } finally {
+        if (mounted) setLoading(false);
+      }
+    }
+    run();
+    return () => { mounted = false; };
   }, [token]);
 
   const handleConfirm = async () => {
@@ -87,6 +118,12 @@ export default function VerifyEmailPage() {
             </div>
           ) : !token ? (
             <Alert>{t('verifyEmail.missingToken')}</Alert>
+          ) : validationState === 'expired' ? (
+            <Alert variant="info">{infoMessage}</Alert>
+          ) : validationState === 'invalid' ? (
+            <Alert>{infoMessage || t('verifyEmail.missingToken')}</Alert>
+          ) : validationState === 'error' ? (
+            <Alert variant="error">{infoMessage || t('verifyEmail.somethingWrong', 'Something went wrong. Please try again.')}</Alert>
           ) : (
             <>
               <p className="text-center text-sm text-gray-700">

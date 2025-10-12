@@ -59,9 +59,17 @@ export default function BusinessRegistrationPage() {
         } catch (err: any) {
             console.error('❌ Business creation error:', err);
 
-            if (err.response?.status === 403) {
+            const status = err?.response?.status;
+            const data = err?.response?.data || {};
+            const msg = typeof data?.message === 'string' ? data.message : (data?.message?.message ?? '');
+            const isDuplicate =
+                status === 409 || /duplicate|already exists|existing business/i.test(msg || '');
+
+            if (isDuplicate) {
+                toast.success("This business already exists. The owner has been notified to approve adding you as a staff member.");
+            } else if (status === 403) {
                 toast.error("Forbidden: Invalid CSRF token");
-            } else if (err.response?.status === 401) {
+            } else if (status === 401) {
                 toast.error("Unauthorized: Please log in again");
             } else {
                 toast.error("Something went wrong");

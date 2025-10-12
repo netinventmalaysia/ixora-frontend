@@ -54,13 +54,17 @@ export const fetchCsrfToken = async (): Promise<string | null> => {
 
 // --- Axios Interceptors ---
 
-// Attach CSRF token to all outgoing requests
+// Attach CSRF token only for mutating requests (POST/PUT/PATCH/DELETE)
 api.interceptors.request.use(async (config) => {
-    let token = sessionStorage.getItem(CSRF_TOKEN_KEY);
-    if (!token) token = await fetchCsrfToken();
+    const method = (config.method || 'get').toLowerCase();
+    const needsCsrf = ['post', 'put', 'patch', 'delete'].includes(method);
 
-    if (token) {
-        config.headers['x-csrf-token'] = token;
+    if (needsCsrf) {
+        let token = sessionStorage.getItem(CSRF_TOKEN_KEY);
+        if (!token) token = await fetchCsrfToken();
+        if (token) {
+            (config.headers as any)['x-csrf-token'] = token;
+        }
     }
 
     return config;
