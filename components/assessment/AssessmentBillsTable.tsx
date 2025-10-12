@@ -16,9 +16,11 @@ type Props = {
   onToggleAll: () => void;
   loading?: boolean;
   t: (key: string, fallback?: string) => string;
+  paidLookup?: Record<string, { paid: boolean; reference?: string }>; // keyed by bill_no
+  onReceipt?: (bill_no: string, reference?: string) => void;
 };
 
-export default function AssessmentBillsTable({ bills, selectedIds, onToggle, onToggleAll, loading = false, t }: Props) {
+export default function AssessmentBillsTable({ bills, selectedIds, onToggle, onToggleAll, loading = false, t, paidLookup, onReceipt }: Props) {
   const totalSelected = bills
     .filter((b) => selectedIds.has(b.id))
     .reduce((sum, b) => sum + (Number(b.amount) || 0), 0);
@@ -56,20 +58,34 @@ export default function AssessmentBillsTable({ bills, selectedIds, onToggle, onT
               <th className="p-2 text-left min-w-[220px] max-w-[420px]">{t('assessment.desc', 'Description')}</th>
               <th className="p-2 text-left whitespace-nowrap w-[120px]">{t('assessment.dueDate', 'Due Date')}</th>
               <th className="p-2 text-right whitespace-nowrap w-[120px]">{t('assessment.amount', 'Amount')}</th>
+              {paidLookup && (<th className="p-2 text-right whitespace-nowrap w-[120px]">{t('assessment.actions', 'Actions')}</th>)}
             </tr>
           </thead>
           <tbody>
             {bills.map((b) => (
               <tr key={String(b.id)} className="border-t">
                 <td className="p-2 text-center">
-                  <input
+                  {(() => {
+                    const paid = paidLookup?.[b.bill_no || '']?.paid;
+                    return (
+                      <input
                     type="checkbox"
                     className="h-4 w-4"
                     checked={selectedIds.has(b.id)}
-                    onChange={() => onToggle(b.id)}
-                  />
+                        onChange={() => { if (!paid) onToggle(b.id); }}
+                        disabled={paid}
+                      />
+                    );
+                  })()}
                 </td>
-                <td className="p-2 font-medium truncate max-w-[140px]" title={b.bill_no}>{b.bill_no}</td>
+                <td className="p-2 font-medium truncate max-w-[140px]" title={b.bill_no}>
+                  <div className="flex items-center gap-2">
+                    <span className="truncate" style={{ maxWidth: '100%' }}>{b.bill_no}</span>
+                    {paidLookup?.[b.bill_no || '']?.paid && (
+                      <span className="inline-flex items-center rounded-full bg-green-50 text-green-700 border border-green-200 px-2 py-0.5 text-[10px]">Paid</span>
+                    )}
+                  </div>
+                </td>
                 <td className="p-2 align-top">
                   <div
                     className="text-[11px] sm:text-xs leading-snug line-clamp-2 whitespace-normal break-words"
@@ -87,11 +103,26 @@ export default function AssessmentBillsTable({ bills, selectedIds, onToggle, onT
                   })()}
                 </td>
                 <td className="p-2 text-right">RM {Number(b.amount || 0).toFixed(2)}</td>
+                {paidLookup && (
+                  <td className="p-2 text-right">
+                    {paidLookup?.[b.bill_no || '']?.paid ? (
+                      <button
+                        type="button"
+                        onClick={() => onReceipt?.(b.bill_no, paidLookup?.[b.bill_no || '']?.reference)}
+                        className="inline-flex items-center px-2 py-1 rounded border text-[11px] hover:bg-gray-50"
+                      >
+                        Receipt
+                      </button>
+                    ) : (
+                      <span className="text-[11px] text-gray-400">-</span>
+                    )}
+                  </td>
+                )}
               </tr>
             ))}
             {bills.length === 0 && !loading && (
               <tr>
-                <td className="p-3 text-center text-gray-500" colSpan={5}>
+                <td className="p-3 text-center text-gray-500" colSpan={paidLookup ? 6 : 5}>
                   {t('assessment.noData', 'No outstanding bills')}
                 </td>
               </tr>

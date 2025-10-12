@@ -8,7 +8,7 @@ import Heading from 'todo/components/forms/Heading';
 import LineSeparator from 'todo/components/forms/LineSeparator';
 import FormActions from 'todo/components/forms/FormActions';
 import RadioGroupField from 'todo/components/forms/RadioGroupField';
-import { AssessmentBill, fetchAssessmentOutstanding } from '@/services/api';
+import { AssessmentBill, fetchAssessmentOutstanding, fetchBillingItemsByBillNo } from '@/services/api';
 import { useBillSelection } from '@/context/BillSelectionContext';
 import { useForm, FormProvider } from 'react-hook-form';
 import { useTranslation } from '@/utils/i18n';
@@ -35,6 +35,7 @@ export default function AssessmentTaxPage() {
 
   const [loading, setLoading] = useState(false);
   const [bills, setBills] = useState<AssessmentBill[]>([]);
+  const [paidLookup, setPaidLookup] = useState<Record<string, { paid: boolean; reference?: string }>>({});
   // Global selection store
   const { add, remove, has } = useBillSelection();
   const [error, setError] = useState<string | null>(null);
@@ -92,6 +93,8 @@ export default function AssessmentTaxPage() {
   const toggleSelect = (id: string | number) => {
     const bill = sortedBills.find(b => b.id === id);
     if (!bill) return;
+    // Prevent selecting paid items
+    if (bill.bill_no && paidLookup[bill.bill_no]?.paid) return;
     const selectable = {
       id: bill.id,
       bill_no: bill.bill_no,
@@ -105,14 +108,55 @@ export default function AssessmentTaxPage() {
   };
 
   const toggleAll = () => {
-    const allSelected = sortedBills.every(b => has({ id: b.id, bill_no: b.bill_no, amount: b.amount, due_date: b.due_date, description: b.description, source: 'assessment', meta: { item_type: '01', account_no: String(b.id) } } as any));
-    sortedBills.forEach(b => {
+    const selectableBills = sortedBills.filter(b => !(b.bill_no && paidLookup[b.bill_no]?.paid));
+    const allSelected = selectableBills.every(b => has({ id: b.id, bill_no: b.bill_no, amount: b.amount, due_date: b.due_date, description: b.description, source: 'assessment', meta: { item_type: '01', account_no: String(b.id) } } as any));
+    selectableBills.forEach(b => {
       const selectable = { id: b.id, bill_no: b.bill_no, amount: b.amount, due_date: b.due_date, description: b.description, source: 'assessment' as const, meta: { item_type: '01', account_no: String(b.id), raw: b } };
       if (allSelected) remove(selectable); else if (!has(selectable) && b.amount > 0) add(selectable);
     });
   };
 
-  const selectedIds = useMemo(() => new Set(sortedBills.filter(b => has({ id: b.id, bill_no: b.bill_no, amount: b.amount, due_date: b.due_date, description: b.description, source: 'assessment', meta: { item_type: '01', account_no: String(b.id) } } as any)).map(b => b.id)), [sortedBills, has]);
+  const selectedIds = useMemo(() => new Set(sortedBills.filter(b => !paidLookup[b.bill_no]?.paid && has({ id: b.id, bill_no: b.bill_no, amount: b.amount, due_date: b.due_date, description: b.description, source: 'assessment', meta: { item_type: '01', account_no: String(b.id) } } as any)).map(b => b.id)), [sortedBills, has, paidLookup]);
+
+  // After bills load, lookup each bill_no to see if it was already paid
+  useEffect(() => {
+    let cancelled = false;
+    const run = async () => {
+      const unique = Array.from(new Set((bills || []).map(b => b.bill_no).filter(Boolean)));
+      const results: Record<string, { paid: boolean; reference?: string }> = {};
+      await Promise.all(unique.map(async (bn) => {
+        const list = await fetchBillingItemsByBillNo(bn!);
+        // Consider paid if any item has status PAID (case-insensitive)
+        const paidItem = (list || []).find(it => String(it?.status || it?.billing_status || '').toUpperCase() === 'PAID');
+        if (paidItem) {
+          results[bn!] = { paid: true, reference: paidItem.reference };
+        } else {
+          results[bn!] = { paid: false };
+        }
+      }));
+      if (!cancelled) {
+        setPaidLookup(results);
+        // Also purge any now-paid bills from the global selection to prevent checkout
+        (bills || []).forEach(b => {
+          if (b.bill_no && results[b.bill_no]?.paid) {
+            const selectable = { id: b.id, bill_no: b.bill_no, amount: b.amount, due_date: b.due_date, description: b.description, source: 'assessment' as const, meta: { item_type: '01', account_no: String(b.id), raw: b } };
+            if (has(selectable)) remove(selectable);
+          }
+        });
+      }
+    };
+    if ((bills || []).length > 0) run(); else setPaidLookup({});
+    return () => { cancelled = true; };
+  }, [bills]);
+
+  const onReceipt = (bill_no: string, reference?: string) => {
+    if (reference) {
+      window.location.href = `/payment-status/${encodeURIComponent(reference)}`;
+    } else {
+      // fallback: just search by bill no into the status page query (legacy) if needed
+      window.location.href = `/payment-status?bill_no=${encodeURIComponent(bill_no)}`;
+    }
+  };
 
   return (
     <SidebarLayout>
@@ -152,6 +196,8 @@ export default function AssessmentTaxPage() {
             onToggleAll={toggleAll}
             loading={loading}
             t={t}
+            paidLookup={paidLookup}
+            onReceipt={onReceipt}
           />
 
           <Spacing size="md" />

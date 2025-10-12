@@ -484,6 +484,32 @@ export const getMySkbAccess = async (): Promise<MySkbAccess> => {
 
 export default api;
 
+// Lookup billing items by bill_no to determine if a bill has already been paid
+export interface BillingItemRecord {
+    id: number | string;
+    reference?: string;
+    billing_status?: string; // overall billing status for the reference
+    order_no?: string;
+    item_type?: string;
+    account_no?: string;
+    bill_no?: string;
+    amount?: number | string;
+    status?: string; // item status e.g., 'PAID'
+    createdAt?: string;
+    updatedAt?: string;
+}
+
+export const fetchBillingItemsByBillNo = async (bill_no: string): Promise<BillingItemRecord[]> => {
+    if (!bill_no) return [];
+    try {
+        const { data } = await api.get('/billings/items/by-bill-no', { params: { bill_no } });
+        const list = data?.data ?? data;
+        return Array.isArray(list) ? list : [];
+    } catch {
+        return [];
+    }
+};
+
 // ================= Assessment Tax =================
 export interface AssessmentBill {
     id: string | number;
