@@ -375,6 +375,18 @@ export default function DashboardPage() {
         </div>
 
         <Spacing size="lg" />
+
+        {/* Invoice Section */}
+        <Heading level={2} align="left" bold>
+          {t('dashboard.invoiceTitle', 'Your Invoices')}
+        </Heading>
+        <TextLine>
+          {t(
+            'dashboard.invoiceDesc',
+            'Below is a summary of your invoices. Once available, you can view, download, or make payments directly from this section.'
+          )}
+        </TextLine>
+
         {/* Invoice Section Notice */}
         <div className="mt-6 border rounded-lg bg-gray-50 px-4 py-6 text-center">
           <h3 className="text-sm font-semibold text-gray-900">

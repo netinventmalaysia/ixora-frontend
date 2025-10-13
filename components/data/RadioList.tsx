@@ -10,8 +10,8 @@ export const radioButtonList = [
   ]
 
   export const identificationTypeList = [
-    { label: 'MyKad (Old IC)', value: 'old_ic' },
     { label: 'MyKad (New IC)', value: 'new_ic' },
+    { label: 'MyKad (Old IC)', value: 'old_ic' },
     { label: 'Passport', value: 'passport' },
     { label: 'My Tentera', value: 'tentera' },
   ];
