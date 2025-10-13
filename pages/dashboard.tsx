@@ -297,8 +297,21 @@ export default function DashboardPage() {
                   key={i}
                   className="border rounded-lg p-4 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 sm:gap-4"
                 >
+                  {!isPaid && (
+                      <div className="flex items-center justify-end mb-2">
+                        <input
+                          type="checkbox"
+                          aria-label={t('dashboard.selectBill', 'Select bill')}
+                          checked={isSelected}
+                          onChange={toggle}
+                          disabled={disabled}
+                          className="h-4 w-4"
+                        />
+                      </div>
+                    )}
                   {/* Bill Info (3-line layout) */}
                   <div className="flex-1 min-w-0">
+                    
                     <div className="text-sm font-semibold text-gray-900 truncate">
                       {b.type} - {b.billNo}
                     </div>
@@ -312,18 +325,7 @@ export default function DashboardPage() {
 
                   {/* Right controls: checkbox + button (Assessment-like UX) */}
                   <div className="flex-shrink-0 sm:text-right mt-2 sm:mt-0 w-full sm:w-auto">
-                    {!isPaid && (
-                      <div className="flex items-center justify-end mb-2">
-                        <input
-                          type="checkbox"
-                          aria-label={t('dashboard.selectBill', 'Select bill')}
-                          checked={isSelected}
-                          onChange={toggle}
-                          disabled={disabled}
-                          className="h-4 w-4"
-                        />
-                      </div>
-                    )}
+                    
 
                     {isPaid ? (
                       <a
@@ -366,7 +368,7 @@ export default function DashboardPage() {
         {/* Invoice Section Notice */}
         <div className="mt-6 border rounded-lg bg-gray-50 px-4 py-6 text-center">
           <h3 className="text-sm font-semibold text-gray-900">
-            {t('dashboard.invoiceUnavailableTitle', 'Invoices Unavailable')}
+            {t('dashboard.invoiceUnavailableTitle', 'No Invoices Available')}
           </h3>
           <p className="mt-2 text-sm text-gray-600">
             {t(
