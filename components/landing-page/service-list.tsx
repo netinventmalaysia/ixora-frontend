@@ -118,9 +118,9 @@ export default function ServicesListPage() {
           <h1 className="text-2xl font-bold text-gray-900">
             {t("services.heading", "Service Modules")}
           </h1>
-          <p className="mt-1 text-sm text-gray-600">
+          {/* <p className="mt-1 text-sm text-gray-600">
             {t("services.subtitle", "Manage MBMB services digitally easy & transparent")}
-          </p>
+          </p> */}
         </div>
         <Link
           href="/"
