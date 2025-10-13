@@ -779,7 +779,7 @@ export const saveProjectDraft = async (payload: ProjectFormPayload, opts: { draf
                     const arr = parsed.map((x: any) => Number(typeof x === 'string' ? x.trim() : x)).filter((n: any) => !Number.isNaN(n));
                     return arr.length ? arr : undefined;
                 }
-            } catch {}
+            } catch { }
             const arr = s.split(',').map((t) => Number(t.trim())).filter((n) => !Number.isNaN(n));
             return arr.length ? arr : undefined;
         }
@@ -829,7 +829,7 @@ export const submitProject = async (payload: ProjectFormPayload, opts: { draftId
                     const arr = parsed.map((x: any) => Number(typeof x === 'string' ? x.trim() : x)).filter((n: any) => !Number.isNaN(n));
                     return arr.length ? arr : undefined;
                 }
-            } catch {}
+            } catch { }
             const arr = s.split(',').map((t) => Number(t.trim())).filter((n) => !Number.isNaN(n));
             return arr.length ? arr : undefined;
         }
@@ -966,6 +966,23 @@ export const listProjects = async (params: ProjectListParams = {}): Promise<Proj
         // Fallback: return empty list on failure
         return { data: [] };
     }
+};
+
+// Get a single submitted/active project by id
+export const getProjectById = async (id: number | string): Promise<Record<string, any> | null> => {
+    try {
+        const { data } = await api.get(`/myskb/project/${id}`);
+        if (data && data.data && typeof data.data === 'object') return data.data;
+        if (data && typeof data === 'object') return data;
+    } catch (e) {
+        // Fallback: try to locate from list
+        try {
+            const list = await listProjects({ limit: 100, offset: 0 });
+            const found = (list.data || []).find((p) => String(p.id) === String(id));
+            if (found) return found as Record<string, any>;
+        } catch {}
+    }
+    return null;
 };
 
 // ================= PWA Push (Frontend helpers to call backend) =================

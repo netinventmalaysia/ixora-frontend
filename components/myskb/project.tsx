@@ -25,7 +25,8 @@ import Heading from "../forms/Heading";
 import BuildingsTable from "todo/components/forms/BuildingsTable";
 import FileUploadField from "../forms/FileUpload";
 import { fetchMyBusinesses, saveProjectDraft, submitProject, listOwnerships, getProjectDraftById } from '@/services/api';
-export default function ProjectPage() {
+type ProjectPageProps = { readOnly?: boolean; initialValues?: Record<string, any> };
+export default function ProjectPage({ readOnly = false, initialValues }: ProjectPageProps) {
   const router = useRouter();
   const [showCancelDialog, setShowCancelDialog] = useState(false);
   const [loading, setLoading] = useState(false);
@@ -72,6 +73,13 @@ export default function ProjectPage() {
 
   // If arriving with a draft_id in the URL, fetch the draft and prefill the form
   useEffect(() => {
+    if (initialValues) {
+      // If initial values provided (read-only route), use them directly.
+      setFormDefaults(initialValues);
+      const bid = Number((initialValues as any).business_id ?? (initialValues as any).businessId);
+      if (!Number.isNaN(bid)) setSelectedBusinessId(bid);
+      return;
+    }
     const draftId = router.query?.draft_id as string | undefined;
     if (!draftId) return;
     let mounted = true;
@@ -182,7 +190,7 @@ export default function ProjectPage() {
   }
 
   // Repeatable owners array (each with owner_id + category)
-  function OwnersFieldArray({ ownerOptions, selectedBusinessId }: { ownerOptions: { value: number; label: string }[]; selectedBusinessId: number | null }) {
+  function OwnersFieldArray({ ownerOptions, selectedBusinessId, readOnly, presetOwnershipIds }: { ownerOptions: { value: number; label: string }[]; selectedBusinessId: number | null; readOnly?: boolean; presetOwnershipIds?: number[] }) {
     // eslint-disable-next-line react-hooks/rules-of-hooks
     const { control, getValues, setValue } = useFormContext();
     // eslint-disable-next-line react-hooks/rules-of-hooks
@@ -194,11 +202,14 @@ export default function ProjectPage() {
     // eslint-disable-next-line react-hooks/rules-of-hooks
     useEffect(() => {
       const current = getValues('owners') as any[] | undefined;
-      if (!Array.isArray(current) || current.length === 0) {
+      if (readOnly && Array.isArray(presetOwnershipIds) && presetOwnershipIds.length > 0) {
+        const rows = presetOwnershipIds.map((oid) => ({ owner_id: oid, category: '' }));
+        replace(rows);
+      } else if (!Array.isArray(current) || current.length === 0) {
         append({ owner_id: '', category: '' });
       }
       // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, []);
+    }, [readOnly, JSON.stringify(presetOwnershipIds)]);
 
     // When business changes, clear owners (since available owners list depends on business)
     // eslint-disable-next-line react-hooks/rules-of-hooks
@@ -233,6 +244,7 @@ export default function ProjectPage() {
                 requiredMessage="Category is required"
               />
             </div>
+            {!readOnly && (
             <div className="sm:col-span-1 flex">
               <Button
                 type="button"
@@ -243,13 +255,16 @@ export default function ProjectPage() {
                 Remove
               </Button>
             </div>
+            )}
           </div>
         ))}
-        <div>
-          <Button type="button" variant="secondary" onClick={() => append({ owner_id: '', category: '' })}>
-            Add owner
-          </Button>
-        </div>
+        {!readOnly && (
+          <div>
+            <Button type="button" variant="secondary" onClick={() => append({ owner_id: '', category: '' })}>
+              Add owner
+            </Button>
+          </div>
+        )}
       </div>
     );
   }
@@ -337,76 +352,105 @@ export default function ProjectPage() {
         {/* This section introduce about the project spesification for the consultant to register a new project and tie with all active ownership, after the registration is successful it will send to mbmb for review, once the review is completed and the consultant have to pay the amount of the project */}
   <FormSectionHeader title="Ownership Information" description="Please fill in the details of your project. This information will be used to register your project with MBMB." />
   <Spacing size="lg" />
-  <SelectField id="business_id" name="business_id" label="Business" options={businessOptions} requiredMessage="Business is required" onChange={(e) => { const v = Number(e.target.value); setSelectedBusinessId(v); if (typeof window !== 'undefined') { try { localStorage.setItem('myskb_last_business_id', String(v)); } catch {} } }} />
+  <div className={readOnly ? 'pointer-events-none opacity-90' : ''}>
+    <SelectField id="business_id" name="business_id" label="Business" options={businessOptions} requiredMessage="Business is required" onChange={(e) => { const v = Number(e.target.value); setSelectedBusinessId(v); if (typeof window !== 'undefined') { try { localStorage.setItem('myskb_last_business_id', String(v)); } catch {} } }} />
+  </div>
   <Spacing size="lg" />
-    <OwnersFieldArray ownerOptions={ownerOptions} selectedBusinessId={selectedBusinessId} />
+    <div className={readOnly ? 'pointer-events-none opacity-90' : ''}>
+    <OwnersFieldArray ownerOptions={ownerOptions} selectedBusinessId={selectedBusinessId} readOnly={readOnly} presetOwnershipIds={(() => {
+      // Try to map owners_user_ids to ownership ids using ownershipIdToUserId map
+      const uids = (formDefaults as any)?.owners_user_ids as number[] | undefined;
+      if (!Array.isArray(uids) || uids.length === 0) return undefined;
+      const set = new Set(uids.map(Number).filter((n) => !Number.isNaN(n)));
+      const ownershipIds: number[] = [];
+      Object.entries(ownershipIdToUserId).forEach(([oidStr, uid]) => {
+        const oid = Number(oidStr);
+        if (!Number.isNaN(oid) && typeof uid === 'number' && set.has(uid)) ownershipIds.push(oid);
+      });
+      return ownershipIds.length ? ownershipIds : undefined;
+    })()} />
+    </div>
     <Spacing size="sm" />
         <Spacing size="lg" />
 
-        <RadioGroupField name="landOrBuildingOwnerList" label="*Is the owner is not land or building owner?" options={landOrBuildingOwnerList} inline={true} requiredMessage="Please select a land or building owner" />
+        <div className={readOnly ? 'pointer-events-none opacity-90' : ''}>
+          <RadioGroupField name="landOrBuildingOwnerList" label="*Is the owner is not land or building owner?" options={landOrBuildingOwnerList} inline={true} requiredMessage="Please select a land or building owner" />
+        </div>
         <Spacing size="sm" />
-  <FileUploadField name="statutoryDeclarationFile" label="Statutory Declaration File" description="PDF up to 10MB" accept="application/pdf" requiredMessage="Please upload a cover photo statutory declaration" />
+  <div className={readOnly ? 'pointer-events-none opacity-90' : ''}>
+    <FileUploadField name="statutoryDeclarationFile" label="Statutory Declaration File" description="PDF up to 10MB" accept="application/pdf" requiredMessage="Please upload a cover photo statutory declaration" />
+  </div>
         <Spacing size="sm" />
-  <FileUploadField name="landHeirDeclarationFile" label="Land Heir Declaration" description="PDF up to 10MB" accept="application/pdf" requiredMessage="Please upload a cover photo land heir declaration" />
+  <div className={readOnly ? 'pointer-events-none opacity-90' : ''}>
+    <FileUploadField name="landHeirDeclarationFile" label="Land Heir Declaration" description="PDF up to 10MB" accept="application/pdf" requiredMessage="Please upload a cover photo land heir declaration" />
+  </div>
         <Spacing size="sm" />
-  <FileUploadField name="rentalAgreementFile" label="Rental Agreement" description="PDF up to 10MB" accept="application/pdf" requiredMessage="Please upload a cover photo rental agreement" />
+  <div className={readOnly ? 'pointer-events-none opacity-90' : ''}>
+    <FileUploadField name="rentalAgreementFile" label="Rental Agreement" description="PDF up to 10MB" accept="application/pdf" requiredMessage="Please upload a cover photo rental agreement" />
+  </div>
         <LineSeparator />
 
         <FormSectionHeader title="Project Information" description="Please fill in the details of your project. This information will be used to register your project with MBMB." />
         <Spacing size="lg" />
-        <InputText id="projectTitle" name="projectTitle" label="Project Title" requiredMessage="Project Title is required" />
+  <InputText id="projectTitle" name="projectTitle" label="Project Title" requiredMessage="Project Title is required" readOnly={readOnly} />
         <Spacing size="lg" />
 
-        <InputText id="address" name="address" label="Project Address" requiredMessage="Address is required" />
+  <InputText id="address" name="address" label="Project Address" requiredMessage="Address is required" readOnly={readOnly} />
 
         <Spacing size="sm" />
         <FormRow columns={3}>
-          <InputText id="city" name="city" label="City" requiredMessage="City is required" />
-          <InputText id="state" name="state" label="State / Province" requiredMessage="State / Province is required" />
-          <InputText id="postalcode" name="postalcode" label="ZIP / Postal code" requiredMessage="ZIP / Postal code is required" />
+          <InputText id="city" name="city" label="City" requiredMessage="City is required" readOnly={readOnly} />
+          <InputText id="state" name="state" label="State / Province" requiredMessage="State / Province is required" readOnly={readOnly} />
+          <InputText id="postalcode" name="postalcode" label="ZIP / Postal code" requiredMessage="ZIP / Postal code is required" readOnly={readOnly} />
         </FormRow>
         <Spacing size="sm" />
-        <SelectField id="country" name="country" label="Country" options={countryOptions} requiredMessage="Country is required" />
+        <div className={readOnly ? 'pointer-events-none opacity-90' : ''}>
+          <SelectField id="country" name="country" label="Country" options={countryOptions} requiredMessage="Country is required" />
+        </div>
         <Spacing size="sm" />
 
         <LineSeparator />
         <FormSectionHeader title="Land Infromation" description="Provide additional details about your land." />
         <Spacing size="lg" />
 
-        <InputText id="landAddress" name="landAddress" label="Subdistrict / Town / City Area" requiredMessage="Subdistrict / Town / City Area is required" />
+  <InputText id="landAddress" name="landAddress" label="Subdistrict / Town / City Area" requiredMessage="Subdistrict / Town / City Area is required" readOnly={readOnly} />
         <Spacing size="sm" />
 
-        <InputText id="lotNumber" name="lotNumber" label="Lot / Plot Number" requiredMessage="Lot / Plot Number" />
+  <InputText id="lotNumber" name="lotNumber" label="Lot / Plot Number" requiredMessage="Lot / Plot Number" readOnly={readOnly} />
         <Spacing size="sm" />
 
-        <SelectField id="landStatus" name="landStatus" label="Land Status" options={landStatusOptions} requiredMessage="Land status is required" />
+        <div className={readOnly ? 'pointer-events-none opacity-90' : ''}>
+          <SelectField id="landStatus" name="landStatus" label="Land Status" options={landStatusOptions} requiredMessage="Land status is required" />
+        </div>
         <Spacing size="sm" />
 
-        <SelectField id="typeGrant" name="typeGrant" label="Type of Grant" options={typeGrantOptions} requiredMessage="Type of Grant is required" />
+        <div className={readOnly ? 'pointer-events-none opacity-90' : ''}>
+          <SelectField id="typeGrant" name="typeGrant" label="Type of Grant" options={typeGrantOptions} requiredMessage="Type of Grant is required" />
+        </div>
         <Spacing size="sm" />
 
 
-        <InputText id="spesificCondition" name="spesificCondition" label="Specific Conditions" />
+  <InputText id="spesificCondition" name="spesificCondition" label="Specific Conditions" readOnly={readOnly} />
         <Spacing size="sm" />
 
-        <InputText id="landArea" name="landArea" label="Land Area (m2)" type="number" requiredMessage="Land Area is required" />
+  <InputText id="landArea" name="landArea" label="Land Area (m2)" type="number" requiredMessage="Land Area is required" readOnly={readOnly} />
         <Spacing size="sm" />
 
-        <InputText id="existingCrops" name="existingCrops" label="Existing Crops" />
+  <InputText id="existingCrops" name="existingCrops" label="Existing Crops" readOnly={readOnly} />
         <Spacing size="sm" />
 
-        <InputText id="existingBuilding" name="existingBuilding" label="Existing Building" type="number" />
+  <InputText id="existingBuilding" name="existingBuilding" label="Existing Building" type="number" readOnly={readOnly} />
         <Spacing size="sm" />
 
-        <InputText id="residentialBuilding" name="residentialBuilding" label="Number of permanent residential building units
-" type="number" />
+  <InputText id="residentialBuilding" name="residentialBuilding" label="Number of permanent residential building units
+" type="number" readOnly={readOnly} />
         <Spacing size="sm" />
 
-        <InputText id="semiResidentialBuilding" name="semiResidentialBuilding" label="Number of semi-permanent residential building units
-" type="number" />
+  <InputText id="semiResidentialBuilding" name="semiResidentialBuilding" label="Number of semi-permanent residential building units
+" type="number" readOnly={readOnly} />
         <Spacing size="sm" />
 
-        <InputText id="otherBuilding" name="otherBuilding" label="Other buildings" type="number" />
+  <InputText id="otherBuilding" name="otherBuilding" label="Other buildings" type="number" readOnly={readOnly} />
         <Spacing size="sm" />
 
         <LineSeparator />
@@ -414,7 +458,9 @@ export default function ProjectPage() {
         <FormSectionHeader title="Propose Usage Information" description="Add one or more buildings and their areas. Each building's processing fee is auto-calculated with a minimum of RM 140." />
         <Spacing size="lg" />
 
-        <BuildingsTable />
+        <div className={readOnly ? 'pointer-events-none opacity-90' : ''}>
+          <BuildingsTable />
+        </div>
 
         <Spacing size="md" />
         <InputText
@@ -431,16 +477,19 @@ export default function ProjectPage() {
         {/* Auto-calc syncer (invisible) */}
         <BuildingsFeesAutoCalc />
 
-        <FormActions>
-          <Button type="button" variant="ghost" onClick={() => setShowCancelDialog(true)}>Cancel</Button>
-          <DraftSaveButton onSave={handleSaveDraft} loading={savingDraft} />
-          <Button type="submit" variant="primary" loading={loading}>Submit</Button>
-        </FormActions>
+        {!readOnly && (
+          <FormActions>
+            <Button type="button" variant="ghost" onClick={() => setShowCancelDialog(true)}>Cancel</Button>
+            <DraftSaveButton onSave={handleSaveDraft} loading={savingDraft} />
+            <Button type="submit" variant="primary" loading={loading}>Submit</Button>
+          </FormActions>
+        )}
 
 
   </FormWrapper>
 
 
+      {!readOnly && (
       <ConfirmDialog
         open={showCancelDialog}
         title="Discard changes?"
@@ -453,6 +502,7 @@ export default function ProjectPage() {
           router.push('/form'); // or reset form
         }}
       />
+      )}
 
     </LayoutWithoutSidebar>
 

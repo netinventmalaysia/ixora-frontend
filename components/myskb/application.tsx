@@ -121,7 +121,9 @@ const Application: React.FC = () => {
               router.push(`/myskb/project?draft_id=${encodeURIComponent(id)}`);
               return;
             }
-            // Default: do nothing or navigate to a project view if available later
+            // Navigate to submitted project detail
+            const id = typeof item.id === 'string' ? item.id : String(item.id);
+            router.push(`/myskb/project/${encodeURIComponent(id)}`);
           }}
         />
       </LayoutWithoutSidebar>
