@@ -33,6 +33,7 @@ export default function ProjectPage() {
   const [businessOptions, setBusinessOptions] = useState<{ value: number; label: string }[]>([]);
   const [selectedBusinessId, setSelectedBusinessId] = useState<number | null>(null);
   const [ownerOptions, setOwnerOptions] = useState<{ value: number; label: string }[]>([]);
+  const [ownershipIdToUserId, setOwnershipIdToUserId] = useState<Record<number, number | undefined>>({});
   const [formDefaults, setFormDefaults] = useState<Record<string, any> | undefined>(undefined);
 
   useEffect(() => {
@@ -61,7 +62,10 @@ export default function ProjectPage() {
           value: o.id, // use ownership id as selection value
           label: o.name || o.email,
         }));
+        const map: Record<number, number | undefined> = {};
+        (data || []).forEach((o: any) => { if (o && typeof o.id === 'number') map[o.id] = (o.user_id != null ? Number(o.user_id) : undefined); });
         setOwnerOptions(opts);
+        setOwnershipIdToUserId(map);
       })
       .catch(() => setOwnerOptions([]));
   }, [selectedBusinessId]);
@@ -109,7 +113,7 @@ export default function ProjectPage() {
           delete (defaults as any).ownerCategory;
           delete (defaults as any).ownershipCategory;
         }
-        if (draft?.business_id) defaults.business_id = draft.business_id;
+  if (draft?.business_id) defaults.business_id = draft.business_id;
         if (!mounted) return;
         setFormDefaults(defaults);
         if (defaults?.business_id) {
@@ -259,6 +263,16 @@ export default function ProjectPage() {
       }
       // Normalize numeric fields for backend
       const payload: any = { ...data };
+      // Derive owners_user_ids from selected owners (ownership ids -> user ids)
+      if (Array.isArray(payload.owners)) {
+        const userIds = payload.owners
+          .map((o: any) => Number(o?.owner_id))
+          .filter((n: number) => !Number.isNaN(n))
+          .map((ownershipId: number) => ownershipIdToUserId[ownershipId])
+          .filter((uid: number | undefined) => typeof uid === 'number' && !Number.isNaN(uid)) as number[];
+        const unique = Array.from(new Set(userIds));
+        if (unique.length > 0) payload.owners_user_ids = unique;
+      }
       if (Array.isArray(payload.buildings)) {
         payload.buildings = payload.buildings.map((b: any) => ({
           ...b,
@@ -289,6 +303,15 @@ export default function ProjectPage() {
       }
       // Normalize numeric fields for backend while saving draft
       const payload: any = { ...data };
+      if (Array.isArray(payload.owners)) {
+        const userIds = payload.owners
+          .map((o: any) => Number(o?.owner_id))
+          .filter((n: number) => !Number.isNaN(n))
+          .map((ownershipId: number) => ownershipIdToUserId[ownershipId])
+          .filter((uid: number | undefined) => typeof uid === 'number' && !Number.isNaN(uid)) as number[];
+        const unique = Array.from(new Set(userIds));
+        if (unique.length > 0) payload.owners_user_ids = unique;
+      }
       if (Array.isArray(payload.buildings)) {
         payload.buildings = payload.buildings.map((b: any) => ({
           ...b,
@@ -314,9 +337,9 @@ export default function ProjectPage() {
         {/* This section introduce about the project spesification for the consultant to register a new project and tie with all active ownership, after the registration is successful it will send to mbmb for review, once the review is completed and the consultant have to pay the amount of the project */}
   <FormSectionHeader title="Ownership Information" description="Please fill in the details of your project. This information will be used to register your project with MBMB." />
   <Spacing size="lg" />
-  <SelectField id="business_id" name="business_id" label="Business" options={businessOptions} requiredMessage="Business is required" onChange={(e) => setSelectedBusinessId(Number(e.target.value))} />
+  <SelectField id="business_id" name="business_id" label="Business" options={businessOptions} requiredMessage="Business is required" onChange={(e) => { const v = Number(e.target.value); setSelectedBusinessId(v); if (typeof window !== 'undefined') { try { localStorage.setItem('myskb_last_business_id', String(v)); } catch {} } }} />
   <Spacing size="lg" />
-  <OwnersFieldArray ownerOptions={ownerOptions} selectedBusinessId={selectedBusinessId} />
+    <OwnersFieldArray ownerOptions={ownerOptions} selectedBusinessId={selectedBusinessId} />
     <Spacing size="sm" />
         <Spacing size="lg" />
 

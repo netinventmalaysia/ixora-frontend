@@ -41,7 +41,14 @@ const MyskbPage: React.FC = () => {
   // Load access once on mount; backend should return allowedTabs like ['Application'] for registered users
   useEffect(() => {
     let mounted = true
-    getMySkbAccess()
+    // Optionally pass business_id if available from last selection
+    let bizId: number | undefined = undefined
+    if (typeof window !== 'undefined') {
+      const saved = localStorage.getItem('myskb_last_business_id')
+      const n = saved ? Number(saved) : NaN
+      if (!Number.isNaN(n)) bizId = n
+    }
+    getMySkbAccess(bizId ? { business_id: bizId } : undefined)
       .then((a) => {
         if (!mounted) return
         if (Array.isArray(a?.allowedTabs) && a.allowedTabs.length > 0) {
