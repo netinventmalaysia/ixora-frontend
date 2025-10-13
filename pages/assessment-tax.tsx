@@ -158,13 +158,16 @@ export default function AssessmentTaxPage() {
     }
   };
 
-  return (
-    <SidebarLayout>
-      {loading && (
-        <div className="fixed inset-0 z-[999] flex items-center justify-center bg-white/60 dark:bg-black/60" aria-hidden="true">
-          <LogoSpinner size={56} className="drop-shadow-md" title={t('common.loading', 'Loading...')} />
-        </div>
-      )}
+return (
+  <SidebarLayout>
+    {loading && (
+      <div className="fixed inset-0 z-[999] flex items-center justify-center bg-white/60 dark:bg-black/60" aria-hidden="true">
+        <LogoSpinner size={56} className="drop-shadow-md" title={t('common.loading', 'Loading...')} />
+      </div>
+    )}
+
+    {/* width container + mobile safe padding */}
+    <div className="mx-auto w-full max-w-screen-xl px-3 sm:px-6 lg:px-8 pb-24" aria-busy={loading}>
       <FormProvider {...methods}>
         <form onSubmit={handleSubmit(onSearch)} className="w-full max-w-3xl mx-auto">
           <Heading level={2} align="left" bold>
@@ -189,6 +192,7 @@ export default function AssessmentTaxPage() {
           {error && <p className="text-red-600 text-sm">{error}</p>}
           {loading && <p className="text-gray-600 text-sm">{t('common.loading', 'Loading...')}</p>}
 
+          {/* the responsive table/card below */}
           <AssessmentBillsTable
             bills={sortedBills}
             selectedIds={selectedIds}
@@ -201,9 +205,9 @@ export default function AssessmentTaxPage() {
           />
 
           <Spacing size="md" />
-          {/* Per-page pay button removed in favor of global checkout tray */}
         </form>
       </FormProvider>
-    </SidebarLayout>
-  );
+    </div>
+  </SidebarLayout>
+);
 }
