@@ -737,7 +737,9 @@ const sanitizeProjectPayload = (src: ProjectFormPayload) => {
         if (
             k === 'business_id' || k === 'businessId' ||
             k === 'owner_id' || k === 'ownerId' ||
+            k === 'user_id' || k === 'userId' ||
             k === 'draft' ||
+            k === 'owners' ||
             k === 'owners_user_ids' || k === 'ownersUserIds' ||
             k === 'useDraft' || k === 'draft_id' || k === 'draftId'
         ) continue;
@@ -787,6 +789,12 @@ export const saveProjectDraft = async (payload: ProjectFormPayload, opts: { draf
     const cleaned = sanitizeProjectPayload(payload);
     const body: any = { business_id, data: cleaned };
     if (!Number.isNaN(owner_id!) && owner_id !== undefined) body.data.owner_id = owner_id;
+    // Allow explicit user_id (primary project owner) at top-level if caller provides it
+    const explicitUserIdRaw = (payload as any)?.user_id ?? (payload as any)?.userId;
+    const explicitUserId = explicitUserIdRaw !== undefined ? Number(explicitUserIdRaw) : undefined;
+    if (explicitUserId !== undefined && !Number.isNaN(explicitUserId)) {
+        body.user_id = explicitUserId;
+    }
     const owners_user_ids = normalizeOwners(ownersRaw);
     if (owners_user_ids) body.owners_user_ids = owners_user_ids;
     const draftId = opts?.draftId;
@@ -837,6 +845,12 @@ export const submitProject = async (payload: ProjectFormPayload, opts: { draftId
     const cleaned = sanitizeProjectPayload(payload);
     const body: any = { business_id, useDraft: false, data: cleaned };
     if (!Number.isNaN(owner_id!) && owner_id !== undefined) body.data.owner_id = owner_id;
+    // Pass primary project owner at top-level when available
+    const explicitUserIdRaw = (payload as any)?.user_id ?? (payload as any)?.userId;
+    const explicitUserId = explicitUserIdRaw !== undefined ? Number(explicitUserIdRaw) : undefined;
+    if (explicitUserId !== undefined && !Number.isNaN(explicitUserId)) {
+        body.user_id = explicitUserId;
+    }
     const owners_user_ids = normalizeOwners(ownersRaw);
     if (owners_user_ids) body.owners_user_ids = owners_user_ids;
     const draftId = opts?.draftId;

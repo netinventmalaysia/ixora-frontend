@@ -2,14 +2,11 @@ import FormWrapper from "todo/components/forms/FormWrapper";
 import Button from 'todo/components/forms/Button';
 import FormSectionHeader from '@/components/forms/FormSectionHeader';
 import FormActions from "todo/components/forms/FormActions";
-import InputWithPrefix from "todo/components/forms/InputText";
 import Spacing from "todo/components/forms/Spacing";
 import LineSeparator from "todo/components/forms/LineSeparator";
 import FormRow from "todo/components/forms/FormRow";
-import { buildingUseOptions, countryOptions, landStatusOptions, OwnershipCategory, typeGrantOptions } from "todo/components/data/SelectionList";
+import { countryOptions, landStatusOptions, OwnershipCategory, typeGrantOptions } from "todo/components/data/SelectionList";
 import SelectField from "todo/components/forms/SelectField";
-import CheckboxGroupField from "todo/components/forms/CheckboxGroupField";
-import { emailNotificationOptions2 } from "todo/components/data/CheckList";
 import ConfirmDialog from "todo/components/forms/ConfirmDialog";
 import { useRouter } from "next/router";
 import { useEffect, useState, useRef } from "react";
@@ -17,11 +14,8 @@ import { useFormContext, useWatch, useFieldArray } from "react-hook-form";
 import RadioGroupField from "todo/components/forms/RadioGroupField";
 import { landOrBuildingOwnerList } from "todo/components/data/RadioList";
 import toast from 'react-hot-toast';
-import DatePickerField from "todo/components/forms/DatePickerField";
 import LayoutWithoutSidebar from "../main/LayoutWithoutSidebar";
 import InputText from "todo/components/forms/InputText";
-import { Label } from "@headlessui/react";
-import Heading from "../forms/Heading";
 import BuildingsTable from "todo/components/forms/BuildingsTable";
 import FileUploadField from "../forms/FileUpload";
 import { fetchMyBusinesses, saveProjectDraft, submitProject, listOwnerships, getProjectDraftById } from '@/services/api';
@@ -36,6 +30,41 @@ export default function ProjectPage({ readOnly = false, initialValues }: Project
   const [ownerOptions, setOwnerOptions] = useState<{ value: number; label: string }[]>([]);
   const [ownershipIdToUserId, setOwnershipIdToUserId] = useState<Record<number, number | undefined>>({});
   const [formDefaults, setFormDefaults] = useState<Record<string, any> | undefined>(undefined);
+
+  // --- Helpers -------------------------------------------------------------
+  // Map selected ownership ids (owners[].owner_id) to unique user ids using lookup from /myskb/ownership
+  const mapOwnershipsToUserIds = (owners: any[] | undefined | null): number[] => {
+    if (!Array.isArray(owners) || owners.length === 0) return [];
+    const ids = owners
+      .map((o: any) => Number(o?.owner_id))
+      .filter((n: number) => !Number.isNaN(n))
+      .map((ownershipId: number) => ownershipIdToUserId[ownershipId])
+      .filter((uid: number | undefined) => typeof uid === 'number' && !Number.isNaN(uid)) as number[];
+    return Array.from(new Set(ids));
+  };
+
+  // Build request payload from form data in a single place
+  const buildSubmitPayload = (data: any) => {
+    const payload: any = { ...data };
+    const ownerUserIds = mapOwnershipsToUserIds(payload.owners);
+    if (ownerUserIds.length > 0) {
+      payload.owners_user_ids = ownerUserIds;
+      payload.user_id = ownerUserIds[0]; // primary owner = first selected owner
+    }
+    // Normalize buildings numeric fields
+    if (Array.isArray(payload.buildings)) {
+      payload.buildings = payload.buildings.map((b: any) => ({
+        ...b,
+        openArea: Number(b?.openArea || 0),
+        closeArea: Number(b?.closeArea || 0),
+        processingFee: Number(b?.processingFee || 0),
+      }));
+    }
+    payload.processingFees = Number(payload.processingFees || 0);
+    // Avoid sending the raw "owners" selection (ownership ids) to backend; we send user ids instead
+    delete payload.owners;
+    return payload;
+  };
 
   useEffect(() => {
     fetchMyBusinesses()
@@ -276,27 +305,8 @@ export default function ProjectPage({ readOnly = false, initialValues }: Project
         toast.error('Please select a Business');
         return;
       }
-      // Normalize numeric fields for backend
-      const payload: any = { ...data };
-      // Derive owners_user_ids from selected owners (ownership ids -> user ids)
-      if (Array.isArray(payload.owners)) {
-        const userIds = payload.owners
-          .map((o: any) => Number(o?.owner_id))
-          .filter((n: number) => !Number.isNaN(n))
-          .map((ownershipId: number) => ownershipIdToUserId[ownershipId])
-          .filter((uid: number | undefined) => typeof uid === 'number' && !Number.isNaN(uid)) as number[];
-        const unique = Array.from(new Set(userIds));
-        if (unique.length > 0) payload.owners_user_ids = unique;
-      }
-      if (Array.isArray(payload.buildings)) {
-        payload.buildings = payload.buildings.map((b: any) => ({
-          ...b,
-          openArea: Number(b?.openArea || 0),
-          closeArea: Number(b?.closeArea || 0),
-          processingFee: Number(b?.processingFee || 0),
-        }));
-      }
-      payload.processingFees = Number(payload.processingFees || 0);
+      // Build clear and minimal API payload
+      const payload = buildSubmitPayload(data);
       const res = await submitProject(payload, { draftId: (router.query?.draft_id as string) || undefined });
       toast.success('Project submitted');
       console.log('Submit result:', res);
@@ -316,26 +326,8 @@ export default function ProjectPage({ readOnly = false, initialValues }: Project
         toast.error('Please select a Business');
         return;
       }
-      // Normalize numeric fields for backend while saving draft
-      const payload: any = { ...data };
-      if (Array.isArray(payload.owners)) {
-        const userIds = payload.owners
-          .map((o: any) => Number(o?.owner_id))
-          .filter((n: number) => !Number.isNaN(n))
-          .map((ownershipId: number) => ownershipIdToUserId[ownershipId])
-          .filter((uid: number | undefined) => typeof uid === 'number' && !Number.isNaN(uid)) as number[];
-        const unique = Array.from(new Set(userIds));
-        if (unique.length > 0) payload.owners_user_ids = unique;
-      }
-      if (Array.isArray(payload.buildings)) {
-        payload.buildings = payload.buildings.map((b: any) => ({
-          ...b,
-          openArea: Number(b?.openArea || 0),
-          closeArea: Number(b?.closeArea || 0),
-          processingFee: Number(b?.processingFee || 0),
-        }));
-      }
-      payload.processingFees = Number(payload.processingFees || 0);
+      // Build clear and minimal API payload
+      const payload = buildSubmitPayload(data);
       const res = await saveProjectDraft({ ...payload, draft: true }, { draftId: (router.query?.draft_id as string) || undefined });
       toast.success('Draft saved');
       console.log('Draft result:', res);
