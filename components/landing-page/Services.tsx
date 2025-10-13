@@ -67,7 +67,7 @@ export default function Services() {
           {t("services.heading", "Service Modules")}
         </h2>
         <p className="mt-2 text-center text-gray-600">
-          {t("services.subtitle", "Manage MBMB services digitally—easy & transparent")}
+          {t("services.subtitle", "Manage all services digitally easy & transparent")}
         </p>
 
         {/* Two-column content */}
@@ -75,7 +75,7 @@ export default function Services() {
           {/* LEFT: hero image */}
           <div className="relative mx-auto w-full max-w-xl overflow-hidden rounded-2xl border bg-white shadow-sm lg:max-w-none">
             <Image
-              src="/images/ixora-bills.png" // TODO: replace with your image
+              src="/images/ixora-service-all.png"
               alt={t("services.heroAlt", "MBMB Digital Services")}
               width={600}
               height={600}
