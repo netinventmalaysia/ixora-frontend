@@ -126,7 +126,7 @@ export default function ServicesListPage() {
           href="/"
           className="rounded-lg border px-3 py-2 text-sm text-gray-700 hover:bg-gray-50"
         >
-          ← {t("common.back", "Back")}
+          ←
         </Link>
       </div>
 

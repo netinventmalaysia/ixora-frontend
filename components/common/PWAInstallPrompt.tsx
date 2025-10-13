@@ -327,18 +327,6 @@ export default function PWAInstallPrompt({
           </div>
         </div>
       )}
-
-      {/* MANUAL BUTTON (FLOATING) */}
-      {canShowManual && (
-        <button
-          onClick={() => triggerPWAInstall()}
-          className="fixed bottom-5 right-5 z-30 rounded-full px-4 py-3 text-sm font-medium text-white shadow-lg hover:opacity-95"
-          style={{ background: PRIMARY, paddingBottom: "calc(env(safe-area-inset-bottom, 0px))" }}
-          aria-label="Open install instructions"
-        >
-          {t.manualButton}
-        </button>
-      )}
     </>
   );
 }
