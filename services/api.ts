@@ -609,7 +609,6 @@ export interface CompoundSearchParams {
     // also accept camelCase from callers and normalize
     compoundNo?: string;
     vehicle_registration_no?: string;
-    vehicel_registration_no?: string; // compatibility
     vehicleRegistrationNo?: string; // camelCase acceptance
 }
 
@@ -619,7 +618,7 @@ export const fetchCompoundOutstanding = async (params: CompoundSearchParams) => 
     if (params.ic) query.ic = params.ic;
     const compound = params.compound_no ?? params.compoundNo;
     if (!params.ic && compound) { query.compound_no = compound; query.compoundNo = compound; }
-    const vrn = params.vehicle_registration_no ?? params.vehicel_registration_no ?? params.vehicleRegistrationNo;
+    const vrn = params.vehicle_registration_no ?? params.vehicleRegistrationNo ?? params.vehicleRegistrationNo;
     if (vrn) { query.vehicle_registration_no = vrn; query.vehicleRegistrationNo = vrn; }
     if (typeof window !== 'undefined') { console.log('[API] GET /compound/outstanding params:', query); }
     const { data } = await api.get('/mbmb/public/api/compound/outstanding', { params: query });
@@ -980,7 +979,7 @@ export const getProjectById = async (id: number | string): Promise<Record<string
             const list = await listProjects({ limit: 100, offset: 0 });
             const found = (list.data || []).find((p) => String(p.id) === String(id));
             if (found) return found as Record<string, any>;
-        } catch {}
+        } catch { }
     }
     return null;
 };
