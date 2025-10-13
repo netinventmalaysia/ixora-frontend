@@ -57,7 +57,7 @@ export default function Services() {
     { title: t("services.trishaw.title", "Trishaw Licence"), desc: t("services.trishaw.desc", "Apply & renew trishaw licences."), icon: TruckIcon, href: "#", status: "coming-soon" },
   ];
 
-  const visible = serviceCards.slice(0, 12); // show 6 on the right
+  const visible = serviceCards.slice(0, 8); // show 6 on the right
 
   return (
     <section id="services" className="bg-white py-16">
