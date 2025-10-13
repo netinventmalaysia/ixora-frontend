@@ -24,7 +24,7 @@ export default function SummaryCards({
   return (
     <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
       <div className="bg-white shadow rounded-lg p-5">
-        <div className="text-xs uppercase text-gray-500">
+        <div className="text-xs text-gray-500">
           {t('dashboard.cards.billTotal', 'Jumlah Bil')}
         </div>
         <div className="mt-1 text-2xl font-bold">{fmt(billTotal)}</div>
@@ -34,7 +34,7 @@ export default function SummaryCards({
       </div>
 
       <div className="bg-white shadow rounded-lg p-5">
-        <div className="text-xs uppercase text-gray-500">
+        <div className="text-xs text-gray-500">
           {t('dashboard.cards.invoiceTotal', 'Jumlah Invois')}
         </div>
   <div className="mt-1 text-2xl font-bold">{fmt(invoiceTotal ?? 0)}</div>
@@ -44,7 +44,7 @@ export default function SummaryCards({
       </div>
 
       <div className="bg-white shadow rounded-lg p-5">
-        <div className="text-xs uppercase text-gray-500">
+        <div className="text-xs text-gray-500">
           {t('dashboard.cards.combinedTotal', 'Jumlah Bil + Invois')}
         </div>
         <div className="mt-1 text-2xl font-bold">{fmt(combinedTotal)}</div>

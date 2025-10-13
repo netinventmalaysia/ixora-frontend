@@ -181,19 +181,28 @@
     "countryPlaceholder": "请选择...",
     "countryRequired": "国家为必填项"
   },
-  "dashboard": {
-    "welcome": "欢迎使用 IXORA MBMB",
-    "description": "IXORA MBMB 是马六甲历史市政厅的官方数字门户，让市民与企业的线上办理更便捷。",
+"dashboard": {
+    "welcome": "欢迎来到 IXORA MBMB",
+    "description": "IXORA MBMB 是马六甲历史城市议会的官方数字门户，让市民和企业更轻松地进行在线交易。",
     "featuresTitle": "主要功能",
     "features": {
-      "assessmentTax": "房产税缴纳",
-      "compoundPayments": "罚单缴纳",
+      "assessmentTax": "产业税付款",
+      "compoundPayments": "罚单付款",
       "boothRental": "摊位租赁",
       "miscBills": "杂项账单",
-      "businessRegistration": "企业注册与许可",
+      "businessRegistration": "企业注册与执照",
       "accountStaffMgmt": "账户与员工管理",
-      "myskb": "临时建筑许可 (MBMB)",
+      "myskb": "临时建筑许可证 (MBMB)",
       "announcements": "公告与新闻"
+    },
+    "cards": {
+      "billTotal": "账单总数",
+      "activeBills": "有效账单",
+      "invoiceTotal": "发票总数",
+      "activeInvoices": "有效发票",
+      "combinedTotal": "账单 + 发票总额",
+      "overallRecords": "总计",
+      "records": "记录"
     },
     "roles": {
       "guest": { "label": "访客", "desc": "可查看公告与公共访问内容" },

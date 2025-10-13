@@ -181,19 +181,28 @@
     "countryPlaceholder": "தயவுசெய்து தேர்ந்தெடுக்கவும்...",
     "countryRequired": "நாடு அவசியம்"
   },
-  "dashboard": {
+"dashboard": {
     "welcome": "IXORA MBMB-க்கு வரவேற்கிறோம்",
-    "description": "IXORA MBMB என்பது மelaka வரலாற்றுச் சிட்டி கவுன்சிலின் (MBMB) அதிகாரப்பூர்வ டிஜிட்டல் போர்டல் — குடிமக்கள் மற்றும் வணிகங்களுக்கு ஆன்லைன் செயல்முறைகளை எளிமைப்படுத்துகிறது.",
+    "description": "IXORA MBMB என்பது மலாக்கா வரலாற்று நகர சபையின் உத்தியோகபூர்வ டிஜிட்டல் தளம் ஆகும், இது குடிமக்கள் மற்றும் வணிக பரிவர்த்தனைகளை ஆன்லைனில் எளிதாக்குகிறது.",
     "featuresTitle": "முக்கிய அம்சங்கள்",
     "features": {
-      "assessmentTax": "செல்வவரி கட்டணம்",
-      "compoundPayments": "அபராத கட்டணம்",
-      "boothRental": "கூடம் வாடகை",
-      "miscBills": "பலவகை பில்கள்",
-      "businessRegistration": "வணிக பதிவு & அனுமதிகள்",
-      "accountStaffMgmt": "கணக்கு & பணியாளர் மேலாண்மை",
-      "myskb": "MBMB தற்காலிக கட்டிட அனுமதி",
-      "announcements": "அறிவிப்புகள் & செய்திகள்"
+      "assessmentTax": "சொத்து வரி கட்டணம்",
+      "compoundPayments": "அப்பாவி அபராதம் கட்டணம்",
+      "boothRental": "கடை வாடகை",
+      "miscBills": "பல்வேறு பில்கள்",
+      "businessRegistration": "வணிக பதிவு மற்றும் உரிமம்",
+      "accountStaffMgmt": "கணக்கு மற்றும் பணியாளர் மேலாண்மை",
+      "myskb": "தற்காலிக கட்டிட அனுமதி (MBMB)",
+      "announcements": "அறிவிப்புகள் மற்றும் செய்திகள்"
+    },
+    "cards": {
+      "billTotal": "மொத்த பில்கள்",
+      "activeBills": "செயலில் உள்ள பில்கள்",
+      "invoiceTotal": "மொத்த விலைப்பட்டியல்",
+      "activeInvoices": "செயலில் உள்ள விலைப்பட்டியல்",
+      "combinedTotal": "பில்கள் + விலைப்பட்டியல் மொத்தம்",
+      "overallRecords": "மொத்தம்",
+      "records": "பதிவுகள்"
     },
     "roles": {
       "guest": { "label": "விருந்தினர்", "desc": "அறிவிப்புகள் மற்றும் பொதுக் காட்சிகள்" },

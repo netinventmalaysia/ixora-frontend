@@ -181,7 +181,7 @@
     "countryPlaceholder": "Sila pilih...",
     "countryRequired": "Negara diperlukan"
   },
-  "dashboard": {
+"dashboard": {
     "welcome": "Selamat Datang ke IXORA MBMB",
     "description": "IXORA MBMB ialah portal digital rasmi Majlis Bandaraya Melaka Bersejarah yang memudahkan urusan rakyat dan perniagaan secara dalam talian.",
     "featuresTitle": "Ciri Utama",
@@ -190,10 +190,19 @@
       "compoundPayments": "Bayaran Kompaun",
       "boothRental": "Sewaan Gerai",
       "miscBills": "Bil Pelbagai",
-      "businessRegistration": "Pendaftaran & Perlesenan Perniagaan",
-      "accountStaffMgmt": "Pengurusan Akaun & Staf Perniagaan",
-      "myskb": "Permit Bangunan Sementara MBMB",
+      "businessRegistration": "Pendaftaran & Lesen Perniagaan",
+      "accountStaffMgmt": "Pengurusan Akaun & Kakitangan",
+      "myskb": "Permit Bangunan Sementara (MBMB)",
       "announcements": "Pengumuman & Berita"
+    },
+    "cards": {
+      "billTotal": "Jumlah Bil",
+      "activeBills": "Bil Aktif",
+      "invoiceTotal": "Jumlah Invois",
+      "activeInvoices": "Invois Aktif",
+      "combinedTotal": "Jumlah Bil + Invois",
+      "overallRecords": "Keseluruhan",
+      "records": "rekod"
     },
     "roles": {
       "guest": { "label": "Tetamu", "desc": "Boleh melihat pengumuman dan capaian awam" },
