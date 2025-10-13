@@ -179,7 +179,7 @@ export default function SidebarContent({
 
   const showModeToggle = userRole !== 'guest';
   // Unified sidebar background color (custom blue) regardless of mode per new branding
-  const sidebarBg = 'bg-[#B01C2F]';
+  const sidebarBg = 'bg-[#005C76]';
   const displayMode = localUserRole === 'admin' && mode === 'Business' ? 'Admin' : mode;
   const personalLabel = localUserRole === 'admin' ? 'Admin' : 'Business';
 

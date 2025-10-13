@@ -33,7 +33,8 @@ type BillRow = {
 export default function DashboardPage() {
   const { t } = useTranslation();
   const [loading, setLoading] = useState(false);
-  const { add } = useBillSelection();
+  // use selection like Assessment (add/remove/has)
+  const { add, remove, has } = useBillSelection();
 
   const [assess, setAssess] = useState<AssessmentBill[]>([]);
   const [compound, setCompound] = useState<CompoundBill[]>([]);
@@ -61,6 +62,23 @@ export default function DashboardPage() {
     if (parts.length >= 3) return parts[0].length === 4 ? Number(parts[0]) : Number(parts[2]); // YYYY or DD/MM/YYYY
     return NaN;
   };
+
+  // Map type -> cart source
+  const mapSource = (tpe: string) =>
+    tpe.toLowerCase().includes('assessment') ? 'assessment'
+    : tpe.toLowerCase().includes('booth') ? 'booth'
+    : tpe.toLowerCase().includes('misc') ? 'misc'
+    : 'compound' as const;
+
+  const toSelectable = (b: BillRow) => ({
+    id: (b as any).id ?? b.billNo,
+    bill_no: b.billNo,
+    amount: b.amount,
+    due_date: b.due,
+    description: b.type,
+    source: mapSource(b.type) as 'assessment' | 'booth' | 'misc' | 'compound',
+    meta: {},
+  });
 
   // ===== Fetch all categories by IC after login =====
   useEffect(() => {
@@ -251,88 +269,88 @@ export default function DashboardPage() {
 
         <Spacing size="sm" />
 
-        {/* Slim, mobile-friendly cards */}
+        {/* Slim, mobile-friendly cards with selection (Assessment-style) */}
         <div className="bg-white shadow rounded-lg p-4 space-y-3">
           {unifiedBills.length === 0 ? (
             <p className="text-sm text-gray-500 text-center py-6">
               {t('dashboard.noBills', 'No bills available at the moment.')}
             </p>
           ) : (
-unifiedBills.map((b, i) => {
-  const paid = (paidLookup[b.billNo]?.status || '').toUpperCase();
-  const isPaid = paid === 'PAID' || paid === 'SUCCESS';
-  const formattedDate = fmtISO(b.due);
-  const overdue = isOverdue(b.due);
+            unifiedBills.map((b, i) => {
+              const paid = (paidLookup[b.billNo]?.status || '').toUpperCase();
+              const isPaid = paid === 'PAID' || paid === 'SUCCESS';
+              const formattedDate = fmtISO(b.due);
+              const overdue = isOverdue(b.due);
 
-  return (
-    <div
-      key={i}
-      className="border rounded-lg p-4 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 sm:gap-4"
-    >
-      {/* Bill Info (3-line layout) */}
-      <div className="flex-1 min-w-0">
-        <div className="text-sm font-semibold text-gray-900 truncate">
-          {b.type} - {b.billNo}
-        </div>
-        <div className={`text-xs mt-1 ${overdue ? 'text-red-600 font-semibold' : 'text-gray-500'}`}>
-          Due: {formattedDate}
-          {/* {overdue && (
-            <span className="ml-2 inline-block rounded bg-red-100 text-red-700 px-1.5 py-0.5 text-[10px]">
-              Overdue
-            </span>
-          )} */}
-        </div>
-        <div className={`text-xs mt-1 ${isPaid ? 'text-emerald-600 font-semibold' : 'text-gray-700 font-semibold'}`}>
-          Amount: {fRM(b.amount)}
-        </div>
-      </div>
+              const selectable = toSelectable(b);
+              const isSelected = has(selectable);
+              const disabled = isPaid || Number(b.amount) <= 0;
 
-      {/* Action Button */}
-      <div className="flex-shrink-0 sm:text-right mt-2 sm:mt-0">
-        {isPaid ? (
-          <a
-            href={
-              paidLookup[b.billNo]?.reference
-                ? `/payment-status/${encodeURIComponent(paidLookup[b.billNo]?.reference!)}`
-                : `/payment-status?bill_no=${encodeURIComponent(b.billNo)}`
-            }
-            className="inline-flex items-center justify-center px-3 h-11 rounded-md bg-indigo-600 text-white text-sm font-medium hover:opacity-90 w-full sm:w-auto"
-          >
-            Receipt
-          </a>
-        ) : (
-          <button
-            onClick={() => {
-              const mapSource = (t: string) =>
-                t.toLowerCase().includes('assessment')
-                  ? 'assessment'
-                  : t.toLowerCase().includes('booth')
-                  ? 'booth'
-                  : t.toLowerCase().includes('misc')
-                  ? 'misc'
-                  : 'compound';
-              const source = mapSource(b.type) as 'assessment' | 'booth' | 'misc' | 'compound';
-              const selectable = {
-                id: (b as any).id ?? b.billNo,
-                bill_no: b.billNo,
-                amount: b.amount,
-                due_date: b.due,
-                description: b.type,
-                source,
-                meta: {},
-              } as any;
-              add(selectable);
-              try { window.dispatchEvent(new Event('ixora:openCheckout')); } catch {}
-            }}
-            className="inline-flex items-center justify-center px-3 h-11 rounded-md bg-[#00A7A6] text-white text-sm font-medium hover:opacity-90 w-full sm:w-auto"
-          >
-            Pay
-          </button>
-        )}
-      </div>
-    </div>
-  );
-})
+              const toggle = () => {
+                if (disabled) return;
+                if (isSelected) remove(selectable);
+                else add(selectable);
+              };
+
+              return (
+                <div
+                  key={i}
+                  className="border rounded-lg p-4 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 sm:gap-4"
+                >
+                  {/* Bill Info (3-line layout) */}
+                  <div className="flex-1 min-w-0">
+                    <div className="text-sm font-semibold text-gray-900 truncate">
+                      {b.type} - {b.billNo}
+                    </div>
+                    <div className={`text-xs mt-1 ${overdue ? 'text-red-600 font-semibold' : 'text-gray-500'}`}>
+                      Due: {formattedDate}
+                    </div>
+                    <div className={`text-xs mt-1 ${isPaid ? 'text-emerald-600 font-semibold' : 'text-gray-700 font-semibold'}`}>
+                      Amount: {fRM(b.amount)}
+                    </div>
+                  </div>
+
+                  {/* Right controls: checkbox + button (Assessment-like UX) */}
+                  <div className="flex-shrink-0 sm:text-right mt-2 sm:mt-0 w-full sm:w-auto">
+                    {!isPaid && (
+                      <div className="flex items-center justify-end mb-2">
+                        <input
+                          type="checkbox"
+                          aria-label={t('dashboard.selectBill', 'Select bill')}
+                          checked={isSelected}
+                          onChange={toggle}
+                          disabled={disabled}
+                          className="h-4 w-4"
+                        />
+                      </div>
+                    )}
+
+                    {isPaid ? (
+                      <a
+                        href={
+                          paidLookup[b.billNo]?.reference
+                            ? `/payment-status/${encodeURIComponent(paidLookup[b.billNo]?.reference!)}`
+                            : `/payment-status?bill_no=${encodeURIComponent(b.billNo)}`
+                        }
+                        className="inline-flex items-center justify-center px-3 h-11 rounded-md bg-indigo-600 text-white text-sm font-medium hover:opacity-90 w-full sm:w-auto"
+                      >
+                        {t('dashboard.receipt', 'Receipt')}
+                      </a>
+                    ) : (
+                      <button
+                        onClick={toggle}
+                        disabled={disabled}
+                        className={`inline-flex items-center justify-center px-3 h-11 rounded-md text-white text-sm font-medium w-full sm:w-auto hover:opacity-90 disabled:opacity-50 ${
+                          isSelected ? 'bg-gray-700' : 'bg-[#00A7A6]'
+                        }`}
+                      >
+                        {isSelected ? t('dashboard.remove', 'Remove') : t('dashboard.select', 'Select')}
+                      </button>
+                    )}
+                  </div>
+                </div>
+              );
+            })
           )}
 
           {/* Total */}
@@ -345,10 +363,19 @@ unifiedBills.map((b, i) => {
         </div>
 
         <Spacing size="lg" />
-        {/* Invoices section hidden until backend provides invoice endpoint */}
+        {/* Invoice Section Notice */}
+        <div className="mt-6 border rounded-lg bg-gray-50 px-4 py-6 text-center">
+          <h3 className="text-sm font-semibold text-gray-900">
+            {t('dashboard.invoiceUnavailableTitle', 'Invoices Unavailable')}
+          </h3>
+          <p className="mt-2 text-sm text-gray-600">
+            {t(
+              'dashboard.invoiceUnavailableText',
+              'No invoices are currently available for your account. Once invoice data is activated in the MBMB IXORA system, you will be able to view and download them here.'
+            )}
+          </p>
+        </div>
 
-        <Spacing size="lg" />
-        <LineSeparator />
       </div>
     </SidebarLayout>
   );
