@@ -293,65 +293,75 @@ export default function DashboardPage() {
               };
 
               return (
-                <div
-                  key={i}
-                  className="border rounded-lg p-4 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 sm:gap-4"
-                >
-                  {!isPaid && (
-                      <div className="flex items-center justify-end mb-2">
-                        <input
-                          type="checkbox"
-                          aria-label={t('dashboard.selectBill', 'Select bill')}
-                          checked={isSelected}
-                          onChange={toggle}
-                          disabled={disabled}
-                          className="h-4 w-4"
-                        />
-                      </div>
-                    )}
-                  {/* Bill Info (3-line layout) */}
-                  <div className="flex-1 min-w-0">
-                    
-                    <div className="text-sm font-semibold text-gray-900 truncate">
-                      {b.type} - {b.billNo}
-                    </div>
-                    <div className={`text-xs mt-1 ${overdue ? 'text-red-600 font-semibold' : 'text-gray-500'}`}>
-                      Due: {formattedDate}
-                    </div>
-                    <div className={`text-xs mt-1 ${isPaid ? 'text-emerald-600 font-semibold' : 'text-gray-700 font-semibold'}`}>
-                      Amount: {fRM(b.amount)}
-                    </div>
-                  </div>
+  <div
+    key={i}
+    className="border rounded-lg p-4 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 sm:gap-4"
+  >
+    {/* Bill Info (3-line layout) */}
+    <div className="flex flex-1 items-start sm:items-center gap-3">
+      {/* Checkbox aligned left with type+bill */}
+      {!isPaid && (
+        <input
+          type="checkbox"
+          aria-label={t('dashboard.selectBill', 'Select bill')}
+          checked={isSelected}
+          onChange={toggle}
+          disabled={disabled}
+          className="mt-0.5 sm:mt-0 h-4 w-4 flex-shrink-0 accent-[#00A7A6] cursor-pointer"
+        />
+      )}
 
-                  {/* Right controls: checkbox + button (Assessment-like UX) */}
-                  <div className="flex-shrink-0 sm:text-right mt-2 sm:mt-0 w-full sm:w-auto">
-                    
+      {/* Bill Texts */}
+      <div className="min-w-0 flex-1">
+        <div className="text-sm font-semibold text-gray-900 truncate">
+          {b.type} - {b.billNo}
+        </div>
+        <div
+          className={`text-xs mt-1 ${
+            overdue ? 'text-red-600 font-semibold' : 'text-gray-500'
+          }`}
+        >
+          Due: {formattedDate}
+        </div>
+        <div
+          className={`text-xs mt-1 ${
+            isPaid ? 'text-emerald-600 font-semibold' : 'text-gray-700 font-semibold'
+          }`}
+        >
+          Amount: {fRM(b.amount)}
+        </div>
+      </div>
+    </div>
 
-                    {isPaid ? (
-                      <a
-                        href={
-                          paidLookup[b.billNo]?.reference
-                            ? `/payment-status/${encodeURIComponent(paidLookup[b.billNo]?.reference!)}`
-                            : `/payment-status?bill_no=${encodeURIComponent(b.billNo)}`
-                        }
-                        className="inline-flex items-center justify-center px-3 h-11 rounded-md bg-indigo-600 text-white text-sm font-medium hover:opacity-90 w-full sm:w-auto"
-                      >
-                        {t('dashboard.receipt', 'Receipt')}
-                      </a>
-                    ) : (
-                      <button
-                        onClick={toggle}
-                        disabled={disabled}
-                        className={`inline-flex items-center justify-center px-3 h-11 rounded-md text-white text-sm font-medium w-full sm:w-auto hover:opacity-90 disabled:opacity-50 ${
-                          isSelected ? 'bg-gray-700' : 'bg-[#00A7A6]'
-                        }`}
-                      >
-                        {isSelected ? t('dashboard.remove', 'Remove') : t('dashboard.select', 'Select')}
-                      </button>
-                    )}
-                  </div>
-                </div>
-              );
+    {/* Right controls (Select / Receipt Button) */}
+    <div className="flex-shrink-0 sm:text-right mt-2 sm:mt-0 w-full sm:w-auto">
+      {isPaid ? (
+        <a
+          href={
+            paidLookup[b.billNo]?.reference
+              ? `/payment-status/${encodeURIComponent(paidLookup[b.billNo]?.reference!)}`
+              : `/payment-status?bill_no=${encodeURIComponent(b.billNo)}`
+          }
+          className="inline-flex items-center justify-center px-3 h-11 rounded-md bg-indigo-600 text-white text-sm font-medium hover:opacity-90 w-full sm:w-auto"
+        >
+          {t('dashboard.receipt', 'Receipt')}
+        </a>
+      ) : (
+        <button
+          onClick={toggle}
+          disabled={disabled}
+          className={`inline-flex items-center justify-center px-3 h-11 rounded-md text-white text-sm font-medium w-full sm:w-auto hover:opacity-90 disabled:opacity-50 ${
+            isSelected ? 'bg-gray-700' : 'bg-[#00A7A6]'
+          }`}
+        >
+          {isSelected
+            ? t('dashboard.remove', 'Remove')
+            : t('dashboard.select', 'Select')}
+        </button>
+      )}
+    </div>
+  </div>
+);
             })
           )}
 
