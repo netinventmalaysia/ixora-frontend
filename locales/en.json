@@ -184,9 +184,9 @@
     "countryPlaceholder": "Please select...",
     "countryRequired": "Country is required"
   },
-  "dashboard": {
+"dashboard": {
     "welcome": "Welcome to IXORA MBMB",
-    "description": "IXORA MBMB is the official digital portal of Majlis Bandaraya Melaka Bersejarah that simplifies citizen and business transactions online.",
+    "description": "IXORA MBMB is the official digital portal of the Melaka Historic City Council, simplifying citizen and business transactions online.",
     "featuresTitle": "Key Features",
     "features": {
       "assessmentTax": "Assessment Tax Payments",
@@ -194,9 +194,18 @@
       "boothRental": "Booth Rental",
       "miscBills": "Miscellaneous Bills",
       "businessRegistration": "Business Registration & Licensing",
-      "accountStaffMgmt": "Account & Business Staff Management",
-      "myskb": "MBMB Temporary Building Permit",
+      "accountStaffMgmt": "Account & Staff Management",
+      "myskb": "Temporary Building Permit (MBMB)",
       "announcements": "Announcements & News"
+    },
+    "cards": {
+      "billTotal": "Total Bills",
+      "activeBills": "Active Bills",
+      "invoiceTotal": "Total Invoices",
+      "activeInvoices": "Active Invoices",
+      "combinedTotal": "Bills + Invoices Total",
+      "overallRecords": "Overall",
+      "records": "records"
     },
     "roles": {
       "guest": { "label": "Guest", "desc": "Can view announcements and public access" },

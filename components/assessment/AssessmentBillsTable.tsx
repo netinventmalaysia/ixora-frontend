@@ -1,150 +1,242 @@
-import React from 'react';
-
-// Minimal shape for bills used by this table (works for Assessment & Compound)
-export type BillItem = {
-  id: string | number;
-  bill_no: string;
-  amount: number | string;
-  due_date: string;
-  description?: string | null;
-};
+import React, { useMemo } from 'react';
+import {
+  Table, TableBody, TableCaption, TableCell, TableFooter,
+  TableHead, TableHeader, TableRow,
+} from '@/components/ui/table';
+import { AssessmentBill } from 'todo/services/api';
 
 type Props = {
-  bills: BillItem[];
+  bills: AssessmentBill[];
   selectedIds: Set<string | number>;
   onToggle: (id: string | number) => void;
   onToggleAll: () => void;
   loading?: boolean;
-  t: (key: string, fallback?: string) => string;
-  paidLookup?: Record<string, { paid: boolean; reference?: string }>; // keyed by bill_no
-  onReceipt?: (bill_no: string, reference?: string) => void;
+  t: (k: string, d?: string) => string;
+  paidLookup: Record<string, { paid: boolean; reference?: string }>;
+  onReceipt: (bill_no: string, reference?: string) => void;
 };
 
-export default function AssessmentBillsTable({ bills, selectedIds, onToggle, onToggleAll, loading = false, t, paidLookup, onReceipt }: Props) {
-  const totalSelected = bills
-    .filter((b) => selectedIds.has(b.id))
-    .reduce((sum, b) => sum + (Number(b.amount) || 0), 0);
+const fmtRM = (n: number) => `RM ${Number(n || 0).toFixed(2)}`;
+const fmtISO = (d?: string) => {
+  if (!d) return '-';
+  const dt = new Date(d);
+  return isNaN(dt.getTime()) ? d : dt.toISOString().split('T')[0];
+};
+const isOverdue = (d?: string) => {
+  const t = new Date().setHours(0,0,0,0);
+  const dd = new Date(d || '').setHours(0,0,0,0);
+  return !isNaN(dd) && dd < t;
+};
 
-  const formatDMY = (val?: string) => {
-    if (!val) return '-';
-    // Try Date parser first
-    const d = new Date(val);
-    if (!isNaN(d.getTime())) {
-      const dd = String(d.getDate()).padStart(2, '0');
-      const mm = String(d.getMonth() + 1).padStart(2, '0');
-      const yyyy = d.getFullYear();
-      return `${dd}/${mm}/${yyyy}`;
-    }
-    // Manual ISO yyyy-mm-dd
-    const m1 = val.match(/^(\d{4})-(\d{1,2})-(\d{1,2})$/);
-    if (m1) {
-      const yyyy = m1[1];
-      const mm = m1[2].padStart(2, '0');
-      const dd = m1[3].padStart(2, '0');
-      return `${dd}/${mm}/${yyyy}`;
-    }
-    return '-';
-  };
+const AssessmentBillsTable: React.FC<Props> = ({
+  bills, selectedIds, onToggle, onToggleAll, loading, t, paidLookup, onReceipt,
+}) => {
 
-  return (
-    <>
-      {/* Actions */}
-      <div className="flex items-center justify-between mb-3">
-        <div className="flex items-center gap-3">
-          <label className="inline-flex items-center gap-2 text-sm">
-            <input
-              type="checkbox"
-              checked={selectedIds.size === bills.length && bills.length > 0}
-              onChange={onToggleAll}
-              className="h-4 w-4"
-            />
-            {t('assessment.selectAll', 'Select all')}
-          </label>
-          <span className="text-sm text-gray-600">
-            {t('assessment.selected', 'Selected')}: {selectedIds.size}
-          </span>
-        </div>
-        <div className="text-sm font-medium">
-          {t('assessment.total', 'Total')}: RM {totalSelected.toFixed(2)}
-        </div>
-      </div>
-
-      {/* Bills table */}
-      <div className="overflow-x-auto rounded border border-gray-200">
-        <table className="min-w-full text-xs sm:text-sm table-auto">
-          <thead className="bg-gray-50">
-            <tr>
-              <th className="p-2 w-10"></th>
-              <th className="p-2 text-left whitespace-nowrap w-[140px]">{t('assessment.billNo', 'Bill No')}</th>
-              <th className="p-2 text-left min-w-[220px] max-w-[420px]">{t('assessment.desc', 'Description')}</th>
-              <th className="p-2 text-left whitespace-nowrap w-[120px]">{t('assessment.dueDate', 'Due Date')}</th>
-              <th className="p-2 text-right whitespace-nowrap w-[120px]">{t('assessment.amount', 'Amount')}</th>
-              {paidLookup && (<th className="p-2 text-right whitespace-nowrap w-[120px]">{t('assessment.actions', 'Actions')}</th>)}
-            </tr>
-          </thead>
-          <tbody>
-            {bills.map((b) => (
-              <tr key={String(b.id)} className="border-t">
-                <td className="p-2 text-center">
-                  {(() => {
-                    const paid = paidLookup?.[b.bill_no || '']?.paid;
-                    return (
-                      <input
-                    type="checkbox"
-                    className="h-4 w-4"
-                    checked={selectedIds.has(b.id)}
-                        onChange={() => { if (!paid) onToggle(b.id); }}
-                        disabled={paid}
-                      />
-                    );
-                  })()}
-                </td>
-                <td className="p-2 font-medium truncate max-w-[140px]" title={b.bill_no}>
-                  <div className="flex items-center gap-2">
-                    <span className="truncate" style={{ maxWidth: '100%' }}>{b.bill_no}</span>
-                    {paidLookup?.[b.bill_no || '']?.paid && (
-                      <span className="inline-flex items-center rounded-full bg-green-50 text-green-700 border border-green-200 px-2 py-0.5 text-[10px]">Paid</span>
-                    )}
-                  </div>
-                </td>
-                <td className="p-2 align-top">
-                  <div
-                    className="text-[11px] sm:text-xs leading-snug line-clamp-2 whitespace-normal break-words"
-                    title={b.description || '-'}
-                    style={{ display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical' }}
-                  >
-                    {b.description || '-'}
-                  </div>
-                </td>
-                <td className="p-2">{formatDMY(b.due_date)}</td>
-                <td className="p-2 text-right">RM {Number(b.amount || 0).toFixed(2)}</td>
-                {paidLookup && (
-                  <td className="p-2 text-right">
-                    {paidLookup?.[b.bill_no || '']?.paid ? (
-                      <button
-                        type="button"
-                        onClick={() => onReceipt?.(b.bill_no, paidLookup?.[b.bill_no || '']?.reference)}
-                        className="inline-flex items-center px-2 py-1 rounded border text-[11px] hover:bg-gray-50"
-                      >
-                        Receipt
-                      </button>
-                    ) : (
-                      <span className="text-[11px] text-gray-400">-</span>
-                    )}
-                  </td>
-                )}
-              </tr>
-            ))}
-            {bills.length === 0 && !loading && (
-              <tr>
-                <td className="p-3 text-center text-gray-500" colSpan={paidLookup ? 6 : 5}>
-                  {t('assessment.noData', 'No outstanding bills')}
-                </td>
-              </tr>
-            )}
-          </tbody>
-        </table>
-      </div>
-    </>
+  const allSelectable = useMemo(
+    () => bills.filter(b => !(b.bill_no && paidLookup[b.bill_no]?.paid)),
+    [bills, paidLookup]
   );
-}
+  const allSelected = useMemo(
+    () => allSelectable.length > 0 && allSelectable.every(b => selectedIds.has(b.id)),
+    [allSelectable, selectedIds]
+  );
+
+return (
+  <div className="bg-white shadow rounded-lg p-4">
+    {/* Desktop / Tablet table */}
+    <div className="hidden md:block">
+      <Table className="w-full">
+        <TableCaption className="sr-only">
+          {t('assessment.tableCaption', 'Outstanding assessment tax bills')}
+        </TableCaption>
+        <TableHeader>
+          <TableRow>
+            {/* Merge checkbox into the first column header */}
+            <TableHead className="w-[34%]">
+              <div className="flex items-center gap-2">
+                <input
+                  type="checkbox"
+                  aria-label={t('assessment.selectAll', 'Select all')}
+                  checked={allSelected}
+                  onChange={onToggleAll}
+                  disabled={loading || allSelectable.length === 0}
+                  className="h-4 w-4 accent-[#00A7A6]"
+                />
+                <span>{t('assessment.colAccount', 'Account / Description')}</span>
+              </div>
+            </TableHead>
+            <TableHead className="w-[20%]">{t('assessment.colBill', 'Bill No.')}</TableHead>
+            <TableHead className="w-[16%]">{t('assessment.colDue', 'Due Date')}</TableHead>
+            <TableHead className="w-[16%]">{t('assessment.colAmount', 'Amount')}</TableHead>
+            <TableHead className="text-right">{t('assessment.colAction', 'Action')}</TableHead>
+          </TableRow>
+        </TableHeader>
+
+        <TableBody>
+          {bills.map((b) => {
+            const paid = b.bill_no && paidLookup[b.bill_no]?.paid;
+            const selected = selectedIds.has(b.id);
+            const disabled = paid || Number(b.amount) <= 0;
+
+            return (
+              <TableRow key={b.id}>
+                {/* Checkbox aligned with text in same cell */}
+                <TableCell className="font-medium">
+                  <div className="flex items-start gap-3">
+                    <input
+                      type="checkbox"
+                      aria-label={t('assessment.selectBill', 'Select bill')}
+                      checked={selected}
+                      onChange={() => onToggle(b.id)}
+                      disabled={disabled}
+                      className="mt-0.5 h-4 w-4 accent-[#00A7A6]"
+                    />
+                    <div className="min-w-0">
+                      <div className="truncate">
+                        {b.description || t('assessment.unknown', 'Unknown')}
+                      </div>
+                      <div
+                        className={`text-xs mt-1 ${
+                          isOverdue(b.due_date) ? 'text-red-600 font-semibold' : 'text-gray-500'
+                        }`}
+                      >
+                        {t('assessment.due', 'Due')}: {fmtISO(b.due_date)}
+                        {isOverdue(b.due_date) && (
+                          <span className="ml-2 inline-block rounded bg-red-100 text-red-700 px-1.5 py-0.5 text-[10px]">
+                            {t('assessment.overdue', 'Overdue')}
+                          </span>
+                        )}
+                      </div>
+                    </div>
+                  </div>
+                </TableCell>
+
+                <TableCell className="text-gray-700">{b.bill_no || '-'}</TableCell>
+                <TableCell className="text-gray-700">{fmtISO(b.due_date)}</TableCell>
+                <TableCell className={`font-semibold ${paid ? 'text-emerald-600' : 'text-gray-900'}`}>
+                  {fmtRM(b.amount)}
+                </TableCell>
+                <TableCell className="text-right">
+                  {paid ? (
+                    <button
+                      type="button"
+                      onClick={() => onReceipt(b.bill_no!, paidLookup[b.bill_no!]?.reference)}
+                      className="inline-flex items-center justify-center px-3 h-10 rounded-md bg-indigo-600 text-white text-sm font-medium hover:opacity-90"
+                    >
+                      {t('assessment.receipt', 'Receipt')}
+                    </button>
+                  ) : (
+                    <button
+                      type="button"
+                      onClick={() => onToggle(b.id)}
+                      disabled={disabled}
+                      className="inline-flex items-center justify-center px-3 h-10 rounded-md bg-[#00A7A6] text-white text-sm font-medium hover:opacity-90 disabled:opacity-50"
+                    >
+                      {selected ? t('assessment.remove', 'Remove') : t('assessment.select', 'Select')}
+                    </button>
+                  )}
+                </TableCell>
+              </TableRow>
+            );
+          })}
+        </TableBody>
+
+        {bills.length > 0 && (
+          <TableFooter>
+            <TableRow>
+              <TableCell colSpan={5}>
+                <div className="text-xs text-gray-500">
+                  {t('assessment.footer', 'Select items to add to your checkout. Paid items are disabled.')}
+                </div>
+              </TableCell>
+            </TableRow>
+          </TableFooter>
+        )}
+      </Table>
+    </div>
+
+    {/* Mobile card list */}
+    <div className="md:hidden space-y-3">
+      {bills.length === 0 ? (
+        <p className="text-sm text-gray-500 text-center py-4">
+          {t('assessment.noBills', 'No bills available at the moment.')}
+        </p>
+      ) : (
+        bills.map((b) => {
+          const paid = b.bill_no && paidLookup[b.bill_no]?.paid;
+          const selected = selectedIds.has(b.id);
+          const disabled = paid || Number(b.amount) <= 0;
+
+          return (
+            <div key={b.id} className="border rounded-lg p-4">
+              {/* align checkbox with text on the left */}
+              <div className="flex items-start gap-3">
+                <input
+                  type="checkbox"
+                  aria-label={t('assessment.selectBill', 'Select bill')}
+                  checked={selected}
+                  onChange={() => onToggle(b.id)}
+                  disabled={disabled}
+                  className="mt-0.5 h-4 w-4 accent-[#00A7A6]"
+                />
+
+                <div className="flex-1 min-w-0">
+                  {/* line 1 */}
+                  <div className="text-sm font-semibold text-gray-900 truncate">
+                    {b.description || t('assessment.unknown', 'Unknown')}
+                    {b.bill_no ? ` - ${b.bill_no}` : ''}
+                  </div>
+                  {/* line 2 */}
+                  <div
+                    className={`text-xs mt-1 ${
+                      isOverdue(b.due_date) ? 'text-red-600 font-semibold' : 'text-gray-500'
+                    }`}
+                  >
+                    {t('assessment.due', 'Due')}: {fmtISO(b.due_date)}
+                    {isOverdue(b.due_date) && (
+                      <span className="ml-2 inline-block rounded bg-red-100 text-red-700 px-1.5 py-0.5 text-[10px]">
+                        {t('assessment.overdue', 'Overdue')}
+                      </span>
+                    )}
+                  </div>
+                  {/* line 3 */}
+                  <div
+                    className={`text-xs mt-1 ${
+                      paid ? 'text-emerald-600 font-semibold' : 'text-gray-700 font-semibold'
+                    }`}
+                  >
+                    {t('assessment.amount', 'Amount')}: {fmtRM(b.amount)}
+                  </div>
+                </div>
+              </div>
+
+              <div className="mt-3">
+                {paid ? (
+                  <button
+                    type="button"
+                    onClick={() => onReceipt(b.bill_no!, paidLookup[b.bill_no!]?.reference)}
+                    className="inline-flex items-center justify-center px-3 h-11 rounded-md bg-indigo-600 text-white text-sm font-medium hover:opacity-90 w-full"
+                  >
+                    {t('assessment.receipt', 'Receipt')}
+                  </button>
+                ) : (
+                  <button
+                    type="button"
+                    onClick={() => onToggle(b.id)}
+                    disabled={disabled}
+                    className="inline-flex items-center justify-center px-3 h-11 rounded-md bg-[#00A7A6] text-white text-sm font-medium hover:opacity-90 disabled:opacity-50 w-full"
+                  >
+                    {selected ? t('assessment.remove', 'Remove') : t('assessment.select', 'Select')}
+                  </button>
+                )}
+              </div>
+            </div>
+          );
+        })
+      )}
+    </div>
+  </div>
+);
+};
+
+export default AssessmentBillsTable;
