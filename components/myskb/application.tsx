@@ -61,6 +61,8 @@ const Application: React.FC = () => {
   }, [projects, drafts]);
 
   const filteredProjects = useMemo(() => {
+    const currentUserIdStr = (typeof window !== 'undefined' ? localStorage.getItem('userId') : undefined) || '';
+    const currentUserId = Number(currentUserIdStr);
     if (currentTab === 'Draft') {
       return drafts.map((d) => ({
         id: d.id,
@@ -70,13 +72,25 @@ const Application: React.FC = () => {
       }));
     }
     // Build items from backend projects
-    const items = (projects || []).map((p) => ({
-      id: p.id,
-      name: p.name || p.projectTitle || p.title || `#${p.id}`,
-      status: p.status || p.applicationStatus || p.statusName || p.currentStatus || 'Submitted',
-      createdAt: p.created_at || p.createdAt,
-      ...p,
-    }));
+    const items = (projects || []).map((p) => {
+      const ownerUserId = Number(p.userId ?? p.ownerUserId ?? p.createdBy ?? p.created_by);
+      const submittedByConsultant = !Number.isNaN(currentUserId) && !Number.isNaN(ownerUserId) && ownerUserId > 0 && currentUserId !== ownerUserId;
+      const coOwnersRaw = p.owners_user_ids ?? p.ownersUserIds ?? p.coOwners ?? p.co_owners;
+      const coOwners: number[] | undefined = Array.isArray(coOwnersRaw)
+        ? coOwnersRaw.map((x: any) => Number(x)).filter((n: any) => !Number.isNaN(n))
+        : (typeof coOwnersRaw === 'string'
+            ? coOwnersRaw.split(',').map((t: string) => Number(t.trim())).filter((n: any) => !Number.isNaN(n))
+            : undefined);
+      return ({
+        id: p.id,
+        name: p.name || p.projectTitle || p.title || `#${p.id}`,
+        status: p.status || p.applicationStatus || p.statusName || p.currentStatus || 'Submitted',
+        createdAt: p.created_at || p.createdAt,
+        submittedByConsultant,
+        coOwners,
+        ...p,
+      });
+    });
     if (currentTab === 'All') return items;
     const wanted = currentTab.toLowerCase();
     return items.filter((it) => String(it.status || '').toLowerCase() === wanted);
@@ -107,7 +121,9 @@ const Application: React.FC = () => {
               router.push(`/myskb/project?draft_id=${encodeURIComponent(id)}`);
               return;
             }
-            // Default: do nothing or navigate to a project view if available later
+            // Navigate to submitted project detail
+            const id = typeof item.id === 'string' ? item.id : String(item.id);
+            router.push(`/myskb/project/${encodeURIComponent(id)}`);
           }}
         />
       </LayoutWithoutSidebar>

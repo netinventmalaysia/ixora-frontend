@@ -470,9 +470,9 @@ export interface MySkbAccess {
 }
 
 // Query which tabs the current user is allowed to see in MySKB
-export const getMySkbAccess = async (): Promise<MySkbAccess> => {
+export const getMySkbAccess = async (params?: { business_id?: number }): Promise<MySkbAccess> => {
     try {
-        const { data } = await api.get('/myskb/ownership/access');
+        const { data } = await api.get('/myskb/ownership/access', { params });
         return data;
     } catch (e) {
         // Fallback: read local override if set for testing
@@ -734,7 +734,14 @@ const sanitizeProjectPayload = (src: ProjectFormPayload) => {
         'processingFees',
     ]);
     for (const [k, v] of Object.entries(src || {})) {
-        if (k === 'business_id' || k === 'businessId' || k === 'owner_id' || k === 'ownerId' || k === 'draft') continue; // handled separately
+        // handled separately or must remain top-level
+        if (
+            k === 'business_id' || k === 'businessId' ||
+            k === 'owner_id' || k === 'ownerId' ||
+            k === 'draft' ||
+            k === 'owners_user_ids' || k === 'ownersUserIds' ||
+            k === 'useDraft' || k === 'draft_id' || k === 'draftId'
+        ) continue;
         if (v === '' || v === undefined || v === null) continue;
         if (numericKeys.has(k)) {
             const n = Number(v);
@@ -757,9 +764,32 @@ export const saveProjectDraft = async (payload: ProjectFormPayload, opts: { draf
     }
     const ownerIdRaw = (payload as any)?.owner_id ?? (payload as any)?.ownerId;
     const owner_id = ownerIdRaw !== undefined ? Number(ownerIdRaw) : undefined;
+    const ownersRaw = (payload as any)?.owners_user_ids ?? (payload as any)?.ownersUserIds;
+    const normalizeOwners = (raw: any): number[] | undefined => {
+        if (raw === undefined || raw === null || raw === '') return undefined;
+        if (Array.isArray(raw)) {
+            const arr = raw.map((x) => Number(typeof x === 'string' ? x.trim() : x)).filter((n) => !Number.isNaN(n));
+            return arr.length ? arr : undefined;
+        }
+        if (typeof raw === 'string') {
+            const s = raw.trim();
+            try {
+                const parsed = JSON.parse(s);
+                if (Array.isArray(parsed)) {
+                    const arr = parsed.map((x: any) => Number(typeof x === 'string' ? x.trim() : x)).filter((n: any) => !Number.isNaN(n));
+                    return arr.length ? arr : undefined;
+                }
+            } catch { }
+            const arr = s.split(',').map((t) => Number(t.trim())).filter((n) => !Number.isNaN(n));
+            return arr.length ? arr : undefined;
+        }
+        return undefined;
+    };
     const cleaned = sanitizeProjectPayload(payload);
     const body: any = { business_id, data: cleaned };
     if (!Number.isNaN(owner_id!) && owner_id !== undefined) body.data.owner_id = owner_id;
+    const owners_user_ids = normalizeOwners(ownersRaw);
+    if (owners_user_ids) body.owners_user_ids = owners_user_ids;
     const draftId = opts?.draftId;
     if (draftId !== undefined && draftId !== null && String(draftId).length > 0) {
         try {
@@ -784,9 +814,32 @@ export const submitProject = async (payload: ProjectFormPayload, opts: { draftId
     }
     const ownerIdRaw = (payload as any)?.owner_id ?? (payload as any)?.ownerId;
     const owner_id = ownerIdRaw !== undefined ? Number(ownerIdRaw) : undefined;
+    const ownersRaw = (payload as any)?.owners_user_ids ?? (payload as any)?.ownersUserIds;
+    const normalizeOwners = (raw: any): number[] | undefined => {
+        if (raw === undefined || raw === null || raw === '') return undefined;
+        if (Array.isArray(raw)) {
+            const arr = raw.map((x) => Number(typeof x === 'string' ? x.trim() : x)).filter((n) => !Number.isNaN(n));
+            return arr.length ? arr : undefined;
+        }
+        if (typeof raw === 'string') {
+            const s = raw.trim();
+            try {
+                const parsed = JSON.parse(s);
+                if (Array.isArray(parsed)) {
+                    const arr = parsed.map((x: any) => Number(typeof x === 'string' ? x.trim() : x)).filter((n: any) => !Number.isNaN(n));
+                    return arr.length ? arr : undefined;
+                }
+            } catch { }
+            const arr = s.split(',').map((t) => Number(t.trim())).filter((n) => !Number.isNaN(n));
+            return arr.length ? arr : undefined;
+        }
+        return undefined;
+    };
     const cleaned = sanitizeProjectPayload(payload);
     const body: any = { business_id, useDraft: false, data: cleaned };
     if (!Number.isNaN(owner_id!) && owner_id !== undefined) body.data.owner_id = owner_id;
+    const owners_user_ids = normalizeOwners(ownersRaw);
+    if (owners_user_ids) body.owners_user_ids = owners_user_ids;
     const draftId = opts?.draftId;
     if (draftId !== undefined && draftId !== null && String(draftId).length > 0) {
         // Prefer dedicated submit endpoint for an existing draft if available
@@ -913,6 +966,23 @@ export const listProjects = async (params: ProjectListParams = {}): Promise<Proj
         // Fallback: return empty list on failure
         return { data: [] };
     }
+};
+
+// Get a single submitted/active project by id
+export const getProjectById = async (id: number | string): Promise<Record<string, any> | null> => {
+    try {
+        const { data } = await api.get(`/myskb/project/${id}`);
+        if (data && data.data && typeof data.data === 'object') return data.data;
+        if (data && typeof data === 'object') return data;
+    } catch (e) {
+        // Fallback: try to locate from list
+        try {
+            const list = await listProjects({ limit: 100, offset: 0 });
+            const found = (list.data || []).find((p) => String(p.id) === String(id));
+            if (found) return found as Record<string, any>;
+        } catch {}
+    }
+    return null;
 };
 
 // ================= PWA Push (Frontend helpers to call backend) =================

@@ -150,7 +150,17 @@ export default function ItemList({ items, statusClasses, actions = [], onItemUpd
                 <svg viewBox="0 0 2 2" className="size-0.5 fill-current">
                   <circle r={1} cx={1} cy={1} />
                 </svg>
-                
+                {/* Consultant submission hint */}
+                {item.submittedByConsultant ? (
+                  <span className="inline-flex items-center rounded-md bg-blue-50 px-2 py-0.5 text-xs font-medium text-blue-700 ring-1 ring-inset ring-blue-600/20">
+                    Submitted by consultant
+                  </span>
+                ) : null}
+                {Array.isArray(item.coOwners) && item.coOwners.length > 0 ? (
+                  <span className="truncate" title={`Co-owners: ${item.coOwners.join(', ')}`}>
+                    Co-owners: {item.coOwners.slice(0, 3).join(', ')}{item.coOwners.length > 3 ? '…' : ''}
+                  </span>
+                ) : null}
               </div>
             </div>
             <div className="flex flex-none items-center gap-x-4">
