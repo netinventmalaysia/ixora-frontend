@@ -13,7 +13,7 @@ export default function Navbar() {
 
   const nav = [
     { label: t("landing.nav.intro"), href: "#intro" },
-    { label: t("landing.nav.energy"), href: "#energy-map" },
+    // { label: t("landing.nav.energy"), href: "#energy-map" },
     { label: t("landing.nav.services"), href: "#services" },
     { label: t("landing.nav.city"), href: "#city" },
     // { label: t("landing.nav.faq"), href: "#faq" },
@@ -23,7 +23,7 @@ export default function Navbar() {
   return (
     <header className="sticky top-0 z-50 border-b border-gray-200/70 bg-white/90 backdrop-blur supports-[backdrop-filter]:bg-white/70">
       <div className="mx-auto flex h-16 max-w-screen-2xl items-center justify-between px-4 sm:px-6 lg:px-8 2xl:px-10">
-  <a href="/login" className="flex items-center gap-2">
+  <a href="/" className="flex items-center gap-2">
           <Image src="/images/logo.png" alt="IXORA MBMB" width={24} height={24} className="h-7 w-auto" priority />
           <span className="text-sm font-semibold tracking-wide text-gray-900 2xl:text-base">
             {t("landing.hero.title", "IXORA MBMB")}

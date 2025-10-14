@@ -60,8 +60,8 @@ export default function Services() {
   const visible = serviceCards.slice(0, 8); // show 6 on the right
 
   return (
-    <section id="services" className="bg-white py-16">
-      <div className="mx-auto max-w-screen-2xl px-6">
+    <section id="services" className="bg-gray-50 py-16">
+      <div className="mx-auto max-w-screen-2xl px-6 py-20">
         {/* Heading */}
         <h2 className="text-center text-3xl font-bold text-gray-900">
           {t("services.heading", "Service Modules")}

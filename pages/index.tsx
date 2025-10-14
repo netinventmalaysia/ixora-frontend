@@ -13,7 +13,7 @@ export default function HomePage() {
   return (
     <Layout>
       <Hero />
-      <DigitalEnergyMap />
+      {/* <DigitalEnergyMap /> */}
       <Services />
       <SmartCityGuide />
       <PWAInstallPrompt
