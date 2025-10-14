@@ -73,9 +73,9 @@ export default function Services() {
         {/* Two-column content */}
         <div className="mt-10 grid grid-cols-1 gap-8 lg:grid-cols-2">
           {/* LEFT: hero image */}
-          <div className="relative mx-auto w-full max-w-xl overflow-hidden rounded-2xl border bg-white shadow-sm lg:max-w-none">
+          <div className="relative mx-auto w-full max-w-xl overflow-hidden lg:max-w-none">
             <Image
-              src="/images/ixora-service-all.png"
+              src="/images/ixora-services.png"
               alt={t("services.heroAlt", "MBMB Digital Services")}
               width={600}
               height={600}
