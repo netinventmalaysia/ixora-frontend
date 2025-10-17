@@ -133,9 +133,33 @@ export default function ProfilePage() {
         router.push("/");
         return;
       }
-
-      const res: AxiosResponse<UserProfile> = await getUserProfile(userId);
-      const data = res.data;
+      const res: AxiosResponse<UserProfile | any> = await getUserProfile(userId);
+      const raw = res.data as any;
+      // Normalize potential snake_case from backend to our camelCase model
+      const data: UserProfile = {
+        id: raw.id,
+        email: raw.email,
+        firstName: raw.firstName ?? raw.first_name ?? '',
+        lastName: raw.lastName ?? raw.last_name ?? '',
+        phoneNumber: raw.phoneNumber ?? raw.phone_number,
+        identificationType: raw.identificationType ?? raw.identification_type,
+        identificationNumber: raw.identificationNumber ?? raw.identification_number ?? raw.ic,
+        dateOfBirth: raw.dateOfBirth ?? raw.date_of_birth,
+        address: raw.address,
+        role: (raw.role as any) || 'personal',
+        profilePicture: raw.profilePicture ?? raw.profile_picture,
+        bio: raw.bio,
+        isActive: raw.isActive,
+        isAccountVerified: raw.isAccountVerified,
+        isEmailVerified: raw.isEmailVerified,
+        isTwoFactorEnabled: raw.isTwoFactorEnabled,
+        city: raw.city,
+        postalcode: raw.postalcode ?? raw.postal_code,
+        country: raw.country,
+        organisation: raw.organisation,
+        companyName: raw.companyName ?? raw.company_name,
+        registrationNumber: raw.registrationNumber ?? raw.registration_number,
+      };
       setUserProfile(data);
       setAccountType(data.role);
       setIsOrganisation(data.organisation === "organisation");

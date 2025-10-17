@@ -27,9 +27,10 @@ const Application: React.FC = () => {
 
   useEffect(() => {
     let mounted = true;
+    const viewerUserId = (typeof window !== 'undefined' ? Number(localStorage.getItem('userId') || '') : NaN);
     Promise.all([
-      listProjectDrafts({ limit: 100, offset: 0 }),
-      listProjects({ limit: 100, offset: 0 }),
+      listProjectDrafts({ limit: 100, offset: 0, viewerUserId: !Number.isNaN(viewerUserId) ? viewerUserId : undefined }),
+      listProjects({ limit: 100, offset: 0, viewerUserId: !Number.isNaN(viewerUserId) ? viewerUserId : undefined }),
     ])
       .then(([draftRes, projRes]) => {
         if (!mounted) return;
@@ -91,9 +92,16 @@ const Application: React.FC = () => {
         ...p,
       });
     });
-    if (currentTab === 'All') return items;
+    // Visibility: show projects where current user is the creator OR included in owners_user_ids
+    const visible = items.filter((it) => {
+      if (Number.isNaN(currentUserId) || currentUserId <= 0) return true; // fallback: show all if unknown
+      const ownerUserId = Number(it.userId ?? it.ownerUserId ?? it.createdBy ?? it.created_by);
+      const coOwners = Array.isArray(it.coOwners) ? it.coOwners as number[] : [];
+      return ownerUserId === currentUserId || coOwners.includes(currentUserId);
+    });
+    if (currentTab === 'All') return visible;
     const wanted = currentTab.toLowerCase();
-    return items.filter((it) => String(it.status || '').toLowerCase() === wanted);
+    return visible.filter((it) => String(it.status || '').toLowerCase() === wanted);
   }, [currentTab, drafts, projects]);
 
   return (

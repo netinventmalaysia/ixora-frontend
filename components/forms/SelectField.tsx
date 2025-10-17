@@ -1,5 +1,5 @@
 import { useFormContext } from 'react-hook-form';
-import { useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 
 type Option = {
   value: string | number;
@@ -53,9 +53,28 @@ export default function SelectField({
     errors = methods.formState?.errors || {};
   }
 
-  // respect controlled value prop when provided, otherwise fall back to form/watch/local state
-  const selectedValue = value !== undefined ? value : watch(name);
+  // Are option values numeric? If so, we will cast onChange to number.
+  const isNumeric = useMemo(() => options.every((o) => typeof o.value === 'number'), [options]);
 
+  // Respect controlled value prop when provided, otherwise fall back to form/watch/local state
+  const watched = value !== undefined ? value : watch(name);
+  const selectedValueString = (watched ?? localValue ?? '') === '' ? '' : String(watched ?? localValue ?? '');
+  // Debug: log value changes for monitoring
+  useEffect(() => {
+    // eslint-disable-next-line no-console
+    console.log('SelectField value changed', { id, name, value: selectedValueString });
+  }, [id, name, selectedValueString]);
+
+  // Debug: log options metadata once
+  useEffect(() => {
+    // eslint-disable-next-line no-console
+    console.log('SelectField mount', { id, name, optionsCount: options.length, isNumeric });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+
+  // Prepare register and preserve react-hook-form's onChange
+  const reg = methods ? register(name, requiredMessage ? { required: requiredMessage } : {}) : undefined;
   return (
     <div className={`w-full ${colSpan}`}>
       <label htmlFor={id} className="block text-sm font-medium text-gray-900">
@@ -64,15 +83,21 @@ export default function SelectField({
       <div className="mt-2">
         <select
           id={id}
-          {...(methods ? register(name, requiredMessage ? { required: requiredMessage } : {}) : {})}
-          value={selectedValue ?? ''}
+          {...(reg || {})}
+          value={selectedValueString}
           onChange={(e) => {
             // when using react-hook-form, setValue will update the form state
             // otherwise, update local fallback state
+            // Invoke RHF's own onChange if present
+            try { (reg as any)?.onChange?.(e); } catch {}
+            const raw = e.target.value;
+            const nextVal = (isNumeric && raw !== '') ? Number(raw) : raw;
+            // eslint-disable-next-line no-console
+            console.log('SelectField onChange', { id, name, raw, nextVal, type: typeof nextVal, isNumeric });
             try {
-              setValue(name, e.target.value, { shouldValidate: true });
-            } catch (err) {
-              setLocalValue(e.target.value);
+              setValue(name, nextVal, { shouldValidate: true, shouldDirty: true });
+            } catch {
+              setLocalValue(nextVal);
             }
             onChange?.(e);
           }}
@@ -84,7 +109,7 @@ export default function SelectField({
             {placeholder}
           </option>
           {options.map((option) => (
-            <option key={option.value} value={option.value}>
+            <option key={String(option.value)} value={String(option.value)}>
               {option.label}
             </option>
           ))}

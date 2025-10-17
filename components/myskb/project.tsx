@@ -32,14 +32,15 @@ export default function ProjectPage({ readOnly = false, initialValues }: Project
   const [formDefaults, setFormDefaults] = useState<Record<string, any> | undefined>(undefined);
 
   // --- Helpers -------------------------------------------------------------
-  // Map selected ownership ids (owners[].owner_id) to unique user ids using lookup from /myskb/ownership
+  // Map selected owner inputs (which may be ownership ids or already user ids) to unique user ids
   const mapOwnershipsToUserIds = (owners: any[] | undefined | null): number[] => {
     if (!Array.isArray(owners) || owners.length === 0) return [];
     const ids = owners
       .map((o: any) => Number(o?.owner_id))
       .filter((n: number) => !Number.isNaN(n))
-      .map((ownershipId: number) => ownershipIdToUserId[ownershipId])
-      .filter((uid: number | undefined) => typeof uid === 'number' && !Number.isNaN(uid)) as number[];
+      // if the value matches an ownership id, map to its user_id; otherwise treat it as already a user_id
+      .map((id: number) => (ownershipIdToUserId[id] !== undefined ? ownershipIdToUserId[id] : id))
+      .filter((uid: any) => typeof uid === 'number' && !Number.isNaN(uid)) as number[];
     return Array.from(new Set(ids));
   };
 
@@ -49,7 +50,6 @@ export default function ProjectPage({ readOnly = false, initialValues }: Project
     const ownerUserIds = mapOwnershipsToUserIds(payload.owners);
     if (ownerUserIds.length > 0) {
       payload.owners_user_ids = ownerUserIds;
-      payload.user_id = ownerUserIds[0]; // primary owner = first selected owner
     }
     // Normalize buildings numeric fields
     if (Array.isArray(payload.buildings)) {
@@ -88,10 +88,10 @@ export default function ProjectPage({ readOnly = false, initialValues }: Project
     if (!selectedBusinessId) { setOwnerOptions([]); return; }
     listOwnerships({ business_id: selectedBusinessId, status: 'Approved', limit: 100, offset: 0 })
       .then(({ data }) => {
-        const opts = (data || []).map((o: any) => ({
-          value: o.id, // use ownership id as selection value
-          label: o.name || o.email,
-        }));
+        // Use user_id as the option value so the form directly captures the user id
+        const opts = (data || [])
+          .filter((o: any) => typeof o?.user_id === 'number')
+          .map((o: any) => ({ value: Number(o.user_id), label: o.name || o.email || `User #${o.user_id}` }));
         const map: Record<number, number | undefined> = {};
         (data || []).forEach((o: any) => { if (o && typeof o.id === 'number') map[o.id] = (o.user_id != null ? Number(o.user_id) : undefined); });
         setOwnerOptions(opts);
@@ -350,16 +350,11 @@ export default function ProjectPage({ readOnly = false, initialValues }: Project
   <Spacing size="lg" />
     <div className={readOnly ? 'pointer-events-none opacity-90' : ''}>
     <OwnersFieldArray ownerOptions={ownerOptions} selectedBusinessId={selectedBusinessId} readOnly={readOnly} presetOwnershipIds={(() => {
-      // Try to map owners_user_ids to ownership ids using ownershipIdToUserId map
+      // Options now use user_id values; preset directly with owners_user_ids
       const uids = (formDefaults as any)?.owners_user_ids as number[] | undefined;
       if (!Array.isArray(uids) || uids.length === 0) return undefined;
-      const set = new Set(uids.map(Number).filter((n) => !Number.isNaN(n)));
-      const ownershipIds: number[] = [];
-      Object.entries(ownershipIdToUserId).forEach(([oidStr, uid]) => {
-        const oid = Number(oidStr);
-        if (!Number.isNaN(oid) && typeof uid === 'number' && set.has(uid)) ownershipIds.push(oid);
-      });
-      return ownershipIds.length ? ownershipIds : undefined;
+      const clean = Array.from(new Set(uids.map(Number).filter((n) => !Number.isNaN(n))));
+      return clean.length ? clean : undefined;
     })()} />
     </div>
     <Spacing size="sm" />

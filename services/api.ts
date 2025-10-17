@@ -117,7 +117,39 @@ export const logoutUser = async () => {
 
 export const createUser = (userData: any) => api.post('/users', userData);
 export const getUserProfile = (userId: number) => api.get(`/users/profile/${userId}`);
-export const updateUser = (userData: any) => api.put(`/users/profile/${userData.id}`, userData);
+// Map FE camelCase fields to BE expected keys (compat for mixed contracts)
+const mapUserUpdatePayload = (userData: any) => {
+    if (!userData || typeof userData !== 'object') return userData;
+    const body: any = { ...userData };
+
+    // Duplicate critical fields with snake_case aliases commonly used by backends
+    if (userData.firstName && !('first_name' in body)) body.first_name = userData.firstName;
+    if (userData.lastName && !('last_name' in body)) body.last_name = userData.lastName;
+    if (userData.phoneNumber && !('phone_number' in body)) body.phone_number = userData.phoneNumber;
+    if (userData.dateOfBirth && !('date_of_birth' in body)) body.date_of_birth = userData.dateOfBirth;
+    if (userData.postalcode && !('postal_code' in body)) body.postal_code = userData.postalcode;
+    if (userData.companyName && !('company_name' in body)) body.company_name = userData.companyName;
+    if (userData.registrationNumber && !('registration_number' in body)) body.registration_number = userData.registrationNumber;
+
+    // Identification fields: send multiple aliases to maximize compatibility
+    const idType = userData.identificationType ?? userData.identification_type;
+    const idNumber = userData.identificationNumber ?? userData.identification_number ?? userData.ic;
+    if (idType && !('identification_type' in body)) body.identification_type = idType;
+    if (idNumber) {
+        if (!('identification_number' in body)) body.identification_number = idNumber;
+        // Some endpoints expect `ic` specifically
+        if (!('ic' in body)) body.ic = idNumber;
+    }
+
+    // Best-effort: drop undefined so we don't overwrite server values with undefined
+    Object.keys(body).forEach((k) => body[k] === undefined && delete body[k]);
+    return body;
+};
+
+export const updateUser = (userData: any) => {
+    const body = mapUserUpdatePayload(userData);
+    return api.put(`/users/profile/${userData.id}`, body);
+};
 export const createBusiness = (businessData: any) => api.post('/business', businessData);
 
 // Fetch the currently authenticated user (alternative to email search)
@@ -765,38 +797,11 @@ export const saveProjectDraft = async (payload: ProjectFormPayload, opts: { draf
     }
     const ownerIdRaw = (payload as any)?.owner_id ?? (payload as any)?.ownerId;
     const owner_id = ownerIdRaw !== undefined ? Number(ownerIdRaw) : undefined;
-    const ownersRaw = (payload as any)?.owners_user_ids ?? (payload as any)?.ownersUserIds;
-    const normalizeOwners = (raw: any): number[] | undefined => {
-        if (raw === undefined || raw === null || raw === '') return undefined;
-        if (Array.isArray(raw)) {
-            const arr = raw.map((x) => Number(typeof x === 'string' ? x.trim() : x)).filter((n) => !Number.isNaN(n));
-            return arr.length ? arr : undefined;
-        }
-        if (typeof raw === 'string') {
-            const s = raw.trim();
-            try {
-                const parsed = JSON.parse(s);
-                if (Array.isArray(parsed)) {
-                    const arr = parsed.map((x: any) => Number(typeof x === 'string' ? x.trim() : x)).filter((n: any) => !Number.isNaN(n));
-                    return arr.length ? arr : undefined;
-                }
-            } catch { }
-            const arr = s.split(',').map((t) => Number(t.trim())).filter((n) => !Number.isNaN(n));
-            return arr.length ? arr : undefined;
-        }
-        return undefined;
-    };
     const cleaned = sanitizeProjectPayload(payload);
+    // Backend DTO for drafts only accepts { business_id, data }
     const body: any = { business_id, data: cleaned };
     if (!Number.isNaN(owner_id!) && owner_id !== undefined) body.data.owner_id = owner_id;
-    // Allow explicit user_id (primary project owner) at top-level if caller provides it
-    const explicitUserIdRaw = (payload as any)?.user_id ?? (payload as any)?.userId;
-    const explicitUserId = explicitUserIdRaw !== undefined ? Number(explicitUserIdRaw) : undefined;
-    if (explicitUserId !== undefined && !Number.isNaN(explicitUserId)) {
-        body.user_id = explicitUserId;
-    }
-    const owners_user_ids = normalizeOwners(ownersRaw);
-    if (owners_user_ids) body.owners_user_ids = owners_user_ids;
+    // Do NOT send owners_user_ids or user_id on draft save — backend DTO will reject extraneous fields when whitelist is on
     const draftId = opts?.draftId;
     if (draftId !== undefined && draftId !== null && String(draftId).length > 0) {
         try {
@@ -843,36 +848,14 @@ export const submitProject = async (payload: ProjectFormPayload, opts: { draftId
         return undefined;
     };
     const cleaned = sanitizeProjectPayload(payload);
-    const body: any = { business_id, useDraft: false, data: cleaned };
+    // Backend submit DTO: { business_id, data?, owners_user_ids? }
+    const body: any = { business_id, data: cleaned };
     if (!Number.isNaN(owner_id!) && owner_id !== undefined) body.data.owner_id = owner_id;
-    // Pass primary project owner at top-level when available
-    const explicitUserIdRaw = (payload as any)?.user_id ?? (payload as any)?.userId;
-    const explicitUserId = explicitUserIdRaw !== undefined ? Number(explicitUserIdRaw) : undefined;
-    if (explicitUserId !== undefined && !Number.isNaN(explicitUserId)) {
-        body.user_id = explicitUserId;
-    }
     const owners_user_ids = normalizeOwners(ownersRaw);
     if (owners_user_ids) body.owners_user_ids = owners_user_ids;
-    const draftId = opts?.draftId;
-    if (draftId !== undefined && draftId !== null && String(draftId).length > 0) {
-        // Prefer dedicated submit endpoint for an existing draft if available
-        try {
-            const { data } = await api.post(`/myskb/project/draft/${draftId}/submit`, body, { headers: { 'Content-Type': 'application/json' } });
-            return data;
-        } catch (e) {
-            // Fallback: submit endpoint that accepts draft_id in body
-            try {
-                const { data } = await api.post('/myskb/project/submit', { ...body, draft_id: draftId, useDraft: true }, { headers: { 'Content-Type': 'application/json' } });
-                return data;
-            } catch (e2) {
-                // Last resort: rethrow the original error
-                throw e2;
-            }
-        }
-    } else {
-        const { data } = await api.post('/myskb/project/submit', body, { headers: { 'Content-Type': 'application/json' } });
-        return data;
-    }
+    // Always submit via /myskb/project/submit; backend derives user from JWT
+    const { data } = await api.post('/myskb/project/submit', body, { headers: { 'Content-Type': 'application/json' } });
+    return data;
 };
 
 // List project drafts for current user
@@ -893,25 +876,33 @@ export interface ProjectDraftListResponse {
     offset?: number;
 }
 
-export const listProjectDrafts = async (params: { limit?: number; offset?: number } = {}): Promise<ProjectDraftListResponse> => {
+export const listProjectDrafts = async (params: { limit?: number; offset?: number; viewerUserId?: number } = {}): Promise<ProjectDraftListResponse> => {
+    // Backend now requires viewerUserId in query for listing
+    let viewerUserId = params.viewerUserId;
+    if ((viewerUserId === undefined || viewerUserId === null) && typeof window !== 'undefined') {
+        const uid = localStorage.getItem('userId');
+        if (uid) viewerUserId = Number(uid);
+    }
+    if (viewerUserId === undefined || Number.isNaN(Number(viewerUserId))) {
+        // Cannot list without a viewer; return empty to avoid 400s
+        return { data: [], total: 0, limit: params.limit, offset: params.offset } as any;
+    }
     try {
-        const { data } = await api.get('/myskb/project/draft', { params });
-        if (Array.isArray(data)) return { data, total: data.length, limit: data.length, offset: 0 } as any;
-        if (data && Array.isArray(data.data)) return data as ProjectDraftListResponse;
-        return { data: [] };
-    } catch (e: any) {
-        // Fallback to generic listing endpoint with status filter if available
-        try {
-            const { data } = await api.get('/myskb/project', { params: { ...params, status: 'Draft' } });
-            if (Array.isArray(data)) return { data, total: data.length, limit: data.length, offset: 0 } as any;
-            if (data && Array.isArray(data.data)) return data as ProjectDraftListResponse;
-        } catch { }
-        return { data: [] };
+        const { data } = await api.get('/myskb/project', { params: { limit: params.limit, offset: params.offset, viewerUserId, status: 'draft' } });
+        const rows = Array.isArray(data?.data) ? data.data : (Array.isArray(data) ? data : []);
+        // Filter drafts client-side in case backend ignores status
+        const onlyDrafts = rows.filter((p: any) => (p?.status || '').toString().toLowerCase() === 'draft');
+        const total = typeof data?.total === 'number' ? data.total : onlyDrafts.length;
+        const limit = typeof data?.limit === 'number' ? data.limit : params.limit ?? onlyDrafts.length;
+        const offset = typeof data?.offset === 'number' ? data.offset : params.offset ?? 0;
+        return { data: onlyDrafts, total, limit, offset };
+    } catch {
+        return { data: [] } as any;
     }
 };
 
 // Get a single draft by id and normalize into { id, business_id, data }
-export const getProjectDraftById = async (id: number | string): Promise<{ id: number | string; business_id?: number; data: Record<string, any> }> => {
+export const getProjectDraftById = async (id: number | string, opts: { viewerUserId?: number } = {}): Promise<{ id: number | string; business_id?: number; data: Record<string, any> }> => {
     const normalize = (raw: any): { id: number | string; business_id?: number; data: Record<string, any> } => {
         if (!raw) return { id, data: {} };
         const draftId = raw.id ?? id;
@@ -930,29 +921,11 @@ export const getProjectDraftById = async (id: number | string): Promise<{ id: nu
         if (!Number.isNaN(business_id)) form.business_id = business_id;
         return { id: draftId, business_id: Number.isNaN(business_id) ? undefined : business_id, data: form };
     };
-
-    // Try primary endpoint
-    try {
-        const { data } = await api.get(`/myskb/project/draft/${id}`);
-        // Some backends wrap as { data }
-        if (data && data.data && typeof data.data === 'object') return normalize(data.data);
-        return normalize(data);
-    } catch (e) {
-        // Fallback 1: generic project by id (if drafts live together)
-        try {
-            const { data } = await api.get(`/myskb/project/${id}`);
-            if (data && data.data && typeof data.data === 'object') return normalize(data.data);
-            return normalize(data);
-        } catch {
-            // Fallback 2: list and find
-            try {
-                const list = await listProjectDrafts({ limit: 100, offset: 0 });
-                const found = (list.data || []).find((d) => String(d.id) === String(id));
-                if (found) return normalize(found);
-            } catch { }
-            return { id, data: {} };
-        }
-    }
+    // Backend no longer exposes GET /myskb/project/draft/:id; list and find instead
+    const list = await listProjectDrafts({ limit: 200, offset: 0, viewerUserId: opts.viewerUserId });
+    const found = (list.data || []).find((d) => String(d.id) === String(id));
+    if (found) return normalize(found);
+    return { id, data: {} };
 };
 
 // List submitted/active projects (non-drafts)
@@ -969,33 +942,38 @@ export interface ProjectListResponse {
     offset?: number;
 }
 
-export const listProjects = async (params: ProjectListParams = {}): Promise<ProjectListResponse> => {
+export const listProjects = async (params: ProjectListParams & { viewerUserId?: number } = {}): Promise<ProjectListResponse> => {
+    let viewerUserId = params.viewerUserId;
+    if ((viewerUserId === undefined || viewerUserId === null) && typeof window !== 'undefined') {
+        const uid = localStorage.getItem('userId');
+        if (uid) viewerUserId = Number(uid);
+    }
+    if (viewerUserId === undefined || Number.isNaN(Number(viewerUserId))) {
+        return { data: [], total: 0, limit: params.limit, offset: params.offset } as any;
+    }
     try {
-        const { data } = await api.get('/myskb/project', { params });
-        if (Array.isArray(data)) return { data, total: data.length, limit: data.length, offset: 0 } as any;
-        if (data && Array.isArray(data.data)) return data as ProjectListResponse;
-        return { data: [] };
-    } catch (e) {
-        // Fallback: return empty list on failure
+        const { data } = await api.get('/myskb/project', { params: { limit: params.limit, offset: params.offset, viewerUserId, status: params.status } });
+        const rows = Array.isArray(data?.data) ? data.data : (Array.isArray(data) ? data : []);
+        // Apply optional status filter client-side
+        const desired = params.status ? rows.filter((p: any) => {
+            const st = (p?.status || '').toString().toLowerCase();
+            if (Array.isArray(params.status)) return params.status.some((s) => st === s.toString().toLowerCase());
+            return params.status !== undefined && st === params.status.toString().toLowerCase();
+        }) : rows;
+        const total = typeof data?.total === 'number' ? data.total : desired.length;
+        const limit = typeof data?.limit === 'number' ? data.limit : params.limit ?? desired.length;
+        const offset = typeof data?.offset === 'number' ? data.offset : params.offset ?? 0;
+        return { data: desired, total, limit, offset };
+    } catch {
         return { data: [] };
     }
 };
 
 // Get a single submitted/active project by id
-export const getProjectById = async (id: number | string): Promise<Record<string, any> | null> => {
-    try {
-        const { data } = await api.get(`/myskb/project/${id}`);
-        if (data && data.data && typeof data.data === 'object') return data.data;
-        if (data && typeof data === 'object') return data;
-    } catch (e) {
-        // Fallback: try to locate from list
-        try {
-            const list = await listProjects({ limit: 100, offset: 0 });
-            const found = (list.data || []).find((p) => String(p.id) === String(id));
-            if (found) return found as Record<string, any>;
-        } catch { }
-    }
-    return null;
+export const getProjectById = async (id: number | string, opts: { viewerUserId?: number } = {}): Promise<Record<string, any> | null> => {
+    const list = await listProjects({ limit: 200, offset: 0, viewerUserId: opts.viewerUserId });
+    const found = (list.data || []).find((p) => String(p.id) === String(id));
+    return found ? (found as Record<string, any>) : null;
 };
 
 // ================= PWA Push (Frontend helpers to call backend) =================
