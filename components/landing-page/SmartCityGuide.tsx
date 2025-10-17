@@ -79,7 +79,7 @@ export default function SmartCityGuide() {
   ];
 
   return (
-    <section id="city" className="bg-gray-50 py-16">
+    <section id="city" className="bg-white py-16">
       <div className="mx-auto max-w-screen-2xl px-6 py-20">
         <h2 className="text-center text-3xl font-bold text-gray-900">
           {t("city.heading", "Panduan Bandaraya")}

@@ -14,7 +14,7 @@ export default function NavbarInner() {
       <div className="mx-auto flex h-16 max-w-screen-2xl items-center justify-between px-4 sm:px-6 lg:px-8 2xl:px-10">
         {/* Logo + Back to Main */}
         <div className="flex items-center gap-3">
-          <a href="/login" className="flex items-center gap-2">
+          <a href="/" className="flex items-center gap-2">
             <Image
               src="/images/logo.png"
               alt="IXORA MBMB"

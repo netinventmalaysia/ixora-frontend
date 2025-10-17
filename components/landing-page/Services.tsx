@@ -57,11 +57,11 @@ export default function Services() {
     { title: t("services.trishaw.title", "Trishaw Licence"), desc: t("services.trishaw.desc", "Apply & renew trishaw licences."), icon: TruckIcon, href: "#", status: "coming-soon" },
   ];
 
-  const visible = serviceCards.slice(0, 12); // show 6 on the right
+  const visible = serviceCards.slice(0, 8); // show 6 on the right
 
   return (
-    <section id="services" className="bg-white py-16">
-      <div className="mx-auto max-w-screen-2xl px-6">
+    <section id="services" className="bg-gray-50 py-16">
+      <div className="mx-auto max-w-screen-2xl px-6 py-20">
         {/* Heading */}
         <h2 className="text-center text-3xl font-bold text-gray-900">
           {t("services.heading", "Service Modules")}
@@ -73,9 +73,9 @@ export default function Services() {
         {/* Two-column content */}
         <div className="mt-10 grid grid-cols-1 gap-8 lg:grid-cols-2">
           {/* LEFT: hero image */}
-          <div className="relative mx-auto w-full max-w-xl overflow-hidden rounded-2xl border bg-white shadow-sm lg:max-w-none">
+          <div className="relative mx-auto w-full max-w-xl overflow-hidden lg:max-w-none">
             <Image
-              src="/images/ixora-service-all.png"
+              src="/images/ixora-services.png"
               alt={t("services.heroAlt", "MBMB Digital Services")}
               width={600}
               height={600}
