@@ -35,6 +35,13 @@ const MyskbPage: React.FC = () => {
     allTabs.find((t) => t.name.toLowerCase() === currentSlug.toLowerCase()) ||
     allTabs[0]
 
+  // Show banner if access is restricted to Application only
+  const isApplicationOnly = useMemo(() => {
+    if (!allowedTabs) return false
+    const list = allowedTabs.map((t) => String(t).toLowerCase())
+    return list.length === 1 && list[0] === 'application'
+  }, [allowedTabs])
+
   const handleTabChange = (t: Tab) => {
     if (lamApproved && t.name.toLowerCase() === 'registration') {
       toast.success('LAM approved. Registration is locked.')
@@ -124,6 +131,13 @@ const MyskbPage: React.FC = () => {
   return (
     <SidebarLayout>
         <Tabs tabs={allTabs} currentTab={currentTab.name} onTabChange={handleTabChange} />
+        {isApplicationOnly && (
+          <div className="mt-3 rounded-md border border-amber-300 bg-amber-50 p-3 text-amber-900 text-sm">
+            You currently have Application-only access. Other MySKB features are hidden.
+            To get full access (Home, Registration, Ownership, Project), your organisation must have an approved LAM registration.
+            If you are a business owner, submit your LAM details under your account. If not, please ask a consultant with an approved LAM to manage your application.
+          </div>
+        )}
         <div className="mt-4">
           {renderContent()}
         </div>

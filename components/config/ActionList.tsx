@@ -4,6 +4,11 @@ export const RegistrationApplicationActions = [
         onClick: (item : any) => console.log('Edit', item),
     },
     {
+        label: 'Set as default',
+        // Handling is centralized in ItemList; this onClick is optional for external hooks
+        onClick: (item: any) => console.log('Set as default', item?.id),
+    },
+    {
         label: 'Withdraw',
         onClick: (item : any) => console.log(`Withdraw ${item.name}`),
     },

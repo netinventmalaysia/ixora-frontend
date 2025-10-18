@@ -111,6 +111,26 @@ export default function ItemList({ items, statusClasses, actions = [], onItemUpd
     }
   };
 
+  // Read default business id once on client to render a badge
+  const getActiveBusinessId = (): number | null => {
+    if (typeof window === 'undefined') return null;
+    try { const v = localStorage.getItem('activeBusinessId'); return v ? Number(v) : null; } catch { return null; }
+  };
+  const activeId = getActiveBusinessId();
+
+  const setAsDefault = (item: Item) => {
+    try {
+      if (typeof window !== 'undefined') {
+        localStorage.setItem('activeBusinessId', String(item.id));
+        // optional: remember label too for quick display elsewhere
+        const label = (item.name || (item as any).companyName || `#${item.id}`) as string;
+        localStorage.setItem('activeBusinessName', label);
+        // notify other components in same tab
+        window.dispatchEvent(new Event('ixora:businessChange'));
+      }
+    } catch {}
+  };
+
   return (
     <>
       <ul role="list" className="divide-y divide-gray-100">
@@ -118,7 +138,14 @@ export default function ItemList({ items, statusClasses, actions = [], onItemUpd
           <li key={item.id} className="flex items-center justify-between gap-x-6 py-5">
             <div className="min-w-0">
               <div className="flex items-start gap-x-3">
-                <p className="text-sm/6 font-semibold text-gray-900">{item.name ?? item.companyName ?? `#${item.id}`}</p>
+                <p className="text-sm/6 font-semibold text-gray-900 flex items-center gap-2">
+                  <span>{item.name ?? item.companyName ?? `#${item.id}`}</span>
+                  {activeId !== null && Number(activeId) === Number(item.id) ? (
+                    <span className="inline-flex items-center rounded-md bg-emerald-50 px-1.5 py-0.5 text-[10px] font-medium text-emerald-700 ring-1 ring-inset ring-emerald-600/20">
+                      Default
+                    </span>
+                  ) : null}
+                </p>
                 <p
                   className={classNames(
                     (() => {
@@ -190,6 +217,8 @@ export default function ItemList({ items, statusClasses, actions = [], onItemUpd
                               handleEdit(item);
                             } else if (action.label.toLowerCase() === 'withdraw') {
                               requestWithdraw(item);
+                            } else if (action.label.toLowerCase() === 'set as default') {
+                              setAsDefault(item);
                             }
                             action.onClick?.(item);
                           }}

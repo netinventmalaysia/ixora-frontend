@@ -43,6 +43,30 @@ export default function LoginPage() {
         setSelectedBusiness(pick || null);
     }, [selectedBusinessId, businesses]);
 
+    // Preselect default business from localStorage
+    useEffect(() => {
+        try {
+            if (typeof window !== 'undefined' && selectedBusinessId == null) {
+                const saved = localStorage.getItem('activeBusinessId');
+                if (saved) {
+                    const id = Number(saved);
+                    if (!Number.isNaN(id)) setSelectedBusinessId(id);
+                }
+            }
+        } catch {}
+        const onChange = () => {
+            try {
+                const saved = typeof window !== 'undefined' ? localStorage.getItem('activeBusinessId') : null;
+                if (saved) {
+                    const id = Number(saved);
+                    if (!Number.isNaN(id)) setSelectedBusinessId(id);
+                }
+            } catch {}
+        };
+        if (typeof window !== 'undefined') window.addEventListener('ixora:businessChange', onChange as EventListener);
+        return () => { if (typeof window !== 'undefined') window.removeEventListener('ixora:businessChange', onChange as EventListener); };
+    }, [selectedBusinessId]);
+
     const handleSubmit = async (data: any) => {
         try {
             setLoading(true);
@@ -87,7 +111,16 @@ export default function LoginPage() {
                         label: `${b.name || b.companyName || b.company_name || 'Business'}${(b.registrationNumber || b.registration_number) ? ` • ${b.registrationNumber || b.registration_number}` : ''}`
                     }))}
                     requiredMessage="Business is required"
-                    onChange={(e) => setSelectedBusinessId(Number(e.target.value))}
+                    onChange={(e) => {
+                        const id = Number(e.target.value);
+                        setSelectedBusinessId(id);
+                        try {
+                            if (typeof window !== 'undefined') {
+                                localStorage.setItem('activeBusinessId', String(id));
+                                window.dispatchEvent(new Event('ixora:businessChange'));
+                            }
+                        } catch {}
+                    }}
                 />
                 <Spacing size="md" />
 

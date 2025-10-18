@@ -134,11 +134,42 @@ export default function Billing() {
                         label: biz.name || biz.companyName || `#${biz.id}`,
                     }));
                 setBusinessOptions(options);
+                // Preselect default if exists and present in options
+                try {
+                    const saved = typeof window !== 'undefined' ? localStorage.getItem('activeBusinessId') : null;
+                    if (saved) {
+                        const id = Number(saved);
+                        if (!Number.isNaN(id) && options.some(o => Number(o.value) === id)) {
+                            setBusinessId(id);
+                        }
+                    }
+                } catch {}
             })
             .catch((err) => {
                 console.error('Failed to fetch businesses for billing select', err);
                 toast.error('Failed to load your businesses');
             });
+    }, []);
+
+    // React to default business changes across the app
+    useEffect(() => {
+        const handler = () => {
+            try {
+                const saved = typeof window !== 'undefined' ? localStorage.getItem('activeBusinessId') : null;
+                if (saved) {
+                    const id = Number(saved);
+                    if (!Number.isNaN(id)) setBusinessId(id);
+                }
+            } catch {}
+        };
+        if (typeof window !== 'undefined') {
+            window.addEventListener('ixora:businessChange', handler as EventListener);
+        }
+        return () => {
+            if (typeof window !== 'undefined') {
+                window.removeEventListener('ixora:businessChange', handler as EventListener);
+            }
+        };
     }, []);
 
     // Fetch billings when a business is selected
