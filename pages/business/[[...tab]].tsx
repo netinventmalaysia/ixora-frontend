@@ -31,6 +31,26 @@ const BusinessPage: React.FC = () => {
 
   // Dynamic Billing badge: count of current billings (no business filter here; page-level/global)
   const [billingCount, setBillingCount] = useState<number | undefined>(undefined);
+  // Whether the current user has at least one registered business (controls visibility of some tabs)
+  const [hasBusinesses, setHasBusinesses] = useState<boolean | null>(null);
+
+  // Load user's businesses once to decide whether to show Team/Billing tabs
+  useEffect(() => {
+    let cancelled = false;
+    fetchMyBusinesses()
+      .then((data) => {
+        if (cancelled) return;
+        const list = Array.isArray((data as any)?.data)
+          ? (data as any).data
+          : (Array.isArray(data) ? (data as any) : []);
+        setHasBusinesses(list.length > 0);
+      })
+      .catch(() => setHasBusinesses(false));
+    return () => {
+      cancelled = true;
+    };
+  }, []);
+
   useEffect(() => {
     fetchBillingsWithBusinessId(undefined)
       .then((data) => {
@@ -40,7 +60,14 @@ const BusinessPage: React.FC = () => {
       .catch(() => setBillingCount(undefined));
   }, []);
 
-  const tabs: Tab[] = businessTabs.map((t) => {
+  // Hide Team & Billing tabs if the user has no registered businesses
+  const visibleTabs = businessTabs.filter((t) => {
+    const key = t.name.toLowerCase();
+    if (hasBusinesses === false && (key === 'team' || key === 'billing')) return false;
+    return true;
+  });
+
+  const tabs: Tab[] = visibleTabs.map((t) => {
   const key = t.name.toLowerCase();
 
   if (['application'].includes(key)) {
@@ -66,6 +93,19 @@ const BusinessPage: React.FC = () => {
     const slug = t.name.toLowerCase();
     router.push(`/business/${encodeURIComponent(slug)}`, undefined, { shallow: true });
   };
+
+  // If user has no businesses and is on a hidden tab (team/billing), redirect to the first visible tab
+  useEffect(() => {
+    if (hasBusinesses === false) {
+      const forbidden = new Set(['team', 'billing']);
+      if (forbidden.has(String(currentSlug).toLowerCase())) {
+        const fallback = tabs[0]?.name?.toLowerCase() || 'home';
+        if (fallback && fallback !== String(currentSlug).toLowerCase()) {
+          router.replace(`/business/${encodeURIComponent(fallback)}`, undefined, { shallow: true });
+        }
+      }
+    }
+  }, [hasBusinesses, currentSlug, router, tabs]);
 
   // If route is numeric like /business/123, open the edit dialog with that ID
   useEffect(() => {
