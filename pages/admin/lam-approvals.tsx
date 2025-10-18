@@ -52,7 +52,8 @@ export default function LamApprovalsPage() {
 
   const onApprove = async (b: any) => {
     try {
-      await verifyLam(b.id, 'Approved');
+      const reason = window.prompt('Approval note (optional):', '') || undefined;
+      await verifyLam(b.id, 'Approved', reason);
       toast.success('Approved');
       fetchData();
     } catch (e) {
@@ -61,7 +62,8 @@ export default function LamApprovalsPage() {
   };
   const onReject = async (b: any) => {
     try {
-      await verifyLam(b.id, 'Rejected');
+      const reason = window.prompt('Please provide a rejection reason:', '') || undefined;
+      await verifyLam(b.id, 'Rejected', reason);
       toast.success('Rejected');
       fetchData();
     } catch (e) {
@@ -98,6 +100,7 @@ export default function LamApprovalsPage() {
               <TableHead>LAM No.</TableHead>
               <TableHead>LAM Document</TableHead>
               <TableHead>Status</TableHead>
+              <TableHead>Reason</TableHead>
               <TableHead>Updated</TableHead>
               <TableHead className="text-right">Actions</TableHead>
             </TableRow>
@@ -122,6 +125,7 @@ export default function LamApprovalsPage() {
                   )}
                 </TableCell>
                 <TableCell>{b.lamStatus || '-'}</TableCell>
+                <TableCell className="max-w-[240px] truncate" title={b.lamStatusReason || b.lam_status_reason || ''}>{b.lamStatusReason || b.lam_status_reason || '-'}</TableCell>
                 <TableCell>{b.updatedAt || b.updated_at || '-'}</TableCell>
                 <TableCell className="text-right">
                   <div className="inline-flex items-center gap-2">

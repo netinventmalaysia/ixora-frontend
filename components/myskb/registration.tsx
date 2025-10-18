@@ -34,7 +34,7 @@ export default function LoginPage() {
             if (!business) throw new Error('No business found for current user');
             // Save LAM number on business for now; backend exposes a dedicated endpoint we could call directly if desired
             const lamNumber: string = data?.aim || '';
-            const lamDocumentPath: string = data?.aimDocument || '';
+            const lamDocumentPath: string = data?.lamDocument || '';
             if (!lamNumber) throw new Error('LAM number is required');
             await submitLam(business.id, { lamNumber, lamDocumentPath });
             toast.success('LAM submitted for verification');
@@ -59,11 +59,11 @@ export default function LoginPage() {
                                         />
                                         <Spacing size="sm" />
                                         <FileUploadField
-                                            name="aimDocument"
+                                            name="lamDocument"
                                             label="LAM Document (PDF)"
                                             description="PDF up to 10MB"
                                             accept="application/pdf"
-                                            folder="myskb/aim"
+                                            folder="myskb/lam"
                                             requiredMessage="Please upload your LAM document (PDF)"
                                         />
                    
