@@ -92,16 +92,11 @@ const Application: React.FC = () => {
         ...p,
       });
     });
-    // Visibility: show projects where current user is the creator OR included in owners_user_ids
-    const visible = items.filter((it) => {
-      if (Number.isNaN(currentUserId) || currentUserId <= 0) return true; // fallback: show all if unknown
-      const ownerUserId = Number(it.userId ?? it.ownerUserId ?? it.createdBy ?? it.created_by);
-      const coOwners = Array.isArray(it.coOwners) ? it.coOwners as number[] : [];
-      return ownerUserId === currentUserId || coOwners.includes(currentUserId);
-    });
-    if (currentTab === 'All') return visible;
+    // Do not apply extra client-side visibility filtering here.
+    // Backend already respects viewerUserId; include all returned for this viewer.
+    if (currentTab === 'All') return items;
     const wanted = currentTab.toLowerCase();
-    return visible.filter((it) => String(it.status || '').toLowerCase() === wanted);
+    return items.filter((it) => String(it.status || '').toLowerCase() === wanted);
   }, [currentTab, drafts, projects]);
 
   return (
