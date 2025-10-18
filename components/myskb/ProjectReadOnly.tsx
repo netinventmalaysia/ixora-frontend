@@ -7,8 +7,6 @@ type OwnerInfo = { name?: string; email?: string; user_id?: number };
 
 type Props = {
   data: Record<string, any>;
-  businessName?: string;
-  owners?: OwnerInfo[];
 };
 
 const Field: React.FC<{ label: string; value?: React.ReactNode; colSpan?: string }> = ({ label, value, colSpan = 'sm:col-span-3' }) => (
@@ -29,25 +27,19 @@ const currency = (n: any) => {
   return `RM ${v.toFixed(2)}`;
 };
 
-const ProjectReadOnly: React.FC<Props> = ({ data, businessName, owners = [] }) => {
-  const buildings: Array<any> = Array.isArray(data?.buildings) ? data.buildings : [];
-  const ownersDisplay = owners.length
-    ? owners.map((o, i) => (
-        <div key={i} className="text-sm text-gray-900">
-          {o.name || o.email || `User #${o.user_id}`}
-        </div>
-      ))
-    : (Array.isArray(data?.owners_user_ids) && data.owners_user_ids.length
-        ? (<div className="text-sm text-gray-900">{data.owners_user_ids.join(', ')}</div>)
-        : (<div className="text-sm text-gray-500">—</div>)
-      );
+const ProjectReadOnly: React.FC<Props> = ({ data = [] as any }) => {
+  console.log('ProjectReadOnly data 123:', data);
+  const buildings: Array<any> = Array.isArray(data?.data?.buildings) ? data.data.buildings : [];
+  const ownersDisplay = data?.owners?.map((o: OwnerInfo, i: number) => (
+        <div key={i} className="text-sm text-gray-900">{o.name}</div>
+      )) || <div className="text-sm text-gray-500">—</div>; 
 
   return (
     <div className="bg-white shadow rounded-lg p-5">
       <FormSectionHeader title="Ownership Information" description="Project and owner context" />
       <div className="mt-4">
         <FormRow columns={3}>
-          <Field label="Business" value={businessName || (data?.business_id ? `#${data.business_id}` : '—')} />
+          <Field label="Business" value={(data?.business_id ? data.business.name : '—')} />
           <Field label="Project Owners" value={<div className="space-y-1">{ownersDisplay}</div>} />
         </FormRow>
       </div>
@@ -57,12 +49,12 @@ const ProjectReadOnly: React.FC<Props> = ({ data, businessName, owners = [] }) =
       <FormSectionHeader title="Project Information" description="Submitted project details" />
       <div className="mt-4">
         <FormRow columns={3}>
-          <Field label="Project Title" value={data?.projectTitle} />
-          <Field label="Country" value={data?.country} />
-          <Field label="Processing Fees" value={currency(data?.processingFees)} />
+          <Field label="Project Title" value={data?.data.projectTitle} />
+          <Field label="Country" value={data?.data.country} />
+          <Field label="Processing Fees" value={currency(data?.data.processingFees)} />
         </FormRow>
         <FormRow columns={1}>
-          <Field label="Project Address" value={formatAddress(data)} colSpan="sm:col-span-9" />
+          <Field label="Project Address" value={formatAddress(data?.data)} colSpan="sm:col-span-9" />
         </FormRow>
       </div>
 
@@ -71,12 +63,12 @@ const ProjectReadOnly: React.FC<Props> = ({ data, businessName, owners = [] }) =
       <FormSectionHeader title="Land Information" description="Submitted land details" />
       <div className="mt-4">
         <FormRow columns={3}>
-          <Field label="Subdistrict / Town / City Area" value={data?.landAddress} />
-          <Field label="Lot / Plot Number" value={data?.lotNumber} />
-          <Field label="Land Status" value={data?.landStatus} />
-          <Field label="Type of Grant" value={data?.typeGrant} />
-          <Field label="Specific Conditions" value={data?.spesificCondition} />
-          <Field label="Land Area (m2)" value={data?.landArea} />
+          <Field label="Subdistrict / Town / City Area" value={data?.data?.landAddress} />
+          <Field label="Lot / Plot Number" value={data?.data?.lotNumber} />
+          <Field label="Land Status" value={data?.data?.landStatus} />
+          <Field label="Type of Grant" value={data?.data?.typeGrant} />
+          <Field label="Specific Conditions" value={data?.data?.spesificCondition} />
+          <Field label="Land Area (m2)" value={data?.data?.landArea} />
         </FormRow>
       </div>
 
@@ -100,7 +92,7 @@ const ProjectReadOnly: React.FC<Props> = ({ data, businessName, owners = [] }) =
               <tbody className="divide-y divide-gray-100">
                 {buildings.map((b, idx) => (
                   <tr key={idx} className="bg-white">
-                    <td className="px-3 py-2 text-sm text-gray-900">{b?.name || '—'}</td>
+                    <td className="px-3 py-2 text-sm text-gray-900">{b?.buildingUse || '—'}</td>
                     <td className="px-3 py-2 text-sm text-gray-900">{Number(b?.openArea ?? 0)}</td>
                     <td className="px-3 py-2 text-sm text-gray-900">{Number(b?.closeArea ?? 0)}</td>
                     <td className="px-3 py-2 text-sm text-gray-900">{currency(b?.processingFee)}</td>

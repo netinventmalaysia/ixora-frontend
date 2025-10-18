@@ -1007,11 +1007,21 @@ export const listProjects = async (params: ProjectListParams & { viewerUserId?: 
     }
 };
 
+// Get single project by id myskb/project
+export const getProject = async (id: number | string): Promise<Record<string, any> | null> => {
+    try {
+        const { data } = await api.get(`/myskb/project/${id}`);
+        return data;
+    } catch {
+        return null;
+    }
+};
+
+
 // Get a single submitted/active project by id
 export const getProjectById = async (id: number | string, opts: { viewerUserId?: number } = {}): Promise<Record<string, any> | null> => {
-    const list = await listProjects({ limit: 200, offset: 0, viewerUserId: opts.viewerUserId });
-    const found = (list.data || []).find((p) => String(p.id) === String(id));
-    return found ? (found as Record<string, any>) : null;
+    const project = await getProject(id);
+    return project || null;
 };
 
 // ================= PWA Push (Frontend helpers to call backend) =================
