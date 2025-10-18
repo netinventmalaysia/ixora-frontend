@@ -16,6 +16,7 @@ import { useTranslation } from '@/utils/i18n';
 import SidebarNav from '@/components/main/SidebarNav';
 import { useRouter } from 'next/router';
 import Link from 'next/link';
+import { getMySkbAccess } from '@/services/api';
 // (fixed) remove duplicate import
 // Global pull-to-refresh is now applied in _app; no local wrapper here
 
@@ -57,6 +58,8 @@ export default function SidebarContent({
   const [generalNav, setGeneralNav] = useState<NavigationItem[]>([]);
   const [personalNav, setPersonalNav] = useState<NavigationItem[]>([]);
   const [bottomNav, setBottomNav] = useState<NavigationItem[]>([]);
+  // If user is a project owner (Application-only access), we reveal MySKB in Personal mode
+  const [showMySkbForProjectOwner, setShowMySkbForProjectOwner] = useState<boolean>(false);
   const { t } = useTranslation();
   const router = useRouter();
 
@@ -108,6 +111,26 @@ export default function SidebarContent({
     };
   }, []);
 
+  // Probe MySKB access to decide if a personal user (project owner) should see MySKB (Application-only)
+  useEffect(() => {
+    let cancelled = false;
+    // Only relevant in Personal mode and for non-admin roles
+    if (mode !== 'Personal') return;
+    if (localUserRole === 'guest' || localUserRole === 'admin' || localUserRole === 'superadmin') return;
+    (async () => {
+      try {
+        const access = await getMySkbAccess();
+        if (cancelled) return;
+        const tabs = Array.isArray(access?.allowedTabs) ? access.allowedTabs.map((t: any) => String(t).toLowerCase()) : [];
+        const appOnly = (tabs.length === 1 && tabs[0] === 'application') || (!!access?.projectOnly);
+        setShowMySkbForProjectOwner(appOnly);
+      } catch {
+        if (!cancelled) setShowMySkbForProjectOwner(false);
+      }
+    })();
+    return () => { cancelled = true; };
+  }, [mode, localUserRole]);
+
   useEffect(() => {
     const withCurrent = (items: NavigationItem[]) => items.map(item => ({ ...item, current: false }));
   // If guest, always show only the general application navigation
@@ -127,7 +150,10 @@ export default function SidebarContent({
       switch (localUserRole) {
         default:
           setGeneralNav(withCurrent(generalAppNavigation.map(i => ({ ...i, name: (i as any).nameKey ? t((i as any).nameKey) : (i as any).name }))));
-          setPersonalNav(withCurrent(businessEnrollmentNavigation.map(i => ({ ...i, name: (i as any).nameKey ? t((i as any).nameKey) : (i as any).name }))));
+          // Show Business Registration, and if user is a project owner with Application-only access, show MySKB too
+          const basePersonal = [...businessEnrollmentNavigation];
+          const includeMySkb = showMySkbForProjectOwner ? businessAppNavigation : [];
+          setPersonalNav(withCurrent([...basePersonal, ...includeMySkb].map(i => ({ ...i, name: (i as any).nameKey ? t((i as any).nameKey) : (i as any).name }))));
           setBottomNav(withCurrent(userNavigation.map(i => ({ ...i, name: (i as any).nameKey ? t((i as any).nameKey) : (i as any).name }))));
       }
     } else {
@@ -164,7 +190,7 @@ export default function SidebarContent({
           setBottomNav([]);
       }
     }
-  }, [mode, localUserRole]);
+  }, [mode, localUserRole, showMySkbForProjectOwner]);
 
   const toggleMode = () => {
     const newMode = mode === 'Personal' ? 'Business' : 'Personal';
