@@ -24,6 +24,7 @@ export default function LoginPage() {
 
     const [showCancelDialog, setShowCancelDialog] = useState(false);
     const [loading, setLoading] = useState(false);
+    const [submitted, setSubmitted] = useState(false);
     const [businesses, setBusinesses] = useState<any[]>([]);
     const [selectedBusinessId, setSelectedBusinessId] = useState<number | null>(null);
     const [selectedBusiness, setSelectedBusiness] = useState<any | null>(null);
@@ -54,7 +55,8 @@ export default function LoginPage() {
             const lamDocumentPath: string = data?.lamDocument || '';
             if (!lamNumber) throw new Error('LAM number is required');
             await submitLam(selectedBusiness.id, { lamNumber, lamDocumentPath });
-            toast.success('LAM submitted for verification');
+            setSubmitted(true);
+            toast.success('LAM submitted for review');
         } catch (e: any) {
             toast.error(e?.message || 'Failed to submit LAM');
         } finally {
@@ -64,7 +66,8 @@ export default function LoginPage() {
 
     return (
       <LayoutWithoutSidebar shiftY="-translate-y-0">
-            <FormWrapper onSubmit={handleSubmit}>
+                        {!submitted ? (
+                        <FormWrapper onSubmit={handleSubmit}>
                 <FormSectionHeader title="Consultant Onboard" description="This registration enables businesses to be officially recognized as consultants authorized to manage temporary building permits through the MYSKB system. It enhances their capability to oversee and coordinate building-related submissions on behalf of project owners." />
                 <Spacing size="lg" />
                 {businesses.length === 0 && (
@@ -113,7 +116,28 @@ export default function LoginPage() {
                 </FormActions>
 
 
-            </FormWrapper>
+                        </FormWrapper>
+                        ) : (
+                            <div className="max-w-2xl mx-auto bg-white border border-gray-200 rounded-lg p-6 text-center">
+                                <div className="mx-auto mb-4 h-12 w-12 rounded-full bg-green-50 border border-green-200 flex items-center justify-center">
+                                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" className="h-6 w-6 text-green-600">
+                                        <path fillRule="evenodd" d="M16.704 4.153a.75.75 0 01.143 1.052l-7 9a.75.75 0 01-1.129.06l-3-3a.75.75 0 111.06-1.06l2.39 2.389 6.48-8.325a.75.75 0 011.056-.116z" clipRule="evenodd" />
+                                    </svg>
+                                </div>
+                                <h3 className="text-xl font-semibold text-gray-900">LAM submission received</h3>
+                                <p className="mt-2 text-gray-600">Your application is waiting for review. We'll email you once we complete the review with either an approval or a rejection.</p>
+                                <div className="mt-4 text-sm text-gray-500">
+                                    <p>Business: <span className="font-medium text-gray-900">{selectedBusiness?.name || selectedBusiness?.companyName || selectedBusiness?.company_name}</span></p>
+                                    {selectedBusiness?.registrationNumber || selectedBusiness?.registration_number ? (
+                                        <p>Registration No.: <span className="font-medium text-gray-900">{selectedBusiness?.registrationNumber || selectedBusiness?.registration_number}</span></p>
+                                    ) : null}
+                                </div>
+                                <div className="mt-6 flex gap-2 justify-center">
+                                    <Button type="button" variant="primary" onClick={() => router.push('/myskb/home')}>Go to MySKB Home</Button>
+                                    <Button type="button" variant="ghost" onClick={() => setSubmitted(false)}>Submit another</Button>
+                                </div>
+                            </div>
+                        )}
             
 
             <ConfirmDialog
