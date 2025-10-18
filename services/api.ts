@@ -206,6 +206,18 @@ export const withdrawBusiness = async (businessId: number) => {
     return data;
 };
 
+// Submit LAM registration for a business
+export const submitLam = async (businessId: number, payload: { lamNumber: string; lamDocumentPath: string }) => {
+    const { data } = await api.post(`/business/${businessId}/lam`, payload);
+    return data;
+};
+
+// Admin: verify LAM (approve/reject)
+export const verifyLam = async (businessId: number, status: 'Approved' | 'Rejected', reason?: string) => {
+    const { data } = await api.patch(`/business/${businessId}/lam/verify`, { status, reason });
+    return data;
+};
+
 // Fetch billings for a business. Backend expects business_id as query param.
 export const fetchBillingsWithBusinessId = async (businessId?: number) => {
     const params: any = {};

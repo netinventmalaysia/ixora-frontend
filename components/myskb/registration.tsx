@@ -19,18 +19,30 @@ import toast from 'react-hot-toast';
 import DatePickerField from "todo/components/forms/DatePickerField";
 import LayoutWithoutSidebar from "../main/LayoutWithoutSidebar";
 import FileUploadField from "../forms/FileUpload";
+import { fetchMyBusinesses, submitLam } from '@/services/api';
 export default function LoginPage() {
 
     const [showCancelDialog, setShowCancelDialog] = useState(false);
     const [loading, setLoading] = useState(false);
 
-    const handleSubmit = (data: any) => {
-        setLoading(true);
-        setTimeout(() => {
+    const handleSubmit = async (data: any) => {
+        try {
+            setLoading(true);
+            // Assume the first registered business in context is the target
+            const list = await fetchMyBusinesses();
+            const business = Array.isArray(list) && list.length ? list[0] : null;
+            if (!business) throw new Error('No business found for current user');
+            // Save LAM number on business for now; backend exposes a dedicated endpoint we could call directly if desired
+            const lamNumber: string = data?.aim || '';
+            const lamDocumentPath: string = data?.aimDocument || '';
+            if (!lamNumber) throw new Error('LAM number is required');
+            await submitLam(business.id, { lamNumber, lamDocumentPath });
+            toast.success('LAM submitted for verification');
+        } catch (e: any) {
+            toast.error(e?.message || 'Failed to submit LAM');
+        } finally {
             setLoading(false);
-            toast.success('Form submitted successfully!');
-            console.log('Submitted data:', data);
-        }, 2000);
+        }
     };
 
     return (
@@ -42,8 +54,8 @@ export default function LoginPage() {
                                         <InputWithPrefix
                                             id="aim"
                                             name="aim"
-                                            label="AIM registration number"
-                                            placeholder="Enter your AIM registration number"
+                                            label="LAM (Lembaga Arkitek Malaysia)"
+                                            placeholder="Enter your LAM (Lembaga Arkitek Malaysia)"
                                         />
                                         <Spacing size="sm" />
                                         <FileUploadField
