@@ -12,26 +12,34 @@ import Project from 'todo/components/myskb/project'
 import { teams, logoUrl } from 'todo/components/main/SidebarConfig'
 import Ownership from 'todo/components/myskb/ownership'
 import SidebarLayout from 'todo/components/main/SidebarLayout'
-import { getMySkbAccess } from '@/services/api'
+import { getMySkbAccess, fetchMyBusinesses } from '@/services/api'
+import toast from 'react-hot-toast'
 
 const MyskbPage: React.FC = () => {
   const router = useRouter()
   const { tab } = router.query
   const [allowedTabs, setAllowedTabs] = useState<string[] | null>(null)
+  const [lamApproved, setLamApproved] = useState<boolean>(false)
   // Use lowercase slug for routing
   const currentSlug = Array.isArray(tab) ? tab[0] : tab || 'home'
   // Filter tabs based on access once loaded; default to full tabs until known
   const allTabs: Tab[] = useMemo(() => {
-    if (!allowedTabs || allowedTabs.length === 0) return myskbTabs
-    const allowedSet = new Set(allowedTabs.map((t) => t.toLowerCase()))
-    return myskbTabs.filter((t) => allowedSet.has(t.name.toLowerCase()))
-  }, [allowedTabs])
+    const base = (!allowedTabs || allowedTabs.length === 0)
+      ? myskbTabs
+      : myskbTabs.filter((t) => new Set(allowedTabs.map((x) => x.toLowerCase())).has(t.name.toLowerCase()))
+    if (!lamApproved) return base
+    return base.map((t) => t.name.toLowerCase() === 'registration' ? { ...t, badge: 'Approved', badgeColor: 'green' } : t)
+  }, [allowedTabs, lamApproved])
   // Match by lowercase name
   const currentTab: Tab =
     allTabs.find((t) => t.name.toLowerCase() === currentSlug.toLowerCase()) ||
     allTabs[0]
 
   const handleTabChange = (t: Tab) => {
+    if (lamApproved && t.name.toLowerCase() === 'registration') {
+      toast.success('LAM approved. Registration is locked.')
+      return
+    }
     const slug = t.name.toLowerCase()
     router.push(`/myskb/${encodeURIComponent(slug)}`, undefined, {
       shallow: true,
@@ -61,6 +69,18 @@ const MyskbPage: React.FC = () => {
         }
       })
       .catch(() => setAllowedTabs([]))
+
+    // Load LAM status to freeze Registration when approved
+    fetchMyBusinesses()
+      .then((list: any[]) => {
+        if (!mounted) return
+        const saved = (typeof window !== 'undefined') ? localStorage.getItem('myskb_last_business_id') : undefined
+        const n = saved ? Number(saved) : NaN
+        const pick = (!Number.isNaN(n) && n > 0) ? (list || []).find((b) => Number(b.id) === n) : (Array.isArray(list) ? list[0] : null)
+        const status = String(pick?.lamStatus || pick?.lam_status || '')
+        setLamApproved(status.toLowerCase() === 'approved')
+      })
+      .catch(() => { if (mounted) setLamApproved(false) })
     return () => {
       mounted = false
     }
@@ -76,6 +96,13 @@ const MyskbPage: React.FC = () => {
       router.replace(`/myskb/${encodeURIComponent(target)}`, undefined, { shallow: true })
     }
   }, [allowedTabs, currentSlug, router])
+
+  // If approved and currently on registration, redirect to home
+  useEffect(() => {
+    if (lamApproved && String(currentSlug).toLowerCase() === 'registration') {
+      router.replace('/myskb/home', undefined, { shallow: true })
+    }
+  }, [lamApproved, currentSlug, router])
 
   const renderContent = () => {
     switch (currentTab.name) {

@@ -154,6 +154,7 @@ export default function SidebarContent({
           setBottomNav(withCurrent(userNavigation.map(i => ({ ...i, name: (i as any).nameKey ? t((i as any).nameKey) : (i as any).name }))));
           break;
         case 'business':
+        case 'consultant':
           setGeneralNav(withCurrent(generalAppNavigation.map(i => ({ ...i, name: (i as any).nameKey ? t((i as any).nameKey) : (i as any).name }))));
           setPersonalNav(withCurrent(businessAppNavigation.map(i => ({ ...i, name: (i as any).nameKey ? t((i as any).nameKey) : (i as any).name }))));
           break;

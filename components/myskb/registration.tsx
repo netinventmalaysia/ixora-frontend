@@ -12,7 +12,7 @@ import CheckboxGroupField from "todo/components/forms/CheckboxGroupField";
 import { emailNotificationOptions2 } from "todo/components/data/CheckList";
 import ConfirmDialog from "todo/components/forms/ConfirmDialog";
 import router from "next/router";
-import { useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import RadioGroupField from "todo/components/forms/RadioGroupField";
 import { radioButtonList } from "todo/components/data/RadioList";
 import toast from 'react-hot-toast';
@@ -24,19 +24,36 @@ export default function LoginPage() {
 
     const [showCancelDialog, setShowCancelDialog] = useState(false);
     const [loading, setLoading] = useState(false);
+    const [businesses, setBusinesses] = useState<any[]>([]);
+    const [selectedBusinessId, setSelectedBusinessId] = useState<number | null>(null);
+    const [selectedBusiness, setSelectedBusiness] = useState<any | null>(null);
+
+    useEffect(() => {
+        let mounted = true;
+        fetchMyBusinesses()
+            .then((list: any[]) => { if (mounted) setBusinesses(Array.isArray(list) ? list : []) })
+            .catch(() => { if (mounted) setBusinesses([]) });
+        return () => { mounted = false };
+    }, []);
+
+    useEffect(() => {
+        if (!selectedBusinessId) { setSelectedBusiness(null); return; }
+        const pick = businesses.find((b) => Number(b.id) === Number(selectedBusinessId));
+        setSelectedBusiness(pick || null);
+    }, [selectedBusinessId, businesses]);
 
     const handleSubmit = async (data: any) => {
         try {
             setLoading(true);
-            // Assume the first registered business in context is the target
-            const list = await fetchMyBusinesses();
-            const business = Array.isArray(list) && list.length ? list[0] : null;
-            if (!business) throw new Error('No business found for current user');
+            if (!selectedBusiness) throw new Error('Please select a business first');
+            // Prevent resubmission client-side if already approved
+            const status = String(selectedBusiness?.lamStatus || selectedBusiness?.lam_status || '').toLowerCase();
+            if (status === 'approved') throw new Error('LAM already approved for this business');
             // Save LAM number on business for now; backend exposes a dedicated endpoint we could call directly if desired
             const lamNumber: string = data?.aim || '';
             const lamDocumentPath: string = data?.lamDocument || '';
             if (!lamNumber) throw new Error('LAM number is required');
-            await submitLam(business.id, { lamNumber, lamDocumentPath });
+            await submitLam(selectedBusiness.id, { lamNumber, lamDocumentPath });
             toast.success('LAM submitted for verification');
         } catch (e: any) {
             toast.error(e?.message || 'Failed to submit LAM');
@@ -50,7 +67,27 @@ export default function LoginPage() {
             <FormWrapper onSubmit={handleSubmit}>
                 <FormSectionHeader title="Consultant Onboard" description="This registration enables businesses to be officially recognized as consultants authorized to manage temporary building permits through the MYSKB system. It enhances their capability to oversee and coordinate building-related submissions on behalf of project owners." />
                 <Spacing size="lg" />
+                {businesses.length === 0 && (
+                    <div className="mb-4 rounded-md border border-amber-300 bg-amber-50 p-3 text-sm text-amber-900">
+                        You don't have any registered businesses yet. Please register your business first in the Business module, then return here to submit your LAM details.
+                        <a href="/business" className="ml-2 underline">Go to Business Registration →</a>
+                    </div>
+                )}
              
+                {/* Business selector required before LAM submission */}
+                <SelectField
+                    id="business_id"
+                    name="business_id"
+                    label="Business"
+                    options={businesses.map((b) => ({
+                        value: b.id,
+                        label: `${b.name || b.companyName || b.company_name || 'Business'}${(b.registrationNumber || b.registration_number) ? ` • ${b.registrationNumber || b.registration_number}` : ''}`
+                    }))}
+                    requiredMessage="Business is required"
+                    onChange={(e) => setSelectedBusinessId(Number(e.target.value))}
+                />
+                <Spacing size="md" />
+
                                         <InputWithPrefix
                                             id="aim"
                                             name="aim"
@@ -70,7 +107,9 @@ export default function LoginPage() {
          
                 <FormActions>
                     <Button type="button" variant="ghost" onClick={() => setShowCancelDialog(true)}>Cancel</Button>
-                    <Button type="submit" variant="primary" loading={loading}>Submit</Button>
+                    <Button type="submit" variant="primary" loading={loading} disabled={!selectedBusiness || String(selectedBusiness?.lamStatus || selectedBusiness?.lam_status || '').toLowerCase() === 'approved'}>
+                        {String(selectedBusiness?.lamStatus || selectedBusiness?.lam_status || '').toLowerCase() === 'approved' ? 'Already Approved' : 'Submit'}
+                    </Button>
                 </FormActions>
 
 
