@@ -60,11 +60,11 @@ export default function LoginPage() {
                                         <Spacing size="sm" />
                                         <FileUploadField
                                             name="aimDocument"
-                                            label="AIM Document (PDF)"
+                                            label="LAM Document (PDF)"
                                             description="PDF up to 10MB"
                                             accept="application/pdf"
                                             folder="myskb/aim"
-                                            requiredMessage="Please upload your AIM document (PDF)"
+                                            requiredMessage="Please upload your LAM document (PDF)"
                                         />
                    
          
