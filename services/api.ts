@@ -547,15 +547,41 @@ export interface BillingItemRecord {
     updatedAt?: string;
 }
 
+// Simple in-memory cache and in-flight dedupe to avoid spamming the endpoint
+const BILL_ITEMS_TTL_MS = 5 * 60 * 1000; // 5 minutes
+type CacheEntry<T> = { value: T; expiresAt: number };
+const billItemsCache = new Map<string, CacheEntry<BillingItemRecord[]>>();
+const billItemsInflight = new Map<string, Promise<BillingItemRecord[]>>();
+
 export const fetchBillingItemsByBillNo = async (bill_no: string): Promise<BillingItemRecord[]> => {
     if (!bill_no) return [];
-    try {
-        const { data } = await api.get('/billings/items/by-bill-no', { params: { bill_no } });
-        const list = data?.data ?? data;
-        return Array.isArray(list) ? list : [];
-    } catch {
-        return [];
+
+    // Serve from cache if fresh
+    const cached = billItemsCache.get(bill_no);
+    const now = Date.now();
+    if (cached && cached.expiresAt > now) {
+        return cached.value;
     }
+
+    // If there's an in-flight request for the same bill_no, reuse it
+    const inflight = billItemsInflight.get(bill_no);
+    if (inflight) return inflight;
+
+    const req = api
+        .get('/billings/items/by-bill-no', { params: { bill_no } })
+        .then(({ data }) => {
+            const list = data?.data ?? data;
+            const result = Array.isArray(list) ? list as BillingItemRecord[] : [];
+            billItemsCache.set(bill_no, { value: result, expiresAt: now + BILL_ITEMS_TTL_MS });
+            return result;
+        })
+        .catch(() => [])
+        .finally(() => {
+            billItemsInflight.delete(bill_no);
+        });
+
+    billItemsInflight.set(bill_no, req);
+    return req;
 };
 
 // ================= Assessment Tax =================
