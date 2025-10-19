@@ -148,13 +148,19 @@ export default function DashboardPage() {
   // ===== After bills are loaded, check paid references (limited) =====
   useEffect(() => {
     const run = async () => {
-      const entries: Array<[string, { reference?: string; status?: string }]> = [];
       const seen = new Set<string>();
-      const bills = unifiedBills.slice(0, 30);
-      await Promise.all(bills.map(async (b) => {
-        const key = b.billNo || String(b.id || '');
-        if (!key || seen.has(key)) return;
+      const top = unifiedBills.slice(0, 30);
+      const unknownKeys: string[] = [];
+      for (const b of top) {
+        const key = b.billNo || String((b as any).id || '');
+        if (!key || seen.has(key)) continue;
         seen.add(key);
+        if (!paidLookup[key]) unknownKeys.push(key);
+      }
+      if (unknownKeys.length === 0) return; // nothing new to check
+
+      const entries: Array<[string, { reference?: string; status?: string }]> = [];
+      await Promise.all(unknownKeys.map(async (key) => {
         try {
           const items = await fetchBillingItemsByBillNo(key);
           const first = Array.isArray(items)
@@ -163,16 +169,19 @@ export default function DashboardPage() {
           if (first) entries.push([key, { reference: first.reference, status: first.status || first.billing_status }]);
         } catch {}
       }));
+
       if (entries.length) {
         setPaidLookup(prev => {
-          const next = { ...prev };
-          for (const [k, v] of entries) next[k] = v;
+          const next = { ...prev } as Record<string, { reference?: string; status?: string }>;
+          for (const [k, v] of entries) {
+            if (!next[k]) next[k] = v; // only set newly discovered keys
+          }
           return next;
         });
       }
     };
     if (unifiedBills.length) run();
-  }, [unifiedBills]);
+  }, [unifiedBills, paidLookup]);
 
   // ===== Totals for cards =====
   const totals = useMemo(() => {
