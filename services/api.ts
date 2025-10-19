@@ -971,6 +971,7 @@ export interface ProjectListParams {
     status?: string | string[]; // e.g., 'Submitted' | 'Pending' | 'Rejected' | 'Complete'
     limit?: number;
     offset?: number;
+    business_id?: number;
 }
 
 export interface ProjectListResponse {
@@ -990,7 +991,9 @@ export const listProjects = async (params: ProjectListParams & { viewerUserId?: 
         return { data: [], total: 0, limit: params.limit, offset: params.offset } as any;
     }
     try {
-        const { data } = await api.get('/myskb/project', { params: { limit: params.limit, offset: params.offset, viewerUserId, status: params.status } });
+        const q: any = { limit: params.limit, offset: params.offset, viewerUserId, status: params.status };
+        if (params.business_id) q.business_id = params.business_id;
+        const { data } = await api.get('/myskb/project', { params: q });
         const rows = Array.isArray(data?.data) ? data.data : (Array.isArray(data) ? data : []);
         // Apply optional status filter client-side
         const desired = params.status ? rows.filter((p: any) => {

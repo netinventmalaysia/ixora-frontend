@@ -8,7 +8,9 @@ import Heading from "../forms/Heading";
 import { MySkbActions } from "todo/components/config/ActionList";
 import { useEffect, useMemo, useState } from 'react';
 import FilterTabs from "../forms/FilterTabs";
-import { listProjectDrafts, listProjects } from '@/services/api';
+import { listProjectDrafts, listProjects, fetchMyBusinesses } from '@/services/api';
+import SelectField from "../forms/SelectField";
+import Spacing from "../forms/Spacing";
 
 const baseTabs: Tab[] = [
   { name: 'All', href: '#' },
@@ -24,13 +26,19 @@ const Application: React.FC = () => {
   const [currentTab, setCurrentTab] = useState('All');
   const [drafts, setDrafts] = useState<any[]>([]);
   const [projects, setProjects] = useState<any[]>([]);
+  const [businessOptions, setBusinessOptions] = useState<{ value: number; label: string }[]>([]);
+  const [businessId, setBusinessId] = useState<number | undefined>(undefined);
 
   useEffect(() => {
     let mounted = true;
     const viewerUserId = (typeof window !== 'undefined' ? Number(localStorage.getItem('userId') || '') : NaN);
+    // Read business_id from URL when consultants are viewing a specific business
+    const searchParams = (typeof window !== 'undefined') ? new URLSearchParams(window.location.search) : null;
+    const businessIdStr = searchParams?.get('business_id') || searchParams?.get('businessId') || undefined;
+    const businessId = businessIdStr ? Number(businessIdStr) : undefined;
     Promise.all([
       listProjectDrafts({ limit: 100, offset: 0, viewerUserId: !Number.isNaN(viewerUserId) ? viewerUserId : undefined }),
-      listProjects({ limit: 100, offset: 0, viewerUserId: !Number.isNaN(viewerUserId) ? viewerUserId : undefined }),
+      listProjects({ limit: 100, offset: 0, viewerUserId: !Number.isNaN(viewerUserId) ? viewerUserId : undefined, ...(businessId ? { business_id: businessId } as any : {}) }),
     ])
       .then(([draftRes, projRes]) => {
         if (!mounted) return;
@@ -42,6 +50,50 @@ const Application: React.FC = () => {
         setDrafts([]);
         setProjects([]);
       });
+    return () => { mounted = false; };
+  }, []);
+
+  // Refetch projects when business selection changes, passing business_id to backend
+  useEffect(() => {
+    let mounted = true;
+    const viewerUserId = (typeof window !== 'undefined' ? Number(localStorage.getItem('userId') || '') : NaN);
+    listProjects({ limit: 100, offset: 0, viewerUserId: !Number.isNaN(viewerUserId) ? viewerUserId : undefined, ...(businessId ? { business_id: businessId } as any : {}) })
+      .then((projRes) => { if (mounted) setProjects(projRes?.data || []); })
+      .catch(() => { if (mounted) setProjects([]); });
+    return () => { mounted = false; };
+  }, [businessId]);
+
+  // Load businesses and initialize selection (like Ownership page)
+  useEffect(() => {
+    let mounted = true;
+    fetchMyBusinesses()
+      .then((data: any[]) => {
+        if (!mounted) return;
+        const isWithdrawn = (item: any) => {
+          const s = item?.status || item?.state || item?.applicationStatus || item?.statusName || item?.status_name || item?.currentStatus || item?.current_status;
+          if (typeof s === 'string') return s.toLowerCase() === 'withdrawn';
+          for (const v of Object.values(item || {})) if (typeof v === 'string' && /withdrawn/i.test(v)) return true;
+          return false;
+        };
+        const opts = (data || [])
+          .filter((biz) => !isWithdrawn(biz))
+          .map((biz: any) => ({ value: biz.id, label: biz.name || biz.companyName || `#${biz.id}` }));
+        setBusinessOptions(opts);
+        // Initialize selection: URL query > localStorage > first option
+        let initial: number | undefined = undefined;
+        if (typeof window !== 'undefined') {
+          const search = new URLSearchParams(window.location.search);
+          const qs = search.get('business_id') || search.get('businessId');
+          if (qs) initial = Number(qs);
+          if (initial === undefined || Number.isNaN(initial)) {
+            const saved = localStorage.getItem('myskb_last_business_id');
+            if (saved) initial = Number(saved);
+          }
+        }
+        if (initial === undefined || Number.isNaN(initial)) initial = opts[0]?.value;
+        if (initial && !Number.isNaN(initial)) setBusinessId(initial);
+      })
+      .catch(() => {/* non-blocking */});
     return () => { mounted = false; };
   }, []);
 
@@ -119,6 +171,21 @@ const Application: React.FC = () => {
         </Heading>
 
         {/* Tabs for filtering */}
+        <Spacing size="md" />
+        <SelectField
+          id="myskb_business"
+          name="myskb_business"
+          label="Business"
+          options={businessOptions}
+          value={businessId}
+          onChange={(e) => {
+            const val = Number(e.target.value);
+            if (!Number.isNaN(val)) {
+              setBusinessId(val);
+              if (typeof window !== 'undefined') localStorage.setItem('myskb_last_business_id', String(val));
+            }
+          }}
+        />
         <FilterTabs
           tabs={projectTabs}
           currentTab={currentTab}
