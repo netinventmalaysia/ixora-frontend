@@ -1127,3 +1127,39 @@ export const checkoutOutstandingBills = async (payload: CheckoutOutstandingDto):
     if (typeof window !== 'undefined') console.log('[API][Checkout] response:', data);
     return data as CheckoutResponse;
 };
+
+// ================= MySKB Admin Review =================
+export interface AdminProjectItem {
+    id: number;
+    projectTitle?: string | null;
+    created_at?: string;
+    status: string;
+    data?: Record<string, any>;
+    businessId: number;
+    userId: number;
+}
+
+export interface AdminProjectListResponse {
+    data: AdminProjectItem[];
+    total?: number;
+    limit?: number;
+    offset?: number;
+}
+
+export const listAdminMySkbProjects = async (params: { status?: string; limit?: number; offset?: number } = {}): Promise<AdminProjectListResponse> => {
+    const { data } = await api.get('/myskb/project/admin', { params });
+    // normalize minimal fallback
+    if (Array.isArray(data)) return { data } as any;
+    return data as AdminProjectListResponse;
+};
+
+export const reviewMySkbProject = async (id: number | string, payload: { status: 'Approved' | 'Rejected'; reason?: string }) => {
+    const { data } = await api.patch(`/myskb/project/${id}/review`, payload);
+    return data as { id: number; status: string; reviewed_at: string; reviewer_user_id: number; reason?: string };
+};
+
+// Admin detail fetch: bypass viewerUserId list flow and hit detail endpoint directly
+export const adminGetMySkbProjectById = async (id: number | string): Promise<any> => {
+    const { data } = await api.get(`/myskb/project/${id}`);
+    return data;
+};
