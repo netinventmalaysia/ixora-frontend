@@ -47,10 +47,15 @@ const Application: React.FC = () => {
 
   const projectTabs: Tab[] = useMemo(() => {
     const draftCount = drafts.length;
-    const submittedCount = projects.filter((p) => (p.status || p.applicationStatus || p.statusName || '').toLowerCase() === 'submitted').length;
-    const pendingCount = projects.filter((p) => (p.status || p.applicationStatus || p.statusName || '').toLowerCase() === 'pending').length;
-    const rejectedCount = projects.filter((p) => (p.status || p.applicationStatus || p.statusName || '').toLowerCase() === 'rejected').length;
-    const completeCount = projects.filter((p) => (p.status || p.applicationStatus || p.statusName || '').toLowerCase() === 'complete').length;
+    const norm = (p: any) => {
+      const raw = (p.status || p.applicationStatus || p.statusName || '').toLowerCase();
+      if (raw === 'pending_payment' || raw === 'approved') return 'pending';
+      return raw;
+    };
+    const submittedCount = projects.filter((p) => norm(p) === 'submitted').length;
+    const pendingCount = projects.filter((p) => norm(p) === 'pending').length;
+    const rejectedCount = projects.filter((p) => norm(p) === 'rejected').length;
+    const completeCount = projects.filter((p) => norm(p) === 'complete').length;
     return [
       { ...baseTabs[0] },
       { ...baseTabs[1], badge: String(submittedCount || 0) },
@@ -82,21 +87,28 @@ const Application: React.FC = () => {
         : (typeof coOwnersRaw === 'string'
             ? coOwnersRaw.split(',').map((t: string) => Number(t.trim())).filter((n: any) => !Number.isNaN(n))
             : undefined);
+      const rawStatus = String(p.status || p.applicationStatus || p.statusName || p.currentStatus || 'Submitted');
+      const rawLower = rawStatus.toLowerCase();
+      const normalized = (rawLower === 'pending_payment' || rawLower === 'approved') ? 'Pending' : (rawStatus.charAt(0).toUpperCase() + rawStatus.slice(1));
       return ({
+        ...p, // include backend fields first
         id: p.id,
         name: p.name || p.projectTitle || p.title || `#${p.id}`,
-        status: p.status || p.applicationStatus || p.statusName || p.currentStatus || 'Submitted',
+        status: normalized, // ensure normalized status overrides raw
         createdAt: p.created_at || p.createdAt,
         submittedByConsultant,
         coOwners,
-        ...p,
       });
     });
     // Do not apply extra client-side visibility filtering here.
     // Backend already respects viewerUserId; include all returned for this viewer.
     if (currentTab === 'All') return items;
     const wanted = currentTab.toLowerCase();
-    return items.filter((it) => String(it.status || '').toLowerCase() === wanted);
+    return items.filter((it) => {
+      const st = String(it.status || '').toLowerCase();
+      if (wanted === 'pending') return st === 'pending';
+      return st === wanted;
+    });
   }, [currentTab, drafts, projects]);
 
   return (
