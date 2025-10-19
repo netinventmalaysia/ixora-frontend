@@ -28,19 +28,61 @@ const currency = (n: any) => {
 };
 
 const ProjectReadOnly: React.FC<Props> = ({ data = [] as any }) => {
-  console.log('ProjectReadOnly data 123:', data);
   const buildings: Array<any> = Array.isArray(data?.data?.buildings) ? data.data.buildings : [];
-  const ownersDisplay = data?.owners?.map((o: OwnerInfo, i: number) => (
-        <div key={i} className="text-sm text-gray-900">{o.name}</div>
-      )) || <div className="text-sm text-gray-500">—</div>; 
+  const ownersDisplay = Array.isArray(data?.owners) && data.owners.length > 0
+    ? data.owners.map((o: OwnerInfo, i: number) => (
+        <div key={i} className="text-sm text-gray-900 flex flex-col">
+          <span>{o.name || '—'}</span>
+          {o.email ? <span className="text-xs text-gray-500">{o.email}</span> : null}
+        </div>
+      ))
+    : <div className="text-sm text-gray-500">—</div>;
+
+  const businessLabel = (data?.business?.name
+    || (typeof data?.business_id === 'number' ? `#${data.business_id}` : undefined)
+  ) ?? '—';
+
+  const submittedOn = data?.created_at ? new Date(data.created_at) : null;
+  const submittedOnStr = submittedOn && !isNaN(submittedOn.getTime()) ? submittedOn.toLocaleString() : '—';
+
+  const totalProcessing = (() => {
+    const direct = Number(data?.data?.processingFees);
+    if (!Number.isNaN(direct) && direct > 0) return direct;
+    if (Array.isArray(buildings) && buildings.length > 0) {
+      const sum = buildings.reduce((acc: number, b: any) => acc + Number(b?.processingFee || 0), 0);
+      return sum;
+    }
+    return NaN;
+  })();
+
+  // --- attachments ---
+  const isPdf = (p?: string) => !!p && /\.pdf$/i.test(p);
+  const isImage = (p?: string) => !!p && /\.(png|jpe?g|gif|bmp|webp|svg)$/i.test(p);
+  const buildUploadUrl = (p?: string) => {
+    if (!p) return '';
+    if (/^https?:\/\//i.test(p)) return p;
+    const base = (process.env.NEXT_PUBLIC_API_URL || 'https://ixora-api.mbmb.gov.my').replace(/\/$/, '');
+    let path = String(p).replace(/^\/+/, '');
+    if (!/^uploads\/file\//i.test(path)) path = `uploads/file/${path}`;
+    return `${base}/${path}`;
+  };
+  const attachments: Array<{ key: string; label: string; path?: string }> = [
+    { key: 'statutoryDeclarationFile', label: 'Statutory Declaration' },
+    { key: 'landHeirDeclarationFile', label: 'Land Heir Declaration' },
+    { key: 'rentalAgreementFile', label: 'Rental Agreement' },
+  ].map((k) => ({ ...k, path: data?.data?.[k.key] as string | undefined })).filter((a) => !!a.path);
 
   return (
     <div className="bg-white shadow rounded-lg p-5">
       <FormSectionHeader title="Ownership Information" description="Project and owner context" />
       <div className="mt-4">
         <FormRow columns={3}>
-          <Field label="Business" value={(data?.business_id ? data.business.name : '—')} />
+          <Field label="Business" value={businessLabel} />
           <Field label="Project Owners" value={<div className="space-y-1">{ownersDisplay}</div>} />
+          <Field label="Status" value={data?.status || '—'} />
+        </FormRow>
+        <FormRow columns={3}>
+          <Field label="Submitted On" value={submittedOnStr} />
         </FormRow>
       </div>
 
@@ -98,9 +140,46 @@ const ProjectReadOnly: React.FC<Props> = ({ data = [] as any }) => {
                     <td className="px-3 py-2 text-sm text-gray-900">{currency(b?.processingFee)}</td>
                   </tr>
                 ))}
+                <tr>
+                  <td className="px-3 py-2 text-sm font-semibold text-gray-900" colSpan={3}>Total Processing</td>
+                  <td className="px-3 py-2 text-sm font-semibold text-gray-900">{currency(totalProcessing)}</td>
+                </tr>
               </tbody>
             </table>
           </div>
+        )}
+      </div>
+
+      {/* Attachments */}
+      <LineSeparator />
+      <FormSectionHeader title="Attachments" description="Uploaded supporting documents" />
+      <div className="mt-4 space-y-4">
+        {attachments.length === 0 ? (
+          <div className="text-sm text-gray-500">No attachments uploaded</div>
+        ) : (
+          attachments.map((att, i) => {
+            const url = buildUploadUrl(att.path);
+            return (
+              <div key={i} className="border rounded-md p-3 bg-gray-50">
+                <div className="text-sm font-medium text-gray-900 mb-2">{att.label}</div>
+                {isPdf(att.path) ? (
+                  <div>
+                    <div className="h-64 w-full border rounded bg-white overflow-hidden">
+                      <iframe src={url} className="w-full h-full" title={`${att.label} preview`} />
+                    </div>
+                    <a href={url} target="_blank" rel="noreferrer" className="text-xs text-indigo-600 hover:underline mt-2 inline-block">Open PDF in new tab</a>
+                  </div>
+                ) : isImage(att.path) ? (
+                  <div className="flex items-center gap-3">
+                    <img src={url} alt={`${att.label} preview`} className="h-24 w-auto rounded border bg-white" />
+                    <a href={url} target="_blank" rel="noreferrer" className="text-xs text-indigo-600 hover:underline">Open image</a>
+                  </div>
+                ) : (
+                  <a href={url} target="_blank" rel="noreferrer" className="text-xs text-indigo-600 hover:underline">Open file</a>
+                )}
+              </div>
+            );
+          })
         )}
       </div>
     </div>

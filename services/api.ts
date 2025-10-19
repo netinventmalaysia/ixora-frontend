@@ -1008,9 +1008,16 @@ export const listProjects = async (params: ProjectListParams & { viewerUserId?: 
 };
 
 // Get single project by id myskb/project
-export const getProject = async (id: number | string): Promise<Record<string, any> | null> => {
+export const getProject = async (id: number | string, opts: { viewerUserId?: number } = {}): Promise<Record<string, any> | null> => {
     try {
-        const { data } = await api.get(`/myskb/project/${id}`);
+        let viewerUserId = opts.viewerUserId;
+        if ((viewerUserId === undefined || viewerUserId === null) && typeof window !== 'undefined') {
+            const uid = localStorage.getItem('userId');
+            if (uid) viewerUserId = Number(uid);
+        }
+        const params: any = {};
+        if (viewerUserId !== undefined && !Number.isNaN(Number(viewerUserId))) params.viewerUserId = Number(viewerUserId);
+        const { data } = await api.get(`/myskb/project/${id}`, { params });
         return data;
     } catch {
         return null;
@@ -1020,7 +1027,7 @@ export const getProject = async (id: number | string): Promise<Record<string, an
 
 // Get a single submitted/active project by id
 export const getProjectById = async (id: number | string, opts: { viewerUserId?: number } = {}): Promise<Record<string, any> | null> => {
-    const project = await getProject(id);
+    const project = await getProject(id, { viewerUserId: opts.viewerUserId });
     return project || null;
 };
 
@@ -1160,6 +1167,6 @@ export const reviewMySkbProject = async (id: number | string, payload: { status:
 
 // Admin detail fetch: bypass viewerUserId list flow and hit detail endpoint directly
 export const adminGetMySkbProjectById = async (id: number | string): Promise<any> => {
-    const { data } = await api.get(`/myskb/project/${id}`);
+    const { data } = await api.get(`/myskb/project/admin/${id}`);
     return data;
 };

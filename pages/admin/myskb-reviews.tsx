@@ -4,8 +4,10 @@ import Heading from '@/components/forms/Heading';
 import LineSeparator from '@/components/forms/LineSeparator';
 import Spacing from '@/components/forms/Spacing';
 import { listAdminMySkbProjects, reviewMySkbProject, AdminProjectItem } from '@/services/api';
+import { useRouter } from 'next/router';
 
 export default function MySkbReviewsPage() {
+  const router = useRouter();
   const [status, setStatus] = useState<'submitted' | 'approved' | 'rejected'>('submitted');
   const [rows, setRows] = useState<AdminProjectItem[]>([]);
   const [loading, setLoading] = useState(false);
@@ -90,19 +92,26 @@ export default function MySkbReviewsPage() {
                 return (
                   <tr key={p.id}>
                     <td className="px-3 py-2 text-sm text-gray-900">{p.id}</td>
-                    <td className="px-3 py-2 text-sm text-gray-900">{title}</td>
+                    <td
+                      className="px-3 py-2 text-sm text-blue-600 hover:underline cursor-pointer"
+                      onClick={() => router.push(`/admin/myskb-reviews/${p.id}`)}
+                      title="View details"
+                    >
+                      {title}
+                    </td>
                     <td className="px-3 py-2 text-sm text-gray-900">{String(business)}</td>
                     <td className="px-3 py-2 text-sm text-gray-900">{created}</td>
                     <td className="px-3 py-2 text-sm text-gray-900 capitalize">{p.status}</td>
                     <td className="px-3 py-2 text-sm text-gray-900">
-                      {status === 'submitted' ? (
-                        <div className="flex gap-2">
-                          <button onClick={() => onApprove(p)} className="px-3 py-1.5 rounded-md bg-emerald-600 text-white text-sm">Approve</button>
-                          <button onClick={() => onReject(p)} className="px-3 py-1.5 rounded-md bg-red-600 text-white text-sm">Reject</button>
-                        </div>
-                      ) : (
-                        <span className="text-gray-500">—</span>
-                      )}
+                      <div className="flex gap-2">
+                        <button onClick={() => router.push(`/admin/myskb-reviews/${p.id}`)} className="px-3 py-1.5 rounded-md bg-white ring-1 ring-gray-300 text-gray-900 text-sm">View</button>
+                        {status === 'submitted' ? (
+                          <>
+                            <button onClick={() => onApprove(p)} className="px-3 py-1.5 rounded-md bg-emerald-600 text-white text-sm">Approve</button>
+                            <button onClick={() => onReject(p)} className="px-3 py-1.5 rounded-md bg-red-600 text-white text-sm">Reject</button>
+                          </>
+                        ) : null}
+                      </div>
                     </td>
                   </tr>
                 );
