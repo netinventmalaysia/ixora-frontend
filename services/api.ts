@@ -971,7 +971,8 @@ export interface ProjectListParams {
     status?: string | string[]; // e.g., 'Submitted' | 'Pending' | 'Rejected' | 'Complete'
     limit?: number;
     offset?: number;
-    business_id?: number;
+    businessId?: number;
+    viewerUserId?: number;
 }
 
 export interface ProjectListResponse {
@@ -981,7 +982,7 @@ export interface ProjectListResponse {
     offset?: number;
 }
 
-export const listProjects = async (params: ProjectListParams & { viewerUserId?: number } = {}): Promise<ProjectListResponse> => {
+export const listProjects = async (params: ProjectListParams): Promise<ProjectListResponse> => {
     let viewerUserId = params.viewerUserId;
     if ((viewerUserId === undefined || viewerUserId === null) && typeof window !== 'undefined') {
         const uid = localStorage.getItem('userId');
@@ -991,8 +992,7 @@ export const listProjects = async (params: ProjectListParams & { viewerUserId?: 
         return { data: [], total: 0, limit: params.limit, offset: params.offset } as any;
     }
     try {
-        const q: any = { limit: params.limit, offset: params.offset, viewerUserId, status: params.status };
-        if (params.business_id) q.business_id = params.business_id;
+        const q: any = { limit: params.limit, offset: params.offset, viewerUserId, businessId: params.businessId, status: params.status };
         const { data } = await api.get('/myskb/project', { params: q });
         const rows = Array.isArray(data?.data) ? data.data : (Array.isArray(data) ? data : []);
         // Apply optional status filter client-side
@@ -1011,7 +1011,7 @@ export const listProjects = async (params: ProjectListParams & { viewerUserId?: 
 };
 
 // Get single project by id myskb/project
-export const getProject = async (id: number | string, opts: { viewerUserId?: number } = {}): Promise<Record<string, any> | null> => {
+export const getProject = async (id: number | string, opts: { viewerUserId?: number, businessId?: number } = {}): Promise<Record<string, any> | null> => {
     try {
         let viewerUserId = opts.viewerUserId;
         if ((viewerUserId === undefined || viewerUserId === null) && typeof window !== 'undefined') {
@@ -1020,6 +1020,7 @@ export const getProject = async (id: number | string, opts: { viewerUserId?: num
         }
         const params: any = {};
         if (viewerUserId !== undefined && !Number.isNaN(Number(viewerUserId))) params.viewerUserId = Number(viewerUserId);
+        if (opts.businessId !== undefined && !Number.isNaN(Number(opts.businessId))) params.businessId = Number(opts.businessId);
         const { data } = await api.get(`/myskb/project/${id}`, { params });
         return data;
     } catch {
@@ -1029,8 +1030,10 @@ export const getProject = async (id: number | string, opts: { viewerUserId?: num
 
 
 // Get a single submitted/active project by id
-export const getProjectById = async (id: number | string, opts: { viewerUserId?: number } = {}): Promise<Record<string, any> | null> => {
-    const project = await getProject(id, { viewerUserId: opts.viewerUserId });
+export const getProjectById = async (id: number | string, opts: { viewerUserId?: number, businessId?: number } = {}): Promise<Record<string, any> | null> => {
+    const viewerUserId = opts.viewerUserId;
+    const businessId = opts.businessId;
+    const project = await getProject(id, { viewerUserId, businessId });
     return project || null;
 };
 

@@ -26,8 +26,15 @@ const ProjectDetailPage: React.FC = () => {
           : (viewerUserIdRaw !== undefined ? Number(viewerUserIdRaw) : undefined);
         const validViewer = Number.isNaN(Number(viewerUserId)) ? undefined : (viewerUserId as number);
 
+        // check if businessId is available at myskb_last_business_id
+        const savedBusinessId = localStorage.getItem('myskb_last_business_id');
+        if (savedBusinessId) {
+          const businessId = Number(savedBusinessId);
+          console.log('Using business ID from localStorage:', businessId);
+        }
+
         // Prefer submitted/active project
-        const proj = await getProjectById(id as string, { viewerUserId: validViewer });
+        const proj = await getProjectById(id as string, { viewerUserId: validViewer, businessId: savedBusinessId ? Number(savedBusinessId) : undefined });
         if (mounted && proj) {
           setData(proj);
           setLoading(false);

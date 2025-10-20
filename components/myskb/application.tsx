@@ -2,13 +2,13 @@ import LayoutWithoutSidebar from "todo/components/main/LayoutWithoutSidebar";
 import { FormProvider, useForm } from "react-hook-form";
 import ItemList from "../forms/ItemList";
 import { useRouter } from 'next/router';
-import Tabs, { Tab } from '../forms/Tab'
+import { Tab } from '../forms/Tab'
 import { statuses } from '@/components/data/ItemData';
 import Heading from "../forms/Heading";
 import { MySkbActions } from "todo/components/config/ActionList";
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import FilterTabs from "../forms/FilterTabs";
-import { listProjectDrafts, listProjects, fetchMyBusinesses } from '@/services/api';
+import { listProjects, fetchMyBusinesses } from '@/services/api';
 import SelectField from "../forms/SelectField";
 import Spacing from "../forms/Spacing";
 
@@ -24,7 +24,6 @@ const Application: React.FC = () => {
   const methods = useForm();
   const router = useRouter();
   const [currentTab, setCurrentTab] = useState('All');
-  const [drafts, setDrafts] = useState<any[]>([]);
   const [projects, setProjects] = useState<any[]>([]);
   const [businessOptions, setBusinessOptions] = useState<{ value: number; label: string }[]>([]);
   const [businessId, setBusinessId] = useState<number | undefined>(undefined);
@@ -32,36 +31,11 @@ const Application: React.FC = () => {
   useEffect(() => {
     let mounted = true;
     const viewerUserId = (typeof window !== 'undefined' ? Number(localStorage.getItem('userId') || '') : NaN);
-    // Read business_id from URL when consultants are viewing a specific business
-    const searchParams = (typeof window !== 'undefined') ? new URLSearchParams(window.location.search) : null;
-    const businessIdStr = searchParams?.get('business_id') || searchParams?.get('businessId') || undefined;
-    const businessId = businessIdStr ? Number(businessIdStr) : undefined;
-    Promise.all([
-      listProjectDrafts({ limit: 100, offset: 0, viewerUserId: !Number.isNaN(viewerUserId) ? viewerUserId : undefined }),
-      listProjects({ limit: 100, offset: 0, viewerUserId: !Number.isNaN(viewerUserId) ? viewerUserId : undefined, ...(businessId ? { business_id: businessId } as any : {}) }),
-    ])
-      .then(([draftRes, projRes]) => {
-        if (!mounted) return;
-        setDrafts(draftRes?.data || []);
-        setProjects(projRes?.data || []);
-      })
-      .catch(() => {
-        if (!mounted) return;
-        setDrafts([]);
-        setProjects([]);
-      });
-    return () => { mounted = false; };
-  }, []);
-
-  // Refetch projects when business selection changes, passing business_id to backend
-  useEffect(() => {
-    let mounted = true;
-    const viewerUserId = (typeof window !== 'undefined' ? Number(localStorage.getItem('userId') || '') : NaN);
-    listProjects({ limit: 100, offset: 0, viewerUserId: !Number.isNaN(viewerUserId) ? viewerUserId : undefined, ...(businessId ? { business_id: businessId } as any : {}) })
+    listProjects({ limit: 100, offset: 0, viewerUserId: !Number.isNaN(viewerUserId) ? viewerUserId : undefined, businessId: businessId as any })
       .then((projRes) => { if (mounted) setProjects(projRes?.data || []); })
       .catch(() => { if (mounted) setProjects([]); });
     return () => { mounted = false; };
-  }, [businessId]);
+  }, [ businessId]);
 
   // Load businesses and initialize selection (like Ownership page)
   useEffect(() => {
@@ -85,9 +59,12 @@ const Application: React.FC = () => {
           const search = new URLSearchParams(window.location.search);
           const qs = search.get('business_id') || search.get('businessId');
           if (qs) initial = Number(qs);
+          console .log('Initial business ID from URL:', initial, businessId);
           if (initial === undefined || Number.isNaN(initial)) {
-            const saved = localStorage.getItem('myskb_last_business_id');
-            if (saved) initial = Number(saved);
+            //set initial from businessId state if available
+            initial = businessId;
+            //set localstorage
+            localStorage.setItem('myskb_last_business_id', String(initial));
           }
         }
         if (initial === undefined || Number.isNaN(initial)) initial = opts[0]?.value;
@@ -95,15 +72,15 @@ const Application: React.FC = () => {
       })
       .catch(() => {/* non-blocking */});
     return () => { mounted = false; };
-  }, []);
+  }, [businessId]);
 
   const projectTabs: Tab[] = useMemo(() => {
-    const draftCount = drafts.length;
     const norm = (p: any) => {
       const raw = (p.status || p.applicationStatus || p.statusName || '').toLowerCase();
       if (raw === 'pending_payment' || raw === 'approved') return 'pending';
       return raw;
     };
+    const draftCount = projects.filter((p) => norm(p) === 'draft').length;
     const submittedCount = projects.filter((p) => norm(p) === 'submitted').length;
     const pendingCount = projects.filter((p) => norm(p) === 'pending').length;
     const rejectedCount = projects.filter((p) => norm(p) === 'rejected').length;
@@ -116,19 +93,11 @@ const Application: React.FC = () => {
       { ...baseTabs[4], badge: String(completeCount || 0) },
       { name: 'Draft', href: '#', badge: String(draftCount), badgeColor: 'yellow' },
     ];
-  }, [projects, drafts]);
+  }, [projects]);
 
   const filteredProjects = useMemo(() => {
     const currentUserIdStr = (typeof window !== 'undefined' ? localStorage.getItem('userId') : undefined) || '';
     const currentUserId = Number(currentUserIdStr);
-    if (currentTab === 'Draft') {
-      return drafts.map((d) => ({
-        id: d.id,
-        name: d.name || d.projectTitle || `Draft #${d.id}`,
-        status: 'Draft',
-        createdAt: d.created_at || d.createdAt,
-      }));
-    }
     // Build items from backend projects
     const items = (projects || []).map((p) => {
       const ownerUserId = Number(p.userId ?? p.ownerUserId ?? p.createdBy ?? p.created_by);
@@ -145,7 +114,7 @@ const Application: React.FC = () => {
       return ({
         ...p, // include backend fields first
         id: p.id,
-        name: p.name || p.projectTitle || p.title || `#${p.id}`,
+        name: p.name || p.projectTitle || p.title || (rawLower === 'draft' ? `Draft #${p.id}` : `#${p.id}`),
         status: normalized, // ensure normalized status overrides raw
         createdAt: p.created_at || p.createdAt,
         submittedByConsultant,
@@ -159,9 +128,10 @@ const Application: React.FC = () => {
     return items.filter((it) => {
       const st = String(it.status || '').toLowerCase();
       if (wanted === 'pending') return st === 'pending';
+      if (wanted === 'draft') return st === 'draft';
       return st === wanted;
     });
-  }, [currentTab, drafts, projects]);
+  }, [currentTab, projects]);
 
   return (
     <FormProvider {...methods}>
@@ -198,7 +168,8 @@ const Application: React.FC = () => {
           statusClasses={statuses}
           actions={MySkbActions}
           onView={(item) => {
-            if (currentTab === 'Draft') {
+            const isDraft = String(item.status || '').toLowerCase() === 'draft';
+            if (isDraft) {
               const id = typeof item.id === 'string' ? item.id : String(item.id);
               router.push(`/myskb/project?draft_id=${encodeURIComponent(id)}`);
               return;
