@@ -20,7 +20,9 @@ const baseTabs: Tab[] = [
   { name: 'Complete', href: '#', badgeColor: 'gray' },
 ];
 
-const Application: React.FC = () => {
+type ApplicationProps = { isApplicationOnly?: boolean };
+
+const Application: React.FC<ApplicationProps> = ({ isApplicationOnly = false }) => {
   const methods = useForm();
   const router = useRouter();
   const [currentTab, setCurrentTab] = useState('All');
@@ -142,20 +144,22 @@ const Application: React.FC = () => {
 
         {/* Tabs for filtering */}
         <Spacing size="md" />
-        <SelectField
-          id="myskb_business"
-          name="myskb_business"
-          label="Business"
-          options={businessOptions}
-          value={businessId}
-          onChange={(e) => {
-            const val = Number(e.target.value);
-            if (!Number.isNaN(val)) {
-              setBusinessId(val);
-              if (typeof window !== 'undefined') localStorage.setItem('myskb_last_business_id', String(val));
-            }
-          }}
-        />
+        {!isApplicationOnly && (
+          <SelectField
+            id="myskb_business"
+            name="myskb_business"
+            label="Business"
+            options={businessOptions}
+            value={businessId}
+            onChange={(e) => {
+              const val = Number(e.target.value);
+              if (!Number.isNaN(val)) {
+                setBusinessId(val);
+                if (typeof window !== 'undefined') localStorage.setItem('myskb_last_business_id', String(val));
+              }
+            }}
+          />
+        )}
         <FilterTabs
           tabs={projectTabs}
           currentTab={currentTab}

@@ -122,7 +122,7 @@ const MyskbPage: React.FC = () => {
       case 'Project':
         return <Project />
       case 'Application':
-        return <Application />
+        return <Application isApplicationOnly={isApplicationOnly} />
       default:
         return null
     }
