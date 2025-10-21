@@ -80,7 +80,7 @@ export default function ProjectPage({ readOnly = false, initialValues }: Project
           .map((biz: any) => ({ value: biz.id, label: biz.name || biz.companyName || `#${biz.id}` }));
         setBusinessOptions(opts);
       })
-      .catch(() => {/* ignore non-fatal */});
+      .catch(() => {/* ignore non-fatal */ });
   }, []);
 
   // Load approved ownerships when business changes
@@ -110,16 +110,16 @@ export default function ProjectPage({ readOnly = false, initialValues }: Project
       if (!Number.isNaN(bid)) setSelectedBusinessId(bid);
       return;
     }
-  const draftId = router.query?.draft_id as string | undefined;
-  const businessId = router.query?.business_id as string | undefined;
+    const draftId = router.query?.draft_id as string | undefined;
+    const businessId = router.query?.business_id as string | undefined;
     console.log('Draft ID from URL:', draftId);
     console.log('Business ID from URL:', businessId);
     if (!draftId) return;
     let mounted = true;
     (async () => {
       try {
-  const draft = await getProjectById(draftId, { businessId: businessId ? Number(businessId) : undefined });
-  const defaults = { ...((draft as any)?.data || {}) } as Record<string, any>;
+        const draft = await getProjectById(draftId, { businessId: businessId ? Number(businessId) : undefined });
+        const defaults = { ...((draft as any)?.data || {}) } as Record<string, any>;
         // Transform legacy flat keys like 'buildings.0.openArea' into array form expected by useFieldArray
         if (!Array.isArray(defaults.buildings)) {
           const map: Record<number, any> = {};
@@ -154,8 +154,8 @@ export default function ProjectPage({ readOnly = false, initialValues }: Project
           delete (defaults as any).ownerCategory;
           delete (defaults as any).ownershipCategory;
         }
-    const draftBiz = Number((draft as any)?.business_id ?? (draft as any)?.businessId);
-    if (!Number.isNaN(draftBiz)) defaults.business_id = draftBiz;
+        const draftBiz = Number((draft as any)?.business_id ?? (draft as any)?.businessId);
+        if (!Number.isNaN(draftBiz)) defaults.business_id = draftBiz;
         if (!mounted) return;
         setFormDefaults(defaults);
         if (defaults?.business_id) {
@@ -279,16 +279,16 @@ export default function ProjectPage({ readOnly = false, initialValues }: Project
               />
             </div>
             {!readOnly && (
-            <div className="sm:col-span-1 flex">
-              <Button
-                type="button"
-                variant="ghost"
-                onClick={() => remove(index)}
-                disabled={fields.length <= 1}
-              >
-                Remove
-              </Button>
-            </div>
+              <div className="sm:col-span-1 flex">
+                <Button
+                  type="button"
+                  variant="ghost"
+                  onClick={() => remove(index)}
+                  disabled={fields.length <= 1}
+                >
+                  Remove
+                </Button>
+              </div>
             )}
           </div>
         ))}
@@ -347,47 +347,47 @@ export default function ProjectPage({ readOnly = false, initialValues }: Project
     <LayoutWithoutSidebar shiftY="-translate-y-0">
       <FormWrapper onSubmit={handleSubmit} defaultValues={formDefaults}>
         {/* This section introduce about the project spesification for the consultant to register a new project and tie with all active ownership, after the registration is successful it will send to mbmb for review, once the review is completed and the consultant have to pay the amount of the project */}
-  <FormSectionHeader title="Ownership Information" description="Please fill in the details of your project. This information will be used to register your project with MBMB." />
-  <Spacing size="lg" />
-  <div className={readOnly ? 'pointer-events-none opacity-90' : ''}>
-    <SelectField id="business_id" name="business_id" label="Business" options={businessOptions} requiredMessage="Business is required" onChange={(e) => { const v = Number(e.target.value); setSelectedBusinessId(v); if (typeof window !== 'undefined') { try { localStorage.setItem('myskb_last_business_id', String(v)); } catch {} } }} />
-  </div>
-  <Spacing size="lg" />
-    <div className={readOnly ? 'pointer-events-none opacity-90' : ''}>
-    <OwnersFieldArray ownerOptions={ownerOptions} selectedBusinessId={selectedBusinessId} readOnly={readOnly} presetOwnershipIds={(() => {
-      // Options now use user_id values; preset directly with owners_user_ids
-      const uids = (formDefaults as any)?.owners_user_ids as number[] | undefined;
-      if (!Array.isArray(uids) || uids.length === 0) return undefined;
-      const clean = Array.from(new Set(uids.map(Number).filter((n) => !Number.isNaN(n))));
-      return clean.length ? clean : undefined;
-    })()} />
-    </div>
-    <Spacing size="sm" />
+        <FormSectionHeader title="Ownership Information" description="Please fill in the details of your project. This information will be used to register your project with MBMB." />
+        <Spacing size="lg" />
+        <div className={readOnly ? 'pointer-events-none opacity-90' : ''}>
+          <SelectField id="business_id" name="business_id" label="Business" options={businessOptions} requiredMessage="Business is required" onChange={(e) => { const v = Number(e.target.value); setSelectedBusinessId(v); if (typeof window !== 'undefined') { try { localStorage.setItem('myskb_last_business_id', String(v)); } catch { } } }} />
+        </div>
+        <Spacing size="lg" />
+        <div className={readOnly ? 'pointer-events-none opacity-90' : ''}>
+          <OwnersFieldArray ownerOptions={ownerOptions} selectedBusinessId={selectedBusinessId} readOnly={readOnly} presetOwnershipIds={(() => {
+            // Options now use user_id values; preset directly with owners_user_ids
+            const uids = (formDefaults as any)?.owners_user_ids as number[] | undefined;
+            if (!Array.isArray(uids) || uids.length === 0) return undefined;
+            const clean = Array.from(new Set(uids.map(Number).filter((n) => !Number.isNaN(n))));
+            return clean.length ? clean : undefined;
+          })()} />
+        </div>
+        <Spacing size="sm" />
         <Spacing size="lg" />
 
         <div className={readOnly ? 'pointer-events-none opacity-90' : ''}>
           <RadioGroupField name="landOrBuildingOwnerList" label="*Is the owner is not land or building owner?" options={landOrBuildingOwnerList} inline={true} requiredMessage="Please select a land or building owner" />
         </div>
         <Spacing size="sm" />
-  <div className={readOnly ? 'pointer-events-none opacity-90' : ''}>
-    <FileUploadField name="statutoryDeclarationFile" label="Statutory Declaration File" description="PDF up to 10MB" accept="application/pdf" requiredMessage="Please upload a cover photo statutory declaration" />
-  </div>
+        <div className={readOnly ? 'pointer-events-none opacity-90' : ''}>
+          <FileUploadField name="statutoryDeclarationFile" label="Statutory Declaration File" description="PDF up to 10MB" accept="application/pdf" requiredMessage="Please upload a cover photo statutory declaration" />
+        </div>
         <Spacing size="sm" />
-  <div className={readOnly ? 'pointer-events-none opacity-90' : ''}>
-    <FileUploadField name="landHeirDeclarationFile" label="Land Heir Declaration" description="PDF up to 10MB" accept="application/pdf" requiredMessage="Please upload a cover photo land heir declaration" />
-  </div>
+        <div className={readOnly ? 'pointer-events-none opacity-90' : ''}>
+          <FileUploadField name="landHeirDeclarationFile" label="Land Heir Declaration" description="PDF up to 10MB" accept="application/pdf" requiredMessage="Please upload a cover photo land heir declaration" />
+        </div>
         <Spacing size="sm" />
-  <div className={readOnly ? 'pointer-events-none opacity-90' : ''}>
-    <FileUploadField name="rentalAgreementFile" label="Rental Agreement" description="PDF up to 10MB" accept="application/pdf" requiredMessage="Please upload a cover photo rental agreement" />
-  </div>
+        <div className={readOnly ? 'pointer-events-none opacity-90' : ''}>
+          <FileUploadField name="rentalAgreementFile" label="Rental Agreement" description="PDF up to 10MB" accept="application/pdf" requiredMessage="Please upload a cover photo rental agreement" />
+        </div>
         <LineSeparator />
 
         <FormSectionHeader title="Project Information" description="Please fill in the details of your project. This information will be used to register your project with MBMB." />
         <Spacing size="lg" />
-  <InputText id="projectTitle" name="projectTitle" label="Project Title" requiredMessage="Project Title is required" readOnly={readOnly} />
+        <InputText id="projectTitle" name="projectTitle" label="Project Title" requiredMessage="Project Title is required" readOnly={readOnly} />
         <Spacing size="lg" />
 
-  <InputText id="address" name="address" label="Project Address" requiredMessage="Address is required" readOnly={readOnly} />
+        <InputText id="address" name="address" label="Project Address" requiredMessage="Address is required" readOnly={readOnly} />
 
         <Spacing size="sm" />
         <FormRow columns={3}>
@@ -405,10 +405,10 @@ export default function ProjectPage({ readOnly = false, initialValues }: Project
         <FormSectionHeader title="Land Infromation" description="Provide additional details about your land." />
         <Spacing size="lg" />
 
-  <InputText id="landAddress" name="landAddress" label="Subdistrict / Town / City Area" requiredMessage="Subdistrict / Town / City Area is required" readOnly={readOnly} />
+        <InputText id="landAddress" name="landAddress" label="Subdistrict / Town / City Area" requiredMessage="Subdistrict / Town / City Area is required" readOnly={readOnly} />
         <Spacing size="sm" />
 
-  <InputText id="lotNumber" name="lotNumber" label="Lot / Plot Number" requiredMessage="Lot / Plot Number" readOnly={readOnly} />
+        <InputText id="lotNumber" name="lotNumber" label="Lot / Plot Number" requiredMessage="Lot / Plot Number" readOnly={readOnly} />
         <Spacing size="sm" />
 
         <div className={readOnly ? 'pointer-events-none opacity-90' : ''}>
@@ -422,27 +422,27 @@ export default function ProjectPage({ readOnly = false, initialValues }: Project
         <Spacing size="sm" />
 
 
-  <InputText id="spesificCondition" name="spesificCondition" label="Specific Conditions" readOnly={readOnly} />
+        <InputText id="spesificCondition" name="spesificCondition" label="Specific Conditions" readOnly={readOnly} />
         <Spacing size="sm" />
 
-  <InputText id="landArea" name="landArea" label="Land Area (m2)" type="number" requiredMessage="Land Area is required" readOnly={readOnly} />
+        <InputText id="landArea" name="landArea" label="Land Area (m2)" type="number" requiredMessage="Land Area is required" readOnly={readOnly} />
         <Spacing size="sm" />
 
-  <InputText id="existingCrops" name="existingCrops" label="Existing Crops" readOnly={readOnly} />
+        <InputText id="existingCrops" name="existingCrops" label="Existing Crops" readOnly={readOnly} />
         <Spacing size="sm" />
 
-  <InputText id="existingBuilding" name="existingBuilding" label="Existing Building" type="number" readOnly={readOnly} />
+        <InputText id="existingBuilding" name="existingBuilding" label="Existing Building" type="number" readOnly={readOnly} />
         <Spacing size="sm" />
 
-  <InputText id="residentialBuilding" name="residentialBuilding" label="Number of permanent residential building units
+        <InputText id="residentialBuilding" name="residentialBuilding" label="Number of permanent residential building units
 " type="number" readOnly={readOnly} />
         <Spacing size="sm" />
 
-  <InputText id="semiResidentialBuilding" name="semiResidentialBuilding" label="Number of semi-permanent residential building units
+        <InputText id="semiResidentialBuilding" name="semiResidentialBuilding" label="Number of semi-permanent residential building units
 " type="number" readOnly={readOnly} />
         <Spacing size="sm" />
 
-  <InputText id="otherBuilding" name="otherBuilding" label="Other buildings" type="number" readOnly={readOnly} />
+        <InputText id="otherBuilding" name="otherBuilding" label="Other buildings" type="number" readOnly={readOnly} />
         <Spacing size="sm" />
 
         <LineSeparator />
@@ -478,22 +478,22 @@ export default function ProjectPage({ readOnly = false, initialValues }: Project
         )}
 
 
-  </FormWrapper>
+      </FormWrapper>
 
 
       {!readOnly && (
-      <ConfirmDialog
-        open={showCancelDialog}
-        title="Discard changes?"
-        description="Your unsaved changes will be lost. Are you sure you want to leave this form?"
-        confirmText="Yes, discard"
-        cancelText="Stay"
-        onCancel={() => setShowCancelDialog(false)}
-        onConfirm={() => {
-          setShowCancelDialog(false);
-          router.push('/form'); // or reset form
-        }}
-      />
+        <ConfirmDialog
+          open={showCancelDialog}
+          title="Discard changes?"
+          description="Your unsaved changes will be lost. Are you sure you want to leave this form?"
+          confirmText="Yes, discard"
+          cancelText="Stay"
+          onCancel={() => setShowCancelDialog(false)}
+          onConfirm={() => {
+            setShowCancelDialog(false);
+            router.push('/form'); // or reset form
+          }}
+        />
       )}
 
     </LayoutWithoutSidebar>

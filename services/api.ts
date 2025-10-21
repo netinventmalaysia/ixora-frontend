@@ -828,6 +828,7 @@ const sanitizeProjectPayload = (src: ProjectFormPayload) => {
 
 // Save project as draft
 export const saveProjectDraft = async (payload: ProjectFormPayload, opts: { draftId?: number | string } = {}) => {
+    console.log('[API][Project] saving draft:', payload, 'opts:', opts);
     const businessIdRaw = payload?.business_id ?? (payload as any)?.businessId;
     const business_id = Number(businessIdRaw);
     if (Number.isNaN(business_id)) {
