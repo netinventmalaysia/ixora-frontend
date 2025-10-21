@@ -111,14 +111,14 @@ export default function ProjectPage({ readOnly = false, initialValues }: Project
       return;
     }
     const draftId = router.query?.draft_id as string | undefined;
-    const businessId = router.query?.business_id as string | undefined;
+  const businessId = router.query?.business_id as string | undefined;
     console.log('Draft ID from URL:', draftId);
     console.log('Business ID from URL:', businessId);
     if (!draftId) return;
     let mounted = true;
     (async () => {
       try {
-        const draft = await getProjectById(draftId, { businessId: businessId ? Number(businessId) : undefined });
+  const draft = await getProjectById(draftId, { businessId: businessId ? Number(businessId) : undefined, status: 'draft' });
         const defaults = { ...((draft as any)?.data || {}) } as Record<string, any>;
         // Transform legacy flat keys like 'buildings.0.openArea' into array form expected by useFieldArray
         if (!Array.isArray(defaults.buildings)) {

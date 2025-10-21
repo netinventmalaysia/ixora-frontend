@@ -986,7 +986,10 @@ export const listProjects = async (params: ProjectListParams): Promise<ProjectLi
 };
 
 // Get single project by id myskb/project
-export const getProject = async (id: number | string, opts: { viewerUserId?: number, businessId?: number } = {}): Promise<Record<string, any> | null> => {
+export const getProject = async (
+    id: number | string,
+    opts: { viewerUserId?: number; businessId?: number; status?: string } = {}
+): Promise<Record<string, any> | null> => {
     try {
         console.log('Fetching project:', id, opts);
         let viewerUserId = opts.viewerUserId;
@@ -997,6 +1000,7 @@ export const getProject = async (id: number | string, opts: { viewerUserId?: num
         const params: any = {};
         if (viewerUserId !== undefined && !Number.isNaN(Number(viewerUserId))) params.viewerUserId = Number(viewerUserId);
         if (opts.businessId !== undefined && !Number.isNaN(Number(opts.businessId))) params.businessId = Number(opts.businessId);
+        if (opts.status !== undefined && String(opts.status).length > 0) params.status = String(opts.status);
         const { data } = await api.get(`/myskb/project/${id}`, { params });
         return data;
     } catch {
@@ -1006,10 +1010,12 @@ export const getProject = async (id: number | string, opts: { viewerUserId?: num
 
 
 // Get a single submitted/active project by id
-export const getProjectById = async (id: number | string, opts: { viewerUserId?: number, businessId?: number } = {}): Promise<Record<string, any> | null> => {
-    const viewerUserId = opts.viewerUserId;
-    const businessId = opts.businessId;
-    const project = await getProject(id, { viewerUserId, businessId });
+export const getProjectById = async (
+    id: number | string,
+    opts: { viewerUserId?: number; businessId?: number; status?: string } = {}
+): Promise<Record<string, any> | null> => {
+    const { viewerUserId, businessId, status } = opts;
+    const project = await getProject(id, { viewerUserId, businessId, status });
     return project || null;
 };
 
