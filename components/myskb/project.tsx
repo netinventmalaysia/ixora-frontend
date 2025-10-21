@@ -11,8 +11,8 @@ import ConfirmDialog from "todo/components/forms/ConfirmDialog";
 import { useRouter } from "next/router";
 import { useEffect, useState, useRef } from "react";
 import { useFormContext, useWatch, useFieldArray } from "react-hook-form";
-import RadioGroupField from "todo/components/forms/RadioGroupField";
-import { landOrBuildingOwnerList } from "todo/components/data/RadioList";
+// import RadioGroupField from "todo/components/forms/RadioGroupField";
+// import { landOrBuildingOwnerList } from "todo/components/data/RadioList";
 import toast from 'react-hot-toast';
 import LayoutWithoutSidebar from "../main/LayoutWithoutSidebar";
 import InputText from "todo/components/forms/InputText";
@@ -203,6 +203,54 @@ export default function ProjectPage({ readOnly = false, initialValues }: Project
   }
 
   // BuildingsTable extracted as reusable component
+  // Attachments that depend on selected owners' category: if any owner is Building or Land Owner, attachments are optional
+  function OwnerCategoryBasedAttachments({ readOnly }: { readOnly?: boolean }) {
+    // eslint-disable-next-line react-hooks/rules-of-hooks
+    const { control } = useFormContext();
+    // eslint-disable-next-line react-hooks/rules-of-hooks
+    const owners = useWatch({ control, name: 'owners' }) as Array<any> | undefined;
+    const hasBuildingOrLand = Array.isArray(owners)
+      ? owners.some((o) => {
+          const cat = String(o?.category || '').toLowerCase();
+          return cat === 'building owner' || cat === 'land owner';
+        })
+      : false;
+    const requireAttachments = !hasBuildingOrLand;
+    if (!requireAttachments) return null;
+    return (
+      <>
+        <div className={readOnly ? 'pointer-events-none opacity-90' : ''}>
+          <FileUploadField
+            name="statutoryDeclarationFile"
+            label="Statutory Declaration File"
+            description="PDF up to 10MB"
+            accept="application/pdf"
+            requiredMessage={'Please upload a cover photo statutory declaration'}
+          />
+        </div>
+        <Spacing size="sm" />
+        <div className={readOnly ? 'pointer-events-none opacity-90' : ''}>
+          <FileUploadField
+            name="landHeirDeclarationFile"
+            label="Land Heir Declaration"
+            description="PDF up to 10MB"
+            accept="application/pdf"
+            requiredMessage={'Please upload a cover photo land heir declaration'}
+          />
+        </div>
+        <Spacing size="sm" />
+        <div className={readOnly ? 'pointer-events-none opacity-90' : ''}>
+          <FileUploadField
+            name="rentalAgreementFile"
+            label="Rental Agreement"
+            description="PDF up to 10MB"
+            accept="application/pdf"
+            requiredMessage={'Please upload a cover photo rental agreement'}
+          />
+        </div>
+      </>
+    );
+  }
 
   // Button that saves a draft using react-hook-form values (keeps nested arrays like buildings)
   function DraftSaveButton({ onSave, loading }: { onSave: (data: any) => void | Promise<void>; loading: boolean }) {
@@ -353,6 +401,7 @@ export default function ProjectPage({ readOnly = false, initialValues }: Project
           <SelectField id="business_id" name="business_id" label="Business" options={businessOptions} requiredMessage="Business is required" onChange={(e) => { const v = Number(e.target.value); setSelectedBusinessId(v); if (typeof window !== 'undefined') { try { localStorage.setItem('myskb_last_business_id', String(v)); } catch { } } }} />
         </div>
         <Spacing size="lg" />
+        
         <div className={readOnly ? 'pointer-events-none opacity-90' : ''}>
           <OwnersFieldArray ownerOptions={ownerOptions} selectedBusinessId={selectedBusinessId} readOnly={readOnly} presetOwnershipIds={(() => {
             // Options now use user_id values; preset directly with owners_user_ids
@@ -362,24 +411,8 @@ export default function ProjectPage({ readOnly = false, initialValues }: Project
             return clean.length ? clean : undefined;
           })()} />
         </div>
-        <Spacing size="sm" />
         <Spacing size="lg" />
-
-        <div className={readOnly ? 'pointer-events-none opacity-90' : ''}>
-          <RadioGroupField name="landOrBuildingOwnerList" label="*Is the owner is not land or building owner?" options={landOrBuildingOwnerList} inline={true} requiredMessage="Please select a land or building owner" />
-        </div>
-        <Spacing size="sm" />
-        <div className={readOnly ? 'pointer-events-none opacity-90' : ''}>
-          <FileUploadField name="statutoryDeclarationFile" label="Statutory Declaration File" description="PDF up to 10MB" accept="application/pdf" requiredMessage="Please upload a cover photo statutory declaration" />
-        </div>
-        <Spacing size="sm" />
-        <div className={readOnly ? 'pointer-events-none opacity-90' : ''}>
-          <FileUploadField name="landHeirDeclarationFile" label="Land Heir Declaration" description="PDF up to 10MB" accept="application/pdf" requiredMessage="Please upload a cover photo land heir declaration" />
-        </div>
-        <Spacing size="sm" />
-        <div className={readOnly ? 'pointer-events-none opacity-90' : ''}>
-          <FileUploadField name="rentalAgreementFile" label="Rental Agreement" description="PDF up to 10MB" accept="application/pdf" requiredMessage="Please upload a cover photo rental agreement" />
-        </div>
+        <OwnerCategoryBasedAttachments readOnly={readOnly} />
         <LineSeparator />
 
         <FormSectionHeader title="Project Information" description="Please fill in the details of your project. This information will be used to register your project with MBMB." />
