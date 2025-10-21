@@ -164,9 +164,15 @@ const Application: React.FC = () => {
 
         {/* Filtered list */}
         <ItemList
-          items={filteredProjects}
+          items={filteredProjects.map((p) => ({
+            ...p,
+            // Override creator fields so ItemList displays business name
+            createdByName: p?.business?.name || p?.businessName || p?.business_name || p?.data?.businessName,
+          }))}
           statusClasses={statuses}
           actions={MySkbActions}
+          byLabel="Business"
+          showViewOnMobile
           onView={(item) => {
             const isDraft = String(item.status || '').toLowerCase() === 'draft';
             if (isDraft) {

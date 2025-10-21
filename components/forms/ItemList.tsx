@@ -33,13 +33,17 @@ type ItemListProps = {
   actions?: ActionItem[];
   onItemUpdated?: (updated: Item) => void;
   onView?: (item: Item) => void; // optional override for View button
+  // Optional label to replace the default 'By:' label in the metadata row
+  byLabel?: string;
+  // If true, show the View button on mobile (default keeps desktop-only)
+  showViewOnMobile?: boolean;
 };
 
 function classNames(...classes: string[]) {
   return classes.filter(Boolean).join(' ');
 }
 
-export default function ItemList({ items, statusClasses, actions = [], onItemUpdated, onView }: ItemListProps) {
+export default function ItemList({ items, statusClasses, actions = [], onItemUpdated, onView, byLabel = 'By', showViewOnMobile = false }: ItemListProps) {
   const [isOpen, setIsOpen] = useState(false);
   const [selected, setSelected] = useState<Item | null>(null);
 
@@ -160,8 +164,8 @@ export default function ItemList({ items, statusClasses, actions = [], onItemUpd
                   {getStatus(item) ?? '—'}
                 </p>
               </div>
-              <div className="mt-1 flex items-center gap-x-2 text-xs/5 text-gray-500">
-                <p className="whitespace-nowrap">
+              <div className="mt-1 flex flex-col sm:flex-row sm:items-center gap-y-1 sm:gap-x-2 text-xs/5 text-gray-500">
+                <p className="whitespace-normal sm:whitespace-nowrap">
                   Created: {item.dueDate ? (
                     <time dateTime={item.dueDateTime}>{item.dueDate}</time>
                   ) : item.createdAt ? (
@@ -170,11 +174,11 @@ export default function ItemList({ items, statusClasses, actions = [], onItemUpd
                     '—'
                   )}
                 </p>
-                <svg viewBox="0 0 2 2" className="size-0.5 fill-current">
+                <svg viewBox="0 0 2 2" className="hidden sm:block size-0.5 fill-current">
                   <circle r={1} cx={1} cy={1} />
                 </svg>
-                <p className="whitespace-nowrap">By: {getCreator(item) ?? '—'}</p>
-                <svg viewBox="0 0 2 2" className="size-0.5 fill-current">
+                <p className="whitespace-normal sm:whitespace-nowrap">{byLabel}: {getCreator(item) ?? '—'}</p>
+                <svg viewBox="0 0 2 2" className="hidden sm:block size-0.5 fill-current">
                   <circle r={1} cx={1} cy={1} />
                 </svg>
                 {/* Consultant submission hint */}
@@ -194,7 +198,10 @@ export default function ItemList({ items, statusClasses, actions = [], onItemUpd
               <button
                 type="button"
                 onClick={() => (onView ? onView(item) : openModal(item))}
-                className="hidden rounded-md bg-white px-2.5 py-1.5 text-sm font-semibold text-gray-900 shadow-xs ring-1 ring-gray-300 ring-inset hover:bg-gray-50 sm:block"
+                className={(showViewOnMobile
+                  ? 'inline-flex'
+                  : 'hidden sm:inline-flex') +
+                  ' rounded-md bg-white px-2.5 py-1.5 text-sm font-semibold text-gray-900 shadow-xs ring-1 ring-gray-300 ring-inset hover:bg-gray-50'}
               >
                 View<span className="sr-only">, {item.name}</span>
               </button>
