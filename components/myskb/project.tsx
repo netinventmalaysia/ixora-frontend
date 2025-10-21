@@ -18,7 +18,7 @@ import LayoutWithoutSidebar from "../main/LayoutWithoutSidebar";
 import InputText from "todo/components/forms/InputText";
 import BuildingsTable from "todo/components/forms/BuildingsTable";
 import FileUploadField from "../forms/FileUpload";
-import { fetchMyBusinesses, saveProjectDraft, submitProject, listOwnerships, getProjectDraftById } from '@/services/api';
+import { fetchMyBusinesses, saveProjectDraft, submitProject, listOwnerships, getProjectById } from '@/services/api';
 type ProjectPageProps = { readOnly?: boolean; initialValues?: Record<string, any> };
 export default function ProjectPage({ readOnly = false, initialValues }: ProjectPageProps) {
   const router = useRouter();
@@ -105,17 +105,21 @@ export default function ProjectPage({ readOnly = false, initialValues }: Project
     if (initialValues) {
       // If initial values provided (read-only route), use them directly.
       setFormDefaults(initialValues);
+      console.log('Initial values provided:', initialValues);
       const bid = Number((initialValues as any).business_id ?? (initialValues as any).businessId);
       if (!Number.isNaN(bid)) setSelectedBusinessId(bid);
       return;
     }
-    const draftId = router.query?.draft_id as string | undefined;
+  const draftId = router.query?.draft_id as string | undefined;
+  const businessId = router.query?.business_id as string | undefined;
+    console.log('Draft ID from URL:', draftId);
+    console.log('Business ID from URL:', businessId);
     if (!draftId) return;
     let mounted = true;
     (async () => {
       try {
-        const draft = await getProjectDraftById(draftId);
-        const defaults = { ...(draft?.data || {}) } as Record<string, any>;
+  const draft = await getProjectById(draftId, { businessId: businessId ? Number(businessId) : undefined });
+  const defaults = { ...((draft as any)?.data || {}) } as Record<string, any>;
         // Transform legacy flat keys like 'buildings.0.openArea' into array form expected by useFieldArray
         if (!Array.isArray(defaults.buildings)) {
           const map: Record<number, any> = {};
@@ -150,7 +154,8 @@ export default function ProjectPage({ readOnly = false, initialValues }: Project
           delete (defaults as any).ownerCategory;
           delete (defaults as any).ownershipCategory;
         }
-  if (draft?.business_id) defaults.business_id = draft.business_id;
+    const draftBiz = Number((draft as any)?.business_id ?? (draft as any)?.businessId);
+    if (!Number.isNaN(draftBiz)) defaults.business_id = draftBiz;
         if (!mounted) return;
         setFormDefaults(defaults);
         if (defaults?.business_id) {

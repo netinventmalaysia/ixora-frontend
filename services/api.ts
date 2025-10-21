@@ -939,32 +939,6 @@ export const listProjectDrafts = async (params: { limit?: number; offset?: numbe
     }
 };
 
-// Get a single draft by id and normalize into { id, business_id, data }
-export const getProjectDraftById = async (id: number | string, opts: { viewerUserId?: number } = {}): Promise<{ id: number | string; business_id?: number; data: Record<string, any> }> => {
-    const normalize = (raw: any): { id: number | string; business_id?: number; data: Record<string, any> } => {
-        if (!raw) return { id, data: {} };
-        const draftId = raw.id ?? id;
-        const business_id = Number(raw.business_id ?? raw.businessId);
-        // Heuristic: backend may store form fields under one of these keys
-        const candidate = raw.data ?? raw.form_data ?? raw.payload ?? raw.content ?? raw.fields;
-        let form: Record<string, any> = {};
-        if (candidate && typeof candidate === 'object') {
-            form = { ...candidate };
-        } else if (raw && typeof raw === 'object') {
-            // If the object itself looks like the form, pick likely keys (non-meta)
-            const metaKeys = new Set(['id', 'createdAt', 'created_at', 'updatedAt', 'updated_at', 'status', 'business_id', 'businessId']);
-            form = Object.fromEntries(Object.entries(raw).filter(([k]) => !metaKeys.has(k)));
-        }
-        // Ensure top-level defaults align with our form field names
-        if (!Number.isNaN(business_id)) form.business_id = business_id;
-        return { id: draftId, business_id: Number.isNaN(business_id) ? undefined : business_id, data: form };
-    };
-    // Backend no longer exposes GET /myskb/project/draft/:id; list and find instead
-    const list = await listProjectDrafts({ limit: 200, offset: 0, viewerUserId: opts.viewerUserId });
-    const found = (list.data || []).find((d) => String(d.id) === String(id));
-    if (found) return normalize(found);
-    return { id, data: {} };
-};
 
 // List submitted/active projects (non-drafts)
 export interface ProjectListParams {
@@ -1013,6 +987,7 @@ export const listProjects = async (params: ProjectListParams): Promise<ProjectLi
 // Get single project by id myskb/project
 export const getProject = async (id: number | string, opts: { viewerUserId?: number, businessId?: number } = {}): Promise<Record<string, any> | null> => {
     try {
+        console.log('Fetching project:', id, opts);
         let viewerUserId = opts.viewerUserId;
         if ((viewerUserId === undefined || viewerUserId === null) && typeof window !== 'undefined') {
             const uid = localStorage.getItem('userId');

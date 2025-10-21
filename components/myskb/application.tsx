@@ -171,7 +171,8 @@ const Application: React.FC = () => {
             const isDraft = String(item.status || '').toLowerCase() === 'draft';
             if (isDraft) {
               const id = typeof item.id === 'string' ? item.id : String(item.id);
-              router.push(`/myskb/project?draft_id=${encodeURIComponent(id)}`);
+              //as well pass the businessId
+              router.push(`/myskb/project?draft_id=${encodeURIComponent(id)}&business_id=${encodeURIComponent(item.businessId)}`);
               return;
             }
             // Navigate to submitted project detail

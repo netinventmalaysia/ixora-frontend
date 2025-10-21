@@ -3,7 +3,7 @@ import { useRouter } from 'next/router';
 import SidebarLayout from 'todo/components/main/SidebarLayout';
 import Heading from 'todo/components/forms/Heading';
 import ProjectReadOnly from 'todo/components/myskb/ProjectReadOnly';
-import { getProjectById, getProjectDraftById } from '@/services/api';
+import { getProjectById } from '@/services/api';
 
 const ProjectDetailPage: React.FC = () => {
   const router = useRouter();
@@ -40,9 +40,6 @@ const ProjectDetailPage: React.FC = () => {
           setLoading(false);
           return;
         }
-        // Fallback to draft
-        const draft = await getProjectDraftById(id as string, { viewerUserId: validViewer });
-        if (mounted) setData(draft);
       } catch (e: any) {
         if (mounted) setError(e?.message || 'Failed to load project');
       } finally {
