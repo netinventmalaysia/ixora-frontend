@@ -152,6 +152,32 @@ export const updateUser = (userData: any) => {
 };
 export const createBusiness = (businessData: any) => api.post('/business', businessData);
 
+// Admin: Users management
+export interface ListUsersParams {
+    search?: string;
+    role?: string;
+    limit?: number;
+    offset?: number;
+}
+
+export const listUsers = async (params: ListUsersParams = {}) => {
+    const query: any = {};
+    if (params.search) query.search = params.search;
+    if (params.role) query.role = params.role;
+    if (typeof params.limit === 'number') query.limit = String(params.limit);
+    if (typeof params.offset === 'number') query.offset = String(params.offset);
+    const { data } = await api.get('/users/admin', { params: query });
+    // Expected shape: { data: User[], total, limit, offset }
+    if (data && Array.isArray(data.data)) return data;
+    // Fallback if backend returns array directly
+    return Array.isArray(data) ? { data, total: data.length } : (data || {});
+};
+
+export const updateUserRole = async (userId: number, role: string) => {
+    const { data } = await api.patch(`/users/${userId}/role`, { role });
+    return data;
+};
+
 // Fetch the currently authenticated user (alternative to email search)
 
 // Fetch user(s) by email. Backend may return an object or an array — callers should handle both shapes.

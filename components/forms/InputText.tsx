@@ -16,6 +16,9 @@ export type InputTextProps = {
   rightElement?: ReactNode;
   disabled?: boolean;
   readOnly?: boolean;
+  // Optional controlled props to allow standalone usage without react-hook-form
+  value?: string | number;
+  onChange?: (e: React.ChangeEvent<HTMLInputElement>) => void;
 };
 
 export default function InputText({
@@ -32,12 +35,21 @@ export default function InputText({
   rightElement,
   disabled = false,
   readOnly = false,
+  value,
+  onChange,
 }: InputTextProps) {
-  const {
-    register,
-    formState: { errors },
-    control,
-  } = useFormContext();
+  // Try to access react-hook-form context if available; otherwise support standalone usage
+  let methods: any = null;
+  try {
+    methods = useFormContext();
+  } catch (e) {
+    methods = null;
+  }
+
+  const register = methods?.register as any;
+  const errors = methods?.formState?.errors || {};
+  const control = methods?.control;
+  const [localValue, setLocalValue] = useState<string | number>("");
 
   const [showPassword, setShowPassword] = useState(false);
   const isPassword = type === "password";
@@ -46,7 +58,7 @@ export default function InputText({
 
   //Watch the identification type only if relevant
   let selectedIdType: string | null = null;
-  if (typeof window !== 'undefined' && isIdentificationField) {
+  if (typeof window !== 'undefined' && isIdentificationField && methods) {
     try {
       selectedIdType = useWatch({ control, name: "identificationType" });
     } catch (e) {
@@ -109,6 +121,9 @@ export default function InputText({
 
   const IconComponent = icon;
 
+  // Prepare register only when form context is present
+  const reg = methods ? register(name, validationRules) : undefined;
+
   return (
     <div className={`w-full ${colSpan}`}>
       <label htmlFor={id} className="block text-sm font-medium text-gray-900">
@@ -121,15 +136,31 @@ export default function InputText({
             <span className="shrink-0 text-sm text-gray-500">{prefix}</span>
           )}
 
-          <input
-            id={id}
-            type={isPassword && showPassword ? "text" : type}
-            {...register(name, validationRules)}
-            placeholder={placeholder}
-            disabled={disabled}
-            readOnly={readOnly}
-            className="block w-full grow py-1.5 pl-1 pr-1 text-sm text-gray-900 placeholder-gray-400 focus:outline-none"
-          />
+          {methods ? (
+            <input
+              id={id}
+              type={isPassword && showPassword ? "text" : type}
+              {...(reg || {})}
+              placeholder={placeholder}
+              disabled={disabled}
+              readOnly={readOnly}
+              className="block w-full grow py-1.5 pl-1 pr-1 text-sm text-gray-900 placeholder-gray-400 focus:outline-none"
+            />
+          ) : (
+            <input
+              id={id}
+              type={isPassword && showPassword ? "text" : type}
+              value={value !== undefined ? value : localValue}
+              onChange={(e) => {
+                setLocalValue(e.target.value);
+                onChange?.(e);
+              }}
+              placeholder={placeholder}
+              disabled={disabled}
+              readOnly={readOnly}
+              className="block w-full grow py-1.5 pl-1 pr-1 text-sm text-gray-900 placeholder-gray-400 focus:outline-none"
+            />
+          )}
 
           {isPassword ? (
             <button
