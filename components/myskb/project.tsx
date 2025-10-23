@@ -122,7 +122,12 @@ export default function ProjectPage({ readOnly = false, initialValues }: Project
     (async () => {
       try {
   const draft = await getProjectById(draftId, { businessId: businessId ? Number(businessId) : undefined, status: 'draft' });
-        const defaults = { ...((draft as any)?.data || {}) } as Record<string, any>;
+    const defaults = { ...((draft as any)?.data || {}) } as Record<string, any>;
+    // If API returns top-level coordinates but not inside data, copy them into defaults
+    const topLat = (draft as any)?.latitude;
+    const topLng = (draft as any)?.longitude;
+    if ((defaults as any).latitude === undefined && topLat !== undefined) (defaults as any).latitude = topLat;
+    if ((defaults as any).longitude === undefined && topLng !== undefined) (defaults as any).longitude = topLng;
         // Transform legacy flat keys like 'buildings.0.openArea' into array form expected by useFieldArray
         if (!Array.isArray(defaults.buildings)) {
           const map: Record<number, any> = {};

@@ -827,6 +827,8 @@ const sanitizeProjectPayload = (src: ProjectFormPayload) => {
         'openArea',
         'closeArea',
         'processingFees',
+        'latitude',
+        'longitude',
     ]);
     for (const [k, v] of Object.entries(src || {})) {
         // handled separately or must remain top-level
