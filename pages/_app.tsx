@@ -2,6 +2,7 @@ import "todo/styles/globals.css";
 import type { AppProps } from "next/app";
 import { Toaster } from 'react-hot-toast';
 import 'react-datepicker/dist/react-datepicker.css';
+import 'leaflet/dist/leaflet.css';
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/router';
 import PullToRefresh from '@/components/common/PullToRefresh';

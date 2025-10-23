@@ -5,7 +5,7 @@ import FormActions from "todo/components/forms/FormActions";
 import Spacing from "todo/components/forms/Spacing";
 import LineSeparator from "todo/components/forms/LineSeparator";
 import FormRow from "todo/components/forms/FormRow";
-import { countryOptions, landStatusOptions, OwnershipCategory, typeGrantOptions } from "todo/components/data/SelectionList";
+import { landStatusOptions, OwnershipCategory, typeGrantOptions } from "todo/components/data/SelectionList";
 import SelectField from "todo/components/forms/SelectField";
 import ConfirmDialog from "todo/components/forms/ConfirmDialog";
 import { useRouter } from "next/router";
@@ -16,6 +16,7 @@ import { useFormContext, useWatch, useFieldArray } from "react-hook-form";
 import toast from 'react-hot-toast';
 import LayoutWithoutSidebar from "../main/LayoutWithoutSidebar";
 import InputText from "todo/components/forms/InputText";
+import GeoAddressMap from "todo/components/forms/GeoAddressMap";
 import BuildingsTable from "todo/components/forms/BuildingsTable";
 import FileUploadField from "../forms/FileUpload";
 import { fetchMyBusinesses, saveProjectDraft, submitProject, listOwnerships, getProjectById } from '@/services/api';
@@ -104,9 +105,11 @@ export default function ProjectPage({ readOnly = false, initialValues }: Project
   useEffect(() => {
     if (initialValues) {
       // If initial values provided (read-only route), use them directly.
-      setFormDefaults(initialValues);
-      console.log('Initial values provided:', initialValues);
-      const bid = Number((initialValues as any).business_id ?? (initialValues as any).businessId);
+      const defaults = { country: 'Malaysia', ...(initialValues as any) };
+      if (!defaults.country) (defaults as any).country = 'Malaysia';
+      setFormDefaults(defaults);
+      console.log('Initial values provided:', defaults);
+      const bid = Number((defaults as any).business_id ?? (defaults as any).businessId);
       if (!Number.isNaN(bid)) setSelectedBusinessId(bid);
       return;
     }
@@ -430,7 +433,18 @@ export default function ProjectPage({ readOnly = false, initialValues }: Project
         </FormRow>
         <Spacing size="sm" />
         <div className={readOnly ? 'pointer-events-none opacity-90' : ''}>
-          <SelectField id="country" name="country" label="Country" options={countryOptions} requiredMessage="Country is required" />
+          <InputText id="country" name="country" label="Country" requiredMessage="Country is required" readOnly={readOnly} />
+        </div>
+        <Spacing size="md" />
+        {/* Map: Geocode address -> Lat/Lng; draggable marker to fine-tune */}
+        <div className={readOnly ? 'pointer-events-none opacity-90' : ''}>
+          <GeoAddressMap
+            label="Project Location"
+            addressFields={{ address: 'address', city: 'city', state: 'state', postalcode: 'postalcode', country: 'country' }}
+            latField="latitude"
+            lngField="longitude"
+            readOnly={readOnly}
+          />
         </div>
         <Spacing size="sm" />
 
