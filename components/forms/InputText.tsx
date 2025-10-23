@@ -55,6 +55,7 @@ export default function InputText({
   const isPassword = type === "password";
   const isEmail = type === "email";
   const isIdentificationField = name === "identificationNumber";
+  const isPhoneField = name === "phoneNumber";
 
   //Watch the identification type only if relevant
   let selectedIdType: string | null = null;
@@ -108,6 +109,19 @@ export default function InputText({
     },
   };
 
+  // Validation for phone number field (expects digits only; UI may provide a visible prefix like +601)
+  const phoneValidation = {
+    required: requiredMessage || "Phone number is required",
+    validate: (value: string) => {
+      if (!value) return "Phone number is required";
+      const digitsOnly = String(value).replace(/\s|-/g, '');
+      if (!/^\d+$/.test(digitsOnly)) return "Digits only (exclude country code)";
+      // Accept 7–10 digits to cover Malaysian mobile ranges after +601
+      if (digitsOnly.length < 7 || digitsOnly.length > 10) return "Enter 7–10 digits (exclude +601)";
+      return true;
+    },
+  };
+
   // Select the correct validation rule
   const validationRules = isPassword
     ? passwordValidation
@@ -115,6 +129,8 @@ export default function InputText({
       ? emailValidation
       : isIdentificationField
         ? identificationValidation
+        : isPhoneField
+          ? phoneValidation
         : requiredMessage
           ? { required: requiredMessage }
           : {};

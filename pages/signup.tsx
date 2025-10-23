@@ -28,6 +28,7 @@ import Button from "todo/components/forms/Button";
 
 import { useTranslation } from "@/utils/i18n";
 import { createUser } from "todo/services/api";
+import axios from 'axios';
 import { countryOptions } from "todo/components/data/SelectionList";
 import { identificationTypeList } from "todo/components/data/RadioList";
 
@@ -54,6 +55,11 @@ export default function SignUpPage() {
   const { t } = useTranslation();
 
   const [loading, setLoading] = useState(false);
+  const [otpSending, setOtpSending] = useState(false);
+  const [otpVerifying, setOtpVerifying] = useState(false);
+  const [otpRequested, setOtpRequested] = useState(false);
+  const [otpVerified, setOtpVerified] = useState(false);
+  const [otpCode, setOtpCode] = useState("");
   const [playSuccessAnim, setPlaySuccessAnim] = useState(false);
   const [shake, setShake] = useState(false);
   const [showCancelDialog, setShowCancelDialog] = useState(false);
@@ -71,6 +77,22 @@ export default function SignUpPage() {
     try {
       setLoading(true);
 
+      // Normalize phone to E.164 (without +):
+      // UI shows prefix +601; users may enter (1) rest of number, (2) local 0xxxxxxxx, or (3) full 60xxxxxxxx.
+      // We coerce to:
+      //   - if starts with '60' already: keep as is
+      //   - else if starts with '0': '60' + digits.slice(1)
+      //   - else: '601' + digits (user typed part after +601)
+      let normalizedPhone: string | undefined = undefined;
+      if (data.phoneNumber) {
+        const digits = String(data.phoneNumber).replace(/[^\d]/g, '').trim();
+        if (digits) {
+          if (digits.startsWith('60')) normalizedPhone = digits; // E.164 without plus
+          else if (digits.startsWith('0')) normalizedPhone = '60' + digits.slice(1);
+          else normalizedPhone = '601' + digits;
+        }
+      }
+
       const payload: UserProfile = {
         email: data.email,
         password: data.password,
@@ -87,11 +109,16 @@ export default function SignUpPage() {
           payload.dateOfBirth = data.dateOfBirth.toISOString();
         } catch {}
       }
-      if (data.phoneNumber) payload.phoneNumber = data.phoneNumber;
+  if (normalizedPhone) payload.phoneNumber = normalizedPhone;
       if (data.address) payload.address = data.address;
       if (data.city) payload.city = data.city;
       if (data.postalcode) payload.postalcode = data.postalcode;
       if (data.country) payload.country = data.country;
+
+      // Require OTP verified before final submit
+      if (!otpVerified) {
+        throw new Error(t('signup.verifyPhoneFirst', 'Please verify your phone number first'));
+      }
 
       await createUser(payload);
       toast.success(t("signup.createdOk", "Account created successfully!"));
@@ -318,8 +345,80 @@ export default function SignUpPage() {
               id="phoneNumber"
               name="phoneNumber"
               label={t("signup.phoneNumber", "Phone Number")}
+              requiredMessage={t("signup.phoneRequired", "Phone number is required")}
               prefix="+601"
             />
+            <div className="mt-2 flex items-center gap-2">
+              <Button
+                type="button"
+                variant="secondary"
+                loading={otpSending}
+                onClick={async () => {
+                  try {
+                    setOtpSending(true);
+                    const input: HTMLInputElement | null = document.getElementById('phoneNumber') as any;
+                    const raw = (input?.value || '').toString();
+                    const digits = raw.replace(/[^\d]/g, '').trim();
+                    let e164 = '';
+                    if (digits.startsWith('60')) e164 = digits;
+                    else if (digits.startsWith('0')) e164 = '60' + digits.slice(1);
+                    else e164 = '601' + digits;
+                    const base = process.env.NEXT_PUBLIC_API_URL || '';
+                    await axios.post(`${base}/whatsapp/otp/request`, { phone: e164, purpose: 'registration' }, { withCredentials: true });
+                    setOtpRequested(true);
+                    toast.success(t('signup.otpSent', 'OTP sent via WhatsApp'));
+                  } catch (e: any) {
+                    toast.error(e?.response?.data?.message || e?.message || t('signup.otpSendFailed', 'Failed to send OTP'));
+                  } finally {
+                    setOtpSending(false);
+                  }
+                }}
+              >
+                {otpRequested ? t('signup.resendOtp', 'Resend OTP') : t('signup.sendOtp', 'Send OTP')}
+              </Button>
+              {otpVerified && <span className="text-green-600 text-sm">{t('signup.phoneVerified', 'Verified')}</span>}
+            </div>
+            {otpRequested && !otpVerified && (
+              <div className="mt-2 flex items-center gap-2">
+                <input
+                  id="otpCode"
+                  value={otpCode}
+                  onChange={(e) => setOtpCode(e.target.value)}
+                  placeholder={t('signup.enterOtp', 'Enter 6-digit code')}
+                  className="w-40 rounded-md border border-gray-300 px-3 py-1.5 text-sm"
+                  inputMode="numeric"
+                  maxLength={6}
+                />
+                <Button
+                  type="button"
+                  variant="primary"
+                  loading={otpVerifying}
+                  onClick={async () => {
+                    try {
+                      setOtpVerifying(true);
+                      const input: HTMLInputElement | null = document.getElementById('phoneNumber') as any;
+                      const raw = (input?.value || '').toString();
+                      const digits = raw.replace(/[^\d]/g, '').trim();
+                      let e164 = '';
+                      if (digits.startsWith('60')) e164 = digits;
+                      else if (digits.startsWith('0')) e164 = '60' + digits.slice(1);
+                      else e164 = '601' + digits;
+                      const base = process.env.NEXT_PUBLIC_API_URL || '';
+                      await axios.post(`${base}/whatsapp/otp/verify`, { phone: e164, code: otpCode, purpose: 'registration' }, { withCredentials: true });
+                      setOtpVerified(true);
+                      toast.success(t('signup.otpVerified', 'Phone verified'));
+                    } catch (e: any) {
+                      setOtpVerified(false);
+                      toast.error(e?.response?.data?.message || e?.message || t('signup.otpVerifyFailed', 'Invalid or expired code'));
+                    } finally {
+                      setOtpVerifying(false);
+                    }
+                  }}
+                >
+                  {t('signup.verifyOtp', 'Verify')}
+                </Button>
+              </div>
+            )}
             <Spacing size="sm" />
 
             <InputText
