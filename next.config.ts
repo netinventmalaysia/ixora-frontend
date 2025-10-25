@@ -7,7 +7,10 @@ const nextConfig: NextConfig = {
   typescript: { ignoreBuildErrors: true },
   output: 'standalone',
   images: {
-    domains: ['images.unsplash.com'],
+    remotePatterns: [
+      { protocol: 'https', hostname: 'images.unsplash.com' },
+
+    ],
   },
 };
 
