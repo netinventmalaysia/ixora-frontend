@@ -9,6 +9,14 @@ export const businessTabs: Tab[] = [
   { name: 'Billing', href: '#' }, // no hardcoded 0
 ];
 
+export const vendorsTabs: Tab[] = [
+  { name: 'Home', href: '#' },
+  { name: 'Registration', href: '#' },
+    { name: 'Team', href: '#' },
+  { name: 'Project List', href: '#', badge: '5', badgeColor: 'blue' },
+  { name: 'Payments Status', href: '#' }, // no hardcoded 0
+];
+
 export const myskbTabs: Tab[] = [
   { name: 'Home', href: '#' },
   { name: 'Registration', href: '#' },
