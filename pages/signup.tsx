@@ -349,33 +349,35 @@ export default function SignUpPage() {
               prefix="+601"
             />
             <div className="mt-2 flex items-center gap-2">
-              <Button
-                type="button"
-                variant="secondary"
-                loading={otpSending}
-                onClick={async () => {
-                  try {
-                    setOtpSending(true);
-                    const input: HTMLInputElement | null = document.getElementById('phoneNumber') as any;
-                    const raw = (input?.value || '').toString();
-                    const digits = raw.replace(/[^\d]/g, '').trim();
-                    let e164 = '';
-                    if (digits.startsWith('60')) e164 = digits;
-                    else if (digits.startsWith('0')) e164 = '60' + digits.slice(1);
-                    else e164 = '601' + digits;
-                    const base = process.env.NEXT_PUBLIC_API_URL || '';
-                    await axios.post(`${base}/whatsapp/otp/request`, { phone: e164, purpose: 'registration' }, { withCredentials: true });
-                    setOtpRequested(true);
-                    toast.success(t('signup.otpSent', 'OTP sent via WhatsApp'));
-                  } catch (e: any) {
-                    toast.error(e?.response?.data?.message || e?.message || t('signup.otpSendFailed', 'Failed to send OTP'));
-                  } finally {
-                    setOtpSending(false);
-                  }
-                }}
-              >
-                {otpRequested ? t('signup.resendOtp', 'Resend OTP') : t('signup.sendOtp', 'Send OTP')}
-              </Button>
+              {!otpVerified && (
+                <Button
+                  type="button"
+                  variant="secondary"
+                  loading={otpSending}
+                  onClick={async () => {
+                    try {
+                      setOtpSending(true);
+                      const input: HTMLInputElement | null = document.getElementById('phoneNumber') as any;
+                      const raw = (input?.value || '').toString();
+                      const digits = raw.replace(/[^\d]/g, '').trim();
+                      let e164 = '';
+                      if (digits.startsWith('60')) e164 = digits;
+                      else if (digits.startsWith('0')) e164 = '60' + digits.slice(1);
+                      else e164 = '601' + digits;
+                      const base = process.env.NEXT_PUBLIC_API_URL || '';
+                      await axios.post(`${base}/whatsapp/otp/request`, { phone: e164, purpose: 'registration' }, { withCredentials: true });
+                      setOtpRequested(true);
+                      toast.success(t('signup.otpSent', 'OTP sent via WhatsApp'));
+                    } catch (e: any) {
+                      toast.error(e?.response?.data?.message || e?.message || t('signup.otpSendFailed', 'Failed to send OTP'));
+                    } finally {
+                      setOtpSending(false);
+                    }
+                  }}
+                >
+                  {otpRequested ? t('signup.resendOtp', 'Resend OTP') : t('signup.sendOtp', 'Send OTP')}
+                </Button>
+              )}
               {otpVerified && <span className="text-green-600 text-sm">{t('signup.phoneVerified', 'Verified')}</span>}
             </div>
             {otpRequested && !otpVerified && (
@@ -470,7 +472,7 @@ export default function SignUpPage() {
               <Button
                 type="submit"
                 variant="primary"
-                disabled={loading}
+                disabled={loading || !otpVerified}
                 className="!bg-[#B01C2F] hover:!bg-[#951325] focus-visible:!ring-2 focus-visible:!ring-[#B01C2F] focus-visible:!ring-offset-2"
               >
                 {t("signup.submit", "Create Account")}
