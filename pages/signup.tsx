@@ -346,7 +346,7 @@ export default function SignUpPage() {
               name="phoneNumber"
               label={t("signup.phoneNumber", "Phone Number")}
               requiredMessage={t("signup.phoneRequired", "Phone number is required")}
-              placeholder={t('signup.phonePlaceholder', 'e.g., 0178899841 or 60178899841')}
+              placeholder={t('signup.phonePlaceholder', 'e.g., 0101111111 or 60101111111')}
             />
             <div className="mt-2 flex items-center gap-2">
               {!otpVerified && (

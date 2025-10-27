@@ -30,6 +30,7 @@ import {
 import toast from "react-hot-toast";
 import router from "next/router";
 import { AxiosResponse } from "axios";
+import axios from "axios";
 import SidebarContent from "todo/components/main/Sidebar";
 import { logoUrl } from "todo/components/main/SidebarConfig";
 import { useTranslation } from "@/utils/i18n";
@@ -95,6 +96,13 @@ export default function ProfilePage() {
   const [userRole, setUserRole] = useState<string>("");
   const [fullName, setFullName] = useState<string>("Guest");
   const [email, setEmail] = useState<string>("");
+  // OTP flow state for phone change
+  const [otpSending, setOtpSending] = useState(false);
+  const [otpRequested, setOtpRequested] = useState(false);
+  const [otpVerifying, setOtpVerifying] = useState(false);
+  const [otpVerified, setOtpVerified] = useState(false);
+  const [otpCode, setOtpCode] = useState("");
+  const [originalPhoneNormalized, setOriginalPhoneNormalized] = useState<string>("");
 
   const [businessOptions, setBusinessOptions] = useState<{ label: string; value: string }[]>([]);
   const [businessId, setBusinessId] = useState<number>();
@@ -163,6 +171,17 @@ export default function ProfilePage() {
       setUserProfile(data);
       setAccountType(data.role);
       setIsOrganisation(data.organisation === "organisation");
+      // Remember original phone in normalized digits-only E.164 (without plus)
+      try {
+        const digits = String(data.phoneNumber || "").replace(/[^\d]/g, '').trim();
+        let e164 = '';
+        if (digits) {
+          if (digits.startsWith('60')) e164 = digits;
+          else if (digits.startsWith('0')) e164 = '60' + digits.slice(1);
+          else e164 = '601' + digits;
+        }
+        setOriginalPhoneNormalized(e164);
+      } catch { setOriginalPhoneNormalized(""); }
 
       // If business user, load saved businesses to pick from
       if (data.role === "business") {
@@ -186,6 +205,19 @@ export default function ProfilePage() {
   const handleSubmit = async (data: any) => {
     try {
       setLoading(true);
+
+      // If phone is changed, require verification
+      const currentDigits = String(data.phoneNumber || "").replace(/[^\d]/g, '').trim();
+      let currentE164 = '';
+      if (currentDigits) {
+        if (currentDigits.startsWith('60')) currentE164 = currentDigits;
+        else if (currentDigits.startsWith('0')) currentE164 = '60' + currentDigits.slice(1);
+        else currentE164 = '601' + currentDigits;
+      }
+      const phoneChanged = currentE164 !== originalPhoneNormalized;
+      if (phoneChanged && !otpVerified) {
+        throw new Error(t('signup.verifyPhoneFirst', 'Please verify your phone number first'));
+      }
 
       const payload: UserProfile = {
         id: userProfile!.id,
@@ -217,6 +249,10 @@ export default function ProfilePage() {
       await updateUser(payload);
       toast.success("Profile updated successfully!");
       await fetchUser();
+      // Reset OTP flags after successful save
+      setOtpRequested(false);
+      setOtpVerified(false);
+      setOtpCode('');
     } catch (err) {
       toast.error("Something went wrong");
     } finally {
@@ -324,9 +360,87 @@ export default function ProfilePage() {
           id="phoneNumber"
           name="phoneNumber"
           label={t("signup.phoneNumber")}
-          prefix="+601"
           requiredMessage={t("signup.phoneNumberRequired")}
+          placeholder={t('signup.phonePlaceholder', 'e.g., 0101111111 or 60101111111')}
         />
+        {/* OTP controls for phone change */}
+        <div className="mt-2 flex items-center gap-2">
+          {!otpVerified && (
+            <Button
+              type="button"
+              variant="secondary"
+              loading={otpSending}
+              onClick={async () => {
+                try {
+                  setOtpSending(true);
+                  const input: HTMLInputElement | null = document.getElementById('phoneNumber') as any;
+                  const raw = (input?.value || '').toString();
+                  const digits = raw.replace(/[^\d]/g, '').trim();
+                  if (!digits) {
+                    toast.error(t('signup.phoneRequired', 'Phone number is required'));
+                    return;
+                  }
+                  let e164 = '';
+                  if (digits.startsWith('60')) e164 = digits;
+                  else if (digits.startsWith('0')) e164 = '60' + digits.slice(1);
+                  else e164 = '601' + digits;
+                  const base = process.env.NEXT_PUBLIC_API_URL || '';
+                  await axios.post(`${base}/whatsapp/otp/request`, { phone: e164, purpose: 'registration' }, { withCredentials: true });
+                  setOtpRequested(true);
+                  toast.success(t('signup.otpSent', 'OTP sent via WhatsApp'));
+                } catch (e: any) {
+                  toast.error(e?.response?.data?.message || e?.message || t('signup.otpSendFailed', 'Failed to send OTP'));
+                } finally {
+                  setOtpSending(false);
+                }
+              }}
+            >
+              {otpRequested ? t('signup.resendOtp', 'Resend OTP') : t('signup.sendOtp', 'Send OTP')}
+            </Button>
+          )}
+          {otpVerified && <span className="text-green-600 text-sm">{t('signup.phoneVerified', 'Verified')}</span>}
+        </div>
+        {otpRequested && !otpVerified && (
+          <div className="mt-2 flex items-center gap-2">
+            <input
+              id="otpCodeProfile"
+              value={otpCode}
+              onChange={(e) => setOtpCode(e.target.value)}
+              placeholder={t('signup.enterOtp', 'Enter 6-digit code')}
+              className="w-40 rounded-md border border-gray-300 px-3 py-1.5 text-sm"
+              inputMode="numeric"
+              maxLength={6}
+            />
+            <Button
+              type="button"
+              variant="primary"
+              loading={otpVerifying}
+              onClick={async () => {
+                try {
+                  setOtpVerifying(true);
+                  const input: HTMLInputElement | null = document.getElementById('phoneNumber') as any;
+                  const raw = (input?.value || '').toString();
+                  const digits = raw.replace(/[^\d]/g, '').trim();
+                  let e164 = '';
+                  if (digits.startsWith('60')) e164 = digits;
+                  else if (digits.startsWith('0')) e164 = '60' + digits.slice(1);
+                  else e164 = '601' + digits;
+                  const base = process.env.NEXT_PUBLIC_API_URL || '';
+                  await axios.post(`${base}/whatsapp/otp/verify`, { phone: e164, code: otpCode, purpose: 'registration' }, { withCredentials: true });
+                  setOtpVerified(true);
+                  toast.success(t('signup.otpVerified', 'Phone verified'));
+                } catch (e: any) {
+                  setOtpVerified(false);
+                  toast.error(e?.response?.data?.message || e?.message || t('signup.otpVerifyFailed', 'Invalid or expired code'));
+                } finally {
+                  setOtpVerifying(false);
+                }
+              }}
+            >
+              {t('signup.verifyOtp', 'Verify')}
+            </Button>
+          </div>
+        )}
         <Spacing size="sm" />
         <InputText
           id="address"
@@ -402,7 +516,27 @@ export default function ProfilePage() {
           <Button type="button" variant="ghost" onClick={() => setShowCancelDialog(true)}>
             {t("common.cancel")}
           </Button>
-          <Button type="submit" variant="primary" loading={loading}>
+          <Button
+            type="submit"
+            variant="primary"
+            loading={loading}
+            disabled={(() => {
+              // Disable save if phone changed and not verified
+              try {
+                const input: HTMLInputElement | null = document.getElementById('phoneNumber') as any;
+                const raw = (input?.value || '').toString();
+                const digits = raw.replace(/[^\d]/g, '').trim();
+                let e164 = '';
+                if (digits) {
+                  if (digits.startsWith('60')) e164 = digits;
+                  else if (digits.startsWith('0')) e164 = '60' + digits.slice(1);
+                  else e164 = '601' + digits;
+                }
+                const changed = e164 !== originalPhoneNormalized;
+                return loading || (changed && !otpVerified);
+              } catch { return loading; }
+            })()}
+          >
             {t("profile.saveChanges")}
           </Button>
         </FormActions>
