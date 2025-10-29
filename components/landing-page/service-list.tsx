@@ -31,11 +31,11 @@ export type ServiceCard = {
 
 /** Centralised list so landing + full page can share the same data */
 export const ALL_SERVICES = (t: ReturnType<typeof useTranslation>["t"]): ServiceCard[] => [
-  { title: t("services.assessment.title","Assessment Tax"), desc: t("services.assessment.desc","Check & pay easily."), icon: HomeModernIcon, href: "/services/assessment" },
-  { title: t("services.licence.title","Business Licence"), desc: t("services.licence.desc","Register or renew your licence."), icon: DocumentTextIcon, href: "/services/licence" },
-  { title: t("services.booth.title","Booth Rental"), desc: t("services.booth.desc","Manage rentals & invoices digitally."), icon: BuildingOffice2Icon, href: "/services/booth" },
-  { title: t("services.compound.title","Compounds"), desc: t("services.compound.desc","Check and pay compounds."), icon: TicketIcon, href: "/services/compound" },
-  { title: t("services.myskb.title","Temporary Building Permit"), desc: t("services.myskb.desc","Apply & renew temporary permits."), icon: DocumentCheckIcon, href: "/services/myskb" },
+  { title: t("services.assessment.title","Assessment Tax"), desc: t("services.assessment.desc","Check & pay easily."), icon: HomeModernIcon, href: "/dashboard" },
+  { title: t("services.licence.title","Business Licence"), desc: t("services.licence.desc","Register or renew your licence."), icon: DocumentTextIcon, href: "/dashboard" },
+  { title: t("services.booth.title","Booth Rental"), desc: t("services.booth.desc","Manage rentals & invoices digitally."), icon: BuildingOffice2Icon, href: "/dashboard" },
+  { title: t("services.compound.title","Compounds"), desc: t("services.compound.desc","Check and pay compounds."), icon: TicketIcon, href: "/dashboard" },
+  { title: t("services.myskb.title","Temporary Building Permit"), desc: t("services.myskb.desc","Apply & renew temporary permits."), icon: DocumentCheckIcon, href: "/dashboard" },
   { title: t("services.transfer.title","Property Ownership Transfer"), desc: t("services.transfer.desc","Process assessment tax ownership transfer."), icon: Square3Stack3DIcon, href: "#", status: "coming-soon" },
   { title: t("services.typhoid.title","Typhoid Injection"), desc: t("services.typhoid.desc","Record injections & health status."), icon: ShieldCheckIcon, href: "#", status: "coming-soon" },
   { title: t("services.parkingRental.title","Parking Bay Rental"), desc: t("services.parkingRental.desc","Apply for parking bay rental."), icon: MapPinIcon, href: "#", status: "coming-soon" },
