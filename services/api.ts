@@ -320,37 +320,19 @@ const normalizeBillingStatus = (raw: any, fallbackRef?: string) => {
 // Fetch a single billing/checkout status by reference.
 export const fetchBillingStatus = async (reference: string) => {
     if (!reference) throw new Error('Missing reference');
-    try {
-        // Preferred endpoint if available
-        const { data } = await api.get('/billings/status', { params: { reference } });
-        return normalizeBillingStatus(data, reference);
-    } catch (e) {
-        // Fallback: attempt generic /billings/:reference (observed in production)
-        try {
-            const { data } = await api.get(`/billings/${reference}`);
-            return normalizeBillingStatus(data, reference);
-        } catch {
-            throw e;
-        }
-    }
+    const { data } = await api.get(`/billings/${reference}`);
+    return normalizeBillingStatus(data, reference);
 };
 
-// Fetch receipt details (could be same as status if backend merges them). Endpoint guess: /billings/receipt?reference=REF
+// Fetch receipt details (same as billing status since backend uses single endpoint)
 export const fetchBillingReceipt = async (reference: string) => {
     if (!reference) throw new Error('Missing reference');
     try {
-        const { data } = await api.get('/billings/receipt', { params: { reference } });
-        // If the receipt endpoint mirrors the status payload, normalize so UI can reuse fields
+        const { data } = await api.get(`/billings/${reference}`);
         return normalizeBillingStatus(data, reference);
-    } catch (e) {
-        // Fallback to fetching the same resource; some backends expose only one endpoint
-        try {
-            const { data } = await api.get(`/billings/${reference}`);
-            return normalizeBillingStatus(data, reference);
-        } catch {
-            // Allow caller to ignore missing receipt
-            return null;
-        }
+    } catch {
+        // Allow caller to ignore missing receipt
+        return null;
     }
 };
 
@@ -473,6 +455,38 @@ export interface PaymentSubmitPayload {
 // Submit a payment to MBMB public API
 export const submitPayment = async (payload: PaymentSubmitPayload) => {
     const { data } = await api.post('/mbmb/public/api/payment/submit', payload);
+    return data;
+};
+
+// ================= MBMB Insert Online Bill =================
+// Matches backend InsertOnlineBillDto and OnlineTransactionAcctDto
+export interface OnlineTransactionAcctDto {
+    orderNo: string;
+    jenis: '01' | '02' | '04' | '05'; // 01 Assessment, 02 Booth, 04 Compound, 05 Misc
+    no_akaun: string;
+    amaun: number;
+}
+
+export interface InsertOnlineBillPayload {
+    orderNo: string;
+    orderTime: string;       // ISO string in GMT+8 preferred
+    orderBank: string;       // vendor receipt id
+    orderAmount: number;     // must equal onlineTransactionAcct.amaun
+    orderStatus: 'C' | 'N';
+    userId: string;          // your system user id
+    ipAddress: string;       // client IP (server may override with req.ip)
+    buyerEmail: string;
+    transactionResponseCode?: string; // default '00'
+    transactionId?: string;
+    transactionTime?: string;
+    transactionBank?: string;
+    transactionRefNo?: string;
+    transactionAmount?: number;
+    onlineTransactionAcct: OnlineTransactionAcctDto;
+}
+
+export const insertOnlineBill = async (payload: InsertOnlineBillPayload) => {
+    const { data } = await api.post('/billings/insert', payload);
     return data;
 };
 
