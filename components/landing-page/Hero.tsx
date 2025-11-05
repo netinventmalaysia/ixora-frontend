@@ -91,10 +91,10 @@ return (
             </button>
 
             {/* Optional: EasyPay */}
-            <a href="#" aria-label="Easy Pay"
+            <a href="signup" aria-label="Easy Pay"
               className="inline-flex flex-1 min-w-[150px] items-center justify-center gap-2 rounded-lg border border-[#B01C2F] bg-white px-5 py-3 text-sm font-semibold text-gray-700 shadow-sm transition hover:bg-gray-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#B01C2F] focus-visible:ring-offset-2">
               <CreditCardIcon className="h-5 w-5 text-[#B01C2F]" aria-hidden="true" />
-              {t("landing.hero.ctaEasyPay", "Easy Pay")}
+              {t("landing.hero.ctaEasyPay", "Register Now")}
             </a>
           </div>
 
