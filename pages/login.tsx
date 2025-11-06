@@ -200,7 +200,7 @@ export default function LoginPage() {
             <span className="text-[#B01C2F]">IXORA</span>{" "}
             <span className="text-[#005C76]">MBMB</span>
           </h1>
-          <p className="mt-1 text-xs text-gray-500">MAJLIS BANDARAYA MELAKA BERSEJARAHd</p>
+          <p className="mt-1 text-xs text-gray-500">MAJLIS BANDARAYA MELAKA BERSEJARAH</p>
         </a>
       </div>
 
