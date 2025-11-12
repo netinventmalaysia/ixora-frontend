@@ -40,7 +40,9 @@ export default function DashboardPage() {
   const [compound, setCompound] = useState<CompoundBill[]>([]);
   const [booth, setBooth] = useState<BoothBill[]>([]);
   const [misc, setMisc] = useState<MiscBill[]>([]);
-  const [paidLookup, setPaidLookup] = useState<Record<string, { reference?: string; status?: string }>>({});
+  const [paidLookup, setPaidLookup] = useState<
+    Record<string, { reference?: string; status?: string }>
+  >({});
 
   // ===== Utilities =====
   const fRM = (n: number) => `RM ${Number(n || 0).toFixed(2)}`;
@@ -59,16 +61,20 @@ export default function DashboardPage() {
     const d = new Date(s);
     if (!isNaN(d.getTime())) return d.getFullYear();
     const parts = s.includes('/') ? s.split('/') : s.split('-');
-    if (parts.length >= 3) return parts[0].length === 4 ? Number(parts[0]) : Number(parts[2]); // YYYY or DD/MM/YYYY
+    if (parts.length >= 3)
+      return parts[0].length === 4 ? Number(parts[0]) : Number(parts[2]); // YYYY or DD/MM/YYYY
     return NaN;
   };
 
   // Map type -> cart source
   const mapSource = (tpe: string) =>
-    tpe.toLowerCase().includes('assessment') ? 'assessment'
-    : tpe.toLowerCase().includes('booth') ? 'booth'
-    : tpe.toLowerCase().includes('misc') ? 'misc'
-    : 'compound' as const;
+    tpe.toLowerCase().includes('assessment')
+      ? 'assessment'
+      : tpe.toLowerCase().includes('booth')
+      ? 'booth'
+      : tpe.toLowerCase().includes('misc')
+      ? 'misc'
+      : ('compound' as const);
 
   const toSelectable = (b: BillRow) => ({
     id: (b as any).id ?? b.billNo,
@@ -82,7 +88,8 @@ export default function DashboardPage() {
 
   // ===== Fetch all categories by IC after login =====
   useEffect(() => {
-    const ic = typeof window !== 'undefined' ? localStorage.getItem('ic') || '' : '';
+    const ic =
+      typeof window !== 'undefined' ? localStorage.getItem('ic') || '' : '';
     if (!ic) return;
     let cancel = false;
     const run = async () => {
@@ -90,37 +97,104 @@ export default function DashboardPage() {
         setLoading(true);
         const [a, c, b, m] = await Promise.all([
           fetchAssessmentOutstanding({ ic }).catch(() => []),
-          fetchCompoundOutstanding({ ic }).then((d: any) => (Array.isArray(d?.data) ? d.data : Array.isArray(d) ? d : [])).catch(() => []),
-          fetchBoothOutstanding({ ic }).then((d: any) => (Array.isArray(d?.data) ? d.data : Array.isArray(d) ? d : [])).catch(() => []),
+          fetchCompoundOutstanding({ ic })
+            .then((d: any) =>
+              Array.isArray(d?.data) ? d.data : Array.isArray(d) ? d : []
+            )
+            .catch(() => []),
+          fetchBoothOutstanding({ ic })
+            .then((d: any) =>
+              Array.isArray(d?.data) ? d.data : Array.isArray(d) ? d : []
+            )
+            .catch(() => []),
           fetchMiscOutstanding({ ic }).catch(() => []),
         ]);
-        if (!cancel) { setAssess(a as AssessmentBill[]); setCompound(c as CompoundBill[]); setBooth(b as BoothBill[]); setMisc(m as MiscBill[]); }
-      } finally { if (!cancel) setLoading(false); }
+        if (!cancel) {
+          setAssess(a as AssessmentBill[]);
+          setCompound(c as CompoundBill[]);
+          setBooth(b as BoothBill[]);
+          setMisc(m as MiscBill[]);
+        }
+      } finally {
+        if (!cancel) setLoading(false);
+      }
     };
     run();
-    return () => { cancel = true; };
+    return () => {
+      cancel = true;
+    };
   }, []);
 
   // ===== Build unified rows, de-dupe & sort (unpaid first, earliest due) =====
   const unifiedBills: BillRow[] = useMemo(() => {
-    const norm = (type: string, id: string | number, billNo: string, amount: number, due: string): BillRow => ({
-      type, id, billNo, amount: Number(amount) || 0, due: due || '-', color: amount > 0 ? 'text-emerald-600' : 'text-gray-500',
+    const norm = (
+      type: string,
+      id: string | number,
+      billNo: string,
+      amount: number,
+      due: string
+    ): BillRow => ({
+      type,
+      id,
+      billNo,
+      amount: Number(amount) || 0,
+      due: due || '-',
+      color: amount > 0 ? 'text-emerald-600' : 'text-gray-500',
     });
 
-    const a = (assess || []).map(b => norm('Assessment Tax', b.id, (b as any).bill_no || (b as any).no_bil || String(b.id), b.amount, b.due_date));
-    const c = (compound || []).map(b => norm(
-      'Compound',
-      (b as any).id ?? (b as any).compound_no ?? (b as any).nokmp ?? (b as any).no_kompaun ?? (b as any).bill_no ?? (b as any).no_rujukan ?? String((b as any).id ?? ''),
-      (b as any).bill_no ?? (b as any).nokmp ?? (b as any).no_kompaun ?? (b as any).no_rujukan ?? String((b as any).id ?? ''),
-      (b as any).amount ?? (b as any).jumlah ?? 0,
-      (b as any).due_date ?? (b as any).trk_bil ?? ''
-    ));
-    const br = (booth || []).map(b => norm('Booth Rental', b.id, (b as any).bill_no ?? (b as any).no_bil ?? String(b.id), b.amount, b.due_date));
-    const ms = (misc || []).map(b => norm('Misc Bill', b.id, (b as any).bill_no ?? (b as any).billNo ?? (b as any).no_rujukan ?? String(b.id), b.amount, b.due_date));
+    const a = (assess || []).map((b) =>
+      norm(
+        'Assessment Tax',
+        b.id,
+        (b as any).bill_no || (b as any).no_bil || String(b.id),
+        b.amount,
+        b.due_date
+      )
+    );
+    const c = (compound || []).map((b) =>
+      norm(
+        'Compound',
+        (b as any).id ??
+          (b as any).compound_no ??
+          (b as any).nokmp ??
+          (b as any).no_kompaun ??
+          (b as any).bill_no ??
+          (b as any).no_rujukan ??
+          String((b as any).id ?? ''),
+        (b as any).bill_no ??
+          (b as any).nokmp ??
+          (b as any).no_kompaun ??
+          (b as any).no_rujukan ??
+          String((b as any).id ?? ''),
+        (b as any).amount ?? (b as any).jumlah ?? 0,
+        (b as any).due_date ?? (b as any).trk_bil ?? ''
+      )
+    );
+    const br = (booth || []).map((b) =>
+      norm(
+        'Booth Rental',
+        b.id,
+        (b as any).bill_no ?? (b as any).no_bil ?? String(b.id),
+        b.amount,
+        b.due_date
+      )
+    );
+    const ms = (misc || []).map((b) =>
+      norm(
+        'Misc Bill',
+        b.id,
+        (b as any).bill_no ??
+          (b as any).billNo ??
+          (b as any).no_rujukan ??
+          String(b.id),
+        b.amount,
+        b.due_date
+      )
+    );
 
     // De-dupe by billNo (keep latest due)
     const map = new Map<string, BillRow>();
-    [...a, ...c, ...br, ...ms].forEach(row => {
+    [...a, ...c, ...br, ...ms].forEach((row) => {
       const prev = map.get(row.billNo);
       if (!prev) map.set(row.billNo, row);
       else {
@@ -137,7 +211,8 @@ export default function DashboardPage() {
     };
 
     return arr.sort((x, y) => {
-      const ax = isPaidRow(x), ay = isPaidRow(y);
+      const ax = isPaidRow(x),
+        ay = isPaidRow(y);
       if (ax !== ay) return ax ? 1 : -1; // unpaid first
       const dx = new Date(x.due).getTime() || Number.MAX_SAFE_INTEGER;
       const dy = new Date(y.due).getTime() || Number.MAX_SAFE_INTEGER;
@@ -159,20 +234,38 @@ export default function DashboardPage() {
       }
       if (unknownKeys.length === 0) return; // nothing new to check
 
-      const entries: Array<[string, { reference?: string; status?: string }]> = [];
-      await Promise.all(unknownKeys.map(async (key) => {
-        try {
-          const items = await fetchBillingItemsByBillNo(key);
-          const first = Array.isArray(items)
-            ? items.find(it => (it.status || '').toUpperCase() === 'PAID' || (it.billing_status || '').toUpperCase() === 'PAID' || (it.billing_status || '').toUpperCase() === 'SUCCESS')
-            : undefined;
-          if (first) entries.push([key, { reference: first.reference, status: first.status || first.billing_status }]);
-        } catch {}
-      }));
+      const entries: Array<[string, { reference?: string; status?: string }]> =
+        [];
+      await Promise.all(
+        unknownKeys.map(async (key) => {
+          try {
+            const items = await fetchBillingItemsByBillNo(key);
+            const first = Array.isArray(items)
+              ? items.find(
+                  (it) =>
+                    (it.status || '').toUpperCase() === 'PAID' ||
+                    (it.billing_status || '').toUpperCase() === 'PAID' ||
+                    (it.billing_status || '').toUpperCase() === 'SUCCESS'
+                )
+              : undefined;
+            if (first)
+              entries.push([
+                key,
+                {
+                  reference: first.reference,
+                  status: first.status || first.billing_status,
+                },
+              ]);
+          } catch {}
+        })
+      );
 
       if (entries.length) {
-        setPaidLookup(prev => {
-          const next = { ...prev } as Record<string, { reference?: string; status?: string }>;
+        setPaidLookup((prev) => {
+          const next = { ...prev } as Record<
+            string,
+            { reference?: string; status?: string }
+          >;
           for (const [k, v] of entries) {
             if (!next[k]) next[k] = v; // only set newly discovered keys
           }
@@ -192,7 +285,9 @@ export default function DashboardPage() {
     const unpaid = unifiedBills.filter((b) => !isPaid(b));
     const billTotal = unpaid.reduce((s, b) => s + (Number(b.amount) || 0), 0);
     const billCount = unpaid.length;
-    const paidAmount = unifiedBills.filter(isPaid).reduce((s, b) => s + (Number(b.amount) || 0), 0);
+    const paidAmount = unifiedBills
+      .filter(isPaid)
+      .reduce((s, b) => s + (Number(b.amount) || 0), 0);
     const unpaidAmount = billTotal;
     return { billTotal, billCount, paidAmount, unpaidAmount };
   }, [unifiedBills, paidLookup]);
@@ -215,17 +310,31 @@ export default function DashboardPage() {
     });
     return Array.from(byYear.entries())
       .sort((a, b) => b[0] - a[0]) // newest first
-      .map(([year, v]) => ({ label: String(year), paidAmount: v.paid, unpaidAmount: v.unpaid }));
+      .map(([year, v]) => ({
+        label: String(year),
+        paidAmount: v.paid,
+        unpaidAmount: v.unpaid,
+      }));
   }, [unifiedBills, paidLookup]);
 
   // ===== Render =====
   return (
     <SidebarLayout>
       {/* Page container: width + safe bottom padding for checkout tray */}
-      <div className="mx-auto w-full max-w-screen-xl px-3 sm:px-6 lg:px-8 pb-24" aria-busy={loading}>
+      <div
+        className="mx-auto w-full max-w-screen-xl px-3 sm:px-6 lg:px-8 pb-24"
+        aria-busy={loading}
+      >
         {loading && (
-          <div className="fixed inset-0 z-[999] flex items-center justify-center bg-white/60 dark:bg-black/60" aria-hidden="true">
-            <LogoSpinner size={56} className="drop-shadow-md" title={t('common.loading', 'Loading...')} />
+          <div
+            className="fixed inset-0 z-[999] flex items-center justify-center bg-white/60 dark:bg-black/60"
+            aria-hidden="true"
+          >
+            <LogoSpinner
+              size={56}
+              className="drop-shadow-md"
+              title={t('common.loading', 'Loading...')}
+            />
           </div>
         )}
 
@@ -233,7 +342,10 @@ export default function DashboardPage() {
           {t('dashboard.welcome', 'Welcome to MBMB IXORA')}
         </Heading>
         <TextLine>
-          {t('dashboard.description', 'MBMB IXORA is the official digital portal of the Melaka Historic City Council, simplifying citizen and business transactions online.')}
+          {t(
+            'dashboard.description',
+            'MBMB IXORA is the official digital portal of the Melaka Historic City Council, simplifying citizen and business transactions online.'
+          )}
         </TextLine>
 
         <Spacing size="lg" />
@@ -245,7 +357,9 @@ export default function DashboardPage() {
         />
         {/* SR summary for screen readers */}
         <p className="sr-only" aria-live="polite">
-          {`Unpaid total RM ${totals.billTotal.toFixed(2)}, Paid total RM ${totals.paidAmount.toFixed(2)}.`}
+          {`Unpaid total RM ${totals.billTotal.toFixed(
+            2
+          )}, Paid total RM ${totals.paidAmount.toFixed(2)}.`}
         </p>
 
         <Spacing size="md" />
@@ -273,7 +387,10 @@ export default function DashboardPage() {
           {t('dashboard.billsTitle', 'Your Bills')}
         </Heading>
         <TextLine>
-          {t('dashboard.billsDesc', 'Below is a summary of your current bills. Click on each bill type for more details and payment options.')}
+          {t(
+            'dashboard.billsDesc',
+            'Below is a summary of your current bills. Click on each bill type for more details and payment options.'
+          )}
         </TextLine>
 
         <Spacing size="sm" />
@@ -302,75 +419,83 @@ export default function DashboardPage() {
               };
 
               return (
-  <div
-    key={i}
-    className="border rounded-lg p-4 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 sm:gap-4"
-  >
-    {/* Bill Info (3-line layout) */}
-    <div className="flex flex-1 items-start sm:items-center gap-3">
-      {/* Checkbox aligned left with type+bill */}
-      {!isPaid && (
-        <input
-          type="checkbox"
-          aria-label={t('dashboard.selectBill', 'Select bill')}
-          checked={isSelected}
-          onChange={toggle}
-          disabled={disabled}
-          className="mt-0.5 sm:mt-0 h-4 w-4 flex-shrink-0 accent-[#00A7A6] cursor-pointer"
-        />
-      )}
+                <div
+                  key={i}
+                  className="border rounded-lg p-4 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 sm:gap-4"
+                >
+                  {/* Bill Info (3-line layout) */}
+                  <div className="flex flex-1 items-start sm:items-center gap-3">
+                    {/* Checkbox aligned left with type+bill */}
+                    {!isPaid && (
+                      <input
+                        type="checkbox"
+                        aria-label={t('dashboard.selectBill', 'Select bill')}
+                        checked={isSelected}
+                        onChange={toggle}
+                        disabled={disabled}
+                        className="mt-0.5 sm:mt-0 h-4 w-4 flex-shrink-0 accent-[#00A7A6] cursor-pointer"
+                      />
+                    )}
 
-      {/* Bill Texts */}
-      <div className="min-w-0 flex-1">
-        <div className="text-sm font-semibold text-gray-900 truncate">
-          {b.type} - {b.billNo}
-        </div>
-        <div
-          className={`text-xs mt-1 ${
-            overdue ? 'text-red-600 font-semibold' : 'text-gray-500'
-          }`}
-        >
-          Due: {formattedDate}
-        </div>
-        <div
-          className={`text-xs mt-1 ${
-            isPaid ? 'text-emerald-600 font-semibold' : 'text-gray-700 font-semibold'
-          }`}
-        >
-          Amount: {fRM(b.amount)}
-        </div>
-      </div>
-    </div>
+                    {/* Bill Texts */}
+                    <div className="min-w-0 flex-1">
+                      <div className="text-sm font-semibold text-gray-900 truncate">
+                        {b.type} - {b.billNo}
+                      </div>
+                      <div
+                        className={`text-xs mt-1 ${
+                          overdue && b.amount > 0
+                            ? 'text-red-600 font-semibold'
+                            : 'text-gray-500'
+                        }`}
+                      >
+                        Due: {formattedDate}
+                      </div>
+                      <div
+                        className={`text-xs mt-1 ${
+                          isPaid
+                            ? 'text-emerald-600 font-semibold'
+                            : 'text-gray-700 font-semibold'
+                        }`}
+                      >
+                        Amount: {fRM(b.amount)}
+                      </div>
+                    </div>
+                  </div>
 
-    {/* Right controls (Select / Receipt Button) */}
-    <div className="flex-shrink-0 sm:text-right mt-2 sm:mt-0 w-full sm:w-auto">
-      {isPaid ? (
-        <a
-          href={
-            paidLookup[b.billNo]?.reference
-              ? `/payment-status/${encodeURIComponent(paidLookup[b.billNo]?.reference!)}`
-              : `/payment-status?bill_no=${encodeURIComponent(b.billNo)}`
-          }
-          className="inline-flex items-center justify-center px-3 h-11 rounded-md bg-indigo-600 text-white text-sm font-medium hover:opacity-90 w-full sm:w-auto"
-        >
-          {t('dashboard.receipt', 'Receipt')}
-        </a>
-      ) : (
-        <button
-          onClick={toggle}
-          disabled={disabled}
-          className={`inline-flex items-center justify-center px-3 h-11 rounded-md text-white text-sm font-medium w-full sm:w-auto hover:opacity-90 disabled:opacity-50 ${
-            isSelected ? 'bg-gray-700' : 'bg-[#00A7A6]'
-          }`}
-        >
-          {isSelected
-            ? t('dashboard.remove', 'Remove')
-            : t('dashboard.select', 'Select')}
-        </button>
-      )}
-    </div>
-  </div>
-);
+                  {/* Right controls (Select / Receipt Button) */}
+                  <div className="flex-shrink-0 sm:text-right mt-2 sm:mt-0 w-full sm:w-auto">
+                    {isPaid ? (
+                      <a
+                        href={
+                          paidLookup[b.billNo]?.reference
+                            ? `/payment-status/${encodeURIComponent(
+                                paidLookup[b.billNo]?.reference!
+                              )}`
+                            : `/payment-status?bill_no=${encodeURIComponent(
+                                b.billNo
+                              )}`
+                        }
+                        className="inline-flex items-center justify-center px-3 h-11 rounded-md bg-indigo-600 text-white text-sm font-medium hover:opacity-90 w-full sm:w-auto"
+                      >
+                        {t('dashboard.receipt', 'Receipt')}
+                      </a>
+                    ) : (
+                      <button
+                        onClick={toggle}
+                        disabled={disabled}
+                        className={`inline-flex items-center justify-center px-3 h-11 rounded-md text-white text-sm font-medium w-full sm:w-auto hover:opacity-90 disabled:opacity-50 ${
+                          isSelected ? 'bg-gray-700' : 'bg-[#00A7A6]'
+                        }`}
+                      >
+                        {isSelected
+                          ? t('dashboard.remove', 'Remove')
+                          : t('dashboard.select', 'Select')}
+                      </button>
+                    )}
+                  </div>
+                </div>
+              );
             })
           )}
 
@@ -408,7 +533,6 @@ export default function DashboardPage() {
             )}
           </p>
         </div>
-
       </div>
     </SidebarLayout>
   );
