@@ -32,7 +32,6 @@ export const fetchCsrfToken = async (): Promise<string | null> => {
             const token = res.data?.csrfToken;
             if (token) {
                 sessionStorage.setItem(CSRF_TOKEN_KEY, token);
-                console.log('[CSRF] Token fetched:', token);
                 return token;
             } else {
                 console.warn('[CSRF] Token missing in response');

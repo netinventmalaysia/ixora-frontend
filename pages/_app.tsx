@@ -8,6 +8,11 @@ import { useRouter } from 'next/router';
 import PullToRefresh from '@/components/common/PullToRefresh';
 import { BillSelectionProvider } from '@/context/BillSelectionContext';
 
+// Disable console.log in production/staging for security
+if (typeof window !== 'undefined' && (process.env.NODE_ENV === 'production' || process.env.NEXT_PUBLIC_ENV === 'staging')) {
+  console.log = () => {};
+}
+
 export default function App({ Component, pageProps }: AppProps) {
   const [hydrated, setHydrated] = useState(false);
   useEffect(() => setHydrated(true), []);
