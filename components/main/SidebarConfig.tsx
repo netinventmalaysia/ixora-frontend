@@ -25,6 +25,7 @@ export const adminNavigation = [
   { name: 'Verifications', href: '/admin/verifications', icon: DocumentDuplicateIcon, current: false },
   { name: 'LAM Approvals', href: '/admin/lam-approvals', icon: DocumentDuplicateIcon, current: false },
   { name: 'MySKB Reviews', href: '/admin/myskb-reviews', icon: FolderIcon, current: false },
+  { name: 'Review Workflow', href: '/admin/review-workflow', icon: CogIcon, current: false },
   { name: 'MBMB API', href: '/admin/vendors', icon: KeyIcon, current: false },
   { name: 'User Management', href: '/admin/users', icon: UsersIcon, current: false },
   { name: 'Reports', href: '/admin/reports', icon: DocumentDuplicateIcon, current: false },

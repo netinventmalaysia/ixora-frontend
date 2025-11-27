@@ -1170,6 +1170,7 @@ export interface AdminProjectItem {
     projectTitle?: string | null;
     created_at?: string;
     status: string;
+    reviewStage?: string | null;
     data?: Record<string, any>;
     businessId: number;
     userId: number;
@@ -1198,4 +1199,42 @@ export const reviewMySkbProject = async (id: number | string, payload: { status:
 export const adminGetMySkbProjectById = async (id: number | string): Promise<any> => {
     const { data } = await api.get(`/myskb/project/admin/${id}`);
     return data;
+};
+
+// ================= Review Workflow (Admin) =================
+export interface ReviewWorkflowStageMemberView {
+    userId?: number;
+    email: string;
+    name?: string;
+}
+
+export interface ReviewWorkflowStageView {
+    stage: string;
+    label?: string;
+    enabled: boolean;
+    orderIndex?: number;
+    members: ReviewWorkflowStageMemberView[];
+}
+
+export interface ReviewWorkflowResponse {
+    module: string;
+    stages: ReviewWorkflowStageView[];
+}
+
+export interface UpdateReviewWorkflowPayloadStage {
+    stage: string;
+    enabled?: boolean;
+    user_emails: string[];
+}
+
+export const getReviewWorkflow = async (moduleKey: string): Promise<ReviewWorkflowResponse> => {
+    const key = moduleKey?.trim().toLowerCase();
+    const { data } = await api.get(`/review-workflow/${key}`);
+    return data as ReviewWorkflowResponse;
+};
+
+export const updateReviewWorkflow = async (moduleKey: string, payload: { stages: UpdateReviewWorkflowPayloadStage[] }) => {
+    const key = moduleKey?.trim().toLowerCase();
+    const { data } = await api.put(`/review-workflow/${key}`, payload);
+    return data as ReviewWorkflowResponse;
 };
