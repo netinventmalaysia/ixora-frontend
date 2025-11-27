@@ -9,7 +9,7 @@ import { landStatusOptions, OwnershipCategory, typeGrantOptions } from "todo/com
 import SelectField from "todo/components/forms/SelectField";
 import ConfirmDialog from "todo/components/forms/ConfirmDialog";
 import { useRouter } from "next/router";
-import { useEffect, useState, useRef } from "react";
+import { useEffect, useState, useRef, useMemo } from "react";
 import { useFormContext, useWatch, useFieldArray } from "react-hook-form";
 // import RadioGroupField from "todo/components/forms/RadioGroupField";
 // import { landOrBuildingOwnerList } from "todo/components/data/RadioList";
@@ -31,6 +31,11 @@ export default function ProjectPage({ readOnly = false, initialValues }: Project
   const [ownerOptions, setOwnerOptions] = useState<{ value: number; label: string }[]>([]);
   const [ownershipIdToUserId, setOwnershipIdToUserId] = useState<Record<number, number | undefined>>({});
   const [formDefaults, setFormDefaults] = useState<Record<string, any> | undefined>(undefined);
+  const mergedDefaults = useMemo(() => {
+    const base = { country: 'Malaysia', state: 'Melaka' };
+    if (!formDefaults) return base;
+    return { ...base, ...formDefaults, state: 'Melaka' };
+  }, [formDefaults]);
 
   // --- Helpers -------------------------------------------------------------
   // Map selected owner inputs (which may be ownership ids or already user ids) to unique user ids
@@ -207,6 +212,17 @@ export default function ProjectPage({ readOnly = false, initialValues }: Project
       const totalFixed = totalRounded.toFixed(2);
       setValue('processingFees', totalFixed, { shouldValidate: true, shouldDirty: true });
     }, [JSON.stringify(buildings), setValue]);
+    return null;
+  }
+
+  function MelakaStateGuard() {
+    const { control, setValue } = useFormContext();
+    const currentState = useWatch({ control, name: 'state' }) as string | undefined;
+    useEffect(() => {
+      const normalized = (currentState || '').trim().toLowerCase();
+      if (normalized === 'melaka') return;
+      setValue('state', 'Melaka', { shouldValidate: true, shouldDirty: normalized.length > 0 && normalized !== 'melaka' });
+    }, [currentState, setValue]);
     return null;
   }
 
@@ -401,7 +417,7 @@ export default function ProjectPage({ readOnly = false, initialValues }: Project
 
   return (
     <LayoutWithoutSidebar shiftY="-translate-y-0">
-      <FormWrapper onSubmit={handleSubmit} defaultValues={formDefaults}>
+      <FormWrapper onSubmit={handleSubmit} defaultValues={mergedDefaults}>
         {/* This section introduce about the project spesification for the consultant to register a new project and tie with all active ownership, after the registration is successful it will send to mbmb for review, once the review is completed and the consultant have to pay the amount of the project */}
         <FormSectionHeader title="Ownership Information" description="Please fill in the details of your project. This information will be used to register your project with MBMB." />
         <Spacing size="lg" />
@@ -433,9 +449,11 @@ export default function ProjectPage({ readOnly = false, initialValues }: Project
         <Spacing size="sm" />
         <FormRow columns={3}>
           <InputText id="city" name="city" label="City" requiredMessage="City is required" readOnly={readOnly} />
-          <InputText id="state" name="state" label="State / Province" requiredMessage="State / Province is required" readOnly={readOnly} />
+          <InputText id="state" name="state" label="State / Province" requiredMessage="State / Province is required" readOnly />
           <InputText id="postalcode" name="postalcode" label="ZIP / Postal code" requiredMessage="ZIP / Postal code is required" readOnly={readOnly} />
         </FormRow>
+        <p className="text-xs text-gray-500">State is fixed to Melaka for MBMB submissions.</p>
+        <MelakaStateGuard />
         <Spacing size="sm" />
         <div className={readOnly ? 'pointer-events-none opacity-90' : ''}>
           <InputText id="country" name="country" label="Country" requiredMessage="Country is required" readOnly={readOnly} />
