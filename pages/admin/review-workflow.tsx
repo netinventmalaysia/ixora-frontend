@@ -19,14 +19,20 @@ import { REVIEW_STAGE_LABELS } from '@/utils/reviewStages';
 const MODULE_OPTIONS = [{ value: 'myskb', label: 'MySKB' }];
 
 const STAGE_DESCRIPTIONS: Record<string, string> = {
-  level1: 'First reviewers that pick up every submission before it can move forward.',
-  level2: 'Optional second-line reviewers for submissions requiring additional scrutiny.',
-  final: 'Final approvers. This stage is always required and cannot be disabled.',
+  level1:
+    'First reviewers that pick up every submission before it can move forward.',
+  level2:
+    'Optional second-line reviewers for submissions requiring additional scrutiny.',
+  final:
+    'Final approvers. This stage is always required and cannot be disabled.',
 };
 
 const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
-type StageMember = Pick<ReviewWorkflowStageMemberView, 'email' | 'name' | 'userId'>;
+type StageMember = Pick<
+  ReviewWorkflowStageMemberView,
+  'email' | 'name' | 'userId'
+>;
 
 type StageState = {
   stage: string;
@@ -62,21 +68,27 @@ export default function ReviewWorkflowAdminPage() {
       const ordered = (data?.stages || [])
         .slice()
         .sort((a, b) => (a.orderIndex || 0) - (b.orderIndex || 0));
-      const normalized: StageState[] = ordered.map((stage: ReviewWorkflowStageView) => ({
-        stage: stage.stage,
-        enabled: stage.stage === 'final' ? true : stage.enabled !== false,
-        members: (stage.members || []).map((member) => ({
-          email: member.email,
-          name: member.name,
-          userId: member.userId,
-        })),
-      }));
+      const normalized: StageState[] = ordered.map(
+        (stage: ReviewWorkflowStageView) => ({
+          stage: stage.stage,
+          enabled: stage.stage === 'final' ? true : stage.enabled !== false,
+          members: (stage.members || []).map((member) => ({
+            email: member.email,
+            name: member.name,
+            userId: member.userId,
+          })),
+        })
+      );
       const cloned = cloneStages(normalized);
       setStages(cloned);
       setInitialStages(cloneStages(normalized));
       setEmailDrafts({});
     } catch (error: any) {
-      toast.error(error?.response?.data?.message || error?.message || 'Failed to load workflow');
+      toast.error(
+        error?.response?.data?.message ||
+          error?.message ||
+          'Failed to load workflow'
+      );
     } finally {
       setLoading(false);
     }
@@ -88,13 +100,18 @@ export default function ReviewWorkflowAdminPage() {
 
   const dirty = useMemo(() => {
     if (!stages.length && !initialStages.length) return false;
-    return JSON.stringify(buildFingerprint(stages)) !== JSON.stringify(buildFingerprint(initialStages));
+    return (
+      JSON.stringify(buildFingerprint(stages)) !==
+      JSON.stringify(buildFingerprint(initialStages))
+    );
   }, [stages, initialStages]);
 
   const handleToggleStage = (stageKey: string, value: boolean) => {
     if (stageKey === 'final') return;
     setStages((prev) =>
-      prev.map((stage) => (stage.stage === stageKey ? { ...stage, enabled: value } : stage)),
+      prev.map((stage) =>
+        stage.stage === stageKey ? { ...stage, enabled: value } : stage
+      )
     );
   };
 
@@ -111,7 +128,9 @@ export default function ReviewWorkflowAdminPage() {
     setStages((prev) =>
       prev.map((stage) => {
         if (stage.stage !== stageKey) return stage;
-        const exists = stage.members.some((member) => member.email.toLowerCase() === email.toLowerCase());
+        const exists = stage.members.some(
+          (member) => member.email.toLowerCase() === email.toLowerCase()
+        );
         if (exists) {
           toast.error('User already assigned to this stage');
           return stage;
@@ -120,7 +139,7 @@ export default function ReviewWorkflowAdminPage() {
           ...stage,
           members: [...stage.members, { email }],
         };
-      }),
+      })
     );
     setEmailDrafts((prev) => ({ ...prev, [stageKey]: '' }));
   };
@@ -129,9 +148,12 @@ export default function ReviewWorkflowAdminPage() {
     setStages((prev) =>
       prev.map((stage) =>
         stage.stage === stageKey
-          ? { ...stage, members: stage.members.filter((member) => member.email !== email) }
-          : stage,
-      ),
+          ? {
+              ...stage,
+              members: stage.members.filter((member) => member.email !== email),
+            }
+          : stage
+      )
     );
   };
 
@@ -154,7 +176,11 @@ export default function ReviewWorkflowAdminPage() {
       toast.success('Workflow saved');
       await fetchWorkflow(moduleKey);
     } catch (error: any) {
-      toast.error(error?.response?.data?.message || error?.message || 'Failed to save workflow');
+      toast.error(
+        error?.response?.data?.message ||
+          error?.message ||
+          'Failed to save workflow'
+      );
     } finally {
       setSaving(false);
     }
@@ -167,7 +193,8 @@ export default function ReviewWorkflowAdminPage() {
       </Heading>
       <Spacing size="sm" />
       <p className="text-sm text-gray-600">
-        Assign reviewers per stage for each module. Only users listed under a stage can act on submissions when that stage is active.
+        Assign reviewers per stage for each module. Only users listed under a
+        stage can act on submissions when that stage is active.
       </p>
       <Spacing size="md" />
 
@@ -192,19 +219,26 @@ export default function ReviewWorkflowAdminPage() {
         <div className="space-y-4">
           {stages.map((stage) => {
             const label = REVIEW_STAGE_LABELS[stage.stage] || stage.stage;
-            const description = STAGE_DESCRIPTIONS[stage.stage] || 'Review stage';
+            const description =
+              STAGE_DESCRIPTIONS[stage.stage] || 'Review stage';
             const canToggle = stage.stage !== 'final';
             return (
               <Card key={stage.stage} className="bg-white shadow-sm">
                 <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
                   <div>
-                    <p className="text-base font-semibold text-gray-900">{label}</p>
+                    <p className="text-base font-semibold text-gray-900">
+                      {label}
+                    </p>
                     <p className="text-sm text-gray-500">{description}</p>
                   </div>
                   <div className="max-w-xs">
                     <Toggle
                       label="Stage enabled"
-                      description={canToggle ? 'Disable if this stage is not needed for the module.' : 'Always enabled'}
+                      description={
+                        canToggle
+                          ? 'Disable if this stage is not needed for the module.'
+                          : 'Always enabled'
+                      }
                       checked={stage.stage === 'final' ? true : stage.enabled}
                       onChange={(next) => handleToggleStage(stage.stage, next)}
                     />
@@ -214,7 +248,9 @@ export default function ReviewWorkflowAdminPage() {
                 <Spacing size="sm" />
 
                 <div>
-                  <p className="text-sm font-medium text-gray-700">Assigned Users</p>
+                  <p className="text-sm font-medium text-gray-700">
+                    Assigned Users
+                  </p>
                   <Spacing size="xs" />
                   {stage.members.length ? (
                     <div className="flex flex-wrap gap-2">
@@ -227,7 +263,9 @@ export default function ReviewWorkflowAdminPage() {
                           <button
                             type="button"
                             className="text-gray-400 hover:text-red-600"
-                            onClick={() => handleRemoveMember(stage.stage, member.email)}
+                            onClick={() =>
+                              handleRemoveMember(stage.stage, member.email)
+                            }
                             aria-label={`Remove ${member.email}`}
                           >
                             ×
@@ -236,7 +274,9 @@ export default function ReviewWorkflowAdminPage() {
                       ))}
                     </div>
                   ) : (
-                    <p className="text-sm text-gray-500">No reviewers assigned yet.</p>
+                    <p className="text-sm text-gray-500">
+                      No reviewers assigned yet.
+                    </p>
                   )}
                 </div>
 
@@ -252,11 +292,18 @@ export default function ReviewWorkflowAdminPage() {
                     colSpan="sm:col-span-2"
                     value={emailDrafts[stage.stage] || ''}
                     onChange={(event) =>
-                      setEmailDrafts((prev) => ({ ...prev, [stage.stage]: event.target.value }))
+                      setEmailDrafts((prev) => ({
+                        ...prev,
+                        [stage.stage]: event.target.value,
+                      }))
                     }
                   />
                   <div className="flex items-end">
-                    <Button type="button" className="w-full" onClick={() => handleAddMember(stage.stage)}>
+                    <Button
+                      type="button"
+                      className="w-full"
+                      onClick={() => handleAddMember(stage.stage)}
+                    >
                       Add
                     </Button>
                   </div>
@@ -278,7 +325,12 @@ export default function ReviewWorkflowAdminPage() {
         >
           Reset
         </Button>
-        <Button type="button" onClick={handleSave} disabled={!dirty || saving || loading} loading={saving}>
+        <Button
+          type="button"
+          onClick={handleSave}
+          disabled={!dirty || saving || loading}
+          loading={saving}
+        >
           Save Changes
         </Button>
       </div>

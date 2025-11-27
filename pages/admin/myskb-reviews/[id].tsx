@@ -14,7 +14,12 @@ export default function AdminMySkbReviewDetail() {
   const [project, setProject] = useState<any>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const { canActOnStage, getStageLabel, loading: workflowLoading, error: workflowError } = useReviewWorkflowAccess('myskb');
+  const {
+    canActOnStage,
+    getStageLabel,
+    loading: workflowLoading,
+    error: workflowError,
+  } = useReviewWorkflowAccess('myskb');
 
   useEffect(() => {
     if (!id) return;
@@ -58,7 +63,8 @@ export default function AdminMySkbReviewDetail() {
       window.alert('You are not assigned to the current review stage.');
       return;
     }
-    const reason = window.prompt('Please provide a rejection reason:', '') || undefined;
+    const reason =
+      window.prompt('Please provide a rejection reason:', '') || undefined;
     try {
       await reviewMySkbProject(id as string, { status: 'Rejected', reason });
       router.replace('/admin/myskb-reviews');
@@ -102,14 +108,24 @@ export default function AdminMySkbReviewDetail() {
               </button>
             </div>
             <div className="rounded-md border border-gray-200 p-3 bg-white">
-              <p className="text-xs uppercase tracking-wide text-gray-500">Current Stage</p>
-              <p className="text-sm font-medium text-gray-900">{getStageLabel(project?.review_stage) || '—'}</p>
+              <p className="text-xs uppercase tracking-wide text-gray-500">
+                Current Stage
+              </p>
+              <p className="text-sm font-medium text-gray-900">
+                {getStageLabel(project?.review_stage) || '—'}
+              </p>
               {workflowLoading ? (
-                <p className="text-xs text-gray-500">Checking reviewer access…</p>
+                <p className="text-xs text-gray-500">
+                  Checking reviewer access…
+                </p>
               ) : workflowError ? (
                 <p className="text-xs text-red-600">{workflowError}</p>
-              ) : !canReview && (project?.status || '').toString().toLowerCase() === 'submitted' ? (
-                <p className="text-xs text-amber-600">You are not assigned to this stage.</p>
+              ) : !canReview &&
+                (project?.status || '').toString().toLowerCase() ===
+                  'submitted' ? (
+                <p className="text-xs text-amber-600">
+                  You are not assigned to this stage.
+                </p>
               ) : null}
             </div>
           </div>
