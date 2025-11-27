@@ -14,7 +14,12 @@ import SelectField from 'todo/components/forms/SelectField';
 import ConfirmDialog from 'todo/components/forms/ConfirmDialog';
 import { useRouter } from 'next/router';
 import { useEffect, useState, useRef, useMemo } from 'react';
-import { useFormContext, useWatch, useFieldArray, useController } from 'react-hook-form';
+import {
+  useFormContext,
+  useWatch,
+  useFieldArray,
+  useController,
+} from 'react-hook-form';
 // import RadioGroupField from "todo/components/forms/RadioGroupField";
 // import { landOrBuildingOwnerList } from "todo/components/data/RadioList";
 import toast from 'react-hot-toast';
@@ -329,7 +334,11 @@ export default function ProjectPage({
     // eslint-disable-next-line react-hooks/rules-of-hooks
     const { control } = useFormContext();
     // eslint-disable-next-line react-hooks/rules-of-hooks
-    const { field } = useController({ name: 'sitePhotos', control, defaultValue: [] });
+    const { field } = useController({
+      name: 'sitePhotos',
+      control,
+      defaultValue: [],
+    });
     const photos: string[] = Array.isArray(field.value) ? field.value : [];
     // eslint-disable-next-line react-hooks/rules-of-hooks
     const [uploading, setUploading] = useState(false);
@@ -339,9 +348,12 @@ export default function ProjectPage({
     const buildUploadUrl = (path: string) => {
       if (!path) return '';
       if (/^https?:\/\//i.test(path)) return path;
-      const base = (process.env.NEXT_PUBLIC_API_URL || 'https://ixora-api.mbmb.gov.my').replace(/\/$/, '');
+      const base = (
+        process.env.NEXT_PUBLIC_API_URL || 'https://ixora-api.mbmb.gov.my'
+      ).replace(/\/$/, '');
       let normalized = path.replace(/^\/+/, '');
-      if (!/^uploads\/file\//i.test(normalized)) normalized = `uploads/file/${normalized}`;
+      if (!/^uploads\/file\//i.test(normalized))
+        normalized = `uploads/file/${normalized}`;
       return `${base}/${normalized}`;
     };
 
@@ -352,7 +364,9 @@ export default function ProjectPage({
         toast.error('Maximum of 5 site photos reached');
         return;
       }
-      const files = Array.from(fileList).filter((file) => file.type.startsWith('image/'));
+      const files = Array.from(fileList).filter((file) =>
+        file.type.startsWith('image/')
+      );
       if (!files.length) {
         toast.error('Only image files are allowed');
         return;
@@ -392,18 +406,28 @@ export default function ProjectPage({
         <div>
           <div className="flex items-center gap-2 text-sm font-medium text-gray-900">
             <span>Site Photos (optional)</span>
-            <span className="text-xs font-normal text-gray-500">Up to {MAX_PHOTOS} images</span>
+            <span className="text-xs font-normal text-gray-500">
+              Up to {MAX_PHOTOS} images
+            </span>
           </div>
-          <p className="text-xs text-gray-500">Recent photos help MBMB inspectors locate the project site faster.</p>
+          <p className="text-xs text-gray-500">
+            Recent photos help MBMB inspectors locate the project site faster.
+          </p>
         </div>
 
         <div
-          className={`rounded-lg border border-dashed border-gray-300 bg-white p-4 text-center ${readOnly ? 'opacity-60' : 'hover:border-indigo-400 hover:bg-gray-50 cursor-pointer'}`}
+          className={`rounded-lg border border-dashed border-gray-300 bg-white p-4 text-center ${
+            readOnly
+              ? 'opacity-60'
+              : 'hover:border-indigo-400 hover:bg-gray-50 cursor-pointer'
+          }`}
           onClick={() => !readOnly && inputRef.current?.click()}
           onDrop={handleDrop}
           onDragOver={(e) => e.preventDefault()}
         >
-          <p className="text-sm text-gray-700">{uploading ? 'Uploading photos…' : 'Click or drag images here'}</p>
+          <p className="text-sm text-gray-700">
+            {uploading ? 'Uploading photos…' : 'Click or drag images here'}
+          </p>
           <p className="text-xs text-gray-500">PNG or JPG, max 10MB each.</p>
         </div>
 
@@ -423,7 +447,10 @@ export default function ProjectPage({
         {photos.length > 0 && (
           <div className="grid grid-cols-2 gap-3 sm:grid-cols-3">
             {photos.map((photo, index) => (
-              <div key={`${photo}-${index}`} className="relative rounded-lg border bg-gray-50 p-2">
+              <div
+                key={`${photo}-${index}`}
+                className="relative rounded-lg border bg-gray-50 p-2"
+              >
                 <img
                   src={buildUploadUrl(photo)}
                   alt={`Site photo ${index + 1}`}
