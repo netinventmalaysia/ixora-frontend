@@ -1,36 +1,62 @@
-import FormWrapper from "todo/components/forms/FormWrapper";
+import FormWrapper from 'todo/components/forms/FormWrapper';
 import Button from 'todo/components/forms/Button';
 import FormSectionHeader from '@/components/forms/FormSectionHeader';
-import FormActions from "todo/components/forms/FormActions";
-import Spacing from "todo/components/forms/Spacing";
-import LineSeparator from "todo/components/forms/LineSeparator";
-import FormRow from "todo/components/forms/FormRow";
-import { landStatusOptions, OwnershipCategory, typeGrantOptions } from "todo/components/data/SelectionList";
-import SelectField from "todo/components/forms/SelectField";
-import ConfirmDialog from "todo/components/forms/ConfirmDialog";
-import { useRouter } from "next/router";
-import { useEffect, useState, useRef, useMemo } from "react";
-import { useFormContext, useWatch, useFieldArray } from "react-hook-form";
+import FormActions from 'todo/components/forms/FormActions';
+import Spacing from 'todo/components/forms/Spacing';
+import LineSeparator from 'todo/components/forms/LineSeparator';
+import FormRow from 'todo/components/forms/FormRow';
+import {
+  landStatusOptions,
+  OwnershipCategory,
+  typeGrantOptions,
+} from 'todo/components/data/SelectionList';
+import SelectField from 'todo/components/forms/SelectField';
+import ConfirmDialog from 'todo/components/forms/ConfirmDialog';
+import { useRouter } from 'next/router';
+import { useEffect, useState, useRef, useMemo } from 'react';
+import { useFormContext, useWatch, useFieldArray } from 'react-hook-form';
 // import RadioGroupField from "todo/components/forms/RadioGroupField";
 // import { landOrBuildingOwnerList } from "todo/components/data/RadioList";
 import toast from 'react-hot-toast';
-import LayoutWithoutSidebar from "../main/LayoutWithoutSidebar";
-import InputText from "todo/components/forms/InputText";
-import GeoAddressMap from "todo/components/forms/GeoAddressMap";
-import BuildingsTable from "todo/components/forms/BuildingsTable";
-import FileUploadField from "../forms/FileUpload";
-import { fetchMyBusinesses, saveProjectDraft, submitProject, listOwnerships, getProjectById } from '@/services/api';
-type ProjectPageProps = { readOnly?: boolean; initialValues?: Record<string, any> };
-export default function ProjectPage({ readOnly = false, initialValues }: ProjectPageProps) {
+import LayoutWithoutSidebar from '../main/LayoutWithoutSidebar';
+import InputText from 'todo/components/forms/InputText';
+import GeoAddressMap from 'todo/components/forms/GeoAddressMap';
+import BuildingsTable from 'todo/components/forms/BuildingsTable';
+import FileUploadField from '../forms/FileUpload';
+import {
+  fetchMyBusinesses,
+  saveProjectDraft,
+  submitProject,
+  listOwnerships,
+  getProjectById,
+} from '@/services/api';
+type ProjectPageProps = {
+  readOnly?: boolean;
+  initialValues?: Record<string, any>;
+};
+export default function ProjectPage({
+  readOnly = false,
+  initialValues,
+}: ProjectPageProps) {
   const router = useRouter();
   const [showCancelDialog, setShowCancelDialog] = useState(false);
   const [loading, setLoading] = useState(false);
   const [savingDraft, setSavingDraft] = useState(false);
-  const [businessOptions, setBusinessOptions] = useState<{ value: number; label: string }[]>([]);
-  const [selectedBusinessId, setSelectedBusinessId] = useState<number | null>(null);
-  const [ownerOptions, setOwnerOptions] = useState<{ value: number; label: string }[]>([]);
-  const [ownershipIdToUserId, setOwnershipIdToUserId] = useState<Record<number, number | undefined>>({});
-  const [formDefaults, setFormDefaults] = useState<Record<string, any> | undefined>(undefined);
+  const [businessOptions, setBusinessOptions] = useState<
+    { value: number; label: string }[]
+  >([]);
+  const [selectedBusinessId, setSelectedBusinessId] = useState<number | null>(
+    null
+  );
+  const [ownerOptions, setOwnerOptions] = useState<
+    { value: number; label: string }[]
+  >([]);
+  const [ownershipIdToUserId, setOwnershipIdToUserId] = useState<
+    Record<number, number | undefined>
+  >({});
+  const [formDefaults, setFormDefaults] = useState<
+    Record<string, any> | undefined
+  >(undefined);
   const mergedDefaults = useMemo(() => {
     const base = { country: 'Malaysia', state: 'Melaka' };
     if (!formDefaults) return base;
@@ -39,14 +65,20 @@ export default function ProjectPage({ readOnly = false, initialValues }: Project
 
   // --- Helpers -------------------------------------------------------------
   // Map selected owner inputs (which may be ownership ids or already user ids) to unique user ids
-  const mapOwnershipsToUserIds = (owners: any[] | undefined | null): number[] => {
+  const mapOwnershipsToUserIds = (
+    owners: any[] | undefined | null
+  ): number[] => {
     if (!Array.isArray(owners) || owners.length === 0) return [];
     const ids = owners
       .map((o: any) => Number(o?.owner_id))
       .filter((n: number) => !Number.isNaN(n))
       // if the value matches an ownership id, map to its user_id; otherwise treat it as already a user_id
-      .map((id: number) => (ownershipIdToUserId[id] !== undefined ? ownershipIdToUserId[id] : id))
-      .filter((uid: any) => typeof uid === 'number' && !Number.isNaN(uid)) as number[];
+      .map((id: number) =>
+        ownershipIdToUserId[id] !== undefined ? ownershipIdToUserId[id] : id
+      )
+      .filter(
+        (uid: any) => typeof uid === 'number' && !Number.isNaN(uid)
+      ) as number[];
     return Array.from(new Set(ids));
   };
 
@@ -76,30 +108,57 @@ export default function ProjectPage({ readOnly = false, initialValues }: Project
     fetchMyBusinesses()
       .then((data: any[]) => {
         const isWithdrawn = (item: any) => {
-          const s = item?.status || item?.state || item?.applicationStatus || item?.statusName || item?.status_name || item?.currentStatus || item?.current_status;
+          const s =
+            item?.status ||
+            item?.state ||
+            item?.applicationStatus ||
+            item?.statusName ||
+            item?.status_name ||
+            item?.currentStatus ||
+            item?.current_status;
           if (typeof s === 'string') return s.toLowerCase() === 'withdrawn';
-          for (const v of Object.values(item || {})) if (typeof v === 'string' && /withdrawn/i.test(v)) return true;
+          for (const v of Object.values(item || {}))
+            if (typeof v === 'string' && /withdrawn/i.test(v)) return true;
           return false;
         };
         const opts = (data || [])
           .filter((biz) => !isWithdrawn(biz))
-          .map((biz: any) => ({ value: biz.id, label: biz.name || biz.companyName || `#${biz.id}` }));
+          .map((biz: any) => ({
+            value: biz.id,
+            label: biz.name || biz.companyName || `#${biz.id}`,
+          }));
         setBusinessOptions(opts);
       })
-      .catch(() => {/* ignore non-fatal */ });
+      .catch(() => {
+        /* ignore non-fatal */
+      });
   }, []);
 
   // Load approved ownerships when business changes
   useEffect(() => {
-    if (!selectedBusinessId) { setOwnerOptions([]); return; }
-    listOwnerships({ business_id: selectedBusinessId, status: 'Approved', limit: 100, offset: 0 })
+    if (!selectedBusinessId) {
+      setOwnerOptions([]);
+      return;
+    }
+    listOwnerships({
+      business_id: selectedBusinessId,
+      status: 'Approved',
+      limit: 100,
+      offset: 0,
+    })
       .then(({ data }) => {
         // Use user_id as the option value so the form directly captures the user id
         const opts = (data || [])
           .filter((o: any) => typeof o?.user_id === 'number')
-          .map((o: any) => ({ value: Number(o.user_id), label: o.name || o.email || `User #${o.user_id}` }));
+          .map((o: any) => ({
+            value: Number(o.user_id),
+            label: o.name || o.email || `User #${o.user_id}`,
+          }));
         const map: Record<number, number | undefined> = {};
-        (data || []).forEach((o: any) => { if (o && typeof o.id === 'number') map[o.id] = (o.user_id != null ? Number(o.user_id) : undefined); });
+        (data || []).forEach((o: any) => {
+          if (o && typeof o.id === 'number')
+            map[o.id] = o.user_id != null ? Number(o.user_id) : undefined;
+        });
         setOwnerOptions(opts);
         setOwnershipIdToUserId(map);
       })
@@ -114,25 +173,35 @@ export default function ProjectPage({ readOnly = false, initialValues }: Project
       if (!defaults.country) (defaults as any).country = 'Malaysia';
       setFormDefaults(defaults);
       console.log('Initial values provided:', defaults);
-      const bid = Number((defaults as any).business_id ?? (defaults as any).businessId);
+      const bid = Number(
+        (defaults as any).business_id ?? (defaults as any).businessId
+      );
       if (!Number.isNaN(bid)) setSelectedBusinessId(bid);
       return;
     }
     const draftId = router.query?.draft_id as string | undefined;
-  const businessId = router.query?.business_id as string | undefined;
+    const businessId = router.query?.business_id as string | undefined;
     console.log('Draft ID from URL:', draftId);
     console.log('Business ID from URL:', businessId);
     if (!draftId) return;
     let mounted = true;
     (async () => {
       try {
-  const draft = await getProjectById(draftId, { businessId: businessId ? Number(businessId) : undefined, status: 'draft' });
-    const defaults = { ...((draft as any)?.data || {}) } as Record<string, any>;
-    // If API returns top-level coordinates but not inside data, copy them into defaults
-    const topLat = (draft as any)?.latitude;
-    const topLng = (draft as any)?.longitude;
-    if ((defaults as any).latitude === undefined && topLat !== undefined) (defaults as any).latitude = topLat;
-    if ((defaults as any).longitude === undefined && topLng !== undefined) (defaults as any).longitude = topLng;
+        const draft = await getProjectById(draftId, {
+          businessId: businessId ? Number(businessId) : undefined,
+          status: 'draft',
+        });
+        const defaults = { ...((draft as any)?.data || {}) } as Record<
+          string,
+          any
+        >;
+        // If API returns top-level coordinates but not inside data, copy them into defaults
+        const topLat = (draft as any)?.latitude;
+        const topLng = (draft as any)?.longitude;
+        if ((defaults as any).latitude === undefined && topLat !== undefined)
+          (defaults as any).latitude = topLat;
+        if ((defaults as any).longitude === undefined && topLng !== undefined)
+          (defaults as any).longitude = topLng;
         // Transform legacy flat keys like 'buildings.0.openArea' into array form expected by useFieldArray
         if (!Array.isArray(defaults.buildings)) {
           const map: Record<number, any> = {};
@@ -157,17 +226,27 @@ export default function ProjectPage({ readOnly = false, initialValues }: Project
         }
         // Transform legacy single-owner fields into owners[] array
         if (!Array.isArray(defaults.owners)) {
-          const singleOwnerId = (defaults as any).owner_id ?? (defaults as any).ownerId;
-          const singleOwnerCategory = (defaults as any).ownerCategory ?? (defaults as any).ownershipCategory;
+          const singleOwnerId =
+            (defaults as any).owner_id ?? (defaults as any).ownerId;
+          const singleOwnerCategory =
+            (defaults as any).ownerCategory ??
+            (defaults as any).ownershipCategory;
           if (singleOwnerId || singleOwnerCategory) {
-            defaults.owners = [{ owner_id: singleOwnerId ?? '', category: singleOwnerCategory ?? '' }];
+            defaults.owners = [
+              {
+                owner_id: singleOwnerId ?? '',
+                category: singleOwnerCategory ?? '',
+              },
+            ];
           }
           delete (defaults as any).owner_id;
           delete (defaults as any).ownerId;
           delete (defaults as any).ownerCategory;
           delete (defaults as any).ownershipCategory;
         }
-        const draftBiz = Number((draft as any)?.business_id ?? (draft as any)?.businessId);
+        const draftBiz = Number(
+          (draft as any)?.business_id ?? (draft as any)?.businessId
+        );
         if (!Number.isNaN(draftBiz)) defaults.business_id = draftBiz;
         if (!mounted) return;
         setFormDefaults(defaults);
@@ -179,7 +258,9 @@ export default function ProjectPage({ readOnly = false, initialValues }: Project
         // ignore load failures for now
       }
     })();
-    return () => { mounted = false; };
+    return () => {
+      mounted = false;
+    };
   }, [router.query?.draft_id]);
 
   // Helper: compute per-building fee and total fee (min RM 140 per row)
@@ -187,11 +268,16 @@ export default function ProjectPage({ readOnly = false, initialValues }: Project
     // eslint-disable-next-line react-hooks/rules-of-hooks
     const { control, setValue } = useFormContext();
     // eslint-disable-next-line react-hooks/rules-of-hooks
-    const buildings = useWatch({ control, name: 'buildings' }) as Array<any> | undefined;
+    const buildings = useWatch({ control, name: 'buildings' }) as
+      | Array<any>
+      | undefined;
     // eslint-disable-next-line react-hooks/rules-of-hooks
     useEffect(() => {
       if (!Array.isArray(buildings) || buildings.length === 0) {
-        setValue('processingFees', '0.00', { shouldValidate: true, shouldDirty: true });
+        setValue('processingFees', '0.00', {
+          shouldValidate: true,
+          shouldDirty: true,
+        });
         return;
       }
       let total = 0;
@@ -205,23 +291,34 @@ export default function ProjectPage({ readOnly = false, initialValues }: Project
         // Write back per-row fee only if changed to avoid loops
         const current = b?.processingFee;
         if (`${current}` !== fixed) {
-          setValue(`buildings.${idx}.processingFee`, fixed, { shouldValidate: true, shouldDirty: true });
+          setValue(`buildings.${idx}.processingFee`, fixed, {
+            shouldValidate: true,
+            shouldDirty: true,
+          });
         }
       });
       const totalRounded = Math.round((total + Number.EPSILON) * 100) / 100;
       const totalFixed = totalRounded.toFixed(2);
-      setValue('processingFees', totalFixed, { shouldValidate: true, shouldDirty: true });
+      setValue('processingFees', totalFixed, {
+        shouldValidate: true,
+        shouldDirty: true,
+      });
     }, [JSON.stringify(buildings), setValue]);
     return null;
   }
 
   function MelakaStateGuard() {
     const { control, setValue } = useFormContext();
-    const currentState = useWatch({ control, name: 'state' }) as string | undefined;
+    const currentState = useWatch({ control, name: 'state' }) as
+      | string
+      | undefined;
     useEffect(() => {
       const normalized = (currentState || '').trim().toLowerCase();
       if (normalized === 'melaka') return;
-      setValue('state', 'Melaka', { shouldValidate: true, shouldDirty: normalized.length > 0 && normalized !== 'melaka' });
+      setValue('state', 'Melaka', {
+        shouldValidate: true,
+        shouldDirty: normalized.length > 0 && normalized !== 'melaka',
+      });
     }, [currentState, setValue]);
     return null;
   }
@@ -232,7 +329,9 @@ export default function ProjectPage({ readOnly = false, initialValues }: Project
     // eslint-disable-next-line react-hooks/rules-of-hooks
     const { control } = useFormContext();
     // eslint-disable-next-line react-hooks/rules-of-hooks
-    const owners = useWatch({ control, name: 'owners' }) as Array<any> | undefined;
+    const owners = useWatch({ control, name: 'owners' }) as
+      | Array<any>
+      | undefined;
     const hasBuildingOrLand = Array.isArray(owners)
       ? owners.some((o) => {
           const cat = String(o?.category || '').toLowerCase();
@@ -249,7 +348,9 @@ export default function ProjectPage({ readOnly = false, initialValues }: Project
             label="Statutory Declaration File"
             description="PDF up to 10MB"
             accept="application/pdf"
-            requiredMessage={'Please upload a cover photo statutory declaration'}
+            requiredMessage={
+              'Please upload a cover photo statutory declaration'
+            }
           />
         </div>
         <Spacing size="sm" />
@@ -259,7 +360,9 @@ export default function ProjectPage({ readOnly = false, initialValues }: Project
             label="Land Heir Declaration"
             description="PDF up to 10MB"
             accept="application/pdf"
-            requiredMessage={'Please upload a cover photo land heir declaration'}
+            requiredMessage={
+              'Please upload a cover photo land heir declaration'
+            }
           />
         </div>
         <Spacing size="sm" />
@@ -277,7 +380,13 @@ export default function ProjectPage({ readOnly = false, initialValues }: Project
   }
 
   // Button that saves a draft using react-hook-form values (keeps nested arrays like buildings)
-  function DraftSaveButton({ onSave, loading }: { onSave: (data: any) => void | Promise<void>; loading: boolean }) {
+  function DraftSaveButton({
+    onSave,
+    loading,
+  }: {
+    onSave: (data: any) => void | Promise<void>;
+    loading: boolean;
+  }) {
     // eslint-disable-next-line react-hooks/rules-of-hooks
     const { getValues } = useFormContext();
     return (
@@ -296,11 +405,24 @@ export default function ProjectPage({ readOnly = false, initialValues }: Project
   }
 
   // Repeatable owners array (each with owner_id + category)
-  function OwnersFieldArray({ ownerOptions, selectedBusinessId, readOnly, presetOwnershipIds }: { ownerOptions: { value: number; label: string }[]; selectedBusinessId: number | null; readOnly?: boolean; presetOwnershipIds?: number[] }) {
+  function OwnersFieldArray({
+    ownerOptions,
+    selectedBusinessId,
+    readOnly,
+    presetOwnershipIds,
+  }: {
+    ownerOptions: { value: number; label: string }[];
+    selectedBusinessId: number | null;
+    readOnly?: boolean;
+    presetOwnershipIds?: number[];
+  }) {
     // eslint-disable-next-line react-hooks/rules-of-hooks
     const { control, getValues, setValue } = useFormContext();
     // eslint-disable-next-line react-hooks/rules-of-hooks
-    const { fields, append, remove, replace } = useFieldArray({ name: 'owners', control });
+    const { fields, append, remove, replace } = useFieldArray({
+      name: 'owners',
+      control,
+    });
     // eslint-disable-next-line react-hooks/rules-of-hooks
     const prevBizRef = useRef<number | null>(selectedBusinessId);
 
@@ -308,8 +430,15 @@ export default function ProjectPage({ readOnly = false, initialValues }: Project
     // eslint-disable-next-line react-hooks/rules-of-hooks
     useEffect(() => {
       const current = getValues('owners') as any[] | undefined;
-      if (readOnly && Array.isArray(presetOwnershipIds) && presetOwnershipIds.length > 0) {
-        const rows = presetOwnershipIds.map((oid) => ({ owner_id: oid, category: '' }));
+      if (
+        readOnly &&
+        Array.isArray(presetOwnershipIds) &&
+        presetOwnershipIds.length > 0
+      ) {
+        const rows = presetOwnershipIds.map((oid) => ({
+          owner_id: oid,
+          category: '',
+        }));
         replace(rows);
       } else if (!Array.isArray(current) || current.length === 0) {
         append({ owner_id: '', category: '' });
@@ -330,7 +459,10 @@ export default function ProjectPage({ readOnly = false, initialValues }: Project
     return (
       <div className="space-y-3">
         {fields.map((field, index) => (
-          <div key={field.id} className="grid grid-cols-1 sm:grid-cols-6 gap-3 items-end">
+          <div
+            key={field.id}
+            className="grid grid-cols-1 sm:grid-cols-6 gap-3 items-end"
+          >
             <div className="sm:col-span-3">
               <SelectField
                 id={`owners.${index}.owner_id`}
@@ -338,7 +470,11 @@ export default function ProjectPage({ readOnly = false, initialValues }: Project
                 label="Project Owner"
                 options={ownerOptions}
                 requiredMessage="Owner is required"
-                placeholder={selectedBusinessId ? 'Select approved owner' : 'Select business first'}
+                placeholder={
+                  selectedBusinessId
+                    ? 'Select approved owner'
+                    : 'Select business first'
+                }
               />
             </div>
             <div className="sm:col-span-2">
@@ -366,7 +502,11 @@ export default function ProjectPage({ readOnly = false, initialValues }: Project
         ))}
         {!readOnly && (
           <div>
-            <Button type="button" variant="secondary" onClick={() => append({ owner_id: '', category: '' })}>
+            <Button
+              type="button"
+              variant="secondary"
+              onClick={() => append({ owner_id: '', category: '' })}
+            >
               Add owner
             </Button>
           </div>
@@ -384,13 +524,17 @@ export default function ProjectPage({ readOnly = false, initialValues }: Project
       }
       // Build clear and minimal API payload
       const payload = buildSubmitPayload(data);
-      const res = await submitProject(payload, { draftId: (router.query?.draft_id as string) || undefined });
+      const res = await submitProject(payload, {
+        draftId: (router.query?.draft_id as string) || undefined,
+      });
       toast.success('Project submitted');
       console.log('Submit result:', res);
       // Navigate to MySKB Application tab after successful submission
       router.push('/myskb/application');
     } catch (e: any) {
-      toast.error(e?.response?.data?.message || e?.message || 'Failed to submit project');
+      toast.error(
+        e?.response?.data?.message || e?.message || 'Failed to submit project'
+      );
     } finally {
       setLoading(false);
     }
@@ -405,11 +549,16 @@ export default function ProjectPage({ readOnly = false, initialValues }: Project
       }
       // Build clear and minimal API payload
       const payload = buildSubmitPayload(data);
-      const res = await saveProjectDraft({ ...payload, draft: true }, { draftId: (router.query?.draft_id as string) || undefined });
+      const res = await saveProjectDraft(
+        { ...payload, draft: true },
+        { draftId: (router.query?.draft_id as string) || undefined }
+      );
       toast.success('Draft saved');
       console.log('Draft result:', res);
     } catch (e: any) {
-      toast.error(e?.response?.data?.message || e?.message || 'Failed to save draft');
+      toast.error(
+        e?.response?.data?.message || e?.message || 'Failed to save draft'
+      );
     } finally {
       setSavingDraft(false);
     }
@@ -419,51 +568,125 @@ export default function ProjectPage({ readOnly = false, initialValues }: Project
     <LayoutWithoutSidebar shiftY="-translate-y-0">
       <FormWrapper onSubmit={handleSubmit} defaultValues={mergedDefaults}>
         {/* This section introduce about the project spesification for the consultant to register a new project and tie with all active ownership, after the registration is successful it will send to mbmb for review, once the review is completed and the consultant have to pay the amount of the project */}
-        <FormSectionHeader title="Ownership Information" description="Please fill in the details of your project. This information will be used to register your project with MBMB." />
+        <FormSectionHeader
+          title="Ownership Information"
+          description="Please fill in the details of your project. This information will be used to register your project with MBMB."
+        />
         <Spacing size="lg" />
         <div className={readOnly ? 'pointer-events-none opacity-90' : ''}>
-          <SelectField id="business_id" name="business_id" label="Business" options={businessOptions} requiredMessage="Business is required" onChange={(e) => { const v = Number(e.target.value); setSelectedBusinessId(v); if (typeof window !== 'undefined') { try { localStorage.setItem('myskb_last_business_id', String(v)); } catch { } } }} />
+          <SelectField
+            id="business_id"
+            name="business_id"
+            label="Business"
+            options={businessOptions}
+            requiredMessage="Business is required"
+            onChange={(e) => {
+              const v = Number(e.target.value);
+              setSelectedBusinessId(v);
+              if (typeof window !== 'undefined') {
+                try {
+                  localStorage.setItem('myskb_last_business_id', String(v));
+                } catch {}
+              }
+            }}
+          />
         </div>
         <Spacing size="lg" />
-        
+
         <div className={readOnly ? 'pointer-events-none opacity-90' : ''}>
-          <OwnersFieldArray ownerOptions={ownerOptions} selectedBusinessId={selectedBusinessId} readOnly={readOnly} presetOwnershipIds={(() => {
-            // Options now use user_id values; preset directly with owners_user_ids
-            const uids = (formDefaults as any)?.owners_user_ids as number[] | undefined;
-            if (!Array.isArray(uids) || uids.length === 0) return undefined;
-            const clean = Array.from(new Set(uids.map(Number).filter((n) => !Number.isNaN(n))));
-            return clean.length ? clean : undefined;
-          })()} />
+          <OwnersFieldArray
+            ownerOptions={ownerOptions}
+            selectedBusinessId={selectedBusinessId}
+            readOnly={readOnly}
+            presetOwnershipIds={(() => {
+              // Options now use user_id values; preset directly with owners_user_ids
+              const uids = (formDefaults as any)?.owners_user_ids as
+                | number[]
+                | undefined;
+              if (!Array.isArray(uids) || uids.length === 0) return undefined;
+              const clean = Array.from(
+                new Set(uids.map(Number).filter((n) => !Number.isNaN(n)))
+              );
+              return clean.length ? clean : undefined;
+            })()}
+          />
         </div>
         <Spacing size="lg" />
         <OwnerCategoryBasedAttachments readOnly={readOnly} />
         <LineSeparator />
 
-        <FormSectionHeader title="Project Information" description="Please fill in the details of your project. This information will be used to register your project with MBMB." />
+        <FormSectionHeader
+          title="Project Information"
+          description="Please fill in the details of your project. This information will be used to register your project with MBMB."
+        />
         <Spacing size="lg" />
-        <InputText id="projectTitle" name="projectTitle" label="Project Title" requiredMessage="Project Title is required" readOnly={readOnly} />
+        <InputText
+          id="projectTitle"
+          name="projectTitle"
+          label="Project Title"
+          requiredMessage="Project Title is required"
+          readOnly={readOnly}
+        />
         <Spacing size="lg" />
 
-        <InputText id="address" name="address" label="Project Address" requiredMessage="Address is required" readOnly={readOnly} />
+        <InputText
+          id="address"
+          name="address"
+          label="Project Address"
+          requiredMessage="Address is required"
+          readOnly={readOnly}
+        />
 
         <Spacing size="sm" />
         <FormRow columns={3}>
-          <InputText id="city" name="city" label="City" requiredMessage="City is required" readOnly={readOnly} />
-          <InputText id="state" name="state" label="State / Province" requiredMessage="State / Province is required" readOnly />
-          <InputText id="postalcode" name="postalcode" label="ZIP / Postal code" requiredMessage="ZIP / Postal code is required" readOnly={readOnly} />
+          <InputText
+            id="city"
+            name="city"
+            label="City"
+            requiredMessage="City is required"
+            readOnly={readOnly}
+          />
+          <InputText
+            id="state"
+            name="state"
+            label="State / Province"
+            requiredMessage="State / Province is required"
+            readOnly
+          />
+          <InputText
+            id="postalcode"
+            name="postalcode"
+            label="ZIP / Postal code"
+            requiredMessage="ZIP / Postal code is required"
+            readOnly={readOnly}
+          />
         </FormRow>
-        <p className="text-xs text-gray-500">State is fixed to Melaka for MBMB submissions.</p>
+        <p className="text-xs text-gray-500">
+          State is fixed to Melaka for MBMB submissions.
+        </p>
         <MelakaStateGuard />
         <Spacing size="sm" />
         <div className={readOnly ? 'pointer-events-none opacity-90' : ''}>
-          <InputText id="country" name="country" label="Country" requiredMessage="Country is required" readOnly={readOnly} />
+          <InputText
+            id="country"
+            name="country"
+            label="Country"
+            requiredMessage="Country is required"
+            readOnly={readOnly}
+          />
         </div>
         <Spacing size="md" />
         {/* Map: Geocode address -> Lat/Lng; draggable marker to fine-tune */}
         <div className={readOnly ? 'pointer-events-none opacity-90' : ''}>
           <GeoAddressMap
             label="Project Location"
-            addressFields={{ address: 'address', city: 'city', state: 'state', postalcode: 'postalcode', country: 'country' }}
+            addressFields={{
+              address: 'address',
+              city: 'city',
+              state: 'state',
+              postalcode: 'postalcode',
+              country: 'country',
+            }}
             latField="latitude"
             lngField="longitude"
             readOnly={readOnly}
@@ -472,52 +695,122 @@ export default function ProjectPage({ readOnly = false, initialValues }: Project
         <Spacing size="sm" />
 
         <LineSeparator />
-        <FormSectionHeader title="Land Infromation" description="Provide additional details about your land." />
+        <FormSectionHeader
+          title="Land Infromation"
+          description="Provide additional details about your land."
+        />
         <Spacing size="lg" />
 
-        <InputText id="landAddress" name="landAddress" label="Subdistrict / Town / City Area" requiredMessage="Subdistrict / Town / City Area is required" readOnly={readOnly} />
+        <InputText
+          id="landAddress"
+          name="landAddress"
+          label="Subdistrict / Town / City Area"
+          requiredMessage="Subdistrict / Town / City Area is required"
+          readOnly={readOnly}
+        />
         <Spacing size="sm" />
 
-        <InputText id="lotNumber" name="lotNumber" label="Lot / Plot Number" requiredMessage="Lot / Plot Number" readOnly={readOnly} />
+        <InputText
+          id="lotNumber"
+          name="lotNumber"
+          label="Lot / Plot Number"
+          requiredMessage="Lot / Plot Number"
+          readOnly={readOnly}
+        />
         <Spacing size="sm" />
 
         <div className={readOnly ? 'pointer-events-none opacity-90' : ''}>
-          <SelectField id="landStatus" name="landStatus" label="Land Status" options={landStatusOptions} requiredMessage="Land status is required" />
+          <SelectField
+            id="landStatus"
+            name="landStatus"
+            label="Land Status"
+            options={landStatusOptions}
+            requiredMessage="Land status is required"
+          />
         </div>
         <Spacing size="sm" />
 
         <div className={readOnly ? 'pointer-events-none opacity-90' : ''}>
-          <SelectField id="typeGrant" name="typeGrant" label="Type of Grant" options={typeGrantOptions} requiredMessage="Type of Grant is required" />
+          <SelectField
+            id="typeGrant"
+            name="typeGrant"
+            label="Type of Grant"
+            options={typeGrantOptions}
+            requiredMessage="Type of Grant is required"
+          />
         </div>
         <Spacing size="sm" />
 
-
-        <InputText id="spesificCondition" name="spesificCondition" label="Specific Conditions" readOnly={readOnly} />
+        <InputText
+          id="spesificCondition"
+          name="spesificCondition"
+          label="Specific Conditions"
+          readOnly={readOnly}
+        />
         <Spacing size="sm" />
 
-        <InputText id="landArea" name="landArea" label="Land Area (m2)" type="number" requiredMessage="Land Area is required" readOnly={readOnly} />
+        <InputText
+          id="landArea"
+          name="landArea"
+          label="Land Area (m2)"
+          type="number"
+          requiredMessage="Land Area is required"
+          readOnly={readOnly}
+        />
         <Spacing size="sm" />
 
-        <InputText id="existingCrops" name="existingCrops" label="Existing Crops" readOnly={readOnly} />
+        <InputText
+          id="existingCrops"
+          name="existingCrops"
+          label="Existing Crops"
+          readOnly={readOnly}
+        />
         <Spacing size="sm" />
 
-        <InputText id="existingBuilding" name="existingBuilding" label="Existing Building" type="number" readOnly={readOnly} />
+        <InputText
+          id="existingBuilding"
+          name="existingBuilding"
+          label="Existing Building"
+          type="number"
+          readOnly={readOnly}
+        />
         <Spacing size="sm" />
 
-        <InputText id="residentialBuilding" name="residentialBuilding" label="Number of permanent residential building units
-" type="number" readOnly={readOnly} />
+        <InputText
+          id="residentialBuilding"
+          name="residentialBuilding"
+          label="Number of permanent residential building units
+"
+          type="number"
+          readOnly={readOnly}
+        />
         <Spacing size="sm" />
 
-        <InputText id="semiResidentialBuilding" name="semiResidentialBuilding" label="Number of semi-permanent residential building units
-" type="number" readOnly={readOnly} />
+        <InputText
+          id="semiResidentialBuilding"
+          name="semiResidentialBuilding"
+          label="Number of semi-permanent residential building units
+"
+          type="number"
+          readOnly={readOnly}
+        />
         <Spacing size="sm" />
 
-        <InputText id="otherBuilding" name="otherBuilding" label="Other buildings" type="number" readOnly={readOnly} />
+        <InputText
+          id="otherBuilding"
+          name="otherBuilding"
+          label="Other buildings"
+          type="number"
+          readOnly={readOnly}
+        />
         <Spacing size="sm" />
 
         <LineSeparator />
 
-        <FormSectionHeader title="Propose Usage Information" description="Add one or more buildings and their areas. Each building's processing fee is auto-calculated with a minimum of RM 140." />
+        <FormSectionHeader
+          title="Propose Usage Information"
+          description="Add one or more buildings and their areas. Each building's processing fee is auto-calculated with a minimum of RM 140."
+        />
         <Spacing size="lg" />
 
         <div className={readOnly ? 'pointer-events-none opacity-90' : ''}>
@@ -541,15 +834,20 @@ export default function ProjectPage({ readOnly = false, initialValues }: Project
 
         {!readOnly && (
           <FormActions>
-            <Button type="button" variant="ghost" onClick={() => setShowCancelDialog(true)}>Cancel</Button>
+            <Button
+              type="button"
+              variant="ghost"
+              onClick={() => setShowCancelDialog(true)}
+            >
+              Cancel
+            </Button>
             <DraftSaveButton onSave={handleSaveDraft} loading={savingDraft} />
-            <Button type="submit" variant="primary" loading={loading}>Submit</Button>
+            <Button type="submit" variant="primary" loading={loading}>
+              Submit
+            </Button>
           </FormActions>
         )}
-
-
       </FormWrapper>
-
 
       {!readOnly && (
         <ConfirmDialog
@@ -565,10 +863,6 @@ export default function ProjectPage({ readOnly = false, initialValues }: Project
           }}
         />
       )}
-
     </LayoutWithoutSidebar>
-
-
   );
 }
-
