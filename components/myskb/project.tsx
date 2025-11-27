@@ -14,7 +14,7 @@ import SelectField from 'todo/components/forms/SelectField';
 import ConfirmDialog from 'todo/components/forms/ConfirmDialog';
 import { useRouter } from 'next/router';
 import { useEffect, useState, useRef, useMemo } from 'react';
-import { useFormContext, useWatch, useFieldArray } from 'react-hook-form';
+import { useFormContext, useWatch, useFieldArray, useController } from 'react-hook-form';
 // import RadioGroupField from "todo/components/forms/RadioGroupField";
 // import { landOrBuildingOwnerList } from "todo/components/data/RadioList";
 import toast from 'react-hot-toast';
@@ -29,6 +29,7 @@ import {
   submitProject,
   listOwnerships,
   getProjectById,
+  uploadCertificate,
 } from '@/services/api';
 type ProjectPageProps = {
   readOnly?: boolean;
@@ -58,7 +59,7 @@ export default function ProjectPage({
     Record<string, any> | undefined
   >(undefined);
   const mergedDefaults = useMemo(() => {
-    const base = { country: 'Malaysia', state: 'Melaka' };
+    const base = { country: 'Malaysia', state: 'Melaka', sitePhotos: [] };
     if (!formDefaults) return base;
     return { ...base, ...formDefaults, state: 'Melaka' };
   }, [formDefaults]);
@@ -321,6 +322,128 @@ export default function ProjectPage({
       });
     }, [currentState, setValue]);
     return null;
+  }
+
+  function SitePhotosField({ readOnly }: { readOnly?: boolean }) {
+    const MAX_PHOTOS = 5;
+    // eslint-disable-next-line react-hooks/rules-of-hooks
+    const { control } = useFormContext();
+    // eslint-disable-next-line react-hooks/rules-of-hooks
+    const { field } = useController({ name: 'sitePhotos', control, defaultValue: [] });
+    const photos: string[] = Array.isArray(field.value) ? field.value : [];
+    // eslint-disable-next-line react-hooks/rules-of-hooks
+    const [uploading, setUploading] = useState(false);
+    // eslint-disable-next-line react-hooks/rules-of-hooks
+    const inputRef = useRef<HTMLInputElement | null>(null);
+
+    const buildUploadUrl = (path: string) => {
+      if (!path) return '';
+      if (/^https?:\/\//i.test(path)) return path;
+      const base = (process.env.NEXT_PUBLIC_API_URL || 'https://ixora-api.mbmb.gov.my').replace(/\/$/, '');
+      let normalized = path.replace(/^\/+/, '');
+      if (!/^uploads\/file\//i.test(normalized)) normalized = `uploads/file/${normalized}`;
+      return `${base}/${normalized}`;
+    };
+
+    const handleFiles = async (fileList: FileList | null) => {
+      if (!fileList || readOnly) return;
+      const remaining = MAX_PHOTOS - photos.length;
+      if (remaining <= 0) {
+        toast.error('Maximum of 5 site photos reached');
+        return;
+      }
+      const files = Array.from(fileList).filter((file) => file.type.startsWith('image/'));
+      if (!files.length) {
+        toast.error('Only image files are allowed');
+        return;
+      }
+      const limited = files.slice(0, remaining);
+      setUploading(true);
+      const uploaded: string[] = [];
+      for (const file of limited) {
+        try {
+          const path = await uploadCertificate(file, 'myskb-site-photos');
+          uploaded.push(path);
+        } catch (error) {
+          console.error('Failed to upload site photo', error);
+          toast.error(`Failed to upload ${file.name}`);
+        }
+      }
+      if (uploaded.length) {
+        field.onChange([...photos, ...uploaded]);
+      }
+      setUploading(false);
+    };
+
+    const handleDrop = (event: React.DragEvent<HTMLDivElement>) => {
+      event.preventDefault();
+      if (readOnly) return;
+      handleFiles(event.dataTransfer.files);
+    };
+
+    const removePhoto = (index: number) => {
+      if (readOnly) return;
+      const next = photos.filter((_, i) => i !== index);
+      field.onChange(next);
+    };
+
+    return (
+      <div className="space-y-3">
+        <div>
+          <div className="flex items-center gap-2 text-sm font-medium text-gray-900">
+            <span>Site Photos (optional)</span>
+            <span className="text-xs font-normal text-gray-500">Up to {MAX_PHOTOS} images</span>
+          </div>
+          <p className="text-xs text-gray-500">Recent photos help MBMB inspectors locate the project site faster.</p>
+        </div>
+
+        <div
+          className={`rounded-lg border border-dashed border-gray-300 bg-white p-4 text-center ${readOnly ? 'opacity-60' : 'hover:border-indigo-400 hover:bg-gray-50 cursor-pointer'}`}
+          onClick={() => !readOnly && inputRef.current?.click()}
+          onDrop={handleDrop}
+          onDragOver={(e) => e.preventDefault()}
+        >
+          <p className="text-sm text-gray-700">{uploading ? 'Uploading photos…' : 'Click or drag images here'}</p>
+          <p className="text-xs text-gray-500">PNG or JPG, max 10MB each.</p>
+        </div>
+
+        <input
+          type="file"
+          accept="image/*"
+          multiple
+          ref={inputRef}
+          className="hidden"
+          onChange={(event) => {
+            handleFiles(event.target.files);
+            if (event.target) event.target.value = '';
+          }}
+          disabled={readOnly || uploading}
+        />
+
+        {photos.length > 0 && (
+          <div className="grid grid-cols-2 gap-3 sm:grid-cols-3">
+            {photos.map((photo, index) => (
+              <div key={`${photo}-${index}`} className="relative rounded-lg border bg-gray-50 p-2">
+                <img
+                  src={buildUploadUrl(photo)}
+                  alt={`Site photo ${index + 1}`}
+                  className="h-32 w-full rounded object-cover"
+                />
+                {!readOnly && (
+                  <button
+                    type="button"
+                    onClick={() => removePhoto(index)}
+                    className="absolute right-2 top-2 rounded bg-black/60 px-2 py-0.5 text-xs text-white"
+                  >
+                    Remove
+                  </button>
+                )}
+              </div>
+            ))}
+          </div>
+        )}
+      </div>
+    );
   }
 
   // BuildingsTable extracted as reusable component
@@ -693,6 +816,10 @@ export default function ProjectPage({
           />
         </div>
         <Spacing size="sm" />
+        <div className={readOnly ? 'opacity-90' : ''}>
+          <SitePhotosField readOnly={readOnly} />
+        </div>
+        <Spacing size="md" />
 
         <LineSeparator />
         <FormSectionHeader
