@@ -1,6 +1,6 @@
-import React from 'react'
-import { useFormContext } from 'react-hook-form'
-import { useTranslation } from '@/utils/i18n'
+import React from 'react';
+import { useFormContext } from 'react-hook-form';
+import { useTranslation } from '@/utils/i18n';
 
 /**
  * TeamMember tab content: basic user info form fields
@@ -10,20 +10,22 @@ const Team: React.FC = () => {
   const {
     register,
     formState: { errors },
-  } = useFormContext()
-  const { t } = useTranslation()
+  } = useFormContext();
+  const { t } = useTranslation();
 
   return (
     <div className="space-y-6">
       {/* Applicant Name */}
       <div>
-        <label htmlFor="applicantName" className="block text-sm font-medium text-gray-700">
+        <label
+          htmlFor="applicantName"
+          className="block text-sm font-medium text-gray-700"
+        >
           {t('myskb.team.fields.applicantName', 'Applicant Name')}
         </label>
       </div>
-
     </div>
-  )
-}
+  );
+};
 
-export default Team
+export default Team;

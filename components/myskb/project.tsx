@@ -171,8 +171,7 @@ export default function ProjectPage({
           .filter((o: any) => typeof o?.user_id === 'number')
           .map((o: any) => ({
             value: Number(o.user_id),
-            label:
-              o.name || o.email || formatUserFallback(o.user_id),
+            label: o.name || o.email || formatUserFallback(o.user_id),
           }));
         const map: Record<number, number | undefined> = {};
         (data || []).forEach((o: any) => {
@@ -375,14 +374,24 @@ export default function ProjectPage({
       if (!fileList || readOnly) return;
       const remaining = MAX_PHOTOS - photos.length;
       if (remaining <= 0) {
-        toast.error(t('myskb.project.sitePhotos.limitReached', 'Maximum of 5 site photos reached'));
+        toast.error(
+          t(
+            'myskb.project.sitePhotos.limitReached',
+            'Maximum of 5 site photos reached'
+          )
+        );
         return;
       }
       const files = Array.from(fileList).filter((file) =>
         file.type.startsWith('image/')
       );
       if (!files.length) {
-        toast.error(t('myskb.project.sitePhotos.imagesOnly', 'Only image files are allowed'));
+        toast.error(
+          t(
+            'myskb.project.sitePhotos.imagesOnly',
+            'Only image files are allowed'
+          )
+        );
         return;
       }
       const limited = files.slice(0, remaining);
@@ -394,7 +403,10 @@ export default function ProjectPage({
           uploaded.push(path);
         } catch (error) {
           console.error('Failed to upload site photo', error);
-          const failureMsg = t('myskb.project.sitePhotos.uploadFailed', 'Failed to upload {{file}}');
+          const failureMsg = t(
+            'myskb.project.sitePhotos.uploadFailed',
+            'Failed to upload {{file}}'
+          );
           toast.error(failureMsg.replace('{{file}}', file.name));
         }
       }
@@ -420,13 +432,21 @@ export default function ProjectPage({
       <div className="space-y-3">
         <div>
           <div className="flex items-center gap-2 text-sm font-medium text-gray-900">
-            <span>{t('myskb.project.sitePhotos.title', 'Site Photos (optional)')}</span>
+            <span>
+              {t('myskb.project.sitePhotos.title', 'Site Photos (optional)')}
+            </span>
             <span className="text-xs font-normal text-gray-500">
-              {t('myskb.project.sitePhotos.limit', 'Up to {{count}} images').replace('{{count}}', String(MAX_PHOTOS))}
+              {t(
+                'myskb.project.sitePhotos.limit',
+                'Up to {{count}} images'
+              ).replace('{{count}}', String(MAX_PHOTOS))}
             </span>
           </div>
           <p className="text-xs text-gray-500">
-            {t('myskb.project.sitePhotos.hint', 'Recent photos help MBMB inspectors locate the project site faster.')}
+            {t(
+              'myskb.project.sitePhotos.hint',
+              'Recent photos help MBMB inspectors locate the project site faster.'
+            )}
           </p>
         </div>
 
@@ -443,9 +463,17 @@ export default function ProjectPage({
           <p className="text-sm text-gray-700">
             {uploading
               ? t('myskb.project.sitePhotos.uploading', 'Uploading photos…')
-              : t('myskb.project.sitePhotos.dropzone', 'Click or drag images here')}
+              : t(
+                  'myskb.project.sitePhotos.dropzone',
+                  'Click or drag images here'
+                )}
           </p>
-          <p className="text-xs text-gray-500">{t('myskb.project.sitePhotos.fileHint', 'PNG or JPG, max 10MB each.')}</p>
+          <p className="text-xs text-gray-500">
+            {t(
+              'myskb.project.sitePhotos.fileHint',
+              'PNG or JPG, max 10MB each.'
+            )}
+          </p>
         </div>
 
         <input
@@ -470,10 +498,10 @@ export default function ProjectPage({
               >
                 <img
                   src={buildUploadUrl(photo)}
-                  alt={t('myskb.project.sitePhotos.alt', 'Site photo {{index}}').replace(
-                    '{{index}}',
-                    String(index + 1)
-                  )}
+                  alt={t(
+                    'myskb.project.sitePhotos.alt',
+                    'Site photo {{index}}'
+                  ).replace('{{index}}', String(index + 1))}
                   className="h-32 w-full rounded object-cover"
                 />
                 {!readOnly && (
@@ -515,20 +543,38 @@ export default function ProjectPage({
         <div className={readOnly ? 'pointer-events-none opacity-90' : ''}>
           <FileUploadField
             name="statutoryDeclarationFile"
-            label={t('myskb.project.attachments.statutory', 'Statutory Declaration File')}
-            description={t('myskb.project.attachments.pdfHint', 'PDF up to 10MB')}
+            label={t(
+              'myskb.project.attachments.statutory',
+              'Statutory Declaration File'
+            )}
+            description={t(
+              'myskb.project.attachments.pdfHint',
+              'PDF up to 10MB'
+            )}
             accept="application/pdf"
-            requiredMessage={t('myskb.project.attachments.statutoryRequired', 'Please upload a statutory declaration')}
+            requiredMessage={t(
+              'myskb.project.attachments.statutoryRequired',
+              'Please upload a statutory declaration'
+            )}
           />
         </div>
         <Spacing size="sm" />
         <div className={readOnly ? 'pointer-events-none opacity-90' : ''}>
           <FileUploadField
             name="landHeirDeclarationFile"
-            label={t('myskb.project.attachments.landHeir', 'Land Heir Declaration')}
-            description={t('myskb.project.attachments.pdfHint', 'PDF up to 10MB')}
+            label={t(
+              'myskb.project.attachments.landHeir',
+              'Land Heir Declaration'
+            )}
+            description={t(
+              'myskb.project.attachments.pdfHint',
+              'PDF up to 10MB'
+            )}
             accept="application/pdf"
-            requiredMessage={t('myskb.project.attachments.landHeirRequired', 'Please upload a land heir declaration')}
+            requiredMessage={t(
+              'myskb.project.attachments.landHeirRequired',
+              'Please upload a land heir declaration'
+            )}
           />
         </div>
         <Spacing size="sm" />
@@ -536,9 +582,15 @@ export default function ProjectPage({
           <FileUploadField
             name="rentalAgreementFile"
             label={t('myskb.project.attachments.rental', 'Rental Agreement')}
-            description={t('myskb.project.attachments.pdfHint', 'PDF up to 10MB')}
+            description={t(
+              'myskb.project.attachments.pdfHint',
+              'PDF up to 10MB'
+            )}
             accept="application/pdf"
-            requiredMessage={t('myskb.project.attachments.rentalRequired', 'Please upload a rental agreement')}
+            requiredMessage={t(
+              'myskb.project.attachments.rentalRequired',
+              'Please upload a rental agreement'
+            )}
           />
         </div>
       </>
@@ -635,11 +687,20 @@ export default function ProjectPage({
                 name={`owners.${index}.owner_id`}
                 label={t('myskb.project.owners.ownerLabel', 'Project Owner')}
                 options={ownerOptions}
-                requiredMessage={t('myskb.project.owners.ownerRequired', 'Owner is required')}
+                requiredMessage={t(
+                  'myskb.project.owners.ownerRequired',
+                  'Owner is required'
+                )}
                 placeholder={
                   selectedBusinessId
-                    ? t('myskb.project.owners.ownerPlaceholder', 'Select approved owner')
-                    : t('myskb.project.owners.businessFirst', 'Select business first')
+                    ? t(
+                        'myskb.project.owners.ownerPlaceholder',
+                        'Select approved owner'
+                      )
+                    : t(
+                        'myskb.project.owners.businessFirst',
+                        'Select business first'
+                      )
                 }
               />
             </div>
@@ -647,9 +708,15 @@ export default function ProjectPage({
               <SelectField
                 id={`owners.${index}.category`}
                 name={`owners.${index}.category`}
-                label={t('myskb.project.owners.categoryLabel', 'Ownership Category')}
+                label={t(
+                  'myskb.project.owners.categoryLabel',
+                  'Ownership Category'
+                )}
                 options={OwnershipCategory as any}
-                requiredMessage={t('myskb.project.owners.categoryRequired', 'Category is required')}
+                requiredMessage={t(
+                  'myskb.project.owners.categoryRequired',
+                  'Category is required'
+                )}
               />
             </div>
             {!readOnly && (
@@ -685,7 +752,9 @@ export default function ProjectPage({
     try {
       setLoading(true);
       if (!data.business_id) {
-        toast.error(t('myskb.project.errors.businessRequired', 'Please select a Business'));
+        toast.error(
+          t('myskb.project.errors.businessRequired', 'Please select a Business')
+        );
         return;
       }
       // Build clear and minimal API payload
@@ -699,7 +768,9 @@ export default function ProjectPage({
       router.push('/myskb/application');
     } catch (e: any) {
       toast.error(
-        e?.response?.data?.message || e?.message || t('myskb.project.errors.submitFailed', 'Failed to submit project')
+        e?.response?.data?.message ||
+          e?.message ||
+          t('myskb.project.errors.submitFailed', 'Failed to submit project')
       );
     } finally {
       setLoading(false);
@@ -710,7 +781,9 @@ export default function ProjectPage({
     try {
       setSavingDraft(true);
       if (!data.business_id) {
-        toast.error(t('myskb.project.errors.businessRequired', 'Please select a Business'));
+        toast.error(
+          t('myskb.project.errors.businessRequired', 'Please select a Business')
+        );
         return;
       }
       // Build clear and minimal API payload
@@ -723,7 +796,9 @@ export default function ProjectPage({
       console.log('Draft result:', res);
     } catch (e: any) {
       toast.error(
-        e?.response?.data?.message || e?.message || t('myskb.project.errors.draftFailed', 'Failed to save draft')
+        e?.response?.data?.message ||
+          e?.message ||
+          t('myskb.project.errors.draftFailed', 'Failed to save draft')
       );
     } finally {
       setSavingDraft(false);
@@ -735,8 +810,14 @@ export default function ProjectPage({
       <FormWrapper onSubmit={handleSubmit} defaultValues={mergedDefaults}>
         {/* This section introduce about the project spesification for the consultant to register a new project and tie with all active ownership, after the registration is successful it will send to mbmb for review, once the review is completed and the consultant have to pay the amount of the project */}
         <FormSectionHeader
-          title={t('myskb.project.sections.ownership.title', 'Ownership Information')}
-          description={t('myskb.project.sections.ownership.description', 'Please fill in the details of your project. This information will be used to register your project with MBMB.')}
+          title={t(
+            'myskb.project.sections.ownership.title',
+            'Ownership Information'
+          )}
+          description={t(
+            'myskb.project.sections.ownership.description',
+            'Please fill in the details of your project. This information will be used to register your project with MBMB.'
+          )}
         />
         <Spacing size="lg" />
         <div className={readOnly ? 'pointer-events-none opacity-90' : ''}>
@@ -745,7 +826,10 @@ export default function ProjectPage({
             name="business_id"
             label={t('myskb.project.fields.business', 'Business')}
             options={businessOptions}
-            requiredMessage={t('myskb.project.errors.businessRequired', 'Business is required')}
+            requiredMessage={t(
+              'myskb.project.errors.businessRequired',
+              'Business is required'
+            )}
             onChange={(e) => {
               const v = Number(e.target.value);
               setSelectedBusinessId(v);
@@ -782,15 +866,24 @@ export default function ProjectPage({
         <LineSeparator />
 
         <FormSectionHeader
-          title={t('myskb.project.sections.projectInfo.title', 'Project Information')}
-          description={t('myskb.project.sections.projectInfo.description', 'Please fill in the details of your project. This information will be used to register your project with MBMB.')}
+          title={t(
+            'myskb.project.sections.projectInfo.title',
+            'Project Information'
+          )}
+          description={t(
+            'myskb.project.sections.projectInfo.description',
+            'Please fill in the details of your project. This information will be used to register your project with MBMB.'
+          )}
         />
         <Spacing size="lg" />
         <InputText
           id="projectTitle"
           name="projectTitle"
           label={t('myskb.project.fields.projectTitle', 'Project Title')}
-          requiredMessage={t('myskb.project.errors.projectTitle', 'Project Title is required')}
+          requiredMessage={t(
+            'myskb.project.errors.projectTitle',
+            'Project Title is required'
+          )}
           readOnly={readOnly}
         />
         <Spacing size="lg" />
@@ -799,7 +892,10 @@ export default function ProjectPage({
           id="address"
           name="address"
           label={t('myskb.project.fields.address', 'Project Address')}
-          requiredMessage={t('myskb.project.errors.address', 'Address is required')}
+          requiredMessage={t(
+            'myskb.project.errors.address',
+            'Address is required'
+          )}
           readOnly={readOnly}
         />
 
@@ -816,19 +912,28 @@ export default function ProjectPage({
             id="state"
             name="state"
             label={t('myskb.project.fields.state', 'State / Province')}
-            requiredMessage={t('myskb.project.errors.state', 'State / Province is required')}
+            requiredMessage={t(
+              'myskb.project.errors.state',
+              'State / Province is required'
+            )}
             readOnly
           />
           <InputText
             id="postalcode"
             name="postalcode"
             label={t('myskb.project.fields.postalCode', 'ZIP / Postal code')}
-            requiredMessage={t('myskb.project.errors.postalCode', 'ZIP / Postal code is required')}
+            requiredMessage={t(
+              'myskb.project.errors.postalCode',
+              'ZIP / Postal code is required'
+            )}
             readOnly={readOnly}
           />
         </FormRow>
         <p className="text-xs text-gray-500">
-          {t('myskb.project.help.stateFixed', 'State is fixed to Melaka for MBMB submissions.')}
+          {t(
+            'myskb.project.help.stateFixed',
+            'State is fixed to Melaka for MBMB submissions.'
+          )}
         </p>
         <MelakaStateGuard />
         <Spacing size="sm" />
@@ -837,7 +942,10 @@ export default function ProjectPage({
             id="country"
             name="country"
             label={t('myskb.project.fields.country', 'Country')}
-            requiredMessage={t('myskb.project.errors.country', 'Country is required')}
+            requiredMessage={t(
+              'myskb.project.errors.country',
+              'Country is required'
+            )}
             readOnly={readOnly}
           />
         </div>
@@ -867,15 +975,24 @@ export default function ProjectPage({
         <LineSeparator />
         <FormSectionHeader
           title={t('myskb.project.sections.land.title', 'Land Information')}
-          description={t('myskb.project.sections.land.description', 'Provide additional details about your land.')}
+          description={t(
+            'myskb.project.sections.land.description',
+            'Provide additional details about your land.'
+          )}
         />
         <Spacing size="lg" />
 
         <InputText
           id="landAddress"
           name="landAddress"
-          label={t('myskb.project.fields.landAddress', 'Subdistrict / Town / City Area')}
-          requiredMessage={t('myskb.project.errors.landAddress', 'Subdistrict / Town / City Area is required')}
+          label={t(
+            'myskb.project.fields.landAddress',
+            'Subdistrict / Town / City Area'
+          )}
+          requiredMessage={t(
+            'myskb.project.errors.landAddress',
+            'Subdistrict / Town / City Area is required'
+          )}
           readOnly={readOnly}
         />
         <Spacing size="sm" />
@@ -884,7 +1001,10 @@ export default function ProjectPage({
           id="lotNumber"
           name="lotNumber"
           label={t('myskb.project.fields.lotNumber', 'Lot / Plot Number')}
-          requiredMessage={t('myskb.project.errors.lotNumber', 'Lot / Plot Number is required')}
+          requiredMessage={t(
+            'myskb.project.errors.lotNumber',
+            'Lot / Plot Number is required'
+          )}
           readOnly={readOnly}
         />
         <Spacing size="sm" />
@@ -895,7 +1015,10 @@ export default function ProjectPage({
             name="landStatus"
             label={t('myskb.project.fields.landStatus', 'Land Status')}
             options={landStatusOptions}
-            requiredMessage={t('myskb.project.errors.landStatus', 'Land status is required')}
+            requiredMessage={t(
+              'myskb.project.errors.landStatus',
+              'Land status is required'
+            )}
           />
         </div>
         <Spacing size="sm" />
@@ -906,7 +1029,10 @@ export default function ProjectPage({
             name="typeGrant"
             label={t('myskb.project.fields.typeGrant', 'Type of Grant')}
             options={typeGrantOptions}
-            requiredMessage={t('myskb.project.errors.typeGrant', 'Type of Grant is required')}
+            requiredMessage={t(
+              'myskb.project.errors.typeGrant',
+              'Type of Grant is required'
+            )}
           />
         </div>
         <Spacing size="sm" />
@@ -914,7 +1040,10 @@ export default function ProjectPage({
         <InputText
           id="spesificCondition"
           name="spesificCondition"
-          label={t('myskb.project.fields.specificCondition', 'Specific Conditions')}
+          label={t(
+            'myskb.project.fields.specificCondition',
+            'Specific Conditions'
+          )}
           readOnly={readOnly}
         />
         <Spacing size="sm" />
@@ -924,7 +1053,10 @@ export default function ProjectPage({
           name="landArea"
           label={t('myskb.project.fields.landArea', 'Land Area (m2)')}
           type="number"
-          requiredMessage={t('myskb.project.errors.landArea', 'Land Area is required')}
+          requiredMessage={t(
+            'myskb.project.errors.landArea',
+            'Land Area is required'
+          )}
           readOnly={readOnly}
         />
         <Spacing size="sm" />
@@ -940,7 +1072,10 @@ export default function ProjectPage({
         <InputText
           id="existingBuilding"
           name="existingBuilding"
-          label={t('myskb.project.fields.existingBuilding', 'Existing Building')}
+          label={t(
+            'myskb.project.fields.existingBuilding',
+            'Existing Building'
+          )}
           type="number"
           readOnly={readOnly}
         />
@@ -949,7 +1084,10 @@ export default function ProjectPage({
         <InputText
           id="residentialBuilding"
           name="residentialBuilding"
-          label={t('myskb.project.fields.permanentUnits', 'Number of permanent residential building units')}
+          label={t(
+            'myskb.project.fields.permanentUnits',
+            'Number of permanent residential building units'
+          )}
           type="number"
           readOnly={readOnly}
         />
@@ -958,7 +1096,10 @@ export default function ProjectPage({
         <InputText
           id="semiResidentialBuilding"
           name="semiResidentialBuilding"
-          label={t('myskb.project.fields.semiPermanentUnits', 'Number of semi-permanent residential building units')}
+          label={t(
+            'myskb.project.fields.semiPermanentUnits',
+            'Number of semi-permanent residential building units'
+          )}
           type="number"
           readOnly={readOnly}
         />
@@ -976,8 +1117,14 @@ export default function ProjectPage({
         <LineSeparator />
 
         <FormSectionHeader
-          title={t('myskb.project.sections.usage.title', 'Proposed Usage Information')}
-          description={t('myskb.project.sections.usage.description', "Add one or more buildings and their areas. Each building's processing fee is auto-calculated with a minimum of RM 140.")}
+          title={t(
+            'myskb.project.sections.usage.title',
+            'Proposed Usage Information'
+          )}
+          description={t(
+            'myskb.project.sections.usage.description',
+            "Add one or more buildings and their areas. Each building's processing fee is auto-calculated with a minimum of RM 140."
+          )}
         />
         <Spacing size="lg" />
 
@@ -989,10 +1136,16 @@ export default function ProjectPage({
         <InputText
           id="processingFees"
           name="processingFees"
-          label={t('myskb.project.fields.processingFees', 'Total Processing Fees')}
+          label={t(
+            'myskb.project.fields.processingFees',
+            'Total Processing Fees'
+          )}
           type="text"
           prefix="RM"
-          requiredMessage={t('myskb.project.errors.processingFees', 'Processing Fees is required')}
+          requiredMessage={t(
+            'myskb.project.errors.processingFees',
+            'Processing Fees is required'
+          )}
           readOnly
           rightElement={
             <span className="text-xs text-gray-500">
@@ -1025,8 +1178,14 @@ export default function ProjectPage({
         <ConfirmDialog
           open={showCancelDialog}
           title={t('myskb.project.confirmDiscard.title', 'Discard changes?')}
-          description={t('myskb.project.confirmDiscard.description', 'Your unsaved changes will be lost. Are you sure you want to leave this form?')}
-          confirmText={t('myskb.project.confirmDiscard.confirm', 'Yes, discard')}
+          description={t(
+            'myskb.project.confirmDiscard.description',
+            'Your unsaved changes will be lost. Are you sure you want to leave this form?'
+          )}
+          confirmText={t(
+            'myskb.project.confirmDiscard.confirm',
+            'Yes, discard'
+          )}
           cancelText={t('myskb.project.confirmDiscard.cancel', 'Stay')}
           onCancel={() => setShowCancelDialog(false)}
           onConfirm={() => {

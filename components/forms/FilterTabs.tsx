@@ -19,7 +19,11 @@ function classNames(...classes: string[]) {
   return classes.filter(Boolean).join(' ');
 }
 
-const FilterTabs: React.FC<FilterTabsProps> = ({ tabs, currentTab, onTabChange }) => {
+const FilterTabs: React.FC<FilterTabsProps> = ({
+  tabs,
+  currentTab,
+  onTabChange,
+}) => {
   return (
     <div className="my-4 w-full">
       {/* Mobile: outer box with background */}
@@ -69,7 +73,9 @@ const FilterTabs: React.FC<FilterTabsProps> = ({ tabs, currentTab, onTabChange }
                 onClick={() => onTabChange(tab)}
                 type="button"
                 className={classNames(
-                  isActive ? 'bg-indigo-50 text-indigo-700' : 'bg-white text-gray-700 hover:bg-gray-50',
+                  isActive
+                    ? 'bg-indigo-50 text-indigo-700'
+                    : 'bg-white text-gray-700 hover:bg-gray-50',
                   idx === 0 ? 'rounded-l-lg' : '',
                   idx === tabs.length - 1 ? 'rounded-r-lg' : '',
                   'group relative flex-1 min-w-0 px-4 py-2 text-sm font-medium text-center focus:z-10'

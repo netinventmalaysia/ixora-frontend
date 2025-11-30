@@ -75,7 +75,10 @@ const Tabs: React.FC<TabsProps> = ({ tabs, currentTab, onTabChange }) => {
                   <div className="inline-flex items-center justify-center gap-x-2">
                     <span>{display}</span>
                     {tab.badge && (
-                      <Badge label={tab.badge} color={tab.badgeColor ?? 'red'} />
+                      <Badge
+                        label={tab.badge}
+                        color={tab.badgeColor ?? 'red'}
+                      />
                     )}
                   </div>
                 </a>
