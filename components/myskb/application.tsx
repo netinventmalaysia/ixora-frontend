@@ -48,8 +48,10 @@ const getProjectStatusMeta = (project: any): ProjectStatusMeta => {
   const stageLower = stage ? stage.toLowerCase() : null;
 
   if (lower === 'draft') return { display: 'Draft', category: 'draft' };
-  if (lower === 'rejected') return { display: 'Rejected', category: 'rejected' };
-  if (lower === 'complete') return { display: 'Complete', category: 'complete' };
+  if (lower === 'rejected')
+    return { display: 'Rejected', category: 'rejected' };
+  if (lower === 'complete')
+    return { display: 'Complete', category: 'complete' };
 
   if (
     lower === 'pending_payment' ||
@@ -61,13 +63,13 @@ const getProjectStatusMeta = (project: any): ProjectStatusMeta => {
     return { display: 'Pending Payment', category: 'pending' };
   }
 
-  if (lower === 'submitted') return { display: 'Submitted', category: 'submitted' };
+  if (lower === 'submitted')
+    return { display: 'Submitted', category: 'submitted' };
 
   const display = rawStatus ? toTitleCase(rawStatus) : fallback;
   return {
     display,
-    category:
-      display.toLowerCase() === 'submitted' ? 'submitted' : 'all',
+    category: display.toLowerCase() === 'submitted' ? 'submitted' : 'all',
   };
 };
 
@@ -187,7 +189,9 @@ const Application: React.FC<ApplicationProps> = ({
   const projectTabs: Tab[] = useMemo(() => {
     const norm = (p: any) => getProjectStatusMeta(p).category;
     const draftCount = projects.filter((p) => norm(p) === 'draft').length;
-    const submittedCount = projects.filter((p) => norm(p) === 'submitted').length;
+    const submittedCount = projects.filter(
+      (p) => norm(p) === 'submitted'
+    ).length;
     const pendingCount = projects.filter((p) => norm(p) === 'pending').length;
     const rejectedCount = projects.filter((p) => norm(p) === 'rejected').length;
     const completeCount = projects.filter((p) => norm(p) === 'complete').length;
@@ -269,7 +273,8 @@ const Application: React.FC<ApplicationProps> = ({
     if (currentTab === 'All') return items;
     const wanted = currentTab.toLowerCase();
     return items.filter((it) => {
-      const st = (it as any).statusCategory || String(it.status || '').toLowerCase();
+      const st =
+        (it as any).statusCategory || String(it.status || '').toLowerCase();
       if (wanted === 'pending') return st === 'pending';
       if (wanted === 'draft') return st === 'draft';
       return st === wanted;

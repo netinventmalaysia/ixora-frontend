@@ -94,9 +94,8 @@ const ProjectReadOnly: React.FC<Props> = ({ data = [] as any }) => {
     );
   const pendingReviewStage = extractReviewStage(data);
   const normalizedPendingStage = normalizeReviewStage(pendingReviewStage);
-  const processingPaymentLocked = isProcessingPaymentBlockedStage(
-    pendingReviewStage
-  );
+  const processingPaymentLocked =
+    isProcessingPaymentBlockedStage(pendingReviewStage);
   const baseStatusKey = String(data?.status || '').toLowerCase();
   const derivedProjectStatus = (() => {
     if (!baseStatusKey && normalizedPendingStage === 'final') {
@@ -108,7 +107,11 @@ const ProjectReadOnly: React.FC<Props> = ({ data = [] as any }) => {
     if (normalizedPendingStage === 'final') {
       return 'pending_payment';
     }
-    if (['pending_payment', 'pending payment', 'pending', 'approved'].includes(baseStatusKey)) {
+    if (
+      ['pending_payment', 'pending payment', 'pending', 'approved'].includes(
+        baseStatusKey
+      )
+    ) {
       return 'pending_payment';
     }
     return baseStatusKey;
@@ -551,9 +554,7 @@ const ProjectReadOnly: React.FC<Props> = ({ data = [] as any }) => {
                   value={
                     <StatusBadge
                       status={derivedProjectStatus || data?.status}
-                      label={statusLabel(
-                        derivedProjectStatus || data?.status
-                      )}
+                      label={statusLabel(derivedProjectStatus || data?.status)}
                     />
                   }
                 />
