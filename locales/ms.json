@@ -423,6 +423,13 @@
       "complete": "Selesai",
       "unknown": "Tidak diketahui"
     },
+    "review": {
+      "paymentAlert": "Permohonan anda kini dalam semakan {{stage}}. Pembayaran hanya dibuka selepas semua semakan diluluskan.",
+      "instructions": "Setiap permohonan MySKB perlu melalui Semakan 1 dan Semakan 2 sebelum pembayaran tersedia.",
+      "noUpdates": "Belum ada kemas kini semakan.",
+      "upcoming": "Akan datang",
+      "awaitingStage": "Menunggu semakan {{stage}}"
+    },
     "tabs": {
       "home": "Utama",
       "registration": "Pendaftaran",
@@ -571,6 +578,7 @@
       "downloadToast": "Memuat turun {{name}}",
       "pay": "Bayar",
       "payUnavailable": "Bayaran hanya tersedia apabila permohonan berstatus Menunggu",
+      "reviewPending": "Bayaran hanya dibuka selepas semakan {{stage}} diluluskan.",
       "noFee": "Tiada fi pemprosesan ditemui untuk projek ini.",
       "paymentSubmitted": "Bayaran dihantar",
       "paymentFailed": "Gagal menghantar bayaran",

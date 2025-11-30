@@ -12,6 +12,7 @@ import { listProjects, fetchMyBusinesses } from '@/services/api';
 import SelectField from '../forms/SelectField';
 import Spacing from '../forms/Spacing';
 import { useTranslation } from '@/utils/i18n';
+import { extractReviewStage, formatReviewStage } from '@/utils/reviewStages';
 
 const BASE_TABS: Tab[] = [
   { name: 'All', href: '#' },
@@ -212,6 +213,13 @@ const Application: React.FC<ApplicationProps> = ({
         rawLower === 'pending_payment' || rawLower === 'approved'
           ? 'Pending'
           : rawStatus.charAt(0).toUpperCase() + rawStatus.slice(1);
+      const reviewStage = extractReviewStage(p);
+      const reviewStageLabel = reviewStage
+        ? t('myskb.review.awaitingStage', 'Awaiting {{stage}} review').replace(
+            '{{stage}}',
+            formatReviewStage(reviewStage) || reviewStage
+          )
+        : undefined;
       return {
         ...p, // include backend fields first
         id: p.id,
@@ -226,6 +234,8 @@ const Application: React.FC<ApplicationProps> = ({
         createdAt: p.created_at || p.createdAt,
         submittedByConsultant,
         coOwners,
+        reviewStage,
+        reviewStageLabel,
       };
     });
     // Do not apply extra client-side visibility filtering here.

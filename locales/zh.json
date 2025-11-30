@@ -371,6 +371,13 @@
       "complete": "已完成",
       "unknown": "未知"
     },
+    "review": {
+      "paymentAlert": "您的申请目前处于{{stage}}审核阶段。所有审核通过后才会开启付款。",
+      "instructions": "每个 MySKB 申请都必须先完成审核 1 与审核 2，才会开放付款。",
+      "noUpdates": "暂无审核更新。",
+      "upcoming": "即将进行",
+      "awaitingStage": "等待 {{stage}} 审核"
+    },
     "tabs": {
       "home": "首页",
       "registration": "注册",
@@ -519,6 +526,7 @@
       "downloadToast": "正在下载 {{name}}",
       "pay": "支付",
       "payUnavailable": "仅当申请状态为“处理中”时才可支付",
+      "reviewPending": "需完成 {{stage}} 审核后才能付款。",
       "noFee": "未找到该项目的处理费用。",
       "paymentSubmitted": "付款已提交",
       "paymentFailed": "付款提交失败",

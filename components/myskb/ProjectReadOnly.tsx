@@ -3,6 +3,12 @@ import FormSectionHeader from '@/components/forms/FormSectionHeader';
 import FormRow from '@/components/forms/FormRow';
 import LineSeparator from '@/components/forms/LineSeparator';
 import { useTranslation } from '@/utils/i18n';
+import {
+  extractReviewStage,
+  formatReviewStage,
+  normalizeReviewStage,
+  REVIEW_STAGE_ORDER,
+} from '@/utils/reviewStages';
 
 type OwnerInfo = { name?: string; email?: string; user_id?: number };
 
@@ -51,9 +57,11 @@ const StatusBadge: React.FC<{ status?: string; label?: string }> = ({
     approved: 'bg-green-50 text-green-700 ring-1 ring-inset ring-green-200',
     pending_payment:
       'bg-amber-50 text-amber-800 ring-1 ring-inset ring-amber-200',
+    pending: 'bg-amber-50 text-amber-800 ring-1 ring-inset ring-amber-200',
     paid: 'bg-emerald-50 text-emerald-700 ring-1 ring-inset ring-emerald-200',
     rejected: 'bg-red-50 text-red-700 ring-1 ring-inset ring-red-200',
     draft: 'bg-gray-50 text-gray-700 ring-1 ring-inset ring-gray-200',
+    upcoming: 'bg-gray-50 text-gray-600 ring-1 ring-inset ring-gray-200',
   };
   const cls =
     map[s] || 'bg-gray-50 text-gray-700 ring-1 ring-inset ring-gray-200';
@@ -83,8 +91,12 @@ const ProjectReadOnly: React.FC<Props> = ({ data = [] as any }) => {
       '{{id}}',
       String(id ?? '')
     );
+  const pendingReviewStage = extractReviewStage(data);
   const statusLabel = (status?: string) => {
     const key = String(status || '').toLowerCase();
+    if (key === 'upcoming') {
+      return t('myskb.review.upcoming', 'Upcoming');
+    }
     if (!key) return t('myskb.status.unknown', humanize(status));
     return t(`myskb.status.${key}`, humanize(status));
   };
@@ -155,6 +167,48 @@ const ProjectReadOnly: React.FC<Props> = ({ data = [] as any }) => {
     const status = r?.status || data?.status || undefined;
     return { reviewedAt, reviewer, reason, status };
   })();
+  const reviewHistoryRaw: any[] = Array.isArray(data?.data?._review_history)
+    ? data.data._review_history
+    : [];
+  const reviewHistory = reviewHistoryRaw
+    .map((entry) => ({
+      ...entry,
+      stage: normalizeReviewStage(entry?.stage),
+      decision: String(entry?.decision || entry?.status).toLowerCase(),
+    }))
+    .filter((entry) => !!entry.stage);
+  const stageTimeline = REVIEW_STAGE_ORDER.map((stage) => {
+    const historyEntry = [...reviewHistory]
+      .reverse()
+      .find((entry) => entry.stage === stage);
+    if (!historyEntry && pendingReviewStage !== stage) return null;
+    const status = historyEntry
+      ? historyEntry.decision === 'rejected'
+        ? 'rejected'
+        : 'approved'
+      : 'pending';
+    return {
+      stage,
+      label: formatReviewStage(stage) || stage,
+      status,
+      reviewer: historyEntry?.reviewerUserId ?? historyEntry?.reviewer ?? null,
+      reviewedAt: historyEntry?.at ?? historyEntry?.reviewedAt ?? null,
+      reason: historyEntry?.reason,
+    };
+  }).filter(Boolean) as Array<{
+    stage: string;
+    label: string;
+    status: string;
+    reviewer?: number | string | null;
+    reviewedAt?: string | null;
+    reason?: string;
+  }>;
+  const reviewAlert = pendingReviewStage
+    ? t(
+        'myskb.review.paymentAlert',
+        'Your application is currently in {{stage}} review. Payment unlocks once all reviews are approved.'
+      ).replace('{{stage}}', formatReviewStage(pendingReviewStage) || pendingReviewStage)
+    : null;
 
   // --- attachments ---
   const isPdf = (p?: string) => !!p && /\.pdf$/i.test(p);
@@ -203,6 +257,11 @@ const ProjectReadOnly: React.FC<Props> = ({ data = [] as any }) => {
 
   return (
     <div className="bg-white shadow rounded-lg p-5">
+      {reviewAlert ? (
+        <div className="mb-4 rounded-md border border-amber-300 bg-amber-50 px-4 py-2 text-sm text-amber-900">
+          {reviewAlert}
+        </div>
+      ) : null}
       <FormSectionHeader
         title={t('myskb.project.readOnly.sections.overview.title', 'Overview')}
         description={t(
@@ -483,7 +542,7 @@ const ProjectReadOnly: React.FC<Props> = ({ data = [] as any }) => {
       </div>
 
       {/* Review / Audit */}
-      {(review?.reviewedAt || review?.reason) && (
+      {(stageTimeline.length > 0 || review?.reviewedAt || review?.reason) && (
         <>
           <LineSeparator />
           <FormSectionHeader
@@ -493,48 +552,98 @@ const ProjectReadOnly: React.FC<Props> = ({ data = [] as any }) => {
               'Administrative review outcome'
             )}
           />
-          <div className="mt-4">
-            <FormRow columns={3}>
-              <Field
-                label={t(
-                  'myskb.project.readOnly.fields.reviewedStatus',
-                  'Reviewed Status'
-                )}
-                value={
-                  <StatusBadge
-                    status={review?.status}
-                    label={statusLabel(review?.status)}
-                  />
-                }
-              />
-              <Field
-                label={t(
-                  'myskb.project.readOnly.fields.reviewedOn',
-                  'Reviewed On'
-                )}
-                value={
-                  review?.reviewedAt
-                    ? new Date(review.reviewedAt).toLocaleString()
-                    : '—'
-                }
-              />
-              <Field
-                label={t('myskb.project.readOnly.fields.reviewer', 'Reviewer')}
-                value={
-                  review?.reviewer ? formatUserFallback(review.reviewer) : '—'
-                }
-              />
-            </FormRow>
-            {review?.reason ? (
-              <FormRow columns={1}>
+          <p className="mt-2 text-xs text-gray-500">
+            {t(
+              'myskb.review.instructions',
+              'Every MySKB application passes Review 1 and Review 2 before payment becomes available.'
+            )}
+          </p>
+          <div className="mt-4 space-y-3">
+            {stageTimeline.length > 0 ? (
+              stageTimeline.map((entry) => (
+                <div
+                  key={entry.stage}
+                  className="rounded-lg border border-gray-200 p-3 bg-gray-50"
+                >
+                  <div className="flex flex-wrap items-center justify-between gap-2">
+                    <div>
+                      <p className="text-sm font-semibold text-gray-900">
+                        {entry.label}
+                      </p>
+                      {entry.reviewedAt ? (
+                        <p className="text-xs text-gray-500">
+                          {new Date(entry.reviewedAt).toLocaleString()}
+                        </p>
+                      ) : null}
+                    </div>
+                    <StatusBadge
+                      status={entry.status}
+                      label={statusLabel(entry.status)}
+                    />
+                  </div>
+                  {entry.reviewer ? (
+                    <p className="mt-2 text-xs text-gray-600">
+                      {t('myskb.project.readOnly.fields.reviewer', 'Reviewer')}:{' '}
+                      {formatUserFallback(entry.reviewer)}
+                    </p>
+                  ) : null}
+                  {entry.reason ? (
+                    <p className="mt-1 text-xs text-gray-600">
+                      {t('myskb.project.readOnly.fields.reason', 'Reason')}: {entry.reason}
+                    </p>
+                  ) : null}
+                </div>
+              ))
+            ) : (
+              <p className="text-sm text-gray-500">
+                {t('myskb.review.noUpdates', 'No review updates yet.')}
+              </p>
+            )}
+          </div>
+          {(review?.reviewedAt || review?.reason) && (
+            <div className="mt-4">
+              <FormRow columns={3}>
                 <Field
-                  label={t('myskb.project.readOnly.fields.reason', 'Reason')}
-                  value={review?.reason}
-                  colSpan="sm:col-span-9"
+                  label={t(
+                    'myskb.project.readOnly.fields.reviewedStatus',
+                    'Reviewed Status'
+                  )}
+                  value={
+                    <StatusBadge
+                      status={review?.status}
+                      label={statusLabel(review?.status)}
+                    />
+                  }
+                />
+                <Field
+                  label={t(
+                    'myskb.project.readOnly.fields.reviewedOn',
+                    'Reviewed On'
+                  )}
+                  value={
+                    review?.reviewedAt
+                      ? new Date(review.reviewedAt).toLocaleString()
+                      : '—'
+                  }
+                />
+                <Field
+                  label={t('myskb.project.readOnly.fields.reviewer', 'Reviewer')}
+                  value={
+                    review?.reviewer ? formatUserFallback(review.reviewer) : '—'
+                  }
                 />
               </FormRow>
-            ) : null}
-          </div>
+              {review?.reason ? (
+                <FormRow columns={1}>
+                  <Field
+                    label={t('myskb.project.readOnly.fields.reason', 'Reason')}
+                    value={review?.reason}
+                    colSpan="sm:col-span-9"
+                  />
+                </FormRow>
+              ) : null}
+            </div>
+          )}
         </>
       )}
 

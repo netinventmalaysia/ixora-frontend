@@ -36,6 +36,16 @@ export type TeamItem = {
   current: boolean;
 };
 
+const readInitialMode = (): 'Personal' | 'Business' => {
+  if (typeof window === 'undefined') return 'Personal';
+  try {
+    const saved = window.localStorage.getItem('user-mode');
+    return saved === 'Business' ? 'Business' : 'Personal';
+  } catch {
+    return 'Personal';
+  }
+};
+
 export default function SidebarContent({
   children,
   teams,
@@ -52,8 +62,8 @@ export default function SidebarContent({
   fullName?: string;
 }) {
   const [sidebarOpen, setSidebarOpen] = useState(false);
-  // Initialize deterministically to avoid SSR/CSR mismatch. Read localStorage after mount.
-  const [mode, setMode] = useState<'Personal' | 'Business'>('Personal');
+  // Initialize deterministically; prefer saved mode on the client, hydrate again after mount for SSR.
+  const [mode, setMode] = useState<'Personal' | 'Business'>(() => readInitialMode());
 
   const [generalNav, setGeneralNav] = useState<NavigationItem[]>([]);
   const [personalNav, setPersonalNav] = useState<NavigationItem[]>([]);

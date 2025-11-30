@@ -1,3 +1,4 @@
+import Link from 'next/link';
 import { NavigationItem } from './Sidebar'; // Or move this type to a shared types file if needed
 import { TeamItem } from './Sidebar';
 function cn(...classes: string[]) {
@@ -26,8 +27,9 @@ export default function SidebarNav({
             <ul role="list" className="-mx-2 mt-2 space-y-1">
               {general.map((item) => (
                 <li key={item.name}>
-                  <a
+                  <Link
                     href={item.href}
+                    prefetch={false}
                     className={cn(
                       item.current
                         ? 'bg-[#B01C2F] text-white shadow'
@@ -37,7 +39,7 @@ export default function SidebarNav({
                   >
                     <item.icon className="h-6 w-6 shrink-0" />
                     <span>{item.name}</span>
-                  </a>
+                  </Link>
                 </li>
               ))}
             </ul>
@@ -50,8 +52,9 @@ export default function SidebarNav({
             <ul role="list" className="-mx-2 mt-2 space-y-1">
               {personal.map((item) => (
                 <li key={item.name}>
-                  <a
+                  <Link
                     href={item.href}
+                    prefetch={false}
                     className={cn(
                       item.current
                         ? 'bg-[#B01C2F] text-white shadow'
@@ -61,7 +64,7 @@ export default function SidebarNav({
                   >
                     <item.icon className="h-6 w-6 shrink-0" />
                     <span>{item.name}</span>
-                  </a>
+                  </Link>
                 </li>
               ))}
             </ul>
@@ -73,8 +76,9 @@ export default function SidebarNav({
             <ul role="list" className="-mx-2 space-y-1">
               {teams.map((team) => (
                 <li key={team.id}>
-                  <a
+                  <Link
                     href={team.href}
+                    prefetch={false}
                     className={cn(
                       team.current
                         ? 'bg-[#B01C2F] text-white shadow'
@@ -86,7 +90,7 @@ export default function SidebarNav({
                       {team.initial}
                     </span>
                     <span className="truncate">{team.name}</span>
-                  </a>
+                  </Link>
                 </li>
               ))}
             </ul>
@@ -98,8 +102,9 @@ export default function SidebarNav({
   <ul role="list" className="mt-4 border-t border-white/20 pt-4 -mx-2 space-y-1">
           {bottom.map((item) => (
             <li key={item.name}>
-              <a
+              <Link
                 href={item.href}
+                prefetch={false}
                 className={cn(
                   item.current
                     ? 'bg-[#B01C2F] text-white shadow'
@@ -109,7 +114,7 @@ export default function SidebarNav({
               >
                 <item.icon className="h-6 w-6 shrink-0" />
                 <span>{item.name}</span>
-              </a>
+              </Link>
             </li>
           ))}
         </ul>

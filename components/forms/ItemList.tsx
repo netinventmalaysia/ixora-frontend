@@ -192,6 +192,16 @@ export default function ItemList({ items, statusClasses, actions = [], onItemUpd
                     Co-owners: {item.coOwners.slice(0, 3).join(', ')}{item.coOwners.length > 3 ? '…' : ''}
                   </span>
                 ) : null}
+                {(item as any).reviewStageLabel ? (
+                  <>
+                    <svg viewBox="0 0 2 2" className="hidden sm:block size-0.5 fill-current">
+                      <circle r={1} cx={1} cy={1} />
+                    </svg>
+                    <span className="inline-flex items-center rounded-md bg-amber-50 px-2 py-0.5 text-xs font-medium text-amber-800 ring-1 ring-inset ring-amber-200 whitespace-nowrap">
+                      {(item as any).reviewStageLabel}
+                    </span>
+                  </>
+                ) : null}
               </div>
             </div>
             <div className="flex flex-none items-center gap-x-4">

@@ -375,6 +375,13 @@
       "complete": "Complete",
       "unknown": "Unknown"
     },
+    "review": {
+      "paymentAlert": "Your application is currently in {{stage}} review. Payment unlocks once all reviews are approved.",
+      "instructions": "Every MySKB application passes Review 1 and Review 2 before payment becomes available.",
+      "noUpdates": "No review updates yet.",
+      "upcoming": "Upcoming",
+      "awaitingStage": "Awaiting {{stage}} review"
+    },
     "tabs": {
       "home": "Home",
       "registration": "Registration",
@@ -523,6 +530,7 @@
       "downloadToast": "Downloading {{name}}",
       "pay": "Pay",
       "payUnavailable": "Payment is available once the application is Pending",
+      "reviewPending": "Payment becomes available after {{stage}} review is approved.",
       "noFee": "No processing fee found for this project.",
       "paymentSubmitted": "Payment submitted",
       "paymentFailed": "Failed to submit payment",
