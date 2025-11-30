@@ -405,6 +405,350 @@
     "trishaw": {
       "title": "Lesen Beca",
       "desc": "Permohonan & pembaharuan lesen beca."
+    }
+  },
+  "myskb": {
+    "common": {
+      "businessFallback": "Perniagaan #{{id}}",
+      "userFallback": "Pengguna #{{id}}"
+    },
+    "status": {
+      "submitted": "Dihantar",
+      "approved": "Diluluskan",
+      "pending_payment": "Menunggu bayaran",
+      "pending": "Menunggu",
+      "paid": "Telah dibayar",
+      "rejected": "Ditolak",
+      "draft": "Draf",
+      "complete": "Selesai",
+      "unknown": "Tidak diketahui"
+    },
+    "tabs": {
+      "home": "Utama",
+      "registration": "Pendaftaran",
+      "ownership": "Pemilikan",
+      "project": "Projek",
+      "application": "Permohonan",
+      "registrationApproved": "Diluluskan",
+      "registrationLocked": "LAM telah diluluskan. Pendaftaran dikunci."
+    },
+    "banner": {
+      "applicationOnly": {
+        "line1": "Anda kini hanya mempunyai akses Permohonan. Ciri MySKB yang lain disembunyikan.",
+        "line2": "Untuk mendapatkan akses penuh (Utama, Pendaftaran, Pemilikan, Projek), organisasi anda mesti mempunyai kelulusan LAM.",
+        "line3": "Jika anda pemilik perniagaan, serahkan butiran LAM melalui akaun anda. Jika tidak, minta perunding yang telah diluluskan LAM mengurus permohonan anda."
+      }
+    },
+    "home": {
+      "heading": "🏗️ MYSKB - Sistem Kawalan Bangunan",
+      "sections": {
+        "what": {
+          "title": "Apakah itu MYSKB?",
+          "description": "MYSKB ialah sistem digital yang dibangunkan untuk memudah dan mendigitalkan proses kawalan bangunan di bawah seliaan Majlis Bandaraya Melaka Bersejarah (MBMB). Sistem ini memberi kuasa kepada perunding yang dilantik untuk mengurus projek pembinaan dengan cekap sambil mematuhi peraturan MBMB."
+        },
+        "objective": {
+          "title": "Objektif",
+          "description": "Memusat dan mendigitalkan pengurusan pendaftaran projek bangunan, kelulusan dan pembayaran fi melalui platform yang boleh dijejak—menghubungkan perunding, pemilik projek dan pentadbir MBMB."
+        },
+        "flow": {
+          "title": "Aliran Sistem"
+        },
+        "benefits": {
+          "title": "Manfaat Utama"
+        }
+      },
+      "flowSteps": [
+        "Log masuk Perunding",
+        "Daftar Pemilik / Syarikat",
+        "Cipta Projek & pautkan kepada Pemilik",
+        "Hantar Permohonan ke MBMB",
+        "MBMB Semak & Lulus",
+        "Bayar Fi",
+        "Jana Surat Anugerah"
+      ],
+      "benefits": [
+        "Pengurusan projek dan perunding berpusat",
+        "Penjejakan digital kelulusan dan pembayaran",
+        "Penjanaan automatik surat anugerah",
+        "Komunikasi telus antara perunding dan MBMB",
+        "Mesra audit dengan kebolehjejakan dokumen"
+      ]
+    },
+    "registration": {
+      "header": {
+        "title": "Pendaftaran Perunding",
+        "description": "Pendaftaran ini membolehkan perniagaan diiktiraf secara rasmi sebagai perunding yang dibenarkan mengurus permit bangunan sementara melalui sistem MYSKB. Ia meningkatkan kemampuan mereka untuk menyelaras penyerahan berkaitan bangunan bagi pihak pemilik projek."
+      },
+      "emptyBusinesses": "Anda belum mempunyai sebarang perniagaan berdaftar. Sila daftar perniagaan anda dahulu dalam modul Perniagaan, kemudian kembali ke sini untuk menghantar butiran LAM.",
+      "goToBusiness": "Pergi ke Pendaftaran Perniagaan →",
+      "businessLabel": "Perniagaan",
+      "errors": {
+        "selectBusiness": "Sila pilih perniagaan terlebih dahulu",
+        "alreadyApproved": "LAM telah diluluskan untuk perniagaan ini",
+        "lamRequired": "Nombor LAM diperlukan",
+        "businessRequired": "Perniagaan diperlukan"
+      },
+      "lamLabel": "LAM (Lembaga Arkitek Malaysia)",
+      "lamPlaceholder": "Masukkan nombor LAM anda (Lembaga Arkitek Malaysia)",
+      "documentLabel": "Dokumen LAM (PDF)",
+      "documentDescription": "PDF sehingga 10MB",
+      "documentRequired": "Sila muat naik dokumen LAM anda (PDF)",
+      "toast": {
+        "submitted": "LAM dihantar untuk semakan",
+        "failed": "Gagal menghantar LAM"
+      },
+      "alreadyApproved": "Sudah Diluluskan",
+      "success": {
+        "title": "Penyerahan LAM diterima",
+        "description": "Permohonan anda menunggu semakan. Kami akan menghubungi anda melalui e-mel setelah keputusan dibuat sama ada diluluskan atau ditolak.",
+        "business": "Perniagaan",
+        "registrationNo": "No. Pendaftaran",
+        "goHome": "Pergi ke MySKB Utama",
+        "submitAnother": "Hantar lagi"
+      },
+      "confirmDiscard": {
+        "title": "Buang perubahan?",
+        "description": "Perubahan yang belum disimpan akan hilang. Adakah anda pasti mahu meninggalkan borang ini?",
+        "confirm": "Ya, buang",
+        "cancel": "Kekal di sini"
+      }
+    },
+    "ownership": {
+      "heading": "Pengurusan Pemilikan Projek",
+      "businessLabel": "Nama Perniagaan",
+      "addOwnerLabel": "Tambah pemilik projek",
+      "searchPlaceholder": "Cari melalui alamat e-mel berdaftar",
+      "inviteButton": "Jemput",
+      "status": {
+        "pending": "Menunggu"
+      },
+      "tabs": {
+        "all": "Semua",
+        "request": "Permintaan",
+        "approved": "Diluluskan"
+      },
+      "actions": {
+        "approve": "Luluskan",
+        "remove": "Buang"
+      },
+      "errors": {
+        "generic": "Ada ralat berlaku",
+        "loadOwners": "Gagal memuatkan pemilik",
+        "loadBusinesses": "Gagal memuatkan perniagaan anda",
+        "emailRequired": "Masukkan e-mel untuk jemputan",
+        "selectBusiness": "Pilih perniagaan terlebih dahulu",
+        "invite": "Gagal menjemput",
+        "missingId": "ID pemilikan tiada",
+        "approve": "Gagal meluluskan",
+        "remove": "Gagal membuang"
+      },
+      "toast": {
+        "linked": "Pengguna dipautkan. Akses Permohonan sahaja diberikan.",
+        "invited": "E-mel jemputan dihantar.",
+        "processed": "Jemputan diproses.",
+        "approved": "Diluluskan",
+        "removed": "Dibuang"
+      }
+    },
+    "application": {
+      "heading": "Permohonan Projek",
+      "businessLabel": "Perniagaan",
+      "byLabel": "Perniagaan",
+      "tabs": {
+        "all": "Semua",
+        "submitted": "Dihantar",
+        "pending": "Menunggu",
+        "rejected": "Ditolak",
+        "complete": "Selesai",
+        "draft": "Draf"
+      },
+      "projectFallback": "Projek #{{id}}",
+      "draftFallback": "Draf #{{id}}"
+    },
+    "actions": {
+      "view": "Lihat",
+      "download": "Muat turun",
+      "downloadToast": "Memuat turun {{name}}",
+      "pay": "Bayar",
+      "payUnavailable": "Bayaran hanya tersedia apabila permohonan berstatus Menunggu",
+      "noFee": "Tiada fi pemprosesan ditemui untuk projek ini.",
+      "paymentSubmitted": "Bayaran dihantar",
+      "paymentFailed": "Gagal menghantar bayaran",
+      "withdraw": "Tarik balik",
+      "withdrawToast": "Tarik balik {{name}}"
+    },
+    "project": {
+      "sitePhotos": {
+        "title": "Foto Tapak (pilihan)",
+        "limit": "Sehingga {{count}} imej",
+        "hint": "Foto terkini membantu pemeriksa MBMB mencari lokasi projek dengan lebih pantas.",
+        "dropzone": "Klik atau seret imej di sini",
+        "fileHint": "PNG atau JPG, maksimum 10MB setiap satu.",
+        "uploading": "Sedang memuat naik foto…",
+        "imagesOnly": "Hanya fail imej dibenarkan",
+        "limitReached": "Maksimum 5 foto tapak telah dicapai",
+        "uploadFailed": "Gagal memuat naik {{file}}",
+        "alt": "Foto tapak {{index}}"
+      },
+      "attachments": {
+        "pdfHint": "PDF sehingga 10MB",
+        "statutory": "Fail Akuan Bersumpah",
+        "statutoryRequired": "Sila muat naik akuan bersumpah",
+        "landHeir": "Akuan Waris Tanah",
+        "landHeirRequired": "Sila muat naik akuan waris tanah",
+        "rental": "Perjanjian Sewa",
+        "rentalRequired": "Sila muat naik perjanjian sewa"
+      },
+      "owners": {
+        "ownerLabel": "Pemilik Projek",
+        "ownerRequired": "Pemilik diperlukan",
+        "ownerPlaceholder": "Pilih pemilik yang diluluskan",
+        "businessFirst": "Pilih perniagaan dahulu",
+        "categoryLabel": "Kategori Pemilikan",
+        "categoryRequired": "Kategori diperlukan",
+        "addOwner": "Tambah pemilik"
+      },
+      "actions": {
+        "saveDraft": "Simpan draf"
+      },
+      "fields": {
+        "business": "Perniagaan",
+        "projectTitle": "Tajuk Projek",
+        "address": "Alamat Projek",
+        "city": "Bandar",
+        "state": "Negeri / Wilayah",
+        "postalCode": "Poskod",
+        "country": "Negara",
+        "location": "Lokasi Projek",
+        "landAddress": "Mukim / Bandar / Kawasan",
+        "lotNumber": "Nombor Lot / Petak",
+        "landStatus": "Status Tanah",
+        "typeGrant": "Jenis Geran",
+        "specificCondition": "Syarat Khas",
+        "landArea": "Luas Tanah (m2)",
+        "existingCrops": "Tanaman Sedia Ada",
+        "existingBuilding": "Bangunan Sedia Ada",
+        "permanentUnits": "Bilangan unit kediaman kekal",
+        "semiPermanentUnits": "Bilangan unit kediaman separa kekal",
+        "otherBuildings": "Bangunan lain",
+        "processingFees": "Jumlah Fi Pemprosesan"
+      },
+      "errors": {
+        "businessRequired": "Perniagaan diperlukan",
+        "projectTitle": "Tajuk Projek diperlukan",
+        "address": "Alamat diperlukan",
+        "city": "Bandar diperlukan",
+        "state": "Negeri / Wilayah diperlukan",
+        "postalCode": "Poskod diperlukan",
+        "country": "Negara diperlukan",
+        "landAddress": "Mukim / Bandar / Kawasan diperlukan",
+        "lotNumber": "Nombor Lot / Petak diperlukan",
+        "landStatus": "Status tanah diperlukan",
+        "typeGrant": "Jenis geran diperlukan",
+        "landArea": "Luas tanah diperlukan",
+        "processingFees": "Fi pemprosesan diperlukan",
+        "submitFailed": "Gagal menghantar projek",
+        "draftFailed": "Gagal menyimpan draf"
+      },
+      "sections": {
+        "ownership": {
+          "title": "Maklumat Pemilikan",
+          "description": "Sila isi butiran projek anda. Maklumat ini digunakan untuk mendaftarkan projek anda dengan MBMB."
+        },
+        "projectInfo": {
+          "title": "Maklumat Projek",
+          "description": "Sila isi butiran projek anda. Maklumat ini digunakan untuk mendaftarkan projek anda dengan MBMB."
+        },
+        "land": {
+          "title": "Maklumat Tanah",
+          "description": "Berikan butiran tambahan tentang tanah anda."
+        },
+        "usage": {
+          "title": "Maklumat Penggunaan Dicadangkan",
+          "description": "Tambah satu atau lebih bangunan serta luasannya. Fi pemprosesan setiap bangunan dikira automatik dengan minimum RM 140."
+        }
+      },
+      "help": {
+        "stateFixed": "Negeri ditetapkan kepada Melaka untuk penyerahan MBMB."
+      },
+      "toast": {
+        "submitted": "Projek dihantar",
+        "draftSaved": "Draf disimpan"
+      },
+      "confirmDiscard": {
+        "title": "Buang perubahan?",
+        "description": "Perubahan yang belum disimpan akan hilang. Adakah anda pasti mahu meninggalkan borang ini?",
+        "confirm": "Ya, buang",
+        "cancel": "Kekal di sini"
+      },
+      "processingFees": {
+        "auto": "Auto"
+      },
+      "readOnly": {
+        "sections": {
+          "overview": {
+            "title": "Ringkasan",
+            "description": "Ringkasan projek dan konteks pemilikan"
+          },
+          "projectInfo": {
+            "description": "Butiran projek yang dihantar"
+          },
+          "usage": {
+            "description": "Bangunan dan keluasan yang dihantar"
+          },
+          "payment": {
+            "title": "Bayaran",
+            "description": "Ringkasan bayaran"
+          },
+          "review": {
+            "title": "Semakan",
+            "description": "Keputusan semakan pentadbiran"
+          },
+          "attachments": {
+            "title": "Lampiran",
+            "description": "Dokumen sokongan yang dimuat naik"
+          }
+        },
+        "fields": {
+          "projectId": "ID Projek",
+          "business": "Perniagaan",
+          "status": "Status",
+          "projectOwners": "Pemilik Projek",
+          "submittedOn": "Tarikh dihantar",
+          "lastUpdated": "Kemaskini terakhir",
+          "address": "Alamat Projek",
+          "paymentStatus": "Status bayaran",
+          "amount": "Amaun",
+          "reference": "Rujukan",
+          "reviewedStatus": "Status semakan",
+          "reviewedOn": "Tarikh disemak",
+          "reviewer": "Penyemak",
+          "reason": "Sebab"
+        },
+        "buildings": {
+          "none": "Tiada bangunan dihantar",
+          "headers": {
+            "name": "Nama / Jenis",
+            "openArea": "Luas Terbuka (m2)",
+            "closeArea": "Luas Tertutup (m2)",
+            "fee": "Fi Pemprosesan"
+          },
+          "totalsSingle": "Jumlah (1 bangunan)",
+          "totalsPlural": "Jumlah ({{count}} bangunan)"
+        },
+        "attachments": {
+          "none": "Tiada lampiran dimuat naik",
+          "previewTitle": "Pratonton {{label}}",
+          "openPdf": "Buka PDF dalam tab baharu",
+          "openImage": "Buka imej",
+          "openFile": "Buka fail"
+        }
+      }
+    },
+    "team": {
+      "fields": {
+        "applicantName": "Nama Pemohon"
+      }
+    }
   }
 }
-  }

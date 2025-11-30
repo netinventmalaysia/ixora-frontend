@@ -14,22 +14,32 @@ import Ownership from 'todo/components/myskb/ownership'
 import SidebarLayout from 'todo/components/main/SidebarLayout'
 import { getMySkbAccess, fetchMyBusinesses } from '@/services/api'
 import toast from 'react-hot-toast'
+import { useTranslation } from '@/utils/i18n'
 
 const MyskbPage: React.FC = () => {
   const router = useRouter()
   const { tab } = router.query
   const [allowedTabs, setAllowedTabs] = useState<string[] | null>(null)
   const [lamApproved, setLamApproved] = useState<boolean>(false)
+  const { t } = useTranslation()
+  const translatedTabs = useMemo(() => {
+    const base = (!allowedTabs || allowedTabs.length === 0)
+      ? myskbTabs
+      : myskbTabs.filter((tabCandidate) => new Set(allowedTabs.map((x) => x.toLowerCase())).has(tabCandidate.name.toLowerCase()))
+    return base.map((tabItem) => ({
+      ...tabItem,
+      label: t(`myskb.tabs.${tabItem.name.toLowerCase()}`, tabItem.name),
+    }))
+  }, [allowedTabs, t])
   // Use lowercase slug for routing
   const currentSlug = Array.isArray(tab) ? tab[0] : tab || 'home'
   // Filter tabs based on access once loaded; default to full tabs until known
   const allTabs: Tab[] = useMemo(() => {
-    const base = (!allowedTabs || allowedTabs.length === 0)
-      ? myskbTabs
-      : myskbTabs.filter((t) => new Set(allowedTabs.map((x) => x.toLowerCase())).has(t.name.toLowerCase()))
-    if (!lamApproved) return base
-    return base.map((t) => t.name.toLowerCase() === 'registration' ? { ...t, badge: 'Approved', badgeColor: 'green' } : t)
-  }, [allowedTabs, lamApproved])
+    if (!lamApproved) return translatedTabs
+    return translatedTabs.map((tabItem) => tabItem.name.toLowerCase() === 'registration'
+      ? { ...tabItem, badge: t('myskb.tabs.registrationApproved', 'Approved'), badgeColor: 'green' }
+      : tabItem)
+  }, [lamApproved, t, translatedTabs])
   // Match by lowercase name
   const currentTab: Tab =
     allTabs.find((t) => t.name.toLowerCase() === currentSlug.toLowerCase()) ||
@@ -42,12 +52,12 @@ const MyskbPage: React.FC = () => {
     return list.length === 1 && list[0] === 'application'
   }, [allowedTabs])
 
-  const handleTabChange = (t: Tab) => {
-    if (lamApproved && t.name.toLowerCase() === 'registration') {
-      toast.success('LAM approved. Registration is locked.')
+  const handleTabChange = (nextTab: Tab) => {
+    if (lamApproved && nextTab.name.toLowerCase() === 'registration') {
+      toast.success(t('myskb.tabs.registrationLocked', 'LAM approved. Registration is locked.'))
       return
     }
-    const slug = t.name.toLowerCase()
+    const slug = nextTab.name.toLowerCase()
     router.push(`/myskb/${encodeURIComponent(slug)}`, undefined, {
       shallow: true,
     })
@@ -133,9 +143,11 @@ const MyskbPage: React.FC = () => {
         <Tabs tabs={allTabs} currentTab={currentTab.name} onTabChange={handleTabChange} />
         {isApplicationOnly && (
           <div className="mt-3 rounded-md border border-amber-300 bg-amber-50 p-3 text-amber-900 text-sm">
-            You currently have Application-only access. Other MySKB features are hidden.
-            To get full access (Home, Registration, Ownership, Project), your organisation must have an approved LAM registration.
-            If you are a business owner, submit your LAM details under your account. If not, please ask a consultant with an approved LAM to manage your application.
+            {t('myskb.banner.applicationOnly.line1', 'You currently have Application-only access. Other MySKB features are hidden.')}
+            {' '}
+            {t('myskb.banner.applicationOnly.line2', 'To get full access (Home, Registration, Ownership, Project), your organisation must have an approved LAM registration.')}
+            {' '}
+            {t('myskb.banner.applicationOnly.line3', 'If you are a business owner, submit your LAM details under your account. If not, please ask a consultant with an approved LAM to manage your application.')}
           </div>
         )}
         <div className="mt-4">

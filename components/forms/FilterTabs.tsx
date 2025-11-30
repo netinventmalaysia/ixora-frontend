@@ -6,6 +6,7 @@ export interface FilterTab {
   name: string;
   badge?: string;
   badgeColor?: BadgeProps['color'];
+  label?: string;
 }
 
 interface FilterTabsProps {
@@ -35,15 +36,18 @@ const FilterTabs: React.FC<FilterTabsProps> = ({ tabs, currentTab, onTabChange }
                 }}
                 className="block w-full appearance-none bg-transparent pr-8 text-sm text-gray-800 font-normal focus:outline-none"
               >
-                {tabs.map((tab) => (
-                  <option
-                    key={tab.name}
-                    value={tab.name}
-                    className="text-sm font-normal"
-                  >
-                    {tab.badge ? `${tab.name} (${tab.badge})` : tab.name}
-                  </option>
-                ))}
+                {tabs.map((tab) => {
+                  const display = tab.label ?? tab.name;
+                  return (
+                    <option
+                      key={tab.name}
+                      value={tab.name}
+                      className="text-sm font-normal"
+                    >
+                      {tab.badge ? `${display} (${tab.badge})` : display}
+                    </option>
+                  );
+                })}
               </select>
               <ChevronDownIcon
                 aria-hidden="true"
@@ -72,7 +76,7 @@ const FilterTabs: React.FC<FilterTabsProps> = ({ tabs, currentTab, onTabChange }
                 )}
               >
                 <div className="w-full inline-flex items-center justify-center gap-x-2">
-                  <span>{tab.name}</span>
+                  <span>{tab.label ?? tab.name}</span>
                   {tab.badge && (
                     <Badge label={tab.badge} color={tab.badgeColor ?? 'gray'} />
                   )}

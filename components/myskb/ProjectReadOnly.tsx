@@ -2,6 +2,7 @@ import React from 'react';
 import FormSectionHeader from '@/components/forms/FormSectionHeader';
 import FormRow from '@/components/forms/FormRow';
 import LineSeparator from '@/components/forms/LineSeparator';
+import { useTranslation } from '@/utils/i18n';
 
 type OwnerInfo = { name?: string; email?: string; user_id?: number };
 
@@ -36,7 +37,7 @@ const humanize = (s?: string) => {
     .replace(/\b\w/g, (c) => c.toUpperCase());
 };
 
-const StatusBadge: React.FC<{ status?: string }> = ({ status }) => {
+const StatusBadge: React.FC<{ status?: string; label?: string }> = ({ status, label }) => {
   const s = (status || '').toLowerCase();
   const map: Record<string, string> = {
     submitted: 'bg-blue-50 text-blue-700 ring-1 ring-inset ring-blue-200',
@@ -47,10 +48,22 @@ const StatusBadge: React.FC<{ status?: string }> = ({ status }) => {
     draft: 'bg-gray-50 text-gray-700 ring-1 ring-inset ring-gray-200',
   };
   const cls = map[s] || 'bg-gray-50 text-gray-700 ring-1 ring-inset ring-gray-200';
-  return <span className={`inline-flex items-center rounded px-2 py-0.5 text-xs font-medium ${cls}`}>{humanize(status)}</span>;
+  return <span className={`inline-flex items-center rounded px-2 py-0.5 text-xs font-medium ${cls}`}>{label ?? humanize(status)}</span>;
 };
 
 const ProjectReadOnly: React.FC<Props> = ({ data = [] as any }) => {
+  const { t } = useTranslation();
+  const formatBusinessFallback = (id: number | string | undefined) =>
+    t('myskb.common.businessFallback', 'Business #{{id}}').replace('{{id}}', String(id ?? ''));
+  const formatProjectFallback = (id: number | string | undefined) =>
+    t('myskb.application.projectFallback', 'Project #{{id}}').replace('{{id}}', String(id ?? ''));
+  const formatUserFallback = (id: number | string | undefined) =>
+    t('myskb.common.userFallback', 'User #{{id}}').replace('{{id}}', String(id ?? ''));
+  const statusLabel = (status?: string) => {
+    const key = String(status || '').toLowerCase();
+    if (!key) return t('myskb.status.unknown', humanize(status));
+    return t(`myskb.status.${key}`, humanize(status));
+  };
   const buildings: Array<any> = Array.isArray(data?.data?.buildings) ? data.data.buildings : [];
   const ownersDisplay = Array.isArray(data?.owners) && data.owners.length > 0
     ? data.owners.map((o: OwnerInfo, i: number) => (
@@ -62,7 +75,7 @@ const ProjectReadOnly: React.FC<Props> = ({ data = [] as any }) => {
     : <div className="text-sm text-gray-500">—</div>;
 
   const businessLabel = (data?.business?.name
-    || (typeof data?.business_id === 'number' ? `#${data.business_id}` : undefined)
+    || (typeof data?.business_id === 'number' ? formatBusinessFallback(data.business_id) : undefined)
   ) ?? '—';
 
   const submittedOn = data?.created_at ? new Date(data.created_at) : null;
@@ -107,72 +120,100 @@ const ProjectReadOnly: React.FC<Props> = ({ data = [] as any }) => {
     if (!/^uploads\/file\//i.test(path)) path = `uploads/file/${path}`;
     return `${base}/${path}`;
   };
-  const attachments: Array<{ key: string; label: string; path?: string }> = [
-    { key: 'statutoryDeclarationFile', label: 'Statutory Declaration' },
-    { key: 'landHeirDeclarationFile', label: 'Land Heir Declaration' },
-    { key: 'rentalAgreementFile', label: 'Rental Agreement' },
-  ].map((k) => ({ ...k, path: data?.data?.[k.key] as string | undefined })).filter((a) => !!a.path);
+  const attachmentConfigs: Array<{ key: string; label: string }> = [
+    { key: 'statutoryDeclarationFile', label: t('myskb.project.attachments.statutory', 'Statutory Declaration File') },
+    { key: 'landHeirDeclarationFile', label: t('myskb.project.attachments.landHeir', 'Land Heir Declaration') },
+    { key: 'rentalAgreementFile', label: t('myskb.project.attachments.rental', 'Rental Agreement') },
+  ];
+  const attachments: Array<{ key: string; label: string; path?: string }> = attachmentConfigs
+    .map((cfg) => ({ ...cfg, path: data?.data?.[cfg.key] as string | undefined }))
+    .filter((a) => !!a.path);
   const paymentRef = data?.data?.paymentReference || data?.payment_reference || data?.billing?.reference || data?.reference || '';
 
   return (
     <div className="bg-white shadow rounded-lg p-5">
-      <FormSectionHeader title="Overview" description="Project summary and ownership context" />
+      <FormSectionHeader
+        title={t('myskb.project.readOnly.sections.overview.title', 'Overview')}
+        description={t('myskb.project.readOnly.sections.overview.description', 'Project summary and ownership context')}
+      />
       <div className="mt-4">
         <FormRow columns={3}>
-          <Field label="Project ID" value={typeof data?.id === 'number' ? `#${data.id}` : '—'} />
-          <Field label="Business" value={businessLabel} />
-          <Field label="Status" value={<StatusBadge status={data?.status} />} />
+          <Field
+            label={t('myskb.project.readOnly.fields.projectId', 'Project ID')}
+            value={typeof data?.id === 'number' ? formatProjectFallback(data.id) : '—'}
+          />
+          <Field label={t('myskb.project.readOnly.fields.business', 'Business')} value={businessLabel} />
+          <Field
+            label={t('myskb.project.readOnly.fields.status', 'Status')}
+            value={<StatusBadge status={data?.status} label={statusLabel(data?.status)} />}
+          />
         </FormRow>
         <FormRow columns={3}>
-          <Field label="Project Owners" value={<div className="space-y-1">{ownersDisplay}</div>} />
-          <Field label="Submitted On" value={submittedOnStr} />
-          <Field label="Last Updated" value={updatedOnStr} />
+          <Field
+            label={t('myskb.project.readOnly.fields.projectOwners', 'Project Owners')}
+            value={<div className="space-y-1">{ownersDisplay}</div>}
+          />
+          <Field label={t('myskb.project.readOnly.fields.submittedOn', 'Submitted On')} value={submittedOnStr} />
+          <Field label={t('myskb.project.readOnly.fields.lastUpdated', 'Last Updated')} value={updatedOnStr} />
         </FormRow>
       </div>
 
       <LineSeparator />
 
-      <FormSectionHeader title="Project Information" description="Submitted project details" />
+      <FormSectionHeader
+        title={t('myskb.project.sections.projectInfo.title', 'Project Information')}
+        description={t('myskb.project.readOnly.sections.projectInfo.description', 'Submitted project details')}
+      />
       <div className="mt-4">
         <FormRow columns={3}>
-          <Field label="Project Title" value={data?.data.projectTitle} />
-          <Field label="Country" value={data?.data.country} />
-          <Field label="Processing Fees" value={currency(data?.data.processingFees)} />
+          <Field label={t('myskb.project.fields.projectTitle', 'Project Title')} value={data?.data.projectTitle} />
+          <Field label={t('myskb.project.fields.country', 'Country')} value={data?.data.country} />
+          <Field label={t('myskb.project.fields.processingFees', 'Total Processing Fees')} value={currency(data?.data.processingFees)} />
         </FormRow>
         <FormRow columns={1}>
-          <Field label="Project Address" value={formatAddress(data?.data)} colSpan="sm:col-span-9" />
+          <Field
+            label={t('myskb.project.fields.address', 'Project Address')}
+            value={formatAddress(data?.data)}
+            colSpan="sm:col-span-9"
+          />
         </FormRow>
       </div>
 
       <LineSeparator />
 
-      <FormSectionHeader title="Land Information" description="Submitted land details" />
+      <FormSectionHeader
+        title={t('myskb.project.sections.land.title', 'Land Information')}
+        description={t('myskb.project.sections.land.description', 'Provide additional details about your land.')}
+      />
       <div className="mt-4">
         <FormRow columns={3}>
-          <Field label="Subdistrict / Town / City Area" value={data?.data?.landAddress} />
-          <Field label="Lot / Plot Number" value={data?.data?.lotNumber} />
-          <Field label="Land Status" value={data?.data?.landStatus} />
-          <Field label="Type of Grant" value={data?.data?.typeGrant} />
-          <Field label="Specific Conditions" value={data?.data?.spesificCondition} />
-          <Field label="Land Area (m2)" value={data?.data?.landArea} />
+          <Field label={t('myskb.project.fields.landAddress', 'Subdistrict / Town / City Area')} value={data?.data?.landAddress} />
+          <Field label={t('myskb.project.fields.lotNumber', 'Lot / Plot Number')} value={data?.data?.lotNumber} />
+          <Field label={t('myskb.project.fields.landStatus', 'Land Status')} value={data?.data?.landStatus} />
+          <Field label={t('myskb.project.fields.typeGrant', 'Type of Grant')} value={data?.data?.typeGrant} />
+          <Field label={t('myskb.project.fields.specificCondition', 'Specific Conditions')} value={data?.data?.spesificCondition} />
+          <Field label={t('myskb.project.fields.landArea', 'Land Area (m2)')} value={data?.data?.landArea} />
         </FormRow>
       </div>
 
       <LineSeparator />
 
-      <FormSectionHeader title="Proposed Usage" description="Submitted buildings and areas" />
+      <FormSectionHeader
+        title={t('myskb.project.sections.usage.title', 'Proposed Usage Information')}
+        description={t('myskb.project.readOnly.sections.usage.description', 'Submitted buildings and areas')}
+      />
       <div className="mt-4">
         {buildings.length === 0 ? (
-          <div className="text-sm text-gray-500">No buildings submitted</div>
+          <div className="text-sm text-gray-500">{t('myskb.project.readOnly.buildings.none', 'No buildings submitted')}</div>
         ) : (
           <div className="overflow-x-auto">
             <table className="min-w-full divide-y divide-gray-200">
               <thead>
                 <tr>
-                  <th className="px-3 py-2 text-left text-xs font-semibold text-gray-700">Name/Type</th>
-                  <th className="px-3 py-2 text-left text-xs font-semibold text-gray-700">Open Area (m2)</th>
-                  <th className="px-3 py-2 text-left text-xs font-semibold text-gray-700">Close Area (m2)</th>
-                  <th className="px-3 py-2 text-left text-xs font-semibold text-gray-700">Processing Fee</th>
+                  <th className="px-3 py-2 text-left text-xs font-semibold text-gray-700">{t('myskb.project.readOnly.buildings.headers.name', 'Name / Type')}</th>
+                  <th className="px-3 py-2 text-left text-xs font-semibold text-gray-700">{t('myskb.project.readOnly.buildings.headers.openArea', 'Open Area (m2)')}</th>
+                  <th className="px-3 py-2 text-left text-xs font-semibold text-gray-700">{t('myskb.project.readOnly.buildings.headers.closeArea', 'Close Area (m2)')}</th>
+                  <th className="px-3 py-2 text-left text-xs font-semibold text-gray-700">{t('myskb.project.readOnly.buildings.headers.fee', 'Processing Fee')}</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-gray-100">
@@ -185,7 +226,16 @@ const ProjectReadOnly: React.FC<Props> = ({ data = [] as any }) => {
                   </tr>
                 ))}
                 <tr>
-                  <td className="px-3 py-2 text-sm font-semibold text-gray-900">Totals ({buildingMetrics.count} building{buildingMetrics.count === 1 ? '' : 's'})</td>
+                  <td className="px-3 py-2 text-sm font-semibold text-gray-900">
+                    {t(
+                      buildingMetrics.count === 1
+                        ? 'myskb.project.readOnly.buildings.totalsSingle'
+                        : 'myskb.project.readOnly.buildings.totalsPlural',
+                      buildingMetrics.count === 1
+                        ? 'Totals (1 building)'
+                        : 'Totals ({{count}} buildings)'
+                    ).replace('{{count}}', String(buildingMetrics.count))}
+                  </td>
                   <td className="px-3 py-2 text-sm font-semibold text-gray-900">{Number(buildingMetrics.openArea)}</td>
                   <td className="px-3 py-2 text-sm font-semibold text-gray-900">{Number(buildingMetrics.closeArea)}</td>
                   <td className="px-3 py-2 text-sm font-semibold text-gray-900">{currency(totalProcessing)}</td>
@@ -198,12 +248,18 @@ const ProjectReadOnly: React.FC<Props> = ({ data = [] as any }) => {
           {['pending_payment', 'paid'].includes(String(data?.status || '').toLowerCase()) && (
             <>
               <LineSeparator />
-              <FormSectionHeader title="Payment" description="Payment summary" />
+              <FormSectionHeader
+                title={t('myskb.project.readOnly.sections.payment.title', 'Payment')}
+                description={t('myskb.project.readOnly.sections.payment.description', 'Payment summary')}
+              />
               <div className="mt-4">
                 <FormRow columns={3}>
-                  <Field label="Payment Status" value={<StatusBadge status={data?.status} />} />
-                  <Field label="Amount" value={currency(totalProcessing)} />
-                  <Field label="Reference" value={paymentRef || '—'} />
+                  <Field
+                    label={t('myskb.project.readOnly.fields.paymentStatus', 'Payment Status')}
+                    value={<StatusBadge status={data?.status} label={statusLabel(data?.status)} />}
+                  />
+                  <Field label={t('myskb.project.readOnly.fields.amount', 'Amount')} value={currency(totalProcessing)} />
+                  <Field label={t('myskb.project.readOnly.fields.reference', 'Reference')} value={paymentRef || '—'} />
                 </FormRow>
               </div>
             </>
@@ -215,16 +271,32 @@ const ProjectReadOnly: React.FC<Props> = ({ data = [] as any }) => {
       {(review?.reviewedAt || review?.reason) && (
         <>
           <LineSeparator />
-          <FormSectionHeader title="Review" description="Administrative review outcome" />
+          <FormSectionHeader
+            title={t('myskb.project.readOnly.sections.review.title', 'Review')}
+            description={t('myskb.project.readOnly.sections.review.description', 'Administrative review outcome')}
+          />
           <div className="mt-4">
             <FormRow columns={3}>
-              <Field label="Reviewed Status" value={<StatusBadge status={review?.status} />} />
-              <Field label="Reviewed On" value={review?.reviewedAt ? new Date(review.reviewedAt).toLocaleString() : '—'} />
-              <Field label="Reviewer" value={review?.reviewer ? `User #${review.reviewer}` : '—'} />
+              <Field
+                label={t('myskb.project.readOnly.fields.reviewedStatus', 'Reviewed Status')}
+                value={<StatusBadge status={review?.status} label={statusLabel(review?.status)} />}
+              />
+              <Field
+                label={t('myskb.project.readOnly.fields.reviewedOn', 'Reviewed On')}
+                value={review?.reviewedAt ? new Date(review.reviewedAt).toLocaleString() : '—'}
+              />
+              <Field
+                label={t('myskb.project.readOnly.fields.reviewer', 'Reviewer')}
+                value={review?.reviewer ? formatUserFallback(review.reviewer) : '—'}
+              />
             </FormRow>
             {review?.reason ? (
               <FormRow columns={1}>
-                <Field label="Reason" value={review?.reason} colSpan="sm:col-span-9" />
+                <Field
+                  label={t('myskb.project.readOnly.fields.reason', 'Reason')}
+                  value={review?.reason}
+                  colSpan="sm:col-span-9"
+                />
               </FormRow>
             ) : null}
           </div>
@@ -233,10 +305,13 @@ const ProjectReadOnly: React.FC<Props> = ({ data = [] as any }) => {
 
       {/* Attachments */}
       <LineSeparator />
-      <FormSectionHeader title="Attachments" description="Uploaded supporting documents" />
+      <FormSectionHeader
+        title={t('myskb.project.readOnly.sections.attachments.title', 'Attachments')}
+        description={t('myskb.project.readOnly.sections.attachments.description', 'Uploaded supporting documents')}
+      />
       <div className="mt-4 space-y-4">
         {attachments.length === 0 ? (
-          <div className="text-sm text-gray-500">No attachments uploaded</div>
+          <div className="text-sm text-gray-500">{t('myskb.project.readOnly.attachments.none', 'No attachments uploaded')}</div>
         ) : (
           attachments.map((att, i) => {
             const url = buildUploadUrl(att.path);
@@ -246,17 +321,36 @@ const ProjectReadOnly: React.FC<Props> = ({ data = [] as any }) => {
                 {isPdf(att.path) ? (
                   <div>
                     <div className="h-64 w-full border rounded bg-white overflow-hidden">
-                      <iframe src={url} className="w-full h-full" title={`${att.label} preview`} />
+                      <iframe
+                        src={url}
+                        className="w-full h-full"
+                        title={t('myskb.project.readOnly.attachments.previewTitle', '{{label}} preview').replace('{{label}}', att.label)}
+                      />
                     </div>
-                    <a href={url} target="_blank" rel="noreferrer" className="text-xs text-indigo-600 hover:underline mt-2 inline-block">Open PDF in new tab</a>
+                    <a
+                      href={url}
+                      target="_blank"
+                      rel="noreferrer"
+                      className="text-xs text-indigo-600 hover:underline mt-2 inline-block"
+                    >
+                      {t('myskb.project.readOnly.attachments.openPdf', 'Open PDF in new tab')}
+                    </a>
                   </div>
                 ) : isImage(att.path) ? (
                   <div className="flex items-center gap-3">
-                    <img src={url} alt={`${att.label} preview`} className="h-24 w-auto rounded border bg-white" />
-                    <a href={url} target="_blank" rel="noreferrer" className="text-xs text-indigo-600 hover:underline">Open image</a>
+                    <img
+                      src={url}
+                      alt={t('myskb.project.readOnly.attachments.previewTitle', '{{label}} preview').replace('{{label}}', att.label)}
+                      className="h-24 w-auto rounded border bg-white"
+                    />
+                    <a href={url} target="_blank" rel="noreferrer" className="text-xs text-indigo-600 hover:underline">
+                      {t('myskb.project.readOnly.attachments.openImage', 'Open image')}
+                    </a>
                   </div>
                 ) : (
-                  <a href={url} target="_blank" rel="noreferrer" className="text-xs text-indigo-600 hover:underline">Open file</a>
+                  <a href={url} target="_blank" rel="noreferrer" className="text-xs text-indigo-600 hover:underline">
+                    {t('myskb.project.readOnly.attachments.openFile', 'Open file')}
+                  </a>
                 )}
               </div>
             );

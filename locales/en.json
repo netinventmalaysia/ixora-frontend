@@ -358,5 +358,349 @@
   "installmentPlan": { "title": "Assessment Installment Plan", "desc": "Pay your tax via installments." },
   "trishaw": { "title": "Trishaw Licence", "desc": "Apply & renew trishaw licences." }
 }
+  },
+  "myskb": {
+    "common": {
+      "businessFallback": "Business #{{id}}",
+      "userFallback": "User #{{id}}"
+    },
+    "status": {
+      "submitted": "Submitted",
+      "approved": "Approved",
+      "pending_payment": "Pending Payment",
+      "pending": "Pending",
+      "paid": "Paid",
+      "rejected": "Rejected",
+      "draft": "Draft",
+      "complete": "Complete",
+      "unknown": "Unknown"
+    },
+    "tabs": {
+      "home": "Home",
+      "registration": "Registration",
+      "ownership": "Ownership",
+      "project": "Project",
+      "application": "Application",
+      "registrationApproved": "Approved",
+      "registrationLocked": "LAM approved. Registration is locked."
+    },
+    "banner": {
+      "applicationOnly": {
+        "line1": "You currently have Application-only access. Other MySKB features are hidden.",
+        "line2": "To get full access (Home, Registration, Ownership, Project), your organisation must have an approved LAM registration.",
+        "line3": "If you are a business owner, submit your LAM details under your account. If not, please ask a consultant with an approved LAM to manage your application."
+      }
+    },
+    "home": {
+      "heading": "🏗️ MYSKB - Sistem Kawalan Bangunan",
+      "sections": {
+        "what": {
+          "title": "What is MYSKB?",
+          "description": "MYSKB is a digital system developed to streamline and digitize the building control process under the supervision of Majlis Bandaraya Melaka Bersejarah (MBMB). This system empowers appointed consultants to manage construction projects efficiently while complying with MBMB's regulations."
+        },
+        "objective": {
+          "title": "Objective",
+          "description": "To centralize and digitalize the management of building project registrations, approvals, and fee payments through a traceable platform—bridging consultants, project owners, and MBMB administrators."
+        },
+        "flow": {
+          "title": "System Flow"
+        },
+        "benefits": {
+          "title": "Key Benefits"
+        }
+      },
+      "flowSteps": [
+        "Consultant Login",
+        "Register Owner / Company",
+        "Create Project & Link to Owner",
+        "Submit Application to MBMB",
+        "MBMB Review & Approve",
+        "Pay Fee",
+        "Generate Award Letter"
+      ],
+      "benefits": [
+        "Centralized project and consultant management",
+        "Digital tracking of approvals and payments",
+        "Automatic generation of award letters",
+        "Transparent communication between consultants and MBMB",
+        "Audit-friendly with document traceability"
+      ]
+    },
+    "registration": {
+      "header": {
+        "title": "Consultant Onboard",
+        "description": "This registration enables businesses to be officially recognized as consultants authorized to manage temporary building permits through the MYSKB system. It enhances their capability to oversee and coordinate building-related submissions on behalf of project owners."
+      },
+      "emptyBusinesses": "You don't have any registered businesses yet. Please register your business first in the Business module, then return here to submit your LAM details.",
+      "goToBusiness": "Go to Business Registration →",
+      "businessLabel": "Business",
+      "errors": {
+        "selectBusiness": "Please select a business first",
+        "alreadyApproved": "LAM already approved for this business",
+        "lamRequired": "LAM number is required",
+        "businessRequired": "Business is required"
+      },
+      "lamLabel": "LAM (Lembaga Arkitek Malaysia)",
+      "lamPlaceholder": "Enter your LAM (Lembaga Arkitek Malaysia)",
+      "documentLabel": "LAM Document (PDF)",
+      "documentDescription": "PDF up to 10MB",
+      "documentRequired": "Please upload your LAM document (PDF)",
+      "toast": {
+        "submitted": "LAM submitted for review",
+        "failed": "Failed to submit LAM"
+      },
+      "alreadyApproved": "Already Approved",
+      "success": {
+        "title": "LAM submission received",
+        "description": "Your application is waiting for review. We'll email you once we complete the review with either an approval or a rejection.",
+        "business": "Business",
+        "registrationNo": "Registration No.",
+        "goHome": "Go to MySKB Home",
+        "submitAnother": "Submit another"
+      },
+      "confirmDiscard": {
+        "title": "Discard changes?",
+        "description": "Your unsaved changes will be lost. Are you sure you want to leave this form?",
+        "confirm": "Yes, discard",
+        "cancel": "Stay"
+      }
+    },
+    "ownership": {
+      "heading": "Project Ownership Management",
+      "businessLabel": "Business Name",
+      "addOwnerLabel": "Add project owner",
+      "searchPlaceholder": "Search by registered email address",
+      "inviteButton": "Invite",
+      "status": {
+        "pending": "Pending"
+      },
+      "tabs": {
+        "all": "All",
+        "request": "Request",
+        "approved": "Approved"
+      },
+      "actions": {
+        "approve": "Approve",
+        "remove": "Remove"
+      },
+      "errors": {
+        "generic": "Something went wrong",
+        "loadOwners": "Failed to load owners",
+        "loadBusinesses": "Failed to load your businesses",
+        "emailRequired": "Enter an email to invite",
+        "selectBusiness": "Select a business first",
+        "invite": "Failed to invite",
+        "missingId": "Missing ownership id",
+        "approve": "Failed to approve",
+        "remove": "Failed to remove"
+      },
+      "toast": {
+        "linked": "User linked. Application-only access granted.",
+        "invited": "Invitation email sent.",
+        "processed": "Invite processed.",
+        "approved": "Approved",
+        "removed": "Removed"
+      }
+    },
+    "application": {
+      "heading": "Project Application",
+      "businessLabel": "Business",
+      "byLabel": "Business",
+      "tabs": {
+        "all": "All",
+        "submitted": "Submitted",
+        "pending": "Pending",
+        "rejected": "Rejected",
+        "complete": "Complete",
+        "draft": "Draft"
+      },
+      "projectFallback": "Project #{{id}}",
+      "draftFallback": "Draft #{{id}}"
+    },
+    "actions": {
+      "view": "View",
+      "download": "Download",
+      "downloadToast": "Downloading {{name}}",
+      "pay": "Pay",
+      "payUnavailable": "Payment is available once the application is Pending",
+      "noFee": "No processing fee found for this project.",
+      "paymentSubmitted": "Payment submitted",
+      "paymentFailed": "Failed to submit payment",
+      "withdraw": "Withdraw",
+      "withdrawToast": "Withdraw {{name}}"
+    },
+    "project": {
+      "sitePhotos": {
+        "title": "Site Photos (optional)",
+        "limit": "Up to {{count}} images",
+        "hint": "Recent photos help MBMB inspectors locate the project site faster.",
+        "dropzone": "Click or drag images here",
+        "fileHint": "PNG or JPG, max 10MB each.",
+        "uploading": "Uploading photos…",
+        "imagesOnly": "Only image files are allowed",
+        "limitReached": "Maximum of 5 site photos reached",
+        "uploadFailed": "Failed to upload {{file}}",
+        "alt": "Site photo {{index}}"
+      },
+      "attachments": {
+        "pdfHint": "PDF up to 10MB",
+        "statutory": "Statutory Declaration File",
+        "statutoryRequired": "Please upload a statutory declaration",
+        "landHeir": "Land Heir Declaration",
+        "landHeirRequired": "Please upload a land heir declaration",
+        "rental": "Rental Agreement",
+        "rentalRequired": "Please upload a rental agreement"
+      },
+      "owners": {
+        "ownerLabel": "Project Owner",
+        "ownerRequired": "Owner is required",
+        "ownerPlaceholder": "Select approved owner",
+        "businessFirst": "Select business first",
+        "categoryLabel": "Ownership Category",
+        "categoryRequired": "Category is required",
+        "addOwner": "Add owner"
+      },
+      "actions": {
+        "saveDraft": "Save draft"
+      },
+      "fields": {
+        "business": "Business",
+        "projectTitle": "Project Title",
+        "address": "Project Address",
+        "city": "City",
+        "state": "State / Province",
+        "postalCode": "ZIP / Postal code",
+        "country": "Country",
+        "location": "Project Location",
+        "landAddress": "Subdistrict / Town / City Area",
+        "lotNumber": "Lot / Plot Number",
+        "landStatus": "Land Status",
+        "typeGrant": "Type of Grant",
+        "specificCondition": "Specific Conditions",
+        "landArea": "Land Area (m2)",
+        "existingCrops": "Existing Crops",
+        "existingBuilding": "Existing Building",
+        "permanentUnits": "Number of permanent residential building units",
+        "semiPermanentUnits": "Number of semi-permanent residential building units",
+        "otherBuildings": "Other buildings",
+        "processingFees": "Total Processing Fees"
+      },
+      "errors": {
+        "businessRequired": "Business is required",
+        "projectTitle": "Project Title is required",
+        "address": "Address is required",
+        "city": "City is required",
+        "state": "State / Province is required",
+        "postalCode": "ZIP / Postal code is required",
+        "country": "Country is required",
+        "landAddress": "Subdistrict / Town / City Area is required",
+        "lotNumber": "Lot / Plot Number is required",
+        "landStatus": "Land status is required",
+        "typeGrant": "Type of Grant is required",
+        "landArea": "Land Area is required",
+        "processingFees": "Processing Fees is required",
+        "submitFailed": "Failed to submit project",
+        "draftFailed": "Failed to save draft"
+      },
+      "sections": {
+        "ownership": {
+          "title": "Ownership Information",
+          "description": "Please fill in the details of your project. This information will be used to register your project with MBMB."
+        },
+        "projectInfo": {
+          "title": "Project Information",
+          "description": "Please fill in the details of your project. This information will be used to register your project with MBMB."
+        },
+        "land": {
+          "title": "Land Information",
+          "description": "Provide additional details about your land."
+        },
+        "usage": {
+          "title": "Proposed Usage Information",
+          "description": "Add one or more buildings and their areas. Each building's processing fee is auto-calculated with a minimum of RM 140."
+        }
+      },
+      "help": {
+        "stateFixed": "State is fixed to Melaka for MBMB submissions."
+      },
+      "toast": {
+        "submitted": "Project submitted",
+        "draftSaved": "Draft saved"
+      },
+      "confirmDiscard": {
+        "title": "Discard changes?",
+        "description": "Your unsaved changes will be lost. Are you sure you want to leave this form?",
+        "confirm": "Yes, discard",
+        "cancel": "Stay"
+      },
+      "processingFees": {
+        "auto": "Auto"
+      },
+      "readOnly": {
+        "sections": {
+          "overview": {
+            "title": "Overview",
+            "description": "Project summary and ownership context"
+          },
+          "projectInfo": {
+            "description": "Submitted project details"
+          },
+          "usage": {
+            "description": "Submitted buildings and areas"
+          },
+          "payment": {
+            "title": "Payment",
+            "description": "Payment summary"
+          },
+          "review": {
+            "title": "Review",
+            "description": "Administrative review outcome"
+          },
+          "attachments": {
+            "title": "Attachments",
+            "description": "Uploaded supporting documents"
+          }
+        },
+        "fields": {
+          "projectId": "Project ID",
+          "business": "Business",
+          "status": "Status",
+          "projectOwners": "Project Owners",
+          "submittedOn": "Submitted On",
+          "lastUpdated": "Last Updated",
+          "address": "Project Address",
+          "paymentStatus": "Payment Status",
+          "amount": "Amount",
+          "reference": "Reference",
+          "reviewedStatus": "Reviewed Status",
+          "reviewedOn": "Reviewed On",
+          "reviewer": "Reviewer",
+          "reason": "Reason"
+        },
+        "buildings": {
+          "none": "No buildings submitted",
+          "headers": {
+            "name": "Name / Type",
+            "openArea": "Open Area (m2)",
+            "closeArea": "Close Area (m2)",
+            "fee": "Processing Fee"
+          },
+          "totalsSingle": "Totals (1 building)",
+          "totalsPlural": "Totals ({{count}} buildings)"
+        },
+        "attachments": {
+          "none": "No attachments uploaded",
+          "previewTitle": "{{label}} preview",
+          "openPdf": "Open PDF in new tab",
+          "openImage": "Open image",
+          "openFile": "Open file"
+        }
+      }
+    },
+    "team": {
+      "fields": {
+        "applicantName": "Applicant Name"
+      }
+    }
   }
 }

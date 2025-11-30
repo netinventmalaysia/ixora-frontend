@@ -14,6 +14,7 @@ import toast from 'react-hot-toast';
 import { inviteOwnership, listOwnerships, removeOwnership, updateOwnership, fetchMyBusinesses } from '@/services/api';
 import FilterTabs from '../forms/FilterTabs';
 import { Tab } from '../forms/Tab';
+import { useTranslation } from '@/utils/i18n';
 
 export default function Ownership() {
     const methods = useForm();
@@ -22,9 +23,15 @@ export default function Ownership() {
     const [businessId, setBusinessId] = useState<number | null>(null);
     const [ownerIdByEmail, setOwnerIdByEmail] = useState<Record<string, number>>({});
     const [businessOptions, setBusinessOptions] = useState<{ value: number; label: string }[]>([]);
+    const { t } = useTranslation();
+    const formatBusinessFallback = (id: number | string | undefined) =>
+        t('myskb.common.businessFallback', 'Business #{{id}}').replace(
+            '{{id}}',
+            String(id ?? '')
+        );
 
     // Normalize API error into a readable string for toasts
-    const getErrMsg = (err: any, fallback = 'Something went wrong') => {
+    const getErrMsg = (err: any, fallback = t('myskb.ownership.errors.generic', 'Something went wrong')) => {
         const src = err?.response?.data?.message ?? err?.message ?? err;
         if (!src) return fallback;
         if (typeof src === 'string') return src;
@@ -45,11 +52,11 @@ export default function Ownership() {
         const pending = profiles.filter((p) => p.status === 'Pending').length;
         const approved = profiles.filter((p) => p.status === 'Approved').length;
         return [
-            { name: 'All', href: '#' },
-            { name: 'Request', href: '#', badge: String(pending), badgeColor: 'yellow' },
-            { name: 'Approved', href: '#', badge: String(approved), badgeColor: 'green' },
+            { name: 'All', href: '#', label: t('myskb.ownership.tabs.all', 'All') },
+            { name: 'Request', href: '#', badge: String(pending), badgeColor: 'yellow', label: t('myskb.ownership.tabs.request', 'Request') },
+            { name: 'Approved', href: '#', badge: String(approved), badgeColor: 'green', label: t('myskb.ownership.tabs.approved', 'Approved') },
         ];
-    }, [profiles]);
+    }, [profiles, t]);
 
     // Load ownerships when business changes
     useEffect(() => {
@@ -74,7 +81,7 @@ export default function Ownership() {
                 setProfiles(mapped);
                 setOwnerIdByEmail(idMap);
             })
-            .catch((e: any) => toast.error(getErrMsg(e, 'Failed to load owners')));
+            .catch((e: any) => toast.error(getErrMsg(e, t('myskb.ownership.errors.loadOwners', 'Failed to load owners'))));
     }, [businessId]);
 
     // Load businesses for select (exclude withdrawn)
@@ -94,12 +101,15 @@ export default function Ownership() {
                 };
                 const options = (data as any[])
                     .filter((biz) => !isWithdrawn(biz))
-                    .map((biz) => ({ value: biz.id, label: biz.name || biz.companyName || `#${biz.id}` }));
+                    .map((biz) => ({
+                        value: biz.id,
+                        label: biz.name || biz.companyName || formatBusinessFallback(biz.id),
+                    }));
                 setBusinessOptions(options);
             })
             .catch((err: any) => {
                 console.error('Failed to fetch businesses for ownership select', err);
-                toast.error('Failed to load your businesses');
+                toast.error(t('myskb.ownership.errors.loadBusinesses', 'Failed to load your businesses'));
             });
     }, []);
 
@@ -125,11 +135,11 @@ export default function Ownership() {
         event.preventDefault();
         const email = String(methods.getValues('search') || '').trim();
         if (!email) {
-            toast('Enter an email to invite');
+            toast(t('myskb.ownership.errors.emailRequired', 'Enter an email to invite'));
             return;
         }
         if (!businessId) {
-            toast('Select a business first');
+            toast(t('myskb.ownership.errors.selectBusiness', 'Select a business first'));
             return;
         }
         try {
@@ -154,14 +164,14 @@ export default function Ownership() {
                 setOwnerIdByEmail((m) => ({ ...m, [String(o.email).toLowerCase()]: o.id }));
             }
             if (res.user_exists) {
-                toast.success('User linked. Application-only access granted.');
+                toast.success(t('myskb.ownership.toast.linked', 'User linked. Application-only access granted.'));
             } else if (res.invited) {
-                toast.success('Invitation email sent.');
+                toast.success(t('myskb.ownership.toast.invited', 'Invitation email sent.'));
             } else {
-                toast.success('Invite processed.');
+                toast.success(t('myskb.ownership.toast.processed', 'Invite processed.'));
             }
         } catch (e: any) {
-            toast.error(getErrMsg(e, 'Failed to invite'));
+            toast.error(getErrMsg(e, t('myskb.ownership.errors.invite', 'Failed to invite')));
         }
     }
 
@@ -169,13 +179,13 @@ export default function Ownership() {
         <FormProvider {...methods}>
             <LayoutWithoutSidebar shiftY="-translate-y-0">
                 <Heading level={5} align="left" bold>
-                    Project Ownership Management
+                    {t('myskb.ownership.heading', 'Project Ownership Management')}
                 </Heading>
                 <Spacing size="lg" />
                 <SelectField
                     id="businessName"
                     name="businessName"
-                    label="Business Name"
+                    label={t('myskb.ownership.businessLabel', 'Business Name')}
                     options={businessOptions}
                     onChange={(e) => setBusinessId(Number(e.target.value))}
                 />
@@ -184,9 +194,9 @@ export default function Ownership() {
                 <InputText
                     id="search"
                     name="search"
-                    label="Add project owner"
+                    label={t('myskb.ownership.addOwnerLabel', 'Add project owner')}
                     type="email"
-                    placeholder="Search by registered email address"
+                    placeholder={t('myskb.ownership.searchPlaceholder', 'Search by registered email address')}
                     icon={MagnifyingGlassIcon}
                     rightElement={
                         <Button
@@ -196,7 +206,7 @@ export default function Ownership() {
                             className="bg-transparent shadow-none px-3 py-1 text-sm text-indigo-600 hover:bg-indigo-50"
                             onClick={doSearch}
                         >
-                            Invite
+                            {t('myskb.ownership.inviteButton', 'Invite')}
                         </Button>
                     }
                 />
@@ -206,7 +216,7 @@ export default function Ownership() {
 
                 <ProfileRow
                     profile={filteredProfiles}
-                    onlineLabel={currentTab === 'Request' ? 'Pending' : undefined}
+                    onlineLabel={currentTab === 'Request' ? t('myskb.ownership.status.pending', 'Pending') : undefined}
                     actions={(profile) => (
                         <ProfileActionMenu
                             profile={profile}
@@ -214,11 +224,11 @@ export default function Ownership() {
                                 ...(profile.status === 'Pending'
                                     ? [
                                             {
-                                                label: 'Approve',
+                                                label: t('myskb.ownership.actions.approve', 'Approve'),
                                                 onClick: async () => {
                                                     const id = ownerIdByEmail[profile.email.toLowerCase()];
                                                     if (!id) {
-                                                        toast.error('Missing ownership id');
+                                                        toast.error(t('myskb.ownership.errors.missingId', 'Missing ownership id'));
                                                         return;
                                                     }
                                                     try {
@@ -228,20 +238,20 @@ export default function Ownership() {
                                                                 p.email.toLowerCase() === profile.email.toLowerCase() ? { ...p, status: 'Approved' } : p,
                                                             ),
                                                         );
-                                                        toast.success('Approved');
+                                                        toast.success(t('myskb.ownership.toast.approved', 'Approved'));
                                                     } catch (e: any) {
-                                                        toast.error(getErrMsg(e, 'Failed to approve'));
+                                                        toast.error(getErrMsg(e, t('myskb.ownership.errors.approve', 'Failed to approve')));
                                                     }
                                                 },
                                             },
                                         ]
                                     : []),
                                 {
-                                    label: 'Remove',
+                                    label: t('myskb.ownership.actions.remove', 'Remove'),
                                     onClick: async () => {
                                         const id = ownerIdByEmail[profile.email.toLowerCase()];
                                         if (!id) {
-                                            toast.error('Missing ownership id');
+                                            toast.error(t('myskb.ownership.errors.missingId', 'Missing ownership id'));
                                             return;
                                         }
                                         try {
@@ -252,9 +262,9 @@ export default function Ownership() {
                                                 delete n[profile.email.toLowerCase()];
                                                 return n;
                                             });
-                                            toast.success('Removed');
+                                            toast.success(t('myskb.ownership.toast.removed', 'Removed'));
                                         } catch (e: any) {
-                                            toast.error(getErrMsg(e, 'Failed to remove'));
+                                            toast.error(getErrMsg(e, t('myskb.ownership.errors.remove', 'Failed to remove')));
                                         }
                                     },
                                     danger: true,

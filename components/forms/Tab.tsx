@@ -7,6 +7,7 @@ export interface Tab {
   href: string;
   badge?: string;
   badgeColor?: BadgeProps['color'];
+  label?: string;
 }
 
 export interface TabsProps {
@@ -33,11 +34,14 @@ const Tabs: React.FC<TabsProps> = ({ tabs, currentTab, onTabChange }) => {
           }}
           className="col-start-1 row-start-1 w-full appearance-none rounded-md bg-white py-2 pr-8 pl-3 text-base text-gray-900 outline-1 -outline-offset-1 outline-gray-300 focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600"
         >
-          {tabs.map((tab) => (
-            <option key={tab.name} value={tab.name}>
-              {tab.badge ? `${tab.name} (${tab.badge})` : tab.name}
-            </option>
-          ))}
+          {tabs.map((tab) => {
+            const display = tab.label ?? tab.name;
+            return (
+              <option key={tab.name} value={tab.name}>
+                {tab.badge ? `${display} (${tab.badge})` : display}
+              </option>
+            );
+          })}
         </select>
         <ChevronDownIcon
           aria-hidden="true"
@@ -51,13 +55,14 @@ const Tabs: React.FC<TabsProps> = ({ tabs, currentTab, onTabChange }) => {
           <nav aria-label="Tabs" className="-mb-px flex">
             {tabs.map((tab) => {
               const isActive = tab.name === currentTab;
+              const display = tab.label ?? tab.name;
               return (
                 <a
                   key={tab.name}
                   href={tab.href}
                   onClick={(e) => {
                     e.preventDefault();
-                    onTabChange(tab); // ✅ Full tab object passed
+                    onTabChange(tab);
                   }}
                   aria-current={isActive ? 'page' : undefined}
                   className={classNames(
@@ -68,7 +73,7 @@ const Tabs: React.FC<TabsProps> = ({ tabs, currentTab, onTabChange }) => {
                   )}
                 >
                   <div className="inline-flex items-center justify-center gap-x-2">
-                    <span>{tab.name}</span>
+                    <span>{display}</span>
                     {tab.badge && (
                       <Badge label={tab.badge} color={tab.badgeColor ?? 'red'} />
                     )}
