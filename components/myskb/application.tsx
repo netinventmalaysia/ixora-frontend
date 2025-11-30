@@ -24,6 +24,53 @@ const BASE_TABS: Tab[] = [
 
 type ApplicationProps = { isApplicationOnly?: boolean };
 
+type ProjectStatusMeta = {
+  display: string;
+  category: 'all' | 'submitted' | 'pending' | 'draft' | 'rejected' | 'complete';
+};
+
+const toTitleCase = (value: string): string => {
+  if (!value) return value;
+  return value.charAt(0).toUpperCase() + value.slice(1);
+};
+
+const getProjectStatusMeta = (project: any): ProjectStatusMeta => {
+  const fallback = 'Submitted';
+  const rawStatus = String(
+    project?.status ||
+      project?.applicationStatus ||
+      project?.statusName ||
+      project?.currentStatus ||
+      fallback
+  );
+  const lower = rawStatus.toLowerCase();
+  const stage = extractReviewStage(project);
+  const stageLower = stage ? stage.toLowerCase() : null;
+
+  if (lower === 'draft') return { display: 'Draft', category: 'draft' };
+  if (lower === 'rejected') return { display: 'Rejected', category: 'rejected' };
+  if (lower === 'complete') return { display: 'Complete', category: 'complete' };
+
+  if (
+    lower === 'pending_payment' ||
+    lower === 'pending payment' ||
+    lower === 'pending' ||
+    lower === 'approved' ||
+    stageLower === 'final'
+  ) {
+    return { display: 'Pending Payment', category: 'pending' };
+  }
+
+  if (lower === 'submitted') return { display: 'Submitted', category: 'submitted' };
+
+  const display = rawStatus ? toTitleCase(rawStatus) : fallback;
+  return {
+    display,
+    category:
+      display.toLowerCase() === 'submitted' ? 'submitted' : 'all',
+  };
+};
+
 const Application: React.FC<ApplicationProps> = ({
   isApplicationOnly = false,
 }) => {
@@ -138,20 +185,9 @@ const Application: React.FC<ApplicationProps> = ({
   }, [businessId]);
 
   const projectTabs: Tab[] = useMemo(() => {
-    const norm = (p: any) => {
-      const raw = (
-        p.status ||
-        p.applicationStatus ||
-        p.statusName ||
-        ''
-      ).toLowerCase();
-      if (raw === 'pending_payment' || raw === 'approved') return 'pending';
-      return raw;
-    };
+    const norm = (p: any) => getProjectStatusMeta(p).category;
     const draftCount = projects.filter((p) => norm(p) === 'draft').length;
-    const submittedCount = projects.filter(
-      (p) => norm(p) === 'submitted'
-    ).length;
+    const submittedCount = projects.filter((p) => norm(p) === 'submitted').length;
     const pendingCount = projects.filter((p) => norm(p) === 'pending').length;
     const rejectedCount = projects.filter((p) => norm(p) === 'rejected').length;
     const completeCount = projects.filter((p) => norm(p) === 'complete').length;
@@ -201,18 +237,7 @@ const Application: React.FC<ApplicationProps> = ({
             .map((t: string) => Number(t.trim()))
             .filter((n: any) => !Number.isNaN(n))
         : undefined;
-      const rawStatus = String(
-        p.status ||
-          p.applicationStatus ||
-          p.statusName ||
-          p.currentStatus ||
-          'Submitted'
-      );
-      const rawLower = rawStatus.toLowerCase();
-      const normalized =
-        rawLower === 'pending_payment' || rawLower === 'approved'
-          ? 'Pending'
-          : rawStatus.charAt(0).toUpperCase() + rawStatus.slice(1);
+      const statusMeta = getProjectStatusMeta(p);
       const reviewStage = extractReviewStage(p);
       const reviewStageLabel = reviewStage
         ? t('myskb.review.awaitingStage', 'Awaiting {{stage}} review').replace(
@@ -227,10 +252,11 @@ const Application: React.FC<ApplicationProps> = ({
           p.name ||
           p.projectTitle ||
           p.title ||
-          (rawLower === 'draft'
+          (statusMeta.category === 'draft'
             ? formatDraftFallback(p.id)
             : formatProjectFallback(p.id)),
-        status: normalized, // ensure normalized status overrides raw
+        status: statusMeta.display, // ensure normalized status overrides raw
+        statusCategory: statusMeta.category,
         createdAt: p.created_at || p.createdAt,
         submittedByConsultant,
         coOwners,
@@ -243,7 +269,7 @@ const Application: React.FC<ApplicationProps> = ({
     if (currentTab === 'All') return items;
     const wanted = currentTab.toLowerCase();
     return items.filter((it) => {
-      const st = String(it.status || '').toLowerCase();
+      const st = (it as any).statusCategory || String(it.status || '').toLowerCase();
       if (wanted === 'pending') return st === 'pending';
       if (wanted === 'draft') return st === 'draft';
       return st === wanted;

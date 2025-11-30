@@ -34,3 +34,10 @@ export const extractReviewStage = (source: any): string | null => {
 
 export const hasPendingReviewStage = (source: any): boolean =>
   !!extractReviewStage(source);
+
+export const isProcessingPaymentBlockedStage = (
+  stage?: string | null
+): boolean => {
+  const normalized = normalizeReviewStage(stage);
+  return normalized === 'level1' || normalized === 'level2';
+};

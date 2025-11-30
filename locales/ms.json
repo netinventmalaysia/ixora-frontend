@@ -424,8 +424,9 @@
       "unknown": "Tidak diketahui"
     },
     "review": {
-      "paymentAlert": "Permohonan anda kini dalam semakan {{stage}}. Pembayaran hanya dibuka selepas semua semakan diluluskan.",
-      "instructions": "Setiap permohonan MySKB perlu melalui Semakan 1 dan Semakan 2 sebelum pembayaran tersedia.",
+      "paymentAlert": "Permohonan anda kini dalam semakan {{stage}}. Bayaran fi pemprosesan hanya dibuka selepas Semakan 2 diluluskan.",
+      "finalStageAlert": "Semakan Akhir sedang mengesahkan bayaran fi pemprosesan anda. Bayaran fi permit akan diminta selepas kelulusan.",
+      "instructions": "Semakan 1 dan Semakan 2 mesti diluluskan sebelum anda boleh membayar fi pemprosesan. Semakan Akhir mengesahkan bayaran tersebut dan kemudian mengeluarkan permintaan bayaran fi permit.",
       "noUpdates": "Belum ada kemas kini semakan.",
       "upcoming": "Akan datang",
       "awaitingStage": "Menunggu semakan {{stage}}"
@@ -578,7 +579,7 @@
       "downloadToast": "Memuat turun {{name}}",
       "pay": "Bayar",
       "payUnavailable": "Bayaran hanya tersedia apabila permohonan berstatus Menunggu",
-      "reviewPending": "Bayaran hanya dibuka selepas semakan {{stage}} diluluskan.",
+      "reviewPending": "Bayaran fi pemprosesan hanya dibuka selepas semakan {{stage}} diluluskan.",
       "noFee": "Tiada fi pemprosesan ditemui untuk projek ini.",
       "paymentSubmitted": "Bayaran dihantar",
       "paymentFailed": "Gagal menghantar bayaran",

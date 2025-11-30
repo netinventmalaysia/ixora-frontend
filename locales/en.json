@@ -376,8 +376,9 @@
       "unknown": "Unknown"
     },
     "review": {
-      "paymentAlert": "Your application is currently in {{stage}} review. Payment unlocks once all reviews are approved.",
-      "instructions": "Every MySKB application passes Review 1 and Review 2 before payment becomes available.",
+      "paymentAlert": "Your application is currently in {{stage}} review. Processing fee payment opens after Review 2 approval.",
+      "finalStageAlert": "Final Approval is verifying your processing payment. Permit fee payment will be requested after approval.",
+      "instructions": "Review 1 and Review 2 must approve before you can pay the processing fee. Final Approval verifies the payment and then issues the permit-fee request.",
       "noUpdates": "No review updates yet.",
       "upcoming": "Upcoming",
       "awaitingStage": "Awaiting {{stage}} review"
@@ -530,7 +531,7 @@
       "downloadToast": "Downloading {{name}}",
       "pay": "Pay",
       "payUnavailable": "Payment is available once the application is Pending",
-      "reviewPending": "Payment becomes available after {{stage}} review is approved.",
+      "reviewPending": "Processing fee payment opens after {{stage}} review is approved.",
       "noFee": "No processing fee found for this project.",
       "paymentSubmitted": "Payment submitted",
       "paymentFailed": "Failed to submit payment",

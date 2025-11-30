@@ -372,8 +372,9 @@
       "unknown": "未知"
     },
     "review": {
-      "paymentAlert": "您的申请目前处于{{stage}}审核阶段。所有审核通过后才会开启付款。",
-      "instructions": "每个 MySKB 申请都必须先完成审核 1 与审核 2，才会开放付款。",
+      "paymentAlert": "您的申请目前处于{{stage}}审核阶段。完成第二次审核后才会开放处理费用支付。",
+      "finalStageAlert": "终审正在核对您的处理费用支付。终审批准后将通知缴付许可证费用。",
+      "instructions": "必须完成审核 1 与审核 2 后才能支付处理费用。终审会核实该付款，并在批准后发出许可证费用的缴费请求。",
       "noUpdates": "暂无审核更新。",
       "upcoming": "即将进行",
       "awaitingStage": "等待 {{stage}} 审核"
@@ -526,7 +527,7 @@
       "downloadToast": "正在下载 {{name}}",
       "pay": "支付",
       "payUnavailable": "仅当申请状态为“处理中”时才可支付",
-      "reviewPending": "需完成 {{stage}} 审核后才能付款。",
+      "reviewPending": "通过 {{stage}} 审核后才会开放处理费用支付。",
       "noFee": "未找到该项目的处理费用。",
       "paymentSubmitted": "付款已提交",
       "paymentFailed": "付款提交失败",

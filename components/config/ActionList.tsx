@@ -17,7 +17,11 @@ export const RegistrationApplicationActions = [
 import { submitPayment } from '@/services/api';
 import toast from 'react-hot-toast';
 import { generateReference } from '@/utils/reference';
-import { extractReviewStage, formatReviewStage } from '@/utils/reviewStages';
+import {
+  extractReviewStage,
+  formatReviewStage,
+  isProcessingPaymentBlockedStage,
+} from '@/utils/reviewStages';
 
 type TranslateFn = (key: string, fallback?: string) => string;
 
@@ -109,13 +113,13 @@ export const buildMySkbActions = (translate?: TranslateFn) => {
         try {
           const status = String(item?.status || '').toLowerCase();
           const pendingReviewStage = extractReviewStage(item);
-          if (pendingReviewStage) {
+          if (isProcessingPaymentBlockedStage(pendingReviewStage)) {
             const msg = t(
               'myskb.actions.reviewPending',
-              'Payment becomes available after {{stage}} review is approved.'
+              'Processing fee payment opens after {{stage}} review is approved.'
             ).replace(
               '{{stage}}',
-              formatReviewStage(pendingReviewStage) || pendingReviewStage
+              formatReviewStage(pendingReviewStage) || pendingReviewStage || ''
             );
             toast(msg);
             return;

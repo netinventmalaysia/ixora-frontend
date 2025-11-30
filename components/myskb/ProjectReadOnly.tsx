@@ -6,6 +6,7 @@ import { useTranslation } from '@/utils/i18n';
 import {
   extractReviewStage,
   formatReviewStage,
+  isProcessingPaymentBlockedStage,
   normalizeReviewStage,
   REVIEW_STAGE_ORDER,
 } from '@/utils/reviewStages';
@@ -92,6 +93,26 @@ const ProjectReadOnly: React.FC<Props> = ({ data = [] as any }) => {
       String(id ?? '')
     );
   const pendingReviewStage = extractReviewStage(data);
+  const normalizedPendingStage = normalizeReviewStage(pendingReviewStage);
+  const processingPaymentLocked = isProcessingPaymentBlockedStage(
+    pendingReviewStage
+  );
+  const baseStatusKey = String(data?.status || '').toLowerCase();
+  const derivedProjectStatus = (() => {
+    if (!baseStatusKey && normalizedPendingStage === 'final') {
+      return 'pending_payment';
+    }
+    if (['paid', 'rejected', 'complete'].includes(baseStatusKey)) {
+      return baseStatusKey;
+    }
+    if (normalizedPendingStage === 'final') {
+      return 'pending_payment';
+    }
+    if (['pending_payment', 'pending payment', 'pending', 'approved'].includes(baseStatusKey)) {
+      return 'pending_payment';
+    }
+    return baseStatusKey;
+  })();
   const statusLabel = (status?: string) => {
     const key = String(status || '').toLowerCase();
     if (key === 'upcoming') {
@@ -204,13 +225,20 @@ const ProjectReadOnly: React.FC<Props> = ({ data = [] as any }) => {
     reason?: string;
   }>;
   const reviewAlert = pendingReviewStage
-    ? t(
-        'myskb.review.paymentAlert',
-        'Your application is currently in {{stage}} review. Payment unlocks once all reviews are approved.'
-      ).replace(
-        '{{stage}}',
-        formatReviewStage(pendingReviewStage) || pendingReviewStage
-      )
+    ? processingPaymentLocked
+      ? t(
+          'myskb.review.paymentAlert',
+          'Your application is currently in {{stage}} review. Processing fee payment opens after Review 2 approval.'
+        ).replace(
+          '{{stage}}',
+          formatReviewStage(pendingReviewStage) || pendingReviewStage || ''
+        )
+      : normalizedPendingStage === 'final'
+      ? t(
+          'myskb.review.finalStageAlert',
+          'Final Approval is verifying your processing payment. Permit fee payment will be requested after approval.'
+        )
+      : null
     : null;
 
   // --- attachments ---
@@ -290,8 +318,8 @@ const ProjectReadOnly: React.FC<Props> = ({ data = [] as any }) => {
             label={t('myskb.project.readOnly.fields.status', 'Status')}
             value={
               <StatusBadge
-                status={data?.status}
-                label={statusLabel(data?.status)}
+                status={derivedProjectStatus || data?.status}
+                label={statusLabel(derivedProjectStatus || data?.status)}
               />
             }
           />
@@ -499,7 +527,7 @@ const ProjectReadOnly: React.FC<Props> = ({ data = [] as any }) => {
         )}
         {/* Payment Summary */}
         {['pending_payment', 'paid'].includes(
-          String(data?.status || '').toLowerCase()
+          String(derivedProjectStatus || '').toLowerCase()
         ) && (
           <>
             <LineSeparator />
@@ -522,8 +550,10 @@ const ProjectReadOnly: React.FC<Props> = ({ data = [] as any }) => {
                   )}
                   value={
                     <StatusBadge
-                      status={data?.status}
-                      label={statusLabel(data?.status)}
+                      status={derivedProjectStatus || data?.status}
+                      label={statusLabel(
+                        derivedProjectStatus || data?.status
+                      )}
                     />
                   }
                 />
