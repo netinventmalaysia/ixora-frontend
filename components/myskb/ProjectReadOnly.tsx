@@ -207,7 +207,10 @@ const ProjectReadOnly: React.FC<Props> = ({ data = [] as any }) => {
     ? t(
         'myskb.review.paymentAlert',
         'Your application is currently in {{stage}} review. Payment unlocks once all reviews are approved.'
-      ).replace('{{stage}}', formatReviewStage(pendingReviewStage) || pendingReviewStage)
+      ).replace(
+        '{{stage}}',
+        formatReviewStage(pendingReviewStage) || pendingReviewStage
+      )
     : null;
 
   // --- attachments ---
@@ -589,7 +592,8 @@ const ProjectReadOnly: React.FC<Props> = ({ data = [] as any }) => {
                   ) : null}
                   {entry.reason ? (
                     <p className="mt-1 text-xs text-gray-600">
-                      {t('myskb.project.readOnly.fields.reason', 'Reason')}: {entry.reason}
+                      {t('myskb.project.readOnly.fields.reason', 'Reason')}:{' '}
+                      {entry.reason}
                     </p>
                   ) : null}
                 </div>
@@ -627,7 +631,10 @@ const ProjectReadOnly: React.FC<Props> = ({ data = [] as any }) => {
                   }
                 />
                 <Field
-                  label={t('myskb.project.readOnly.fields.reviewer', 'Reviewer')}
+                  label={t(
+                    'myskb.project.readOnly.fields.reviewer',
+                    'Reviewer'
+                  )}
                   value={
                     review?.reviewer ? formatUserFallback(review.reviewer) : '—'
                   }

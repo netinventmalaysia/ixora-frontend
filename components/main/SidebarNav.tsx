@@ -23,7 +23,9 @@ export default function SidebarNav({
       <ul role="list" className="flex flex-col gap-y-7">
         {general.length > 0 && (
           <li>
-            <div className="text-xs font-semibold leading-6 text-gray-100">General</div>
+            <div className="text-xs font-semibold leading-6 text-gray-100">
+              General
+            </div>
             <ul role="list" className="-mx-2 mt-2 space-y-1">
               {general.map((item) => (
                 <li key={item.name}>
@@ -46,9 +48,11 @@ export default function SidebarNav({
           </li>
         )}
 
-    {personal.length > 0 && (
+        {personal.length > 0 && (
           <li>
-  <div className="text-xs font-semibold leading-6 text-gray-100">{personalLabel}</div>
+            <div className="text-xs font-semibold leading-6 text-gray-100">
+              {personalLabel}
+            </div>
             <ul role="list" className="-mx-2 mt-2 space-y-1">
               {personal.map((item) => (
                 <li key={item.name}>
@@ -99,7 +103,10 @@ export default function SidebarNav({
       </ul>
 
       {bottom.length > 0 && (
-  <ul role="list" className="mt-4 border-t border-white/20 pt-4 -mx-2 space-y-1">
+        <ul
+          role="list"
+          className="mt-4 border-t border-white/20 pt-4 -mx-2 space-y-1"
+        >
           {bottom.map((item) => (
             <li key={item.name}>
               <Link

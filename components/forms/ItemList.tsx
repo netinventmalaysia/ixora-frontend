@@ -43,7 +43,15 @@ function classNames(...classes: string[]) {
   return classes.filter(Boolean).join(' ');
 }
 
-export default function ItemList({ items, statusClasses, actions = [], onItemUpdated, onView, byLabel = 'By', showViewOnMobile = false }: ItemListProps) {
+export default function ItemList({
+  items,
+  statusClasses,
+  actions = [],
+  onItemUpdated,
+  onView,
+  byLabel = 'By',
+  showViewOnMobile = false,
+}: ItemListProps) {
   const [isOpen, setIsOpen] = useState(false);
   const [selected, setSelected] = useState<Item | null>(null);
 
@@ -89,8 +97,8 @@ export default function ItemList({ items, statusClasses, actions = [], onItemUpd
   };
 
   const requestWithdraw = (item: Item) => {
-  const st = (getStatus(item) || '').toLowerCase();
-  if (st !== 'submitted') {
+    const st = (getStatus(item) || '').toLowerCase();
+    if (st !== 'submitted') {
       return; // Only allow for Submitted
     }
     setPendingWithdraw(item);
@@ -100,13 +108,16 @@ export default function ItemList({ items, statusClasses, actions = [], onItemUpd
   const confirmWithdraw = async () => {
     if (!pendingWithdraw) return;
     try {
-      const idNum = typeof pendingWithdraw.id === 'string' ? Number(pendingWithdraw.id) : pendingWithdraw.id;
+      const idNum =
+        typeof pendingWithdraw.id === 'string'
+          ? Number(pendingWithdraw.id)
+          : pendingWithdraw.id;
       const updated = await withdrawBusiness(idNum as number);
       // Reflect in local items if passed from parent (immutable update expected upstream)
       // Update selected/edit data if matches
       if (selected && selected.id === updated.id) setSelected(updated);
       if (editData && editData.id === updated.id) setEditData(updated);
-  onItemUpdated?.(updated);
+      onItemUpdated?.(updated);
     } catch (e) {
       console.error('Withdraw failed', e);
     } finally {
@@ -118,7 +129,12 @@ export default function ItemList({ items, statusClasses, actions = [], onItemUpd
   // Read default business id once on client to render a badge
   const getActiveBusinessId = (): number | null => {
     if (typeof window === 'undefined') return null;
-    try { const v = localStorage.getItem('activeBusinessId'); return v ? Number(v) : null; } catch { return null; }
+    try {
+      const v = localStorage.getItem('activeBusinessId');
+      return v ? Number(v) : null;
+    } catch {
+      return null;
+    }
   };
   const activeId = getActiveBusinessId();
 
@@ -127,7 +143,9 @@ export default function ItemList({ items, statusClasses, actions = [], onItemUpd
       if (typeof window !== 'undefined') {
         localStorage.setItem('activeBusinessId', String(item.id));
         // optional: remember label too for quick display elsewhere
-        const label = (item.name || (item as any).companyName || `#${item.id}`) as string;
+        const label = (item.name ||
+          (item as any).companyName ||
+          `#${item.id}`) as string;
         localStorage.setItem('activeBusinessName', label);
         // notify other components in same tab
         window.dispatchEvent(new Event('ixora:businessChange'));
@@ -139,7 +157,10 @@ export default function ItemList({ items, statusClasses, actions = [], onItemUpd
     <>
       <ul role="list" className="divide-y divide-gray-100">
         {items.map((item) => (
-          <li key={item.id} className="flex items-center justify-between gap-x-6 py-5">
+          <li
+            key={item.id}
+            className="flex items-center justify-between gap-x-6 py-5"
+          >
             <div className="min-w-0">
               <div className="flex items-start gap-x-3">
                 <p className="text-sm/6 font-semibold text-gray-900 flex items-center gap-2">
@@ -158,7 +179,7 @@ export default function ItemList({ items, statusClasses, actions = [], onItemUpd
                       const key = findStatusKey(statusClasses, s);
                       return key ? statusClasses[key] : '';
                     })(),
-                    'mt-0.5 rounded-md px-1.5 py-0.5 text-xs font-medium whitespace-nowrap ring-1 ring-inset',
+                    'mt-0.5 rounded-md px-1.5 py-0.5 text-xs font-medium whitespace-nowrap ring-1 ring-inset'
                   )}
                 >
                   {getStatus(item) ?? '—'}
@@ -166,19 +187,30 @@ export default function ItemList({ items, statusClasses, actions = [], onItemUpd
               </div>
               <div className="mt-1 flex flex-col sm:flex-row sm:items-center gap-y-1 sm:gap-x-2 text-xs/5 text-gray-500">
                 <p className="whitespace-normal sm:whitespace-nowrap">
-                  Created: {item.dueDate ? (
+                  Created:{' '}
+                  {item.dueDate ? (
                     <time dateTime={item.dueDateTime}>{item.dueDate}</time>
                   ) : item.createdAt ? (
-                    <time dateTime={item.createdAt}>{formatDateString(item.createdAt)}</time>
+                    <time dateTime={item.createdAt}>
+                      {formatDateString(item.createdAt)}
+                    </time>
                   ) : (
                     '—'
                   )}
                 </p>
-                <svg viewBox="0 0 2 2" className="hidden sm:block size-0.5 fill-current">
+                <svg
+                  viewBox="0 0 2 2"
+                  className="hidden sm:block size-0.5 fill-current"
+                >
                   <circle r={1} cx={1} cy={1} />
                 </svg>
-                <p className="whitespace-normal sm:whitespace-nowrap">{byLabel}: {getCreator(item) ?? '—'}</p>
-                <svg viewBox="0 0 2 2" className="hidden sm:block size-0.5 fill-current">
+                <p className="whitespace-normal sm:whitespace-nowrap">
+                  {byLabel}: {getCreator(item) ?? '—'}
+                </p>
+                <svg
+                  viewBox="0 0 2 2"
+                  className="hidden sm:block size-0.5 fill-current"
+                >
                   <circle r={1} cx={1} cy={1} />
                 </svg>
                 {/* Consultant submission hint */}
@@ -188,13 +220,20 @@ export default function ItemList({ items, statusClasses, actions = [], onItemUpd
                   </span>
                 ) : null}
                 {Array.isArray(item.coOwners) && item.coOwners.length > 0 ? (
-                  <span className="truncate" title={`Co-owners: ${item.coOwners.join(', ')}`}>
-                    Co-owners: {item.coOwners.slice(0, 3).join(', ')}{item.coOwners.length > 3 ? '…' : ''}
+                  <span
+                    className="truncate"
+                    title={`Co-owners: ${item.coOwners.join(', ')}`}
+                  >
+                    Co-owners: {item.coOwners.slice(0, 3).join(', ')}
+                    {item.coOwners.length > 3 ? '…' : ''}
                   </span>
                 ) : null}
                 {(item as any).reviewStageLabel ? (
                   <>
-                    <svg viewBox="0 0 2 2" className="hidden sm:block size-0.5 fill-current">
+                    <svg
+                      viewBox="0 0 2 2"
+                      className="hidden sm:block size-0.5 fill-current"
+                    >
                       <circle r={1} cx={1} cy={1} />
                     </svg>
                     <span className="inline-flex items-center rounded-md bg-amber-50 px-2 py-0.5 text-xs font-medium text-amber-800 ring-1 ring-inset ring-amber-200 whitespace-nowrap">
@@ -208,10 +247,10 @@ export default function ItemList({ items, statusClasses, actions = [], onItemUpd
               <button
                 type="button"
                 onClick={() => (onView ? onView(item) : openModal(item))}
-                className={(showViewOnMobile
-                  ? 'inline-flex'
-                  : 'hidden sm:inline-flex') +
-                  ' rounded-md bg-white px-2.5 py-1.5 text-sm font-semibold text-gray-900 shadow-xs ring-1 ring-gray-300 ring-inset hover:bg-gray-50'}
+                className={
+                  (showViewOnMobile ? 'inline-flex' : 'hidden sm:inline-flex') +
+                  ' rounded-md bg-white px-2.5 py-1.5 text-sm font-semibold text-gray-900 shadow-xs ring-1 ring-gray-300 ring-inset hover:bg-gray-50'
+                }
               >
                 View<span className="sr-only">, {item.name}</span>
               </button>
@@ -219,7 +258,10 @@ export default function ItemList({ items, statusClasses, actions = [], onItemUpd
                 <Menu as="div" className="relative flex-none">
                   <MenuButton className="-m-2.5 block p-2.5 text-gray-500 hover:text-gray-900">
                     <span className="sr-only">Open options</span>
-                    <EllipsisVerticalIcon aria-hidden="true" className="size-5" />
+                    <EllipsisVerticalIcon
+                      aria-hidden="true"
+                      className="size-5"
+                    />
                   </MenuButton>
                   <MenuItems
                     transition
@@ -232,9 +274,13 @@ export default function ItemList({ items, statusClasses, actions = [], onItemUpd
                           onClick={() => {
                             if (action.label.toLowerCase() === 'edit') {
                               handleEdit(item);
-                            } else if (action.label.toLowerCase() === 'withdraw') {
+                            } else if (
+                              action.label.toLowerCase() === 'withdraw'
+                            ) {
                               requestWithdraw(item);
-                            } else if (action.label.toLowerCase() === 'set as default') {
+                            } else if (
+                              action.label.toLowerCase() === 'set as default'
+                            ) {
                               setAsDefault(item);
                             }
                             action.onClick?.(item);
@@ -260,11 +306,11 @@ export default function ItemList({ items, statusClasses, actions = [], onItemUpd
         data={selected}
         statusClasses={statusClasses}
         loading={loadingDetails}
-  error={loadError}
-  // hide token fields and unrelated others by default
-  excludeKeys={["invitationToken"]}
-  hideTokenLike={true}
-  showOther={false}
+        error={loadError}
+        // hide token fields and unrelated others by default
+        excludeKeys={['invitationToken']}
+        hideTokenLike={true}
+        showOther={false}
       />
 
       <BusinessEditDialog
@@ -286,7 +332,10 @@ export default function ItemList({ items, statusClasses, actions = [], onItemUpd
         open={confirmOpen}
         title="Withdraw application?"
         description="Are you sure you want to withdraw your application? This action cannot be undone."
-        onCancel={() => { setConfirmOpen(false); setPendingWithdraw(null); }}
+        onCancel={() => {
+          setConfirmOpen(false);
+          setPendingWithdraw(null);
+        }}
         onConfirm={confirmWithdraw}
         confirmText="Yes, withdraw"
         cancelText="No, keep it"
@@ -333,7 +382,8 @@ function findStatusKey(map: StatusMap, status: string): string | undefined {
 function buildUrl(path: string) {
   if (!path) return path;
   if (/^https?:\/\//i.test(path)) return path;
-  const base = process.env.NEXT_PUBLIC_API_URL || 'https://ixora-api.mbmb.gov.my';
+  const base =
+    process.env.NEXT_PUBLIC_API_URL || 'https://ixora-api.mbmb.gov.my';
   // Ensure it goes under /uploads/file/<path>
   let normalized = String(path).replace(/^\/+/, '');
   if (!/^uploads\/file\//i.test(normalized)) {
